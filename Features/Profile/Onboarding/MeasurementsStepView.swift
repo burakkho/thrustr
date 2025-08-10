@@ -11,6 +11,7 @@ import SwiftData
 struct MeasurementsStepView: View {
     @Binding var data: OnboardingData
     let onNext: () -> Void
+    @State private var validationMessage: String? = nil
     
     var body: some View {
         VStack(spacing: 24) {
@@ -120,14 +121,18 @@ struct MeasurementsStepView: View {
             }
             
             VStack(spacing: 12) {
-                Button(action: onNext) {
-                    Text(LocalizationKeys.Onboarding.continueButton.localized)
-                        .font(.headline)
-                        .foregroundColor(.white)
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(Color.blue)
-                        .cornerRadius(12)
+                if let message = validationMessage {
+                    Text(message)
+                        .font(.caption)
+                        .foregroundColor(.red)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
+                
+                GradientButton(title: LocalizationKeys.Onboarding.continueButton.localized) {
+                    validationMessage = validateInputs()
+                    if validationMessage == nil {
+                        onNext()
+                    }
                 }
                 
                 Button(LocalizationKeys.Onboarding.skipStep.localized) {
@@ -175,6 +180,7 @@ struct MeasurementInput: View {
     let placeholder: String
     
     @State private var textValue: String = ""
+    @State private var errorText: String? = nil
     
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -185,10 +191,18 @@ struct MeasurementInput: View {
                     .keyboardType(.decimalPad)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                     .onChange(of: textValue) { _, newValue in
-                        if let v = Double(newValue), range.contains(v) {
-                            value = v
+                        if let v = Double(newValue) {
+                            if range.contains(v) {
+                                value = v
+                                errorText = nil
+                            } else {
+                                errorText = "\(Int(range.lowerBound)) - \(Int(range.upperBound)) \(unit)"
+                            }
                         } else if newValue.isEmpty {
                             value = nil
+                            errorText = nil
+                        } else {
+                            errorText = "Geçersiz değer"
                         }
                     }
                     .onAppear {
@@ -200,7 +214,24 @@ struct MeasurementInput: View {
                     .foregroundColor(.secondary)
                     .padding(.trailing, 8)
             }
+            if let errorText = errorText {
+                Text(errorText)
+                    .font(.caption)
+                    .foregroundColor(.red)
+            } else {
+                Text("\(Int(range.lowerBound))-\(Int(range.upperBound)) \(unit)")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
         }
+    }
+}
+
+// MARK: - Validation Helper
+private extension MeasurementsStepView {
+    func validateInputs() -> String? {
+        // All optional, but if provided must be within range (already enforced). No blocking needed.
+        return nil
     }
 }
 

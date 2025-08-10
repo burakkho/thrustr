@@ -12,6 +12,8 @@ import SwiftData
 struct OnboardingView: View {
     @Environment(\.modelContext) private var modelContext
     @AppStorage("onboardingCompleted") private var onboardingCompleted = false
+    @AppStorage("onboardingStep") private var savedStep: Int = 0
+    @AppStorage("onboardingData") private var savedDataJSON: String = ""
     @State private var currentStep = 0
     @State private var onboardingData = OnboardingData()
     
@@ -26,7 +28,7 @@ struct OnboardingView: View {
             
             VStack {
                 if currentStep > 0 {
-                    OnboardingProgressView(currentStep: currentStep, totalSteps: 5)
+                    InteractiveProgressBar(currentStep: currentStep, totalSteps: 5)
                         .padding(.top)
                 }
                 
@@ -47,8 +49,14 @@ struct OnboardingView: View {
                         currentStep -= 1
                     }
                     .foregroundColor(.blue)
+                    .accessibilityLabel(Text("onboarding.back".localized))
+                    .accessibilityHint(Text("Bir önceki adıma döner"))
                     .padding(.bottom)
                 }
+            }
+            .onAppear(perform: restoreProgressIfNeeded)
+            .onChange(of: currentStep) { _, _ in
+                persistProgress()
             }
         }
     }
@@ -91,55 +99,111 @@ struct OnboardingView: View {
             }
             
             onboardingCompleted = true
+            // Temizle
+            savedStep = 0
+            savedDataJSON = ""
             print("✅ Onboarding tamamlandı")
         } catch {
             print("❌ Save error: \(error)")
+        }
+    }
+
+    // MARK: - Persistence
+    private func persistProgress() {
+        savedStep = currentStep
+        if let encoded = try? JSONEncoder().encode(onboardingData),
+           let json = String(data: encoded, encoding: .utf8) {
+            savedDataJSON = json
+        }
+    }
+    
+    private func restoreProgressIfNeeded() {
+        guard !onboardingCompleted else { return }
+        currentStep = savedStep
+        if !savedDataJSON.isEmpty, let data = savedDataJSON.data(using: .utf8),
+           let decoded = try? JSONDecoder().decode(OnboardingData.self, from: data) {
+            onboardingData = decoded
         }
     }
 }
 
 // MARK: - Onboarding Data Model
 @Observable
-class OnboardingData {
-    var name = ""
-    var age = 25
-    var gender = "male"
-    var height = 175.0
-    var weight = 70.0
-    var targetWeight: Double? = nil
-    var fitnessGoal = "maintain"
-    var activityLevel = "moderate"
-    var neckCircumference: Double? = nil
-    var waistCircumference: Double? = nil
-    var hipCircumference: Double? = nil
-}
+class OnboardingData: Codable {
+    var name: String
+    var age: Int
+    var gender: String
+    var height: Double
+    var weight: Double
+    var targetWeight: Double?
+    var fitnessGoal: String
+    var activityLevel: String
+    var neckCircumference: Double?
+    var waistCircumference: Double?
+    var hipCircumference: Double?
 
-// MARK: - Progress Indicator
-struct OnboardingProgressView: View {
-    let currentStep: Int
-    let totalSteps: Int
-    
-    var body: some View {
-        VStack(spacing: 8) {
-            HStack {
-                ForEach(1...totalSteps, id: \.self) { step in
-                    Circle()
-                        .fill(step <= currentStep ? Color.blue : Color.gray.opacity(0.3))
-                        .frame(width: 12, height: 12)
-                    if step < totalSteps {
-                        Rectangle()
-                            .fill(step < currentStep ? Color.blue : Color.gray.opacity(0.3))
-                            .frame(height: 2)
-                    }
-                }
-            }
-            .padding(.horizontal)
-            Text("onboarding.progress.step".localized(with: currentStep, totalSteps))
-                .font(.caption)
-                .foregroundColor(.secondary)
-        }
+    enum CodingKeys: String, CodingKey {
+        case name, age, gender, height, weight, targetWeight, fitnessGoal, activityLevel, neckCircumference, waistCircumference, hipCircumference
+    }
+
+    init(
+        name: String = "",
+        age: Int = 25,
+        gender: String = "male",
+        height: Double = 175.0,
+        weight: Double = 70.0,
+        targetWeight: Double? = nil,
+        fitnessGoal: String = "maintain",
+        activityLevel: String = "moderate",
+        neckCircumference: Double? = nil,
+        waistCircumference: Double? = nil,
+        hipCircumference: Double? = nil
+    ) {
+        self.name = name
+        self.age = age
+        self.gender = gender
+        self.height = height
+        self.weight = weight
+        self.targetWeight = targetWeight
+        self.fitnessGoal = fitnessGoal
+        self.activityLevel = activityLevel
+        self.neckCircumference = neckCircumference
+        self.waistCircumference = waistCircumference
+        self.hipCircumference = hipCircumference
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.name = try container.decodeIfPresent(String.self, forKey: .name) ?? ""
+        self.age = try container.decodeIfPresent(Int.self, forKey: .age) ?? 25
+        self.gender = try container.decodeIfPresent(String.self, forKey: .gender) ?? "male"
+        self.height = try container.decodeIfPresent(Double.self, forKey: .height) ?? 175.0
+        self.weight = try container.decodeIfPresent(Double.self, forKey: .weight) ?? 70.0
+        self.targetWeight = try container.decodeIfPresent(Double.self, forKey: .targetWeight)
+        self.fitnessGoal = try container.decodeIfPresent(String.self, forKey: .fitnessGoal) ?? "maintain"
+        self.activityLevel = try container.decodeIfPresent(String.self, forKey: .activityLevel) ?? "moderate"
+        self.neckCircumference = try container.decodeIfPresent(Double.self, forKey: .neckCircumference)
+        self.waistCircumference = try container.decodeIfPresent(Double.self, forKey: .waistCircumference)
+        self.hipCircumference = try container.decodeIfPresent(Double.self, forKey: .hipCircumference)
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(name, forKey: .name)
+        try container.encode(age, forKey: .age)
+        try container.encode(gender, forKey: .gender)
+        try container.encode(height, forKey: .height)
+        try container.encode(weight, forKey: .weight)
+        try container.encodeIfPresent(targetWeight, forKey: .targetWeight)
+        try container.encode(fitnessGoal, forKey: .fitnessGoal)
+        try container.encode(activityLevel, forKey: .activityLevel)
+        try container.encodeIfPresent(neckCircumference, forKey: .neckCircumference)
+        try container.encodeIfPresent(waistCircumference, forKey: .waistCircumference)
+        try container.encodeIfPresent(hipCircumference, forKey: .hipCircumference)
     }
 }
+
+// (Legacy OnboardingProgressView replaced by InteractiveProgressBar)
 
 // MARK: - Preview
 #Preview {

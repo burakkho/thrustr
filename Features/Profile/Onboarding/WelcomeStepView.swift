@@ -13,6 +13,7 @@ struct WelcomeStepView: View {
     
     @State private var iconScale: CGFloat = 0
     @State private var contentOpacity: Double = 0
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     
     var body: some View {
         VStack(spacing: 0) {
@@ -27,20 +28,20 @@ struct WelcomeStepView: View {
                         .font(.system(size: 50, weight: .medium, design: .rounded))
                         .foregroundColor(.blue)
                 )
-                .scaleEffect(iconScale)
+                .scaleEffect(reduceMotion ? 1.0 : iconScale)
                 .onAppear {
-                    withAnimation(.easeOut(duration: 0.5)) {
-                        iconScale = 1.0
+                    if reduceMotion { iconScale = 1.0 } else {
+                        withAnimation(.easeOut(duration: 0.5)) { iconScale = 1.0 }
                     }
                 }
             
             VStack(spacing: 12) {
                 Text(LocalizationKeys.Onboarding.Welcome.title.localized)
-                    .font(.system(size: 32, weight: .bold, design: .rounded))
+                    .font(.largeTitle)
                     .multilineTextAlignment(.center)
                 
                 Text(LocalizationKeys.Onboarding.Welcome.subtitle.localized)
-                    .font(.system(size: 17, weight: .regular))
+                    .font(.body)
                     .foregroundColor(.secondary)
                     .multilineTextAlignment(.center)
                     .lineSpacing(4)
@@ -91,20 +92,11 @@ struct WelcomeStepView: View {
             Spacer()
             
             // CTA Button - Daha sade
-            Button(action: onNext) {
-                HStack(spacing: 8) {
-                    Text(LocalizationKeys.Onboarding.Welcome.start.localized)
-                        .font(.system(size: 17, weight: .semibold))
-                    
-                    Image(systemName: "arrow.right")
-                        .font(.system(size: 15, weight: .semibold))
-                }
-                .foregroundColor(.white)
-                .frame(maxWidth: .infinity)
-                .frame(height: 50)
-                .background(Color.blue)
-                .cornerRadius(12)
+            GradientButton(title: LocalizationKeys.Onboarding.Welcome.start.localized, icon: "arrow.right") {
+                onNext()
             }
+            .accessibilityLabel(Text(LocalizationKeys.Onboarding.Welcome.start.localized))
+            .accessibilityHint(Text("Onboarding'a başla"))
             .padding(.horizontal, 24)
             .padding(.bottom, 50)
         }
@@ -122,18 +114,18 @@ struct MinimalFeatureRow: View {
     var body: some View {
         HStack(spacing: 16) {
             Image(systemName: icon)
-                .font(.system(size: 22, weight: .regular))
+                .font(.title2)
                 .foregroundColor(.blue)
                 .frame(width: 32)
             
             Text(text)
-                .font(.system(size: 16, weight: .regular))
+                .font(.body)
                 .foregroundColor(.primary)
             
             Spacer()
             
             Image(systemName: "checkmark")
-                .font(.system(size: 14, weight: .medium))
+                .font(.subheadline)
                 .foregroundColor(.green)
                 .opacity(appeared ? 1 : 0)
         }

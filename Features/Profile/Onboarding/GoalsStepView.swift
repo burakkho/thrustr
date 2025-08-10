@@ -11,6 +11,7 @@ import SwiftData
 struct GoalsStepView: View {
     @Binding var data: OnboardingData
     let onNext: () -> Void
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     
     var body: some View {
         VStack(spacing: 24) {
@@ -136,14 +137,8 @@ struct GoalsStepView: View {
                 .padding(.horizontal)
             }
             
-            Button(action: onNext) {
-                Text(LocalizationKeys.Onboarding.continueAction.localized)
-                    .font(.headline)
-                    .foregroundColor(.white)
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(Color.blue)
-                    .cornerRadius(12)
+            GradientButton(title: LocalizationKeys.Onboarding.continueAction.localized) {
+                onNext()
             }
             .padding(.horizontal)
             .padding(.bottom)
@@ -193,6 +188,10 @@ struct GoalOptionButton: View {
             .cornerRadius(12)
         }
         .buttonStyle(PlainButtonStyle())
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel(Text(title))
+        .accessibilityHint(Text(subtitle))
+        .accessibilityAddTraits(isSelected ? .isSelected : [])
     }
 }
 
@@ -235,6 +234,10 @@ struct ActivityLevelButton: View {
             .cornerRadius(12)
         }
         .buttonStyle(PlainButtonStyle())
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel(Text(title))
+        .accessibilityHint(Text(subtitle))
+        .accessibilityAddTraits(isSelected ? .isSelected : [])
     }
 }
 

@@ -99,6 +99,7 @@ struct GradientButton: View {
     }
     
     @State private var isPressed = false
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     
     var body: some View {
         Button(action: action) {
@@ -128,14 +129,15 @@ struct GradientButton: View {
                 }
             )
             .cornerRadius(OnboardingDesign.cardCornerRadius)
-            .scaleEffect(isPressed ? 0.96 : 1.0)
+            .scaleEffect(reduceMotion ? 1.0 : (isPressed ? 0.96 : 1.0))
             .shadow(color: isEnabled ? Color(hex: "007AFF").opacity(0.3) : .clear,
-                   radius: isPressed ? 5 : 10, y: isPressed ? 2 : 5)
+                   radius: reduceMotion ? 0 : (isPressed ? 5 : 10), y: reduceMotion ? 0 : (isPressed ? 2 : 5))
         }
         .disabled(!isEnabled)
         .onLongPressGesture(minimumDuration: .infinity, maximumDistance: .infinity,
                            pressing: { pressing in
-            withAnimation(OnboardingDesign.springAnimation) {
+            let animation = reduceMotion ? nil : OnboardingDesign.springAnimation
+            withAnimation(animation) {
                 isPressed = pressing
             }
         }, perform: {})
@@ -150,6 +152,7 @@ struct AnimatedFeatureCard: View {
     let delay: Double
     
     @State private var appeared = false
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     
     var body: some View {
         HStack(spacing: 16) {
@@ -179,11 +182,15 @@ struct AnimatedFeatureCard: View {
                 .fill(Color(.systemBackground))
                 .shadow(color: color.opacity(0.1), radius: 5, y: 2)
         )
-        .offset(x: appeared ? 0 : -50)
-        .opacity(appeared ? 1 : 0)
+        .offset(x: reduceMotion ? 0 : (appeared ? 0 : -50))
+        .opacity(reduceMotion ? 1 : (appeared ? 1 : 0))
         .onAppear {
-            withAnimation(OnboardingDesign.springAnimation.delay(delay)) {
+            if reduceMotion {
                 appeared = true
+            } else {
+                withAnimation(OnboardingDesign.springAnimation.delay(delay)) {
+                    appeared = true
+                }
             }
         }
     }
@@ -193,6 +200,7 @@ struct AnimatedFeatureCard: View {
 struct InteractiveProgressBar: View {
     let currentStep: Int
     let totalSteps: Int
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     
     var progress: CGFloat {
         CGFloat(currentStep) / CGFloat(totalSteps)
@@ -211,7 +219,7 @@ struct InteractiveProgressBar: View {
                     RoundedRectangle(cornerRadius: 6)
                         .fill(OnboardingDesign.primaryGradient)
                         .frame(width: geometry.size.width * progress, height: 12)
-                        .animation(OnboardingDesign.springAnimation, value: progress)
+                        .animation(reduceMotion ? nil : OnboardingDesign.springAnimation, value: progress)
                     
                     // Steps dots
                     HStack(spacing: 0) {
@@ -223,8 +231,8 @@ struct InteractiveProgressBar: View {
                                     Circle()
                                         .stroke(step < currentStep ? Color.clear : Color.white, lineWidth: 2)
                                 )
-                                .scaleEffect(step == currentStep - 1 ? 1.2 : 1.0)
-                                .animation(OnboardingDesign.springAnimation, value: currentStep)
+                                .scaleEffect(reduceMotion ? 1.0 : (step == currentStep - 1 ? 1.2 : 1.0))
+                                .animation(reduceMotion ? nil : OnboardingDesign.springAnimation, value: currentStep)
                             
                             if step < totalSteps - 1 {
                                 Spacer()
@@ -265,6 +273,7 @@ struct VisualInputField: View {
     let placeholder: String
     
     @FocusState private var isFocused: Bool
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -274,7 +283,7 @@ struct VisualInputField: View {
             
             HStack {
                 TextField(placeholder, text: $text)
-                    .font(.system(size: 18, weight: .medium, design: .rounded))
+                    .font(.headline)
                     .focused($isFocused)
                 
                 if !text.isEmpty {
@@ -293,6 +302,7 @@ struct VisualInputField: View {
                             .stroke(isFocused ? Color(hex: "007AFF") : Color.clear, lineWidth: 2)
                     )
             )
+            .dynamicTypeSize(.medium ... .accessibility5)
         }
     }
 }
@@ -317,10 +327,10 @@ struct VisualSlider: View {
                 Spacer()
                 
                 Text("\(Int(value))")
-                    .font(.system(size: 28, weight: .bold, design: .rounded))
+                    .font(.title)
                     .foregroundStyle(gradient)
                 + Text(" \(unit)")
-                    .font(.system(size: 16, weight: .medium, design: .rounded))
+                    .font(.subheadline)
                     .foregroundColor(.secondary)
             }
             
@@ -340,7 +350,9 @@ struct VisualSlider: View {
             }
             .overlay(
                 Slider(value: $value, in: range, step: step)
-                    .opacity(0.01) // Invisible but interactive
+                    .opacity(0.01)
+                    .accessibilityLabel(Text(title))
+                    .accessibilityValue(Text("\(Int(value)) \(unit)"))
             )
         }
         .padding()
@@ -349,6 +361,7 @@ struct VisualSlider: View {
                 .fill(Color(.systemBackground))
                 .shadow(color: OnboardingDesign.cardShadowColor, radius: 8, y: 4)
         )
+        .dynamicTypeSize(.medium ... .accessibility5)
     }
 }
 
@@ -362,6 +375,7 @@ struct SelectionCard: View {
     let action: () -> Void
     
     @State private var isPressed = false
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     
     var body: some View {
         Button(action: action) {
@@ -417,15 +431,18 @@ struct SelectionCard: View {
                 RoundedRectangle(cornerRadius: 16)
                     .stroke(isSelected ? color : Color.clear, lineWidth: 2)
             )
-            .scaleEffect(isPressed ? 0.98 : 1.0)
+            .scaleEffect(reduceMotion ? 1.0 : (isPressed ? 0.98 : 1.0))
         }
         .buttonStyle(PlainButtonStyle())
         .onLongPressGesture(minimumDuration: .infinity, maximumDistance: .infinity,
                            pressing: { pressing in
-            withAnimation(OnboardingDesign.springAnimation) {
+            let animation = reduceMotion ? nil : OnboardingDesign.springAnimation
+            withAnimation(animation) {
                 isPressed = pressing
             }
         }, perform: {})
+        .accessibilityElement(children: .combine)
+        .accessibilityAddTraits(isSelected ? .isSelected : [])
     }
 }
 

@@ -11,6 +11,7 @@ import SwiftData
 struct SummaryStepView: View {
     let data: OnboardingData
     let onComplete: () -> Void
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     
     var body: some View {
         VStack(spacing: 24) {
@@ -182,18 +183,8 @@ struct SummaryStepView: View {
                 .padding(.horizontal)
             }
             
-            Button(action: onComplete) {
-                HStack {
-                    Text(LocalizationKeys.Onboarding.Summary.startApp.localized)
-                        .font(.headline)
-                    Image(systemName: "arrow.right")
-                        .font(.headline)
-                }
-                .foregroundColor(.white)
-                .frame(maxWidth: .infinity)
-                .padding()
-                .background(LinearGradient(colors: [Color.green, Color.blue], startPoint: .leading, endPoint: .trailing))
-                .cornerRadius(12)
+            GradientButton(title: LocalizationKeys.Onboarding.Summary.startApp.localized, icon: "arrow.right") {
+                onComplete()
             }
             .padding(.horizontal)
             .padding(.bottom)

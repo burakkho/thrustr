@@ -11,6 +11,10 @@ import SwiftData
 struct PersonalInfoStepView: View {
     @Binding var data: OnboardingData
     let onNext: () -> Void
+    @FocusState private var focusedField: Field?
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    
+    private enum Field { case name }
     
     var body: some View {
         VStack(spacing: 24) {
@@ -31,6 +35,10 @@ struct PersonalInfoStepView: View {
                             .font(.headline)
                         TextField(LocalizationKeys.Onboarding.PersonalInfo.namePlaceholder.localized, text: $data.name)
                             .textFieldStyle(RoundedBorderTextFieldStyle())
+                            .focused($focusedField, equals: .name)
+                            .submitLabel(.next)
+                            .accessibilityLabel(Text(LocalizationKeys.Onboarding.PersonalInfo.name.localized))
+                            .accessibilityHint(Text("İsminizi girin"))
                     }
                     
                     VStack(alignment: .leading, spacing: 8) {
@@ -44,6 +52,8 @@ struct PersonalInfoStepView: View {
                         .padding()
                         .background(Color(.systemGray6))
                         .cornerRadius(12)
+                        .accessibilityLabel(Text(LocalizationKeys.Onboarding.PersonalInfo.age.localized))
+                        .accessibilityValue(Text("\(data.age)"))
                     }
                     
                     VStack(alignment: .leading, spacing: 8) {
@@ -65,6 +75,7 @@ struct PersonalInfoStepView: View {
                                 data.gender = "female"
                             }
                         }
+                        .accessibilityElement(children: .contain)
                     }
                     
                     VStack(alignment: .leading, spacing: 8) {
@@ -76,6 +87,8 @@ struct PersonalInfoStepView: View {
                                 .fontWeight(.semibold)
                                 .frame(width: 80, alignment: .leading)
                             Slider(value: $data.height, in: 140...220, step: 1)
+                                .accessibilityLabel(Text(LocalizationKeys.Onboarding.PersonalInfo.height.localized))
+                                .accessibilityValue(Text("\(Int(data.height)) cm"))
                         }
                         .padding()
                         .background(Color(.systemGray6))
@@ -91,6 +104,8 @@ struct PersonalInfoStepView: View {
                                 .fontWeight(.semibold)
                                 .frame(width: 80, alignment: .leading)
                             Slider(value: $data.weight, in: 40...150, step: 0.5)
+                                .accessibilityLabel(Text(LocalizationKeys.Onboarding.PersonalInfo.weight.localized))
+                                .accessibilityValue(Text("\(Int(data.weight)) kg"))
                         }
                         .padding()
                         .background(Color(.systemGray6))
@@ -100,18 +115,17 @@ struct PersonalInfoStepView: View {
                 .padding(.horizontal)
             }
             
-            Button(action: { if !data.name.isEmpty { onNext() } }) {
-                Text(LocalizationKeys.Onboarding.continueAction.localized)
-                    .font(.headline)
-                    .foregroundColor(.white)
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(data.name.isEmpty ? Color.gray : Color.blue)
-                    .cornerRadius(12)
+            GradientButton(title: LocalizationKeys.Onboarding.continueAction.localized, isEnabled: !data.name.isEmpty) {
+                if !data.name.isEmpty { onNext() }
             }
             .disabled(data.name.isEmpty)
             .padding(.horizontal)
             .padding(.bottom)
+        }
+        .onSubmit {
+            if focusedField == .name {
+                focusedField = nil
+            }
         }
     }
 }
@@ -141,6 +155,8 @@ struct GenderButton: View {
             .cornerRadius(12)
         }
         .foregroundColor(isSelected ? .blue : .primary)
+        .accessibilityLabel(Text(title))
+        .accessibilityAddTraits(isSelected ? .isSelected : [])
     }
 }
 
