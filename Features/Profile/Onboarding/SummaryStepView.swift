@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-
+import SwiftData
 // MARK: - Summary Step
 struct SummaryStepView: View {
     let data: OnboardingData

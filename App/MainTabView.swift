@@ -1,10 +1,3 @@
-//
-//  MainTabView.swift
-//  SporHocam
-//
-//  Created by Assistant on 10/8/25.
-//
-
 import SwiftUI
 import SwiftData
 

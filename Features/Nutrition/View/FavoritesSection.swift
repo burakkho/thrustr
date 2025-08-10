@@ -117,7 +117,7 @@ struct QuickFoodCard: View {
             VStack(alignment: .leading, spacing: 6) {
                 HStack {
                     Image(systemName: food.categoryEnum.icon)
-                        .foregroundColor(food.categoryEnum.color)
+                        .foregroundColor(food.categoryEnum.color)  // ✅ ndColor değil, foregroundColor
                         .font(.caption)
                     
                     Spacer()

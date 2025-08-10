@@ -59,6 +59,11 @@
 		41E63D632E483E6D006A2117 /* SummaryStepView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41E63D622E483E6D006A2117 /* SummaryStepView.swift */; };
 		41E63D652E485914006A2117 /* LanguageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41E63D642E48590E006A2117 /* LanguageManager.swift */; };
 		41E63D692E487A0D006A2117 /* LocalizationKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41E63D682E487A06006A2117 /* LocalizationKeys.swift */; };
+		41E63DA42E489CE8006A2117 /* OnboardingDesignSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41E63DA32E489CE0006A2117 /* OnboardingDesignSystem.swift */; };
+		41E63DA72E48B131006A2117 /* exercises.csv in Resources */ = {isa = PBXBuildFile; fileRef = 41E63DA62E48B131006A2117 /* exercises.csv */; };
+		41E63DA92E48B152006A2117 /* DataSeeder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41E63DA82E48B14D006A2117 /* DataSeeder.swift */; };
+		41E63DAB2E48B1C2006A2117 /* foods.csv in Resources */ = {isa = PBXBuildFile; fileRef = 41E63DAA2E48B1C2006A2117 /* foods.csv */; };
+		41E63DAD2E48B53B006A2117 /* FoodCategory+UI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41E63DAC2E48B53A006A2117 /* FoodCategory+UI.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -135,6 +140,11 @@
 		41E63D622E483E6D006A2117 /* SummaryStepView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SummaryStepView.swift; sourceTree = "<group>"; };
 		41E63D642E48590E006A2117 /* LanguageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LanguageManager.swift; sourceTree = "<group>"; };
 		41E63D682E487A06006A2117 /* LocalizationKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalizationKeys.swift; sourceTree = "<group>"; };
+		41E63DA32E489CE0006A2117 /* OnboardingDesignSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingDesignSystem.swift; sourceTree = "<group>"; };
+		41E63DA62E48B131006A2117 /* exercises.csv */ = {isa = PBXFileReference; lastKnownFileType = text; path = exercises.csv; sourceTree = "<group>"; };
+		41E63DA82E48B14D006A2117 /* DataSeeder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataSeeder.swift; sourceTree = "<group>"; };
+		41E63DAA2E48B1C2006A2117 /* foods.csv */ = {isa = PBXFileReference; lastKnownFileType = text; path = foods.csv; sourceTree = "<group>"; };
+		41E63DAC2E48B53A006A2117 /* FoodCategory+UI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FoodCategory+UI.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -178,6 +188,7 @@
 		41E316242E46320900A27990 = {
 			isa = PBXGroup;
 			children = (
+				41E63DA52E48B110006A2117 /* Resources */,
 				41E3162E2E46320900A27990 /* Products */,
 				41E3165D2E4676B700A27990 /* App */,
 				41E3165F2E4676CC00A27990 /* Core */,
@@ -240,6 +251,7 @@
 		41E316632E46772F00A27990 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				41E63DAC2E48B53A006A2117 /* FoodCategory+UI.swift */,
 				41E316BD2E47A05E00A27990 /* BodyTrackingModels.swift */,
 				41E316B52E479D0700A27990 /* Gender.swift */,
 				41E3169C2E4767FA00A27990 /* NutritionEntry.swift */,
@@ -258,6 +270,7 @@
 		41E316642E46773600A27990 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				41E63DA82E48B14D006A2117 /* DataSeeder.swift */,
 				41E63D642E48590E006A2117 /* LanguageManager.swift */,
 				41E63D512E483021006A2117 /* ThemeManager.swift */,
 				41E63D312E482863006A2117 /* UserService.swift */,
@@ -394,8 +407,26 @@
 				41E63D5C2E483DA9006A2117 /* PersonalInfoStepView.swift */,
 				41E316762E4680A900A27990 /* OnboardingView.swift */,
 				41E63D5A2E483D03006A2117 /* WelcomeStepView.swift */,
+				41E63DA22E489CCB006A2117 /* Components */,
 			);
 			path = Onboarding;
+			sourceTree = "<group>";
+		};
+		41E63DA22E489CCB006A2117 /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				41E63DA32E489CE0006A2117 /* OnboardingDesignSystem.swift */,
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
+		41E63DA52E48B110006A2117 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				41E63DAA2E48B1C2006A2117 /* foods.csv */,
+				41E63DA62E48B131006A2117 /* exercises.csv */,
+			);
+			path = Resources;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -514,6 +545,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				41E63DAB2E48B1C2006A2117 /* foods.csv in Resources */,
+				41E63DA72E48B131006A2117 /* exercises.csv in Resources */,
 				41E63D552E4836AE006A2117 /* Localizable.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -567,8 +600,10 @@
 				41E63D692E487A0D006A2117 /* LocalizationKeys.swift in Sources */,
 				41E316B02E479AD800A27990 /* PersonalInfoEditView.swift in Sources */,
 				41E63D322E482867006A2117 /* UserService.swift in Sources */,
+				41E63DAD2E48B53B006A2117 /* FoodCategory+UI.swift in Sources */,
 				41E316962E4764D500A27990 /* Food.swift in Sources */,
 				41E63D5F2E483DD8006A2117 /* GoalsStepView.swift in Sources */,
+				41E63DA92E48B152006A2117 /* DataSeeder.swift in Sources */,
 				41E316AB2E4777CB00A27990 /* CustomFoodEntryView.swift in Sources */,
 				41E3169D2E4767FF00A27990 /* NutritionEntry.swift in Sources */,
 				41E316732E467F0F00A27990 /* Workout.swift in Sources */,
@@ -578,6 +613,7 @@
 				41E316B42E479B1900A27990 /* AccountManagementView.swift in Sources */,
 				41E316792E468C5F00A27990 /* TrainingView.swift in Sources */,
 				41E316752E467FB000A27990 /* MainTabView.swift in Sources */,
+				41E63DA42E489CE8006A2117 /* OnboardingDesignSystem.swift in Sources */,
 				41E316BA2E47A00300A27990 /* BodyMeasurementView.swift in Sources */,
 				41E316A72E47748300A27990 /* FavoritesSection.swift in Sources */,
 				41E316BE2E47A06600A27990 /* BodyTrackingModels.swift in Sources */,

@@ -2,7 +2,7 @@
 //  WelcomeStepView.swift
 //  SporHocam
 //
-//  Onboarding Welcome Step - Localized & Fixed
+//  Welcome Step - Minimal & Clean Design
 //
 
 import SwiftUI
@@ -11,86 +11,139 @@ import SwiftUI
 struct WelcomeStepView: View {
     let onNext: () -> Void
     
+    @State private var iconScale: CGFloat = 0
+    @State private var contentOpacity: Double = 0
+    
     var body: some View {
-        VStack(spacing: 30) {
+        VStack(spacing: 0) {
             Spacer()
             
-            Image(systemName: "dumbbell.fill")
-                .font(.system(size: 80))
-                .foregroundColor(.blue)
+            // App Icon - Sade ve büyük
+            Circle()
+                .fill(Color.blue.opacity(0.1))
+                .frame(width: 120, height: 120)
+                .overlay(
+                    Image(systemName: "figure.run")
+                        .font(.system(size: 50, weight: .medium, design: .rounded))
+                        .foregroundColor(.blue)
+                )
+                .scaleEffect(iconScale)
+                .onAppear {
+                    withAnimation(.easeOut(duration: 0.5)) {
+                        iconScale = 1.0
+                    }
+                }
             
-            VStack(spacing: 16) {
+            VStack(spacing: 12) {
                 Text(LocalizationKeys.Onboarding.Welcome.title.localized)
-                    .font(.largeTitle)
-                    .fontWeight(.bold)
+                    .font(.system(size: 32, weight: .bold, design: .rounded))
                     .multilineTextAlignment(.center)
                 
                 Text(LocalizationKeys.Onboarding.Welcome.subtitle.localized)
-                    .font(.title3)
+                    .font(.system(size: 17, weight: .regular))
                     .foregroundColor(.secondary)
                     .multilineTextAlignment(.center)
+                    .lineSpacing(4)
+            }
+            .padding(.top, 40)
+            .padding(.horizontal, 32)
+            .opacity(contentOpacity)
+            .onAppear {
+                withAnimation(.easeOut(duration: 0.5).delay(0.2)) {
+                    contentOpacity = 1.0
+                }
             }
             
-            VStack(alignment: .leading, spacing: 12) {
-                FeatureRow(
-                    icon: "dumbbell.fill",
-                    text: LocalizationKeys.Onboarding.Feature.workout.localized,
-                    color: .blue
+            // Özellikler - Daha minimal
+            VStack(spacing: 0) {
+                MinimalFeatureRow(
+                    icon: "figure.strengthtraining.traditional",
+                    text: LocalizationKeys.Onboarding.Feature.workout.localized
                 )
-                FeatureRow(
+                
+                Divider()
+                    .padding(.leading, 56)
+                
+                MinimalFeatureRow(
                     icon: "chart.line.uptrend.xyaxis",
-                    text: LocalizationKeys.Onboarding.Feature.progress.localized,
-                    color: .green
+                    text: LocalizationKeys.Onboarding.Feature.progress.localized
                 )
-                FeatureRow(
+                
+                Divider()
+                    .padding(.leading, 56)
+                
+                MinimalFeatureRow(
                     icon: "fork.knife",
-                    text: LocalizationKeys.Onboarding.Feature.nutrition.localized,
-                    color: .orange
+                    text: LocalizationKeys.Onboarding.Feature.nutrition.localized
                 )
-                FeatureRow(
+                
+                Divider()
+                    .padding(.leading, 56)
+                
+                MinimalFeatureRow(
                     icon: "target",
-                    text: LocalizationKeys.Onboarding.Feature.goals.localized,
-                    color: .red
+                    text: LocalizationKeys.Onboarding.Feature.goals.localized
                 )
             }
-            .padding()
-            .background(Color(.systemGray6))
-            .cornerRadius(16)
-            .padding(.horizontal)
+            .padding(.top, 48)
+            .opacity(contentOpacity)
             
             Spacer()
             
+            // CTA Button - Daha sade
             Button(action: onNext) {
-                Text(LocalizationKeys.Onboarding.Welcome.start.localized)
-                    .font(.headline)
-                    .foregroundColor(.white)
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(Color.blue)
-                    .cornerRadius(12)
+                HStack(spacing: 8) {
+                    Text(LocalizationKeys.Onboarding.Welcome.start.localized)
+                        .font(.system(size: 17, weight: .semibold))
+                    
+                    Image(systemName: "arrow.right")
+                        .font(.system(size: 15, weight: .semibold))
+                }
+                .foregroundColor(.white)
+                .frame(maxWidth: .infinity)
+                .frame(height: 50)
+                .background(Color.blue)
+                .cornerRadius(12)
             }
-            .padding(.horizontal)
-            .padding(.bottom)
+            .padding(.horizontal, 24)
+            .padding(.bottom, 50)
         }
+        .background(Color(.systemBackground))
     }
 }
 
-// MARK: - Feature Row Component
-struct FeatureRow: View {
+// MARK: - Minimal Feature Row
+struct MinimalFeatureRow: View {
     let icon: String
     let text: String
-    let color: Color
+    
+    @State private var appeared = false
     
     var body: some View {
-        HStack(spacing: 12) {
+        HStack(spacing: 16) {
             Image(systemName: icon)
-                .foregroundColor(color)
-                .frame(width: 24)
+                .font(.system(size: 22, weight: .regular))
+                .foregroundColor(.blue)
+                .frame(width: 32)
             
             Text(text)
-                .font(.body)
+                .font(.system(size: 16, weight: .regular))
+                .foregroundColor(.primary)
             
             Spacer()
+            
+            Image(systemName: "checkmark")
+                .font(.system(size: 14, weight: .medium))
+                .foregroundColor(.green)
+                .opacity(appeared ? 1 : 0)
+        }
+        .padding(.horizontal, 24)
+        .padding(.vertical, 16)
+        .contentShape(Rectangle())
+        .onAppear {
+            withAnimation(.easeOut(duration: 0.3).delay(0.5)) {
+                appeared = true
+            }
         }
     }
 }

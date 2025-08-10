@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-
+import SwiftData
 // MARK: - Measurements Step
 struct MeasurementsStepView: View {
     @Binding var data: OnboardingData

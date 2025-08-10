@@ -2,48 +2,37 @@ import SwiftUI
 import SwiftData
 
 @main
-struct sporhocamApp: App {
-    @StateObject private var themeManager = ThemeManager()
-    @StateObject private var languageManager = LanguageManager.shared
+struct SporHocamApp: App {
+    let container: ModelContainer
     
-    var sharedModelContainer: ModelContainer = {
-        let schema = Schema([
-            // Core Models
-            User.self,
-            Exercise.self,
-            Workout.self,
-            WorkoutPart.self,
-            ExerciseSet.self,
-            Goal.self,
-            
-            // Nutrition Models
-            Food.self,
-            NutritionEntry.self,
-            
-            // Body Tracking Models
-            WeightEntry.self,
-            BodyMeasurement.self,
-            ProgressPhoto.self
-        ])
-        
-        let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
-
+    init() {
         do {
-            return try ModelContainer(for: schema, configurations: [modelConfiguration])
+            container = try ModelContainer(for:
+                User.self,
+                Exercise.self,
+                Food.self,
+                Workout.self,
+                WorkoutPart.self,
+                ExerciseSet.self,
+                NutritionEntry.self,
+                BodyMeasurement.self,
+                Goal.self
+            )
         } catch {
-            fatalError("Could not create ModelContainer: \(error)")
+            fatalError("Failed to create ModelContainer: \(error)")
         }
-    }()
-
+    }
+    
     var body: some Scene {
         WindowGroup {
             ContentView()
-                .environmentObject(themeManager)
-                .environmentObject(languageManager)
-                .onAppear {
-                    print("🚀 App started with language: \(languageManager.currentLanguage.displayName)")
+                .task {
+                    // await kaldırıldı çünkü fonksiyon async değil
+                    DataSeeder.seedDatabaseIfNeeded(
+                        modelContext: container.mainContext
+                    )
                 }
         }
-        .modelContainer(sharedModelContainer)
+        .modelContainer(container)
     }
 }
