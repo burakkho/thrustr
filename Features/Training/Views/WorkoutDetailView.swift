@@ -72,6 +72,7 @@ struct WorkoutDetailView: View {
 
     private func finishWorkout() {
         workout.finishWorkout()
+        try? modelContext.save()
         dismiss()
     }
 }
@@ -126,6 +127,7 @@ struct EmptyWorkoutState: View {
 // MARK: - Part Card
 struct WorkoutPartCard: View {
     let part: WorkoutPart
+    @Environment(\.modelContext) private var modelContext
     @State private var showingExerciseSelection = false
     @State private var showingSetTracking = false
     @State private var selectedExercise: Exercise?
@@ -210,6 +212,19 @@ struct WorkoutPartCard: View {
                 workoutPart: part,
                 onExerciseSelected: { exercise in
                     selectedExercise = exercise
+
+                    // Create a placeholder set so the exercise appears immediately under this part
+                    let nextIndexForExercise = (part.exerciseSets
+                        .filter { $0.exercise?.id == exercise.id }
+                        .map { Int($0.setNumber) }
+                        .max() ?? 0) + 1
+
+                    let placeholder = ExerciseSet(setNumber: Int16(nextIndexForExercise), isCompleted: false)
+                    placeholder.exercise = exercise
+                    placeholder.workoutPart = part
+                    modelContext.insert(placeholder)
+                    try? modelContext.save()
+
                     showingSetTracking = true
                 }
             )
@@ -343,6 +358,7 @@ struct StatBadge: View {
 // MARK: - Add Part Sheet + Row
 struct AddPartSheet: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.modelContext) private var modelContext
     let workout: Workout
 
     @State private var selectedPartType: WorkoutPartType = .strength
@@ -407,6 +423,7 @@ struct AddPartSheet: View {
 
     private func addPart() {
         _ = workout.addPart(name: partName, type: selectedPartType)
+        try? modelContext.save()
         dismiss()
     }
     

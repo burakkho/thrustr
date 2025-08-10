@@ -55,10 +55,8 @@ struct TrainingView: View {
                     showWorkoutDetail = true
                 }
             }
-            .fullScreenCover(isPresented: $showWorkoutDetail) {
-                if let workout = workoutToShow {
-                    WorkoutDetailView(workout: workout)
-                }
+            .fullScreenCover(item: $workoutToShow) { workout in
+                WorkoutDetailView(workout: workout)
             }
         }
     }
@@ -266,6 +264,7 @@ struct ActiveWorkoutView: View {
 struct ActiveWorkoutCard: View {
     let workout: Workout
     let onTap: () -> Void
+    @Environment(\.modelContext) private var modelContext
     @State private var currentTime = Date()
     
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
@@ -319,6 +318,7 @@ struct ActiveWorkoutCard: View {
                 
                 Button(LocalizationKeys.Training.Active.finish.localized) {
                     workout.finishWorkout()
+                    try? modelContext.save()
                 }
                 .font(.headline)
                 .foregroundColor(.blue)
@@ -482,6 +482,7 @@ struct NewWorkoutView: View {
     private func startEmptyWorkout() {
         let workout = Workout(name: workoutName.isEmpty ? LocalizationKeys.Training.History.defaultName.localized : workoutName)
         modelContext.insert(workout)
+        try? modelContext.save()
         
         dismiss()
         
@@ -498,6 +499,7 @@ struct NewWorkoutView: View {
         let _ = workout.addPart(name: LocalizationKeys.Training.Part.functional.localized, type: .functional)
         
         modelContext.insert(workout)
+        try? modelContext.save()
         
         dismiss()
         
@@ -514,6 +516,7 @@ struct NewWorkoutView: View {
         let _ = workout.addPart(name: LocalizationKeys.Training.Part.conditioning.localized, type: .conditioning)
         
         modelContext.insert(workout)
+        try? modelContext.save()
         
         dismiss()
         

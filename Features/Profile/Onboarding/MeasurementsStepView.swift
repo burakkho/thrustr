@@ -17,10 +17,9 @@ struct MeasurementsStepView: View {
         VStack(spacing: 24) {
             VStack(spacing: 8) {
                 Text(LocalizationKeys.Onboarding.measurementsTitle.localized)
-                    .font(.largeTitle)
-                    .fontWeight(.bold)
+                    .font(.system(size: 28, weight: .semibold, design: .rounded))
                 Text(LocalizationKeys.Onboarding.measurementsSubtitle.localized)
-                    .font(.subheadline)
+                    .font(.system(size: 14, weight: .regular, design: .rounded))
                     .foregroundColor(.secondary)
                     .multilineTextAlignment(.center)
             }
@@ -128,7 +127,7 @@ struct MeasurementsStepView: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
                 
-                GradientButton(title: LocalizationKeys.Onboarding.continueButton.localized) {
+                PrimaryButton(title: LocalizationKeys.Onboarding.continueButton.localized, icon: "arrow.right") {
                     validationMessage = validateInputs()
                     if validationMessage == nil {
                         onNext()

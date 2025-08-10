@@ -17,10 +17,9 @@ struct GoalsStepView: View {
         VStack(spacing: 24) {
             VStack(spacing: 8) {
                 Text(LocalizationKeys.Onboarding.Goals.title.localized)
-                    .font(.largeTitle)
-                    .fontWeight(.bold)
+                    .font(.system(size: 28, weight: .semibold, design: .rounded))
                 Text(LocalizationKeys.Onboarding.Goals.subtitle.localized)
-                    .font(.subheadline)
+                    .font(.system(size: 14, weight: .regular, design: .rounded))
                     .foregroundColor(.secondary)
                     .multilineTextAlignment(.center)
             }
@@ -137,7 +136,7 @@ struct GoalsStepView: View {
                 .padding(.horizontal)
             }
             
-            GradientButton(title: LocalizationKeys.Onboarding.continueAction.localized) {
+            PrimaryButton(title: LocalizationKeys.Onboarding.continueAction.localized, icon: "arrow.right") {
                 onNext()
             }
             .padding(.horizontal)

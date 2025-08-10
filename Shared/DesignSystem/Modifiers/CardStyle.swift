@@ -6,9 +6,17 @@ struct CardStyle: ViewModifier {
         content
             .padding(theme.spacing.m)
             .background(theme.colors.cardBackground)
-            .cornerRadius(theme.radius.m)
-            .shadow(color: theme.shadows.card, radius: 2, y: 1)
+            .overlay(
+                RoundedRectangle(cornerRadius: 14)
+                    .stroke(strokeColor, lineWidth: strokeWidth)
+            )
+            .cornerRadius(14)
+            .shadow(color: Color.shadowLight, radius: 3, y: 1)
     }
+
+    @Environment(\.colorScheme) private var colorScheme
+    private var strokeColor: Color { colorScheme == .dark ? Color.white.opacity(0.18) : Color.borderPrimary }
+    private var strokeWidth: CGFloat { colorScheme == .dark ? 2.0 : 1.0 }
 }
 
 extension View {

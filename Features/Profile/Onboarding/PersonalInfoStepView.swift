@@ -20,10 +20,9 @@ struct PersonalInfoStepView: View {
         VStack(spacing: 24) {
             VStack(spacing: 8) {
                 Text(LocalizationKeys.Onboarding.PersonalInfo.title.localized)
-                    .font(.largeTitle)
-                    .fontWeight(.bold)
+                    .font(.system(size: 28, weight: .semibold, design: .rounded))
                 Text(LocalizationKeys.Onboarding.PersonalInfo.subtitle.localized)
-                    .font(.subheadline)
+                    .font(.system(size: 14, weight: .regular, design: .rounded))
                     .foregroundColor(.secondary)
             }
             .padding(.top)
@@ -46,8 +45,7 @@ struct PersonalInfoStepView: View {
                             .font(.headline)
                         Stepper(value: $data.age, in: 15...80) {
                             Text(String(format: LocalizationKeys.Onboarding.PersonalInfo.ageYears.localized, data.age))
-                                .font(.title2)
-                                .fontWeight(.semibold)
+                                .font(.system(size: 20, weight: .semibold, design: .rounded))
                         }
                         .padding()
                         .background(Color(.systemGray6))
@@ -83,8 +81,7 @@ struct PersonalInfoStepView: View {
                             .font(.headline)
                         HStack {
                             Text("\(Int(data.height)) cm")
-                                .font(.title2)
-                                .fontWeight(.semibold)
+                                .font(.system(size: 20, weight: .semibold, design: .rounded))
                                 .frame(width: 80, alignment: .leading)
                             Slider(value: $data.height, in: 140...220, step: 1)
                                 .accessibilityLabel(Text(LocalizationKeys.Onboarding.PersonalInfo.height.localized))
@@ -100,8 +97,7 @@ struct PersonalInfoStepView: View {
                             .font(.headline)
                         HStack {
                             Text("\(Int(data.weight)) kg")
-                                .font(.title2)
-                                .fontWeight(.semibold)
+                                .font(.system(size: 20, weight: .semibold, design: .rounded))
                                 .frame(width: 80, alignment: .leading)
                             Slider(value: $data.weight, in: 40...150, step: 0.5)
                                 .accessibilityLabel(Text(LocalizationKeys.Onboarding.PersonalInfo.weight.localized))
@@ -115,7 +111,7 @@ struct PersonalInfoStepView: View {
                 .padding(.horizontal)
             }
             
-            GradientButton(title: LocalizationKeys.Onboarding.continueAction.localized, isEnabled: !data.name.isEmpty) {
+            PrimaryButton(title: LocalizationKeys.Onboarding.continueAction.localized, icon: "arrow.right", isEnabled: !data.name.isEmpty) {
                 if !data.name.isEmpty { onNext() }
             }
             .disabled(data.name.isEmpty)

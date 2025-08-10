@@ -6,20 +6,32 @@ class DataSeeder {
     
     // MARK: - Main Seed Function
     static func seedDatabaseIfNeeded(modelContext: ModelContext) {
-        // Check if already seeded
-        let descriptor = FetchDescriptor<Exercise>()
-        let exerciseCount = try? modelContext.fetchCount(descriptor)
-        
-        // If we have exercises, assume database is seeded
-        if let count = exerciseCount, count > 0 {
-            print("✅ Database already seeded with \(count) exercises")
-            return
+        // Check counts independently to avoid duplicate seeding
+        let exerciseDescriptor = FetchDescriptor<Exercise>()
+        let foodDescriptor = FetchDescriptor<Food>()
+        let exerciseCount = (try? modelContext.fetchCount(exerciseDescriptor)) ?? 0
+        let foodCount = (try? modelContext.fetchCount(foodDescriptor)) ?? 0
+
+        var didSeed = false
+        if exerciseCount == 0 {
+            print("🌱 Seeding exercises…")
+            seedExercises(modelContext: modelContext)
+            didSeed = true
+        } else {
+            print("✅ Exercises already present: \(exerciseCount)")
         }
-        
-        print("🌱 Starting database seed...")
-        seedExercises(modelContext: modelContext)
-        seedFoods(modelContext: modelContext)
-        print("✅ Database seeding completed!")
+
+        if foodCount == 0 {
+            print("🌱 Seeding foods…")
+            seedFoods(modelContext: modelContext)
+            didSeed = true
+        } else {
+            print("✅ Foods already present: \(foodCount)")
+        }
+
+        if didSeed {
+            print("✅ Database seeding completed!")
+        }
     }
     
     // MARK: - Seed Exercises
@@ -32,34 +44,85 @@ class DataSeeder {
         
         let rows = csvData.components(separatedBy: .newlines)
         var successCount = 0
-        
-        for (index, row) in rows.enumerated() {
-            // Skip header and empty rows
-            if index == 0 || row.isEmpty { continue }
-            
-            let columns = parseCSVRow(row)
-            if columns.count >= 9 {
-                let exercise = Exercise(
-                    nameEN: columns[0],
-                    nameTR: columns[1],
-                    category: columns[2],
-                    equipment: columns[3]
-                )
-                
-                exercise.supportsWeight = columns[4].lowercased() == "true"
-                exercise.supportsReps = columns[5].lowercased() == "true"
-                exercise.supportsTime = columns[6].lowercased() == "true"
-                exercise.supportsDistance = columns[7].lowercased() == "true"
-                exercise.instructions = columns[8].isEmpty ? nil : columns[8]
-                
-                modelContext.insert(exercise)
-                successCount += 1
+
+        // Quotas for curated set (total 100)
+        let quotas: [ExerciseCategory: Int] = [
+            .strength: 60,
+            .core: 12,
+            .functional: 10,
+            .cardio: 8,
+            .warmup: 6,
+            .flexibility: 4
+        ]
+        var used: [ExerciseCategory: Int] = [:]
+        var seenKeys = Set<String>()
+
+        // Helper closures
+        func normalizeEquipment(_ raw: String) -> String {
+            let v = raw.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+            switch v {
+            case "barbell", "dumbbell", "kettlebell", "bodyweight", "machine", "cable", "band",
+                 "bench", "rack", "box", "ball", "rope", "bike", "rower", "treadmill":
+                return v
+            case "none": return "bodyweight"
+            case "mat", "foam_roller", "sandbag", "platform": return "other"
+            default: return v.isEmpty ? "other" : v
             }
         }
-        
+
+        func canUse(category: ExerciseCategory) -> Bool {
+            let cap = quotas[category] ?? 0
+            let count = used[category] ?? 0
+            return cap == 0 ? false : count < cap
+        }
+
+        func markUsed(_ category: ExerciseCategory) {
+            used[category] = (used[category] ?? 0) + 1
+        }
+
+        // Iterate and pick curated unique rows until quotas filled or 100 reached
+        for (index, row) in rows.enumerated() {
+            if index == 0 || row.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty { continue }
+            let columns = parseCSVRow(row)
+            if columns.count < 9 { continue }
+
+            let nameEN = columns[0].trimmingCharacters(in: .whitespaces)
+            let nameTR = columns[1].trimmingCharacters(in: .whitespaces)
+            let category = ExerciseCategory.fromString(columns[2])
+            let equipment = normalizeEquipment(columns[3])
+
+            // Skip categories we don't curate for initial set
+            if quotas[category] == nil { continue }
+            if !canUse(category: category) { continue }
+
+            // Uniqueness by normalized key
+            let key = "\(nameEN.lowercased())|\(category.rawValue)|\(equipment)"
+            if seenKeys.contains(key) { continue }
+
+            let exercise = Exercise(
+                nameEN: nameEN,
+                nameTR: nameTR,
+                category: category.rawValue,
+                equipment: equipment
+            )
+
+            exercise.supportsWeight = columns[4].lowercased() == "true"
+            exercise.supportsReps = columns[5].lowercased() == "true"
+            exercise.supportsTime = columns[6].lowercased() == "true"
+            exercise.supportsDistance = columns[7].lowercased() == "true"
+            exercise.instructions = columns[8].isEmpty ? nil : columns[8]
+
+            modelContext.insert(exercise)
+            successCount += 1
+            seenKeys.insert(key)
+            markUsed(category)
+
+            if successCount >= 100 { break }
+        }
+
         do {
             try modelContext.save()
-            print("✅ Seeded \(successCount) exercises")
+            print("✅ Seeded curated exercises: total=\(successCount) | used=\(used)")
         } catch {
             print("❌ Error saving exercises: \(error)")
         }
@@ -146,21 +209,13 @@ class DataSeeder {
     }
     
     // MARK: - Clear Database (for testing)
-    static func clearDatabase(modelContext: ModelContext) {
-        // Clear exercises
+    static func clearExercisesOnly(modelContext: ModelContext) {
         let exerciseDescriptor = FetchDescriptor<Exercise>()
         if let exercises = try? modelContext.fetch(exerciseDescriptor) {
             exercises.forEach { modelContext.delete($0) }
         }
-        
-        // Clear foods
-        let foodDescriptor = FetchDescriptor<Food>()
-        if let foods = try? modelContext.fetch(foodDescriptor) {
-            foods.forEach { modelContext.delete($0) }
-        }
-        
         try? modelContext.save()
-        print("🗑️ Database cleared")
+        print("🗑️ Exercises cleared (foods preserved)")
     }
 }
 

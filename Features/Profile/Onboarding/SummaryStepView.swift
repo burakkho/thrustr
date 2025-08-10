@@ -17,10 +17,9 @@ struct SummaryStepView: View {
         VStack(spacing: 24) {
             VStack(spacing: 8) {
                 Text(LocalizationKeys.Onboarding.Summary.title.localized)
-                    .font(.largeTitle)
-                    .fontWeight(.bold)
+                    .font(.system(size: 28, weight: .semibold, design: .rounded))
                 Text(LocalizationKeys.Onboarding.Summary.subtitle.localized)
-                    .font(.subheadline)
+                    .font(.system(size: 14, weight: .regular, design: .rounded))
                     .foregroundColor(.secondary)
                     .multilineTextAlignment(.center)
             }
@@ -183,7 +182,7 @@ struct SummaryStepView: View {
                 .padding(.horizontal)
             }
             
-            GradientButton(title: LocalizationKeys.Onboarding.Summary.startApp.localized, icon: "arrow.right") {
+            PrimaryButton(title: LocalizationKeys.Onboarding.Summary.startApp.localized, icon: "arrow.right") {
                 onComplete()
             }
             .padding(.horizontal)

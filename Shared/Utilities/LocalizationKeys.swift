@@ -982,6 +982,59 @@ enum LocalizationKeys {
             static let allTime = "progress_charts.all_time"
             static let noData = "progress_charts.no_data"
             static let noDataDesc = "progress_charts.no_data_desc"
+
+            // Added: specific time shortcuts for chips
+            static let range1w = "progress_charts.range_1w"
+            static let range1m = "progress_charts.range_1m"
+            static let range3m = "progress_charts.range_3m"
+            static let range6m = "progress_charts.range_6m"
+            static let range1y = "progress_charts.range_1y"
+
+            // Added: chart type section and options used in UI chips
+            static let chartType = "progress_charts.chart_type"
+            static let typeWeightChange = "progress_charts.type.weight_change"
+            static let typeWorkoutVolume = "progress_charts.type.workout_volume"
+            static let typeWorkoutFrequency = "progress_charts.type.workout_frequency"
+            static let typeBodyMeasurements = "progress_charts.type.body_measurements"
+
+            // Added: empty state messages per chart
+            static let emptyWeightChange = "progress_charts.empty.weight_change"
+            static let emptyWorkoutVolume = "progress_charts.empty.workout_volume"
+            static let emptyWorkoutFrequency = "progress_charts.empty.workout_frequency"
+            static let emptyBodyMeasurements = "progress_charts.empty.body_measurements"
+
+            // Added: axis labels and fallback note
+            static let axisDate = "progress_charts.axis.date"
+            static let axisWeight = "progress_charts.axis.weight"
+            static let axisWeek = "progress_charts.axis.week"
+            static let axisVolume = "progress_charts.axis.volume"
+            static let axisFrequency = "progress_charts.axis.frequency"
+            static let fallbackRequiresIOS16 = "progress_charts.fallback_requires_ios16"
+
+            // Added: statistics and insights
+            static let statsTitle = "progress_charts.stats.title"
+            static let statsWeightChange = "progress_charts.stats.weight_change"
+            static let statsAverageWeight = "progress_charts.stats.average_weight"
+            static let statsEntryCount = "progress_charts.stats.entry_count"
+            static let statsLatest = "progress_charts.stats.latest"
+            static let statsTotalWorkouts = "progress_charts.stats.total_workouts"
+            static let statsWeeklyAvg = "progress_charts.stats.weekly_avg"
+            static let statsTotalVolume = "progress_charts.stats.total_volume"
+            static let statsAverageVolume = "progress_charts.stats.average_volume"
+
+            static let insightsTitle = "progress_charts.insights.title"
+            static let insightsInsufficientData = "progress_charts.insights.insufficient_data"
+            static let insightsTrendUp = "progress_charts.insights.trend_up"
+            static let insightsTrendDown = "progress_charts.insights.trend_down"
+            static let insightsTrendStable = "progress_charts.insights.trend_stable"
+            static let insightsWeightTrend = "progress_charts.insights.weight_trend"
+            static let insightsWorkoutConsistency = "progress_charts.insights.workout_consistency"
+            static let consistencyExcellent = "progress_charts.insights.consistency.excellent"
+            static let consistencyGood = "progress_charts.insights.consistency.good"
+            static let consistencyAverage = "progress_charts.insights.consistency.average"
+            static let consistencyLow = "progress_charts.insights.consistency.low"
+            static let insightsEmptyDesc = "progress_charts.insights.empty_desc"
+            static let bodyMeasurementsInfo = "progress_charts.body_measurements.info"
         }
         
         // MARK: - Weight Tracking

@@ -27,7 +27,7 @@ struct QuickStatCard: View {
             
             VStack(alignment: .leading, spacing: theme.spacing.xs) {
                 Text(value)
-                    .font(.title2.bold())
+                    .font(.system(size: 26, weight: .semibold, design: .rounded))
                     .foregroundColor(theme.colors.textPrimary)
                 
                 Text(title)

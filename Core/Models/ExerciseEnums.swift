@@ -10,6 +10,10 @@ enum ExerciseCategory: String, CaseIterable, Codable {
     case olympic = "olympic"
     case functional = "functional"
     case isolation = "isolation"
+    case strength = "strength"
+    case warmup = "warmup"
+    case flexibility = "flexibility"
+    case plyometric = "plyometric"
     case other = "other"
 
     var displayName: String {
@@ -22,6 +26,10 @@ enum ExerciseCategory: String, CaseIterable, Codable {
         case .olympic: return "Olympic"
         case .functional: return "Fonksiyonel"
         case .isolation: return "İzolasyon"
+        case .strength: return "Strength"
+        case .warmup: return "Isınma"
+        case .flexibility: return "Esneklik"
+        case .plyometric: return "Pliometrik"
         case .other: return "Diğer"
         }
     }
@@ -36,6 +44,10 @@ enum ExerciseCategory: String, CaseIterable, Codable {
         case .olympic: return "trophy"
         case .functional: return "figure.strengthtraining.functional"
         case .isolation: return "target"
+        case .strength: return "dumbbell"
+        case .warmup: return "thermometer.sun"
+        case .flexibility: return "figure.cooldown"
+        case .plyometric: return "figure.jumprope"
         case .other: return "ellipsis.circle"
         }
     }
@@ -50,6 +62,10 @@ enum ExerciseCategory: String, CaseIterable, Codable {
         case .olympic: return .yellow
         case .functional: return .pink
         case .isolation: return .gray
+        case .strength: return .blue
+        case .warmup: return .orange
+        case .flexibility: return .purple
+        case .plyometric: return .red
         case .other: return .secondary
         }
     }
@@ -64,7 +80,30 @@ enum ExerciseCategory: String, CaseIterable, Codable {
         case .olympic: return "Olympic weightlifting hareketleri"
         case .functional: return "Fonksiyonel hareket kalıpları"
         case .isolation: return "İzolasyon ve yardımcı hareketler"
+        case .strength: return "Kuvvet odaklı çok eklemli hareketler"
+        case .warmup: return "Antrenman öncesi hazırlık hareketleri"
+        case .flexibility: return "Esneklik ve mobilite çalışmaları"
+        case .plyometric: return "Patlayıcı güç ve sıçrama çalışmaları"
         case .other: return "Diğer egzersiz türleri"
+        }
+    }
+
+    // Normalize arbitrary strings (from CSV) to a known category
+    static func fromString(_ string: String) -> ExerciseCategory {
+        switch string.lowercased() {
+        case "push": return .push
+        case "pull": return .pull
+        case "legs", "leg": return .legs
+        case "core": return .core
+        case "cardio": return .cardio
+        case "olympic": return .olympic
+        case "functional": return .functional
+        case "isolation": return .isolation
+        case "strength": return .strength
+        case "warmup": return .warmup
+        case "flexibility", "mobility": return .flexibility
+        case "plyometric", "plyo": return .plyometric
+        default: return .other
         }
     }
 }

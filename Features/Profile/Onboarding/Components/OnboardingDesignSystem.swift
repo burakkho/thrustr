@@ -10,6 +10,7 @@ import SwiftUI
 // MARK: - Design Constants
 struct OnboardingDesign {
     // Colors
+    static let primaryColor = Color.appPrimary
     static let primaryGradient = LinearGradient(
         colors: [Color(hex: "007AFF"), Color(hex: "5856D6")],
         startPoint: .topLeading,
@@ -144,6 +145,49 @@ struct GradientButton: View {
     }
 }
 
+// MARK: - Primary Button (Solid, no gradient)
+struct PrimaryButton: View {
+    let title: String
+    let icon: String?
+    let action: () -> Void
+    let isEnabled: Bool
+    
+    init(title: String, icon: String? = nil, isEnabled: Bool = true, action: @escaping () -> Void) {
+        self.title = title
+        self.icon = icon
+        self.isEnabled = isEnabled
+        self.action = action
+    }
+    
+    @State private var isPressed = false
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 12) {
+                Text(title)
+                    .font(.system(size: 17, weight: .semibold, design: .rounded))
+                if let icon = icon {
+                    Image(systemName: icon)
+                        .font(.system(size: 17, weight: .semibold))
+                }
+            }
+            .foregroundColor(.white)
+            .frame(maxWidth: .infinity)
+            .frame(height: OnboardingDesign.buttonHeight)
+            .background(isEnabled ? OnboardingDesign.primaryColor : Color.gray.opacity(0.4))
+            .cornerRadius(OnboardingDesign.cardCornerRadius)
+            .scaleEffect(reduceMotion ? 1.0 : (isPressed ? 0.98 : 1.0))
+            .shadow(color: isEnabled ? Color.black.opacity(0.08) : .clear, radius: 6, y: 3)
+        }
+        .disabled(!isEnabled)
+        .onLongPressGesture(minimumDuration: .infinity, maximumDistance: .infinity, pressing: { pressing in
+            let animation = reduceMotion ? nil : OnboardingDesign.springAnimation
+            withAnimation(animation) { isPressed = pressing }
+        }, perform: {})
+    }
+}
+
 // MARK: - Feature Card with Animation
 struct AnimatedFeatureCard: View {
     let icon: String
@@ -197,31 +241,73 @@ struct AnimatedFeatureCard: View {
 }
 
 // MARK: - Interactive Progress Bar
+enum OnboardingProgressBarStyle { case regular, compact }
+
 struct InteractiveProgressBar: View {
     let currentStep: Int
     let totalSteps: Int
+    var style: OnboardingProgressBarStyle = .compact
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     
-    var progress: CGFloat {
+    private var progress: CGFloat {
         CGFloat(currentStep) / CGFloat(totalSteps)
     }
     
     var body: some View {
+        switch style {
+        case .regular:
+            regularBody
+        case .compact:
+            compactBody
+        }
+    }
+    
+    // Minimal/compact variant
+    private var compactBody: some View {
+        GeometryReader { geometry in
+            ZStack(alignment: .leading) {
+                // Track (very thin)
+                RoundedRectangle(cornerRadius: 3)
+                    .fill(Color.gray.opacity(0.18))
+                    .frame(height: 4)
+                // Progress (solid brand color)
+                RoundedRectangle(cornerRadius: 3)
+                    .fill(OnboardingDesign.primaryColor)
+                    .frame(width: geometry.size.width * progress, height: 4)
+                    .animation(reduceMotion ? nil : OnboardingDesign.easeAnimation, value: progress)
+                // Minimal dots overlay
+                HStack(spacing: 0) {
+                    ForEach(1...totalSteps, id: \.self) { step in
+                        let isFilled = CGFloat(step) <= CGFloat(currentStep)
+                        Circle()
+                            .fill(isFilled ? OnboardingDesign.primaryColor : Color.clear)
+                            .overlay(
+                                Circle()
+                                    .stroke(Color.gray.opacity(0.35), lineWidth: isFilled ? 0 : 1)
+                            )
+                            .frame(width: 6, height: 6)
+                        if step < totalSteps { Spacer() }
+                    }
+                }
+                .frame(height: 4)
+            }
+        }
+        .frame(height: 10)
+        .padding(.horizontal)
+    }
+    
+    // Original/regular variant
+    private var regularBody: some View {
         VStack(spacing: 16) {
             GeometryReader { geometry in
                 ZStack(alignment: .leading) {
-                    // Background
                     RoundedRectangle(cornerRadius: 6)
                         .fill(Color.gray.opacity(0.2))
                         .frame(height: 12)
-                    
-                    // Progress
                     RoundedRectangle(cornerRadius: 6)
                         .fill(OnboardingDesign.primaryGradient)
                         .frame(width: geometry.size.width * progress, height: 12)
                         .animation(reduceMotion ? nil : OnboardingDesign.springAnimation, value: progress)
-                    
-                    // Steps dots
                     HStack(spacing: 0) {
                         ForEach(0..<totalSteps, id: \.self) { step in
                             Circle()
@@ -233,24 +319,18 @@ struct InteractiveProgressBar: View {
                                 )
                                 .scaleEffect(reduceMotion ? 1.0 : (step == currentStep - 1 ? 1.2 : 1.0))
                                 .animation(reduceMotion ? nil : OnboardingDesign.springAnimation, value: currentStep)
-                            
-                            if step < totalSteps - 1 {
-                                Spacer()
-                            }
+                            if step < totalSteps - 1 { Spacer() }
                         }
                     }
                     .padding(.horizontal, 10)
                 }
             }
             .frame(height: 20)
-            
             HStack {
                 Text("Adım \(currentStep) / \(totalSteps)")
                     .font(.system(size: 14, weight: .medium, design: .rounded))
                     .foregroundColor(.secondary)
-                
                 Spacer()
-                
                 Text("\(Int(progress * 100))% Tamamlandı")
                     .font(.system(size: 14, weight: .semibold, design: .rounded))
                     .foregroundColor(.primary)

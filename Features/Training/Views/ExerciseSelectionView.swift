@@ -103,10 +103,14 @@ struct SearchBar: View {
                 .font(.caption)
             }
         }
-        .padding(.horizontal, 12)
-        .padding(.vertical, 8)
-        .background(Color(.systemGray6))
-        .cornerRadius(10)
+            .padding(.horizontal, 12)
+            .padding(.vertical, 8)
+            .background(Color(.systemBackground))
+            .overlay(
+                RoundedRectangle(cornerRadius: 10)
+                    .stroke(Color.borderPrimary, lineWidth: 1)
+            )
+            .cornerRadius(10)
     }
 }
 
@@ -216,8 +220,12 @@ struct ExerciseRow: View {
             }
             .padding()
             .background(Color(.systemBackground))
+            .overlay(
+                RoundedRectangle(cornerRadius: 12)
+                    .stroke(Color.borderPrimary, lineWidth: 1)
+            )
             .cornerRadius(12)
-            .shadow(color: .black.opacity(0.05), radius: 2, x: 0, y: 1)
+            .shadow(color: Color.shadowLight, radius: 3, y: 1)
         }
         .buttonStyle(PlainButtonStyle())
     }

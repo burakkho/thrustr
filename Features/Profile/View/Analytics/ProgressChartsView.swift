@@ -65,7 +65,7 @@ struct ProgressChartsView: View {
             }
             .padding()
         }
-        .navigationTitle("İlerleme Grafikleri")
+        .navigationTitle(LocalizationKeys.localized(LocalizationKeys.ProgressCharts.title))
         .navigationBarTitleDisplayMode(.inline)
         .background(Color(.systemGroupedBackground))
     }
@@ -80,11 +80,11 @@ struct ProgressChartsHeaderSection: View {
                 .foregroundColor(.blue)
             
             VStack(spacing: 8) {
-                Text("İlerleme Grafikleri")
+                Text(LocalizationKeys.localized(LocalizationKeys.ProgressCharts.title))
                     .font(.title2)
                     .fontWeight(.semibold)
                 
-                Text("Performansınızı ve gelişiminizi görsel olarak takip edin")
+                Text(LocalizationKeys.localized(LocalizationKeys.ProgressCharts.subtitle))
                     .font(.subheadline)
                     .foregroundColor(.secondary)
                     .multilineTextAlignment(.center)
@@ -103,7 +103,7 @@ struct TimeRangeSelector: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Zaman Aralığı")
+            Text(LocalizationKeys.localized(LocalizationKeys.ProgressCharts.timeRange))
                 .font(.headline)
                 .fontWeight(.semibold)
             
@@ -136,7 +136,7 @@ struct ChartTypeSelector: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Grafik Türü")
+            Text(LocalizationKeys.localized(LocalizationKeys.ProgressCharts.chartType))
                 .font(.headline)
                 .fontWeight(.semibold)
             
@@ -216,20 +216,20 @@ struct WeightChartView: View {
     var body: some View {
         VStack(spacing: 12) {
             if chartData.isEmpty {
-                EmptyChartView(message: "Henüz kilo kaydı bulunmuyor")
+                EmptyChartView(message: LocalizationKeys.localized(LocalizationKeys.ProgressCharts.emptyWeightChange))
             } else {
                 if #available(iOS 16.0, *) {
                     Chart(chartData) { data in
                         LineMark(
-                            x: .value("Tarih", data.date),
-                            y: .value("Kilo", data.weight)
+                             x: .value(LocalizationKeys.localized(LocalizationKeys.ProgressCharts.axisDate), data.date),
+                             y: .value(LocalizationKeys.localized(LocalizationKeys.ProgressCharts.axisWeight), data.weight)
                         )
                         .foregroundStyle(.orange)
                         .lineStyle(StrokeStyle(lineWidth: 3))
                         
                         PointMark(
-                            x: .value("Tarih", data.date),
-                            y: .value("Kilo", data.weight)
+                             x: .value(LocalizationKeys.localized(LocalizationKeys.ProgressCharts.axisDate), data.date),
+                             y: .value(LocalizationKeys.localized(LocalizationKeys.ProgressCharts.axisWeight), data.weight)
                         )
                         .foregroundStyle(.orange)
                         .symbolSize(50)
@@ -248,7 +248,7 @@ struct WeightChartView: View {
                         }
                     }
                 } else {
-                    FallbackChartView(color: .orange, message: "Kilo Değişimi")
+                    FallbackChartView(color: .orange, message: LocalizationKeys.localized(LocalizationKeys.ProgressCharts.typeWeightChange))
                 }
             }
         }
@@ -276,19 +276,19 @@ struct WorkoutVolumeChartView: View {
     var body: some View {
         VStack(spacing: 12) {
             if weeklyData.isEmpty {
-                EmptyChartView(message: "Henüz antrenman verisi bulunmuyor")
+                EmptyChartView(message: LocalizationKeys.localized(LocalizationKeys.ProgressCharts.emptyWorkoutVolume))
             } else {
                 if #available(iOS 16.0, *) {
                     Chart(weeklyData) { data in
                         BarMark(
-                            x: .value("Hafta", data.week),
-                            y: .value("Hacim", data.volume)
+                            x: .value(LocalizationKeys.localized(LocalizationKeys.ProgressCharts.axisWeek), data.week),
+                            y: .value(LocalizationKeys.localized(LocalizationKeys.ProgressCharts.axisVolume), data.volume)
                         )
                         .foregroundStyle(.blue)
                     }
                     .frame(height: 200)
                 } else {
-                    FallbackChartView(color: .blue, message: "Haftalık Antrenman Hacmi")
+                    FallbackChartView(color: .blue, message: LocalizationKeys.localized(LocalizationKeys.ProgressCharts.typeWorkoutVolume))
                 }
             }
         }
@@ -314,19 +314,19 @@ struct WorkoutFrequencyChartView: View {
     var body: some View {
         VStack(spacing: 12) {
             if frequencyData.isEmpty {
-                EmptyChartView(message: "Henüz antrenman verisi bulunmuyor")
+                EmptyChartView(message: LocalizationKeys.localized(LocalizationKeys.ProgressCharts.emptyWorkoutFrequency))
             } else {
                 if #available(iOS 16.0, *) {
                     Chart(frequencyData) { data in
                         BarMark(
-                            x: .value("Hafta", data.period),
-                            y: .value("Sıklık", data.count)
+                            x: .value(LocalizationKeys.localized(LocalizationKeys.ProgressCharts.axisWeek), data.period),
+                            y: .value(LocalizationKeys.localized(LocalizationKeys.ProgressCharts.axisFrequency), data.count)
                         )
                         .foregroundStyle(.green)
                     }
                     .frame(height: 200)
                 } else {
-                    FallbackChartView(color: .green, message: "Antrenman Sıklığı")
+                    FallbackChartView(color: .green, message: LocalizationKeys.localized(LocalizationKeys.ProgressCharts.typeWorkoutFrequency))
                 }
             }
         }
@@ -340,9 +340,9 @@ struct BodyMeasurementsChartView: View {
     var body: some View {
         VStack(spacing: 12) {
             if measurements.isEmpty {
-                EmptyChartView(message: "Henüz vücut ölçümü bulunmuyor")
+                EmptyChartView(message: LocalizationKeys.localized(LocalizationKeys.ProgressCharts.emptyBodyMeasurements))
             } else {
-                Text("Vücut ölçümleri grafiği için BodyMeasurementsView'daki grafik bölümünü kullanın")
+                Text(LocalizationKeys.localized(LocalizationKeys.ProgressCharts.bodyMeasurementsInfo))
                     .font(.subheadline)
                     .foregroundColor(.secondary)
                     .multilineTextAlignment(.center)
@@ -385,7 +385,7 @@ struct FallbackChartView: View {
                 .font(.subheadline)
                 .foregroundColor(.secondary)
             
-            Text("Grafik iOS 16+ gerektirir")
+            Text(LocalizationKeys.localized(LocalizationKeys.ProgressCharts.fallbackRequiresIOS16))
                 .font(.caption)
                 .foregroundColor(.secondary)
         }
@@ -402,7 +402,7 @@ struct SummaryStatisticsSection: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("Özet İstatistikler")
+            Text(LocalizationKeys.localized(LocalizationKeys.ProgressCharts.statsTitle))
                 .font(.headline)
                 .fontWeight(.semibold)
             
@@ -442,25 +442,25 @@ struct WeightStatisticsCards: View {
     
     var body: some View {
         StatCard(
-            title: "Toplam Değişim",
+            title: LocalizationKeys.localized(LocalizationKeys.ProgressCharts.statsWeightChange),
             value: String(format: "%.1f kg", weightChange),
             color: weightChange >= 0 ? .green : .red
         )
         
         StatCard(
-            title: "Ortalama Kilo",
+            title: LocalizationKeys.localized(LocalizationKeys.ProgressCharts.statsAverageWeight),
             value: String(format: "%.1f kg", averageWeight),
             color: .blue
         )
         
         StatCard(
-            title: "Kayıt Sayısı",
+            title: LocalizationKeys.localized(LocalizationKeys.ProgressCharts.statsEntryCount),
             value: "\(entries.count)",
             color: .orange
         )
         
         StatCard(
-            title: "En Son",
+            title: LocalizationKeys.localized(LocalizationKeys.ProgressCharts.statsLatest),
             value: String(format: "%.1f kg", entries.first?.weight ?? 0),
             color: .purple
         )
@@ -491,25 +491,25 @@ struct WorkoutStatisticsCards: View {
     
     var body: some View {
         StatCard(
-            title: "Toplam Antrenman",
+            title: LocalizationKeys.localized(LocalizationKeys.ProgressCharts.statsTotalWorkouts),
             value: "\(totalWorkouts)",
             color: .blue
         )
         
         StatCard(
-            title: "Haftalık Ortalama",
+            title: LocalizationKeys.localized(LocalizationKeys.ProgressCharts.statsWeeklyAvg),
             value: String(format: "%.1f", averageWorkoutsPerWeek),
             color: .green
         )
         
         StatCard(
-            title: "Toplam Hacim",
+            title: LocalizationKeys.localized(LocalizationKeys.ProgressCharts.statsTotalVolume),
             value: String(format: "%.0f kg", totalVolume),
             color: .orange
         )
         
         StatCard(
-            title: "Ortalama Hacim",
+            title: LocalizationKeys.localized(LocalizationKeys.ProgressCharts.statsAverageVolume),
             value: String(format: "%.0f kg", averageVolume),
             color: .purple
         )
@@ -565,7 +565,7 @@ struct InsightsSection: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("Öngörüler")
+            Text(LocalizationKeys.localized(LocalizationKeys.ProgressCharts.insightsTitle))
                 .font(.headline)
                 .fontWeight(.semibold)
             
@@ -594,24 +594,24 @@ struct WeightInsightCard: View {
     let entries: [WeightEntry]
     
     private var trend: String {
-        guard entries.count >= 2 else { return "Yetersiz veri" }
+        guard entries.count >= 2 else { return LocalizationKeys.localized(LocalizationKeys.ProgressCharts.insightsInsufficientData) }
         
         let latest = entries.first?.weight ?? 0
         let previous = entries.dropFirst().first?.weight ?? 0
         
         if latest > previous {
-            return "Kilo artış trendinde"
+            return LocalizationKeys.localized(LocalizationKeys.ProgressCharts.insightsTrendUp)
         } else if latest < previous {
-            return "Kilo azalış trendinde"
+            return LocalizationKeys.localized(LocalizationKeys.ProgressCharts.insightsTrendDown)
         } else {
-            return "Kilo stabil"
+            return LocalizationKeys.localized(LocalizationKeys.ProgressCharts.insightsTrendStable)
         }
     }
     
     var body: some View {
         InsightCard(
             icon: "scalemass.fill",
-            title: "Kilo Trendi",
+            title: LocalizationKeys.localized(LocalizationKeys.ProgressCharts.insightsWeightTrend),
             insight: trend,
             color: .orange
         )
@@ -627,20 +627,20 @@ struct WorkoutInsightCard: View {
         let averagePerWeek = weeks > 0 ? Double(workouts.count) / Double(weeks) : 0
         
         if averagePerWeek >= 4 {
-            return "Mükemmel tutarlılık!"
+            return LocalizationKeys.localized(LocalizationKeys.ProgressCharts.consistencyExcellent)
         } else if averagePerWeek >= 3 {
-            return "İyi tutarlılık"
+            return LocalizationKeys.localized(LocalizationKeys.ProgressCharts.consistencyGood)
         } else if averagePerWeek >= 2 {
-            return "Orta tutarlılık"
+            return LocalizationKeys.localized(LocalizationKeys.ProgressCharts.consistencyAverage)
         } else {
-            return "Daha tutarlı olabilirsin"
+            return LocalizationKeys.localized(LocalizationKeys.ProgressCharts.consistencyLow)
         }
     }
     
     var body: some View {
         InsightCard(
             icon: "dumbbell.fill",
-            title: "Antrenman Tutarlılığı",
+            title: LocalizationKeys.localized(LocalizationKeys.ProgressCharts.insightsWorkoutConsistency),
             insight: consistency,
             color: .blue
         )
@@ -651,8 +651,8 @@ struct EmptyInsightCard: View {
     var body: some View {
         InsightCard(
             icon: "lightbulb.fill",
-            title: "Öngörüler",
-            insight: "Veri girmeye başladığında burada öngörüler görebileceksin",
+            title: LocalizationKeys.localized(LocalizationKeys.ProgressCharts.insightsTitle),
+            insight: LocalizationKeys.localized(LocalizationKeys.ProgressCharts.insightsEmptyDesc),
             color: .gray
         )
     }
@@ -714,11 +714,11 @@ enum TimeRange: CaseIterable {
     
     var displayName: String {
         switch self {
-        case .week1: return "1 Hafta"
-        case .month1: return "1 Ay"
-        case .month3: return "3 Ay"
-        case .month6: return "6 Ay"
-        case .year1: return "1 Yıl"
+        case .week1: return LocalizationKeys.localized(LocalizationKeys.ProgressCharts.range1w)
+        case .month1: return LocalizationKeys.localized(LocalizationKeys.ProgressCharts.range1m)
+        case .month3: return LocalizationKeys.localized(LocalizationKeys.ProgressCharts.range3m)
+        case .month6: return LocalizationKeys.localized(LocalizationKeys.ProgressCharts.range6m)
+        case .year1: return LocalizationKeys.localized(LocalizationKeys.ProgressCharts.range1y)
         }
     }
     
@@ -751,10 +751,10 @@ enum ChartType: CaseIterable {
     
     var displayName: String {
         switch self {
-        case .weight: return "Kilo Değişimi"
-        case .workoutVolume: return "Antrenman Hacmi"
-        case .workoutFrequency: return "Antrenman Sıklığı"
-        case .bodyMeasurements: return "Vücut Ölçüleri"
+        case .weight: return LocalizationKeys.localized(LocalizationKeys.ProgressCharts.typeWeightChange)
+        case .workoutVolume: return LocalizationKeys.localized(LocalizationKeys.ProgressCharts.typeWorkoutVolume)
+        case .workoutFrequency: return LocalizationKeys.localized(LocalizationKeys.ProgressCharts.typeWorkoutFrequency)
+        case .bodyMeasurements: return LocalizationKeys.localized(LocalizationKeys.ProgressCharts.typeBodyMeasurements)
         }
     }
     

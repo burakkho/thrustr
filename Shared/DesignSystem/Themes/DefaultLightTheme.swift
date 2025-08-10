@@ -15,6 +15,7 @@ struct DefaultLightTheme: Theme {
     let spacing = Spacing()
     let radius = Radius()
     let shadows = Shadows()
+    let typography = Typography()
 }
 
 

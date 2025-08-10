@@ -92,7 +92,7 @@ struct WelcomeStepView: View {
             Spacer()
             
             // CTA Button - Daha sade
-            GradientButton(title: LocalizationKeys.Onboarding.Welcome.start.localized, icon: "arrow.right") {
+            PrimaryButton(title: LocalizationKeys.Onboarding.Welcome.start.localized, icon: "arrow.right") {
                 onNext()
             }
             .accessibilityLabel(Text(LocalizationKeys.Onboarding.Welcome.start.localized))

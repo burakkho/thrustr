@@ -5,7 +5,8 @@ struct DefaultDarkTheme: Theme {
         accent: .appPrimary,
         backgroundPrimary: .backgroundPrimary,
         backgroundSecondary: .backgroundSecondary,
-        cardBackground: .cardBackground,
+        // Dark mode'da kartları belirginleştirmek için secondary background kullan
+        cardBackground: .backgroundSecondary,
         textPrimary: .textPrimary,
         textSecondary: .textSecondary,
         success: .appSuccess,
@@ -15,6 +16,7 @@ struct DefaultDarkTheme: Theme {
     let spacing = Spacing()
     let radius = Radius()
     let shadows = Shadows()
+    let typography = Typography()
 }
 
 

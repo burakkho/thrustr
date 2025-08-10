@@ -6,11 +6,14 @@ struct DashboardView: View {
     @EnvironmentObject private var tabRouter: TabRouter
     @Query private var users: [User]
     @Query private var workouts: [Workout]
+    @Query private var nutritionEntries: [NutritionEntry]
     @StateObject private var healthKitService = HealthKitService()
     @StateObject private var workoutService = WorkoutService()
     
     @State private var showingWeightEntry = false
     @State private var isLoading = true
+    @State private var showStepsInfo = false
+    @State private var showCaloriesInfo = false
     
     private var currentUser: User {
         users.first ?? createDefaultUser()
@@ -27,8 +30,8 @@ struct DashboardView: View {
                     // Welcome Section
                     welcomeSection
                     
-                    // Health Stats Grid
-                    healthStatsGrid
+                    // Health Stat Strip (single row)
+                    healthStatStrip
                     
                     // Quick Actions
                     quickActionsSection
@@ -42,6 +45,7 @@ struct DashboardView: View {
                 .padding()
             }
             .navigationTitle(LocalizationKeys.Dashboard.title.localized)
+            .background(Color(.systemGroupedBackground))
             .refreshable {
                 await refreshHealthData()
             }
@@ -96,48 +100,71 @@ struct DashboardView: View {
             }
         }
         .padding()
-        .background(Color(.systemGray6))
-        .cornerRadius(16)
+        .background(Color(.systemBackground))
+        .overlay(
+            RoundedRectangle(cornerRadius: 14)
+                .stroke(Color.borderPrimary, lineWidth: 1)
+        )
+        .cornerRadius(14)
+        .shadow(color: Color.shadowLight, radius: 3, y: 1)
     }
     
-    // MARK: - Health Stats Grid (Using Shared Components)
-    private var healthStatsGrid: some View {
-        LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 2), spacing: 16) {
-            // Steps
-            QuickStatCard(
-                icon: "figure.walk",
-                title: LocalizationKeys.Dashboard.Stats.today.localized,
-                value: formatSteps(healthKitService.todaySteps),
-                subtitle: LocalizationKeys.Dashboard.Stats.steps.localized,
-                color: .blue
-            )
-            
-            // Calories
-            QuickStatCard(
-                icon: "flame.fill",
-                title: LocalizationKeys.Dashboard.Stats.calories.localized,
-                value: formatCalories(healthKitService.todayCalories),
-                subtitle: LocalizationKeys.Dashboard.Stats.kcal.localized,
-                color: .orange
-            )
-            
-            // Weight
-            QuickStatCard(
-                icon: "scalemass.fill",
-                title: LocalizationKeys.Dashboard.Stats.weight.localized,
-                value: currentUser.displayWeight,
-                subtitle: LocalizationKeys.Dashboard.Stats.lastMeasurement.localized,
-                color: .green
-            )
-            
-            // BMI
-            QuickStatCard(
-                icon: "heart.fill",
-                title: LocalizationKeys.Dashboard.Stats.bmi.localized,
-                value: String(format: "%.1f", currentUser.bmi),
-                subtitle: currentUser.bmiCategory,
-                color: .red
-            )
+    // MARK: - Health Stat Strip (Single Row)
+    private var healthStatStrip: some View {
+        Group {
+            if healthKitService.isAuthorized {
+                HStack(spacing: 8) {
+                    DashboardHealthStatStripItem(
+                        icon: "figure.walk",
+                        title: LocalizationKeys.Dashboard.Stats.steps.localized,
+                        value: formatSteps(healthKitService.todaySteps),
+                        color: .blue
+                    ) { showStepsInfo = true }
+                    .frame(maxWidth: .infinity)
+
+                    DashboardHealthStatStripItem(
+                        icon: "flame.fill",
+                        title: LocalizationKeys.Dashboard.Stats.calories.localized,
+                        value: formatCalories(healthKitService.todayCalories) + " kcal",
+                        color: .orange
+                    ) { showCaloriesInfo = true }
+                    .frame(maxWidth: .infinity)
+
+                    DashboardHealthStatStripItem(
+                        icon: "fork.knife",
+                        title: "Alınan",
+                        value: String(format: "%.0f kcal", todayConsumedCalories()),
+                        color: .green
+                    ) { tabRouter.selected = 2 }
+                    .frame(maxWidth: .infinity)
+
+                    DashboardHealthStatStripItem(
+                        icon: "dumbbell.fill",
+                        title: "Bugün",
+                        value: formatDuration(todayWorkoutDuration()),
+                        color: .blue
+                    ) { tabRouter.selected = 1 }
+                    .frame(maxWidth: .infinity)
+                }
+                .padding(.horizontal, 2)
+                .alert("HealthKit Bilgisi", isPresented: $showStepsInfo) {
+                    Button("Tamam", role: .cancel) {}
+                } message: {
+                    Text("Adım hedefleri Sağlık uygulamasından alınır. Hedef değiştirmek için Sağlık uygulamasını kullanın.")
+                }
+                .alert("HealthKit Bilgisi", isPresented: $showCaloriesInfo) {
+                    Button("Tamam", role: .cancel) {}
+                } message: {
+                    Text("Aktif kalori hedefleri Sağlık uygulamasından alınır. Hedef değiştirmek için Sağlık uygulamasını kullanın.")
+                }
+            } else {
+                DashboardHealthStatStripPlaceholder(
+                    message: "Sağlık verilerini göstermek için izin ver.",
+                    actionTitle: "İzin Ver"
+                ) {
+                    Task { _ = await healthKitService.requestPermissions() }
+                }
+            }
         }
     }
     
@@ -218,8 +245,13 @@ struct DashboardView: View {
                         .multilineTextAlignment(.center)
                 }
                 .padding()
-                .background(Color(.systemGray6))
-                .cornerRadius(12)
+                .background(Color(.systemBackground))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 14)
+                        .stroke(Color.borderPrimary, lineWidth: 1)
+                )
+                .cornerRadius(14)
+                .shadow(color: Color.shadowLight, radius: 3, y: 1)
                 .padding(.horizontal)
             } else {
                 ScrollView(.horizontal, showsIndicators: false) {
@@ -304,8 +336,13 @@ struct DashboardView: View {
                 }
             }
             .padding()
-            .background(Color(.systemGray6))
-            .cornerRadius(16)
+            .background(Color(.systemBackground))
+            .overlay(
+                RoundedRectangle(cornerRadius: 14)
+                    .stroke(Color.borderPrimary, lineWidth: 1)
+            )
+            .cornerRadius(14)
+            .shadow(color: Color.shadowLight, radius: 3, y: 1)
             .padding(.horizontal)
         }
     }
@@ -333,6 +370,24 @@ struct DashboardView: View {
             calories: healthKitService.todayCalories,
             weight: healthKitService.currentWeight
         )
+    }
+
+    private func todayConsumedCalories() -> Double {
+        let startOfDay = Calendar.current.startOfDay(for: Date())
+        let endOfDay = Calendar.current.date(byAdding: .day, value: 1, to: startOfDay) ?? Date()
+        return nutritionEntries.filter { $0.date >= startOfDay && $0.date < endOfDay }
+            .reduce(0) { $0 + $1.calories }
+    }
+
+    private func todayWorkoutDuration() -> TimeInterval {
+        let startOfDay = Calendar.current.startOfDay(for: Date())
+        let endOfDay = Calendar.current.date(byAdding: .day, value: 1, to: startOfDay) ?? Date()
+        let todays = workouts.filter { $0.startTime >= startOfDay && $0.startTime < endOfDay }
+        let total = todays.reduce(0.0) { partial, workout in
+            if let end = workout.endTime { return partial + end.timeIntervalSince(workout.startTime) }
+            return partial + TimeInterval(workout.totalDuration)
+        }
+        return total
     }
     
     private func createDefaultUser() -> User {
@@ -484,6 +539,76 @@ struct WeightEntryView: View {
         .onAppear {
             newWeight = String(format: "%.1f", user.currentWeight)
         }
+    }
+}
+
+// MARK: - Inline Health Stat Strip Components (to avoid project file edits)
+struct DashboardHealthStatStripItem: View {
+    let icon: String
+    let title: String
+    let value: String
+    let color: Color
+    let action: (() -> Void)?
+
+    var body: some View {
+        Button(action: { action?() }) {
+            HStack(spacing: 8) {
+                Image(systemName: icon)
+                    .foregroundColor(color)
+                    .font(.headline)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(value)
+                        .font(.system(size: 18, weight: .semibold, design: .rounded))
+                        .foregroundColor(.primary)
+                        .lineLimit(1)
+                    Text(title)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                        .lineLimit(1)
+                }
+                Spacer(minLength: 0)
+            }
+            .padding(.vertical, 10)
+            .padding(.horizontal, 12)
+            .background(Color(.systemBackground))
+            .overlay(
+                RoundedRectangle(cornerRadius: 12)
+                    .stroke(Color.borderPrimary, lineWidth: 1)
+            )
+            .cornerRadius(12)
+            .shadow(color: Color.shadowLight, radius: 3, y: 1)
+        }
+        .buttonStyle(.plain)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel(Text("\(title) \(value)"))
+    }
+}
+
+struct DashboardHealthStatStripPlaceholder: View {
+    let message: String
+    let actionTitle: String
+    let action: () -> Void
+
+    var body: some View {
+        HStack(spacing: 12) {
+            Image(systemName: "heart.text.square")
+                .foregroundColor(.blue)
+                .font(.title2)
+            Text(message)
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+            Spacer()
+            Button(actionTitle, action: action)
+                .buttonStyle(.borderedProminent)
+        }
+        .padding(12)
+        .background(Color(.systemBackground))
+        .overlay(
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(Color.borderPrimary, lineWidth: 1)
+        )
+        .cornerRadius(12)
+        .shadow(color: Color.shadowLight, radius: 3, y: 1)
     }
 }
 

@@ -19,17 +19,14 @@ struct OnboardingView: View {
     
     var body: some View {
         ZStack {
-            LinearGradient(
-                colors: [Color.blue.opacity(0.1), Color.purple.opacity(0.1)],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-            .ignoresSafeArea()
+            // Onboarding arka planını sade beyaza çekiyoruz
+            Color(.systemBackground)
+                .ignoresSafeArea()
             
             VStack {
                 if currentStep > 0 {
-                    InteractiveProgressBar(currentStep: currentStep, totalSteps: 5)
-                        .padding(.top)
+                    InteractiveProgressBar(currentStep: currentStep, totalSteps: 5, style: .compact)
+                        .padding(.top, 8)
                 }
                 
                 switch currentStep {

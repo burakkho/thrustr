@@ -7,6 +7,7 @@ protocol Theme {
     var spacing: Spacing { get }
     var radius: Radius { get }
     var shadows: Shadows { get }
+    var typography: Typography { get }
 }
 
 // MARK: - Environment Key

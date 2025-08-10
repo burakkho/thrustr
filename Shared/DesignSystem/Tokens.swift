@@ -33,4 +33,12 @@ struct Shadows {
     let card: Color = Color.shadowLight
 }
 
+// MARK: - Typography
+struct Typography {
+    let title: Font = .system(size: 28, weight: .semibold, design: .rounded)
+    let subtitle: Font = .system(size: 14, weight: .regular, design: .rounded)
+    let value: Font = .system(size: 20, weight: .semibold, design: .rounded)
+    let caption: Font = .caption
+}
+
 

@@ -12,31 +12,31 @@ struct FitnessCalculatorsView: View {
                     VStack(spacing: 16) {
                         NavigationLink(destination: OneRMCalculatorView()) {
                             CalculatorCard(
-                                title: "1RM Hesaplayıcı",
-                                description: "Maksimum tekrar hesaplama",
+                                title: LocalizationKeys.localized(LocalizationKeys.OneRMCalculator.title),
+                                description: LocalizationKeys.localized(LocalizationKeys.OneRMCalculator.subtitle),
                                 icon: "dumbbell.fill",
                                 color: .blue,
-                                details: "Egzersiz performansınızı değerlendirin"
+                                details: LocalizationKeys.localized("fitness_calculators.card.one_rm.details")
                             )
                         }
                         
                         NavigationLink(destination: FFMICalculatorView()) {
                             CalculatorCard(
-                                title: "FFMI Hesaplayıcı",
-                                description: "Yağsız kas kütlesi indeksi",
+                                title: LocalizationKeys.localized(LocalizationKeys.FFMICalculator.title),
+                                description: LocalizationKeys.localized(LocalizationKeys.FFMICalculator.subtitle),
                                 icon: "figure.strengthtraining.traditional",
                                 color: .green,
-                                details: "Doğal genetik potansiyelinizi öğrenin"
+                                details: LocalizationKeys.localized("fitness_calculators.card.ffmi.details")
                             )
                         }
                         
                         NavigationLink(destination: NavyMethodCalculatorView()) {
                             CalculatorCard(
-                                title: "Navy Method",
-                                description: "Vücut yağ oranı hesaplama",
+                                title: LocalizationKeys.localized(LocalizationKeys.NavyMethodCalculator.title),
+                                description: LocalizationKeys.localized(LocalizationKeys.NavyMethodCalculator.subtitle),
                                 icon: "percent",
                                 color: .orange,
-                                details: "Sadece ölçümlerle yağ oranınızı hesaplayın"
+                                details: LocalizationKeys.localized("fitness_calculators.card.navy.details")
                             )
                         }
                     }
@@ -46,7 +46,7 @@ struct FitnessCalculatorsView: View {
                 }
                 .padding()
             }
-            .navigationTitle("Fitness Hesaplayıcıları")
+            .navigationTitle(LocalizationKeys.localized(LocalizationKeys.FitnessCalculators.title))
             .navigationBarTitleDisplayMode(.large)
             .background(Color(.systemGroupedBackground))
         }
@@ -62,11 +62,11 @@ struct CalculatorsHeaderSection: View {
                 .foregroundColor(.blue)
             
             VStack(spacing: 8) {
-                Text("Fitness Hesaplayıcıları")
+                Text(LocalizationKeys.localized(LocalizationKeys.FitnessCalculators.title))
                     .font(.title2)
                     .fontWeight(.semibold)
                 
-                Text("Bilimsel formüllerle performansınızı değerlendirin")
+                Text(LocalizationKeys.localized(LocalizationKeys.FitnessCalculators.subtitle))
                     .font(.subheadline)
                     .foregroundColor(.secondary)
                     .multilineTextAlignment(.center)
