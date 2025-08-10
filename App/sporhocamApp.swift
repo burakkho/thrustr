@@ -1,10 +1,3 @@
-//
-//  sporhocamApp.swift
-//  sporhocam
-//
-//  Created by Burak Macbook Mini on 8.08.2025.
-//
-
 import SwiftUI
 import SwiftData
 
@@ -12,8 +5,24 @@ import SwiftData
 struct sporhocamApp: App {
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
-            Item.self,
+            // Core Models
+            User.self,
+            Exercise.self,
+            Workout.self,
+            WorkoutPart.self,
+            ExerciseSet.self,
+            Goal.self,
+            
+            // Nutrition Models
+            Food.self,
+            NutritionEntry.self,
+            
+            // Body Tracking Models
+            WeightEntry.self,
+            BodyMeasurement.self,
+            ProgressPhoto.self
         ])
+        
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
 
         do {

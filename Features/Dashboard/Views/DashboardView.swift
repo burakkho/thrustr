@@ -1,0 +1,482 @@
+import SwiftUI
+import SwiftData
+
+struct DashboardView: View {
+    @Environment(\.modelContext) private var modelContext
+    @Query private var users: [User]
+    @Query private var workouts: [Workout]
+    @StateObject private var healthKitService = HealthKitService()
+    @StateObject private var workoutService = WorkoutService()
+    
+    @State private var showingWeightEntry = false
+    @State private var isLoading = true
+    
+    private var currentUser: User {
+        users.first ?? createDefaultUser()
+    }
+    
+    private var recentWorkouts: [Workout] {
+        workouts.sorted { $0.startTime > $1.startTime }.prefix(5).map { $0 }
+    }
+    
+    var body: some View {
+        NavigationView {
+            ScrollView {
+                VStack(spacing: 20) {
+                    // Welcome Section
+                    welcomeSection
+                    
+                    // Health Stats Grid
+                    healthStatsGrid
+                    
+                    // Quick Actions
+                    quickActionsSection
+                    
+                    // Recent Workouts
+                    recentWorkoutsSection
+                    
+                    // Weekly Progress
+                    weeklyProgressSection
+                }
+                .padding()
+            }
+            .navigationTitle("Ana Sayfa")
+            .refreshable {
+                await refreshHealthData()
+            }
+            .sheet(isPresented: $showingWeightEntry) {
+                WeightEntryView(user: currentUser)
+            }
+        }
+        .onAppear {
+            Task {
+                await loadInitialData()
+            }
+        }
+    }
+    
+    // MARK: - Welcome Section
+    private var welcomeSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                VStack(alignment: .leading) {
+                    // ✅ FIXED: User.name boş string check
+                    Text("Merhaba, \(currentUser.name.isEmpty ? "Kullanıcı" : currentUser.name)!")
+                        .font(.title2.bold())
+                        .foregroundColor(.primary)
+                    
+                    Text("Bugün nasıl hissediyorsun?")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                }
+                
+                Spacer()
+                
+                // Profile Picture or Initials
+                ZStack {
+                    Circle()
+                        .fill(Color.blue.opacity(0.1))
+                        .frame(width: 50, height: 50)
+                    
+                    // ✅ FIXED: User.name boş string check for initials
+                    Text(String((currentUser.name.isEmpty ? "K" : currentUser.name).prefix(1)).uppercased())
+                        .font(.title2.bold())
+                        .foregroundColor(.blue)
+                }
+            }
+        }
+        .padding()
+        .background(Color(.systemGray6))
+        .cornerRadius(16)
+    }
+    
+    // MARK: - Health Stats Grid (Using Shared Components)
+    private var healthStatsGrid: some View {
+        LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 2), spacing: 16) {
+            // Steps
+            QuickStatCard(
+                icon: "figure.walk",
+                title: "Bugün",
+                value: formatSteps(healthKitService.todaySteps),
+                subtitle: "adım",
+                color: .blue
+            )
+            
+            // Calories
+            QuickStatCard(
+                icon: "flame.fill",
+                title: "Kalori",
+                value: formatCalories(healthKitService.todayCalories),
+                subtitle: "kcal",
+                color: .orange
+            )
+            
+            // Weight
+            QuickStatCard(
+                icon: "scalemass.fill",
+                title: "Kilo",
+                value: currentUser.displayWeight,
+                subtitle: "son ölçüm",
+                color: .green
+            )
+            
+            // BMI
+            QuickStatCard(
+                icon: "heart.fill",
+                title: "BMI",
+                value: String(format: "%.1f", currentUser.bmi),
+                subtitle: currentUser.bmiCategory,
+                color: .red
+            )
+        }
+    }
+    
+    // MARK: - Quick Actions (Using Shared Components)
+    private var quickActionsSection: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            Text("Hızlı İşlemler")
+                .font(.headline)
+                .padding(.horizontal)
+            
+            VStack(spacing: 12) {
+                // Start Workout
+                GuideSection(
+                    title: "Antrenman Başlat",
+                    icon: "dumbbell.fill",
+                    description: "Yeni antrenman oluştur ve egzersizlerini takip et",
+                    color: .blue
+                ) {
+                    // Navigate to Training
+                }
+                
+                // Log Weight
+                GuideSection(
+                    title: "Kilo Gir",
+                    icon: "scalemass.fill",
+                    description: "Güncel kilonu kaydet ve ilerlemeyi takip et",
+                    color: .green
+                ) {
+                    showingWeightEntry = true
+                }
+                
+                // Nutrition Tracking
+                GuideSection(
+                    title: "Beslenme Takibi",
+                    icon: "fork.knife",
+                    description: "Günlük kalori ve makro besinlerini kaydet",
+                    color: .orange
+                ) {
+                    // Navigate to Nutrition
+                }
+            }
+            .padding(.horizontal)
+        }
+    }
+    
+    // MARK: - Recent Workouts Section
+    private var recentWorkoutsSection: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            HStack {
+                Text("Son Antrenmanlar")
+                    .font(.headline)
+                
+                Spacer()
+                
+                if !recentWorkouts.isEmpty {
+                    Button("Tümünü Gör") {
+                        // Navigate to workout history
+                    }
+                    .font(.caption)
+                    .foregroundColor(.blue)
+                }
+            }
+            .padding(.horizontal)
+            
+            if recentWorkouts.isEmpty {
+                VStack(spacing: 12) {
+                    Image(systemName: "dumbbell")
+                        .font(.largeTitle)
+                        .foregroundColor(.secondary)
+                    
+                    Text("Henüz antrenman yok")
+                        .font(.headline)
+                        .foregroundColor(.secondary)
+                    
+                    Text("İlk antrenmanını başlatmak için yukarıdaki butona tıkla!")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                        .multilineTextAlignment(.center)
+                }
+                .padding()
+                .background(Color(.systemGray6))
+                .cornerRadius(12)
+                .padding(.horizontal)
+            } else {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 12) {
+                        ForEach(recentWorkouts, id: \.id) { workout in
+                            WorkoutCard(workout: workout)
+                        }
+                    }
+                    .padding(.horizontal)
+                }
+            }
+        }
+    }
+    
+    // MARK: - Weekly Progress Section
+    private var weeklyProgressSection: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            Text("Bu Hafta")
+                .font(.headline)
+                .padding(.horizontal)
+            
+            VStack(spacing: 16) {
+                // Workout Count
+                HStack {
+                    VStack(alignment: .leading) {
+                        Text("Antrenman Sayısı")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                        
+                        Text("\(workoutService.weeklyWorkoutCount)")
+                            .font(.title.bold())
+                            .foregroundColor(.blue)
+                    }
+                    
+                    Spacer()
+                    
+                    Image(systemName: "dumbbell.fill")
+                        .foregroundColor(.blue)
+                        .font(.title2)
+                }
+                
+                Divider()
+                
+                // Total Volume
+                HStack {
+                    VStack(alignment: .leading) {
+                        Text("Toplam Hacim")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                        
+                        Text("\(Int(workoutService.weeklyVolume)) kg")
+                            .font(.title.bold())
+                            .foregroundColor(.green)
+                    }
+                    
+                    Spacer()
+                    
+                    Image(systemName: "scalemass.fill")
+                        .foregroundColor(.green)
+                        .font(.title2)
+                }
+                
+                Divider()
+                
+                // Total Time
+                HStack {
+                    VStack(alignment: .leading) {
+                        Text("Toplam Süre")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                        
+                        Text(formatDuration(workoutService.weeklyDuration))
+                            .font(.title.bold())
+                            .foregroundColor(.orange)
+                    }
+                    
+                    Spacer()
+                    
+                    Image(systemName: "clock.fill")
+                        .foregroundColor(.orange)
+                        .font(.title2)
+                }
+            }
+            .padding()
+            .background(Color(.systemGray6))
+            .cornerRadius(16)
+            .padding(.horizontal)
+        }
+    }
+    
+    // MARK: - Helper Methods
+    private func loadInitialData() async {
+        isLoading = true
+        
+        // Request HealthKit permissions and load data
+        _ = await healthKitService.requestPermissions()
+        await refreshHealthData()
+        
+        // Load workout statistics
+        workoutService.loadWorkoutStats(workouts: workouts)
+        
+        isLoading = false
+    }
+    
+    private func refreshHealthData() async {
+        await healthKitService.readTodaysData()
+        
+        // Update user with HealthKit data
+        currentUser.updateHealthKitData(
+            steps: healthKitService.todaySteps,
+            calories: healthKitService.todayCalories,
+            weight: healthKitService.currentWeight
+        )
+    }
+    
+    private func createDefaultUser() -> User {
+        let user = User()
+        modelContext.insert(user)
+        return user
+    }
+    
+    private func formatSteps(_ steps: Double?) -> String {
+        guard let steps = steps else { return "0" }
+        return NumberFormatter.localizedString(from: NSNumber(value: Int(steps)), number: .decimal)
+    }
+    
+    private func formatCalories(_ calories: Double?) -> String {
+        guard let calories = calories else { return "0" }
+        return String(format: "%.0f", calories)
+    }
+    
+    private func formatDuration(_ duration: TimeInterval) -> String {
+        let hours = Int(duration) / 3600
+        let minutes = (Int(duration) % 3600) / 60
+        
+        if hours > 0 {
+            return "\(hours)sa \(minutes)dk"
+        } else {
+            return "\(minutes)dk"
+        }
+    }
+}
+
+// MARK: - Workout Card Component
+struct WorkoutCard: View {
+    let workout: Workout
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                // ✅ FIXED: workout.name is String? (optional)
+                Text(workout.name ?? "Antrenman")
+                    .font(.headline)
+                    .lineLimit(1)
+                
+                Spacer()
+                
+                // ✅ OK: workout.startTime is Date (not optional)
+                Text(formatWorkoutDate(workout.startTime))
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+            
+            HStack {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Süre")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    
+                    // ✅ FIXED: workout.totalDuration is Int (seconds), convert to TimeInterval
+                    Text(formatWorkoutDuration(TimeInterval(workout.totalDuration)))
+                        .font(.subheadline.bold())
+                        .foregroundColor(.blue)
+                }
+                
+                Spacer()
+                
+                VStack(alignment: .trailing, spacing: 4) {
+                    Text("Hacim")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    
+                    // ✅ OK: workout.totalVolume is computed property (Double), not optional
+                    Text("\(Int(workout.totalVolume)) kg")
+                        .font(.subheadline.bold())
+                        .foregroundColor(.green)
+                }
+            }
+        }
+        .padding()
+        .background(Color(.systemBackground))
+        .cornerRadius(12)
+        .shadow(color: .black.opacity(0.05), radius: 2, x: 0, y: 1)
+        .frame(width: 200)
+    }
+    
+    private func formatWorkoutDate(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "d MMM"
+        formatter.locale = Locale(identifier: "tr_TR")
+        return formatter.string(from: date)
+    }
+    
+    private func formatWorkoutDuration(_ duration: TimeInterval) -> String {
+        let minutes = Int(duration) / 60
+        if minutes >= 60 {
+            let hours = minutes / 60
+            let remainingMinutes = minutes % 60
+            return "\(hours)sa \(remainingMinutes)dk"
+        } else {
+            return "\(minutes)dk"
+        }
+    }
+}
+
+// MARK: - Weight Entry View
+struct WeightEntryView: View {
+    @Environment(\.dismiss) private var dismiss
+    let user: User
+    
+    @State private var newWeight: String = ""
+    
+    var body: some View {
+        NavigationView {
+            VStack(spacing: 20) {
+                Text("Güncel Kilonu Gir")
+                    .font(.title2.bold())
+                    .padding(.top)
+                
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Kilo (kg)")
+                        .font(.headline)
+                    
+                    TextField("Örn: 70.5", text: $newWeight)
+                        .keyboardType(.decimalPad)
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                }
+                .padding(.horizontal)
+                
+                Button("Kaydet") {
+                    if let weight = Double(newWeight.replacingOccurrences(of: ",", with: ".")), weight > 0 {
+                        user.currentWeight = weight
+                        user.calculateMetrics()
+                        dismiss()
+                    }
+                }
+                .buttonStyle(.borderedProminent)
+                .disabled(newWeight.isEmpty)
+                
+                Spacer()
+            }
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("İptal") {
+                        dismiss()
+                    }
+                }
+            }
+        }
+        .onAppear {
+            newWeight = String(format: "%.1f", user.currentWeight)
+        }
+    }
+}
+
+#Preview {
+    DashboardView()
+        .modelContainer(for: [User.self, Workout.self, Exercise.self, Food.self, NutritionEntry.self])
+}
