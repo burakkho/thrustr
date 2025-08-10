@@ -38,9 +38,11 @@ class HealthKitService: ObservableObject {
             let calorieStatus = healthStore.authorizationStatus(for: activeEnergyType)
             let weightStatus = healthStore.authorizationStatus(for: bodyMassType)
             
-            isAuthorized = stepStatus == .sharingAuthorized &&
-                          calorieStatus == .sharingAuthorized &&
-                          weightStatus == .sharingAuthorized
+            // Consider authorized if ANY relevant type is permitted
+            // Dashboard uses steps and active energy; weight is optional
+            isAuthorized = (stepStatus == .sharingAuthorized) ||
+                           (calorieStatus == .sharingAuthorized) ||
+                           (weightStatus == .sharingAuthorized)
             
             if isAuthorized {
                 await readTodaysData()

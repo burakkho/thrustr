@@ -162,7 +162,10 @@ struct DashboardView: View {
                     message: "Sağlık verilerini göstermek için izin ver.",
                     actionTitle: "İzin Ver"
                 ) {
-                    Task { _ = await healthKitService.requestPermissions() }
+                    Task {
+                        let _ = await healthKitService.requestPermissions()
+                        await healthKitService.readTodaysData()
+                    }
                 }
             }
         }
