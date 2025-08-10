@@ -51,7 +51,7 @@ struct GoalTrackingView: View {
             }
             .padding()
         }
-        .navigationTitle("Hedef Takibi")
+        .navigationTitle(LocalizationKeys.GoalTracking.title.localized)
         .navigationBarTitleDisplayMode(.inline)
         .background(Color(.systemGroupedBackground))
         .sheet(isPresented: $showingAddGoal) {
@@ -72,11 +72,11 @@ struct GoalTrackingHeaderSection: View {
                 .foregroundColor(.blue)
             
             VStack(spacing: 8) {
-                Text("Hedef Takibi")
+                Text(LocalizationKeys.GoalTracking.title.localized)
                     .font(.title2)
                     .fontWeight(.semibold)
                 
-                Text("Hedeflerini belirle ve ilerlemenizi takip et")
+                Text(LocalizationKeys.GoalTracking.subtitle.localized)
                     .font(.subheadline)
                     .foregroundColor(.secondary)
                     .multilineTextAlignment(.center)
@@ -89,7 +89,7 @@ struct GoalTrackingHeaderSection: View {
                         .fontWeight(.bold)
                         .foregroundColor(.blue)
                     
-                    Text("Aktif")
+                    Text("\(LocalizationKeys.Common.completed.localized)") // placeholder, could have separate key for Active
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
@@ -100,7 +100,7 @@ struct GoalTrackingHeaderSection: View {
                         .fontWeight(.bold)
                         .foregroundColor(.green)
                     
-                    Text("Tamamlanan")
+                    Text(LocalizationKeys.GoalTracking.completedGoals.localized)
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
@@ -132,40 +132,40 @@ struct QuickGoalStats: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Özet")
+            Text(LocalizationKeys.Analytics.weeklyProgress.localized) // reuse better key later
                 .font(.headline)
                 .fontWeight(.semibold)
             
             LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 2), spacing: 12) {
                 QuickStatCard(
                     icon: "chart.line.uptrend.xyaxis",
-                    title: "Ortalama İlerleme",
+                    title: "Average Progress".localized,
                     value: "\(Int(averageProgress))%",
-                    subtitle: "ilerleme",
+                    subtitle: "progress".localized,
                     color: .blue
                 )
                 
                 QuickStatCard(
                     icon: "clock.fill",
-                    title: "Sonraki Deadline",
-                    value: daysUntilNextDeadline > 0 ? "\(daysUntilNextDeadline) gün" : "Yok",
-                    subtitle: "kalan süre",
+                    title: "Next Deadline".localized,
+                    value: daysUntilNextDeadline > 0 ? String(format: "%d %@", daysUntilNextDeadline, "days".localized) : "None".localized,
+                    subtitle: "remaining".localized,
                     color: .orange
                 )
                 
                 QuickStatCard(
                     icon: "checkmark.circle.fill",
-                    title: "Bu Ay Tamamlanan",
+                    title: "Completed This Month".localized,
                     value: "\(goalsCompletedThisMonth)",
-                    subtitle: "hedef",
+                    subtitle: "goals".localized,
                     color: .green
                 )
                 
                 QuickStatCard(
                     icon: "target",
-                    title: "Başarı Oranı",
+                    title: "Success Rate".localized,
                     value: "\(Int(successRate))%",
-                    subtitle: "başarı",
+                    subtitle: "success".localized,
                     color: .purple
                 )
             }
@@ -194,7 +194,7 @@ struct ActiveGoalsSection: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("Aktif Hedefler")
+            Text(LocalizationKeys.GoalTracking.currentGoals.localized)
                 .font(.headline)
                 .fontWeight(.semibold)
             
@@ -258,7 +258,7 @@ struct GoalCard: View {
                             .fontWeight(.bold)
                             .foregroundColor(isUrgent ? .red : .secondary)
                         
-                        Text("gün kaldı")
+                Text("days left".localized)
                             .font(.caption2)
                             .foregroundColor(.secondary)
                     }
@@ -268,7 +268,7 @@ struct GoalCard: View {
             // Progress Section
             VStack(alignment: .leading, spacing: 8) {
                 HStack {
-                    Text("İlerleme")
+                    Text(LocalizationKeys.Achievements.progress.localized)
                         .font(.subheadline)
                         .fontWeight(.medium)
                     
@@ -292,7 +292,7 @@ struct GoalCard: View {
                     Spacer()
                     
                     if goal.progressPercentage >= 1.0 {
-                        Text("Tamamlandı! 🎉")
+                        Text(LocalizationKeys.Common.completed.localized + " 🎉")
                             .font(.caption)
                             .fontWeight(.semibold)
                             .foregroundColor(.green)
@@ -324,7 +324,7 @@ struct AddGoalSection: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("Yeni Hedef Ekle")
+            Text("add_goal.title".localized) // reuse existing key
                 .font(.headline)
                 .fontWeight(.semibold)
             
@@ -336,7 +336,7 @@ struct AddGoalSection: View {
                         .font(.title2)
                         .foregroundColor(.blue)
                     
-                    Text("Hedef Ekle")
+                    Text("add_goal.title".localized)
                         .font(.headline)
                         .fontWeight(.semibold)
                         .foregroundColor(.blue)
@@ -362,7 +362,7 @@ struct CompletedGoalsSection: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("Tamamlanan Hedefler")
+            Text(LocalizationKeys.GoalTracking.completedGoals.localized)
                 .font(.headline)
                 .fontWeight(.semibold)
             
@@ -403,7 +403,7 @@ struct CompletedGoalRow: View {
                     .foregroundColor(.secondary)
                 
                 if let completedDate = goal.completedDate {
-                    Text("Tamamlandı: \(formatDate(completedDate))")
+                    Text("\(LocalizationKeys.Common.completed.localized): \(formatDate(completedDate))")
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
@@ -429,33 +429,33 @@ struct CompletedGoalRow: View {
 struct GoalTipsSection: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("Hedef Belirleme İpuçları")
+            Text("Goal Setting Tips".localized)
                 .font(.headline)
                 .fontWeight(.semibold)
             
             VStack(spacing: 12) {
                 GoalTipRow(
                     icon: "target",
-                    title: "SMART Hedefler",
-                    description: "Spesifik, Ölçülebilir, Ulaşılabilir, Gerçekçi ve Zamanlı hedefler belirle"
+                    title: "SMART Goals".localized,
+                    description: "Set Specific, Measurable, Achievable, Realistic and Time-bound goals".localized
                 )
                 
                 GoalTipRow(
                     icon: "chart.line.uptrend.xyaxis",
-                    title: "Küçük Adımlar",
-                    description: "Büyük hedefleri küçük, yönetilebilir parçalara böl"
+                    title: "Small Steps".localized,
+                    description: "Break big goals into smaller, manageable parts".localized
                 )
                 
                 GoalTipRow(
                     icon: "calendar.badge.checkmark",
-                    title: "Düzenli Takip",
-                    description: "İlerlemenizi düzenli olarak kontrol edin ve gerektiğinde ayarlama yapın"
+                    title: "Regular Tracking".localized,
+                    description: "Review progress regularly and adjust when needed".localized
                 )
                 
                 GoalTipRow(
                     icon: "heart.fill",
-                    title: "Motivasyon",
-                    description: "Başarılarınızı kutlayın ve kendinizi ödüllendirin"
+                    title: "Motivation".localized,
+                    description: "Celebrate achievements and reward yourself".localized
                 )
             }
             .padding()
@@ -506,7 +506,7 @@ struct AddGoalView: View {
     @State private var deadline = Date().addingTimeInterval(30 * 24 * 60 * 60) // 30 days from now
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             ScrollView {
                 VStack(spacing: 24) {
                     // Header
@@ -515,14 +515,14 @@ struct AddGoalView: View {
                             .font(.system(size: 60))
                             .foregroundColor(.blue)
                         
-                        Text("Yeni Hedef Ekle")
+                        Text("add_goal.title".localized)
                             .font(.title2)
                             .fontWeight(.semibold)
                     }
                     
                     // Goal Type Selection
                     VStack(alignment: .leading, spacing: 12) {
-                        Text("Hedef Türü")
+                        Text(LocalizationKeys.GoalTracking.goalType.localized)
                             .font(.headline)
                             .fontWeight(.semibold)
                         
@@ -553,26 +553,26 @@ struct AddGoalView: View {
                     // Goal Details
                     VStack(spacing: 16) {
                         VStack(alignment: .leading, spacing: 8) {
-                            Text("Hedef Başlığı")
+                            Text("goal.title".localized)
                                 .font(.subheadline)
                                 .fontWeight(.medium)
                             
-                            TextField("Örn: 5 kg vermek", text: $title)
+                            TextField("goal.title_placeholder".localized, text: $title)
                                 .textFieldStyle(RoundedBorderTextFieldStyle())
                         }
                         
                         VStack(alignment: .leading, spacing: 8) {
-                            Text("Açıklama")
+                            Text("goal.description".localized)
                                 .font(.subheadline)
                                 .fontWeight(.medium)
                             
-                            TextField("Hedef hakkında detaylar", text: $description, axis: .vertical)
+                            TextField("goal.description_placeholder".localized, text: $description, axis: .vertical)
                                 .textFieldStyle(RoundedBorderTextFieldStyle())
                                 .lineLimit(3...6)
                         }
                         
                         VStack(alignment: .leading, spacing: 8) {
-                            Text("Hedef Değer")
+                            Text("goal.value".localized)
                                 .font(.subheadline)
                                 .fontWeight(.medium)
                             
@@ -589,12 +589,12 @@ struct AddGoalView: View {
                         }
                         
                         VStack(alignment: .leading, spacing: 8) {
-                            Toggle("Son Tarih Belirle", isOn: $hasDeadline)
+                            Toggle("goal.set_end_date".localized, isOn: $hasDeadline)
                                 .font(.subheadline)
                                 .fontWeight(.medium)
                             
                             if hasDeadline {
-                                DatePicker("Son Tarih", selection: $deadline, displayedComponents: .date)
+                                DatePicker("goal.goal_deadline".localized, selection: $deadline, displayedComponents: .date)
                                     .datePickerStyle(.compact)
                             }
                         }
@@ -606,17 +606,17 @@ struct AddGoalView: View {
                 }
                 .padding()
             }
-            .navigationTitle("Hedef Ekle")
+            .navigationTitle("add_goal.title".localized)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button("İptal") {
+                    Button("action.cancel".localized) {
                         dismiss()
                     }
                 }
                 
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Kaydet") {
+                    Button("action.save".localized) {
                         saveGoal()
                     }
                     .fontWeight(.semibold)

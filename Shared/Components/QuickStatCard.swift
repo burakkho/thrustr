@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct QuickStatCard: View {
+    @Environment(\.theme) private var theme
     let icon: String
     let title: String
     let value: String
@@ -15,7 +16,7 @@ struct QuickStatCard: View {
     let color: Color
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: theme.spacing.s) {
             HStack {
                 Image(systemName: icon)
                     .foregroundColor(color)
@@ -24,25 +25,23 @@ struct QuickStatCard: View {
                 Spacer()
             }
             
-            VStack(alignment: .leading, spacing: 4) {
+            VStack(alignment: .leading, spacing: theme.spacing.xs) {
                 Text(value)
                     .font(.title2.bold())
-                    .foregroundColor(.primary)
+                    .foregroundColor(theme.colors.textPrimary)
                 
                 Text(title)
                     .font(.caption)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(theme.colors.textSecondary)
                 
                 if !subtitle.isEmpty {
                     Text(subtitle)
                         .font(.caption2)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(theme.colors.textSecondary)
                 }
             }
         }
-        .padding()
-        .background(Color(.systemGray6))
-        .cornerRadius(12)
+        .cardStyle()
     }
 }
 

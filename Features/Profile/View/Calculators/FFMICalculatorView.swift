@@ -415,7 +415,7 @@ enum FFMICategory: CaseIterable {
 }
 
 #Preview {
-    NavigationView {
+    NavigationStack {
         FFMICalculatorView()
     }
 }

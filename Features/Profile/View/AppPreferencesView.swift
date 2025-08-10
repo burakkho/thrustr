@@ -12,7 +12,7 @@ struct AppPreferencesView: View {
     @AppStorage("hapticEnabled") private var hapticEnabled = true
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             List {
                 // Language Section
                 Section {

@@ -58,7 +58,7 @@ struct AchievementsView: View {
             }
             .padding()
         }
-        .navigationTitle("Başarımlar")
+        .navigationTitle(LocalizationKeys.Achievements.title.localized)
         .navigationBarTitleDisplayMode(.inline)
         .background(Color(.systemGroupedBackground))
     }
@@ -80,11 +80,11 @@ struct AchievementsHeaderSection: View {
                 .foregroundColor(.yellow)
             
             VStack(spacing: 8) {
-                Text("Başarımlar")
+                Text(LocalizationKeys.Achievements.title.localized)
                     .font(.title2)
                     .fontWeight(.semibold)
                 
-                Text("Hedeflerini tamamla ve rozet kazan!")
+                Text(LocalizationKeys.Achievements.subtitle.localized)
                     .font(.subheadline)
                     .foregroundColor(.secondary)
                     .multilineTextAlignment(.center)
@@ -122,7 +122,7 @@ struct AchievementsHeaderSection: View {
                 }
             }
             
-            Text("\(Int(completionPercentage))% Tamamlandı")
+            Text("\(Int(completionPercentage))% " + "common.completed".localized)
                 .font(.subheadline)
                 .fontWeight(.semibold)
                 .foregroundColor(.blue)
@@ -140,7 +140,7 @@ struct CategorySelectorSection: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Kategori")
+            Text("common.category".localized)
                 .font(.headline)
                 .fontWeight(.semibold)
             
@@ -154,7 +154,7 @@ struct CategorySelectorSection: View {
                                 Image(systemName: category.icon)
                                     .font(.caption)
                                 
-                                Text(category.displayName)
+                                Text(category.localizedName)
                                     .font(.caption)
                                     .fontWeight(.medium)
                             }
@@ -178,7 +178,7 @@ struct AchievementsGridSection: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("Başarımlar")
+            Text(LocalizationKeys.Achievements.title.localized)
                 .font(.headline)
                 .fontWeight(.semibold)
             
@@ -243,7 +243,7 @@ struct AchievementCard: View {
                         .foregroundColor(.secondary)
                 }
             } else {
-                Text("Tamamlandı! ✅")
+                Text("common.completed".localized + " ✅")
                     .font(.caption)
                     .fontWeight(.semibold)
                     .foregroundColor(.green)
@@ -273,7 +273,7 @@ struct AchievementStatisticsSection: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("Kategori İstatistikleri")
+            Text("common.category_stats".localized)
                 .font(.headline)
                 .fontWeight(.semibold)
             
@@ -311,7 +311,7 @@ struct CategoryStatRow: View {
                 .frame(width: 24)
             
             VStack(alignment: .leading, spacing: 4) {
-                Text(category.displayName)
+                Text(category.localizedName)
                     .font(.subheadline)
                     .fontWeight(.medium)
                 
@@ -350,27 +350,27 @@ struct Achievement: Identifiable {
     
     mutating func updateProgress(workouts: [Workout], weightEntries: [WeightEntry], nutritionEntries: [NutritionEntry], user: User?) {
         switch title {
-        case "İlk Antrenman":
+        case LocalizationKeys.Achievements.Item.firstWorkoutTitle.localized:
             currentProgress = Double(workouts.count >= 1 ? 1 : 0)
-        case "10 Antrenman":
+        case LocalizationKeys.Achievements.Item.w10Title.localized:
             currentProgress = Double(min(workouts.count, 10))
-        case "50 Antrenman":
+        case LocalizationKeys.Achievements.Item.w50Title.localized:
             currentProgress = Double(min(workouts.count, 50))
-        case "100 Antrenman":
+        case LocalizationKeys.Achievements.Item.w100Title.localized:
             currentProgress = Double(min(workouts.count, 100))
-        case "Hafta Sonu Savaşçısı":
+        case LocalizationKeys.Achievements.Item.weekendWarriorTitle.localized:
             let weekendWorkouts = workouts.filter { Calendar.current.isDateInWeekend($0.date) }.count
             currentProgress = Double(min(weekendWorkouts, 10))
-        case "Ağırlık Avcısı":
+        case LocalizationKeys.Achievements.Item.weightHunterTitle.localized:
             let totalVolume = workouts.reduce(0) { $0 + $1.totalVolume }
             currentProgress = min(totalVolume, 10000)
-        case "İlk Kilo Kaydı":
+        case LocalizationKeys.Achievements.Item.firstWeightTitle.localized:
             currentProgress = Double(weightEntries.count >= 1 ? 1 : 0)
-        case "Takipçi":
+        case LocalizationKeys.Achievements.Item.trackerTitle.localized:
             currentProgress = Double(min(weightEntries.count, 30))
-        case "İlk Beslenme Kaydı":
+        case LocalizationKeys.Achievements.Item.firstMealTitle.localized:
             currentProgress = Double(nutritionEntries.count >= 1 ? 1 : 0)
-        case "Beslenme Uzmanı":
+        case LocalizationKeys.Achievements.Item.nutritionExpertTitle.localized:
             currentProgress = Double(min(nutritionEntries.count, 100))
         default:
             currentProgress = 0
@@ -379,28 +379,28 @@ struct Achievement: Identifiable {
     
     static let allAchievements: [Achievement] = [
         // Workout Achievements
-        Achievement(title: "İlk Antrenman", description: "İlk antrenmanını tamamla", icon: "dumbbell.fill", category: .workout, targetValue: 1),
-        Achievement(title: "10 Antrenman", description: "10 antrenman tamamla", icon: "10.circle.fill", category: .workout, targetValue: 10),
-        Achievement(title: "50 Antrenman", description: "50 antrenman tamamla", icon: "50.circle.fill", category: .workout, targetValue: 50),
-        Achievement(title: "100 Antrenman", description: "100 antrenman tamamla", icon: "100.circle.fill", category: .workout, targetValue: 100),
-        Achievement(title: "Hafta Sonu Savaşçısı", description: "10 hafta sonu antrenmanı", icon: "calendar.badge.clock", category: .workout, targetValue: 10),
-        Achievement(title: "Ağırlık Avcısı", description: "10,000 kg toplam hacim", icon: "scalemass.fill", category: .workout, targetValue: 10000),
+        Achievement(title: LocalizationKeys.Achievements.Item.firstWorkoutTitle.localized, description: LocalizationKeys.Achievements.Item.firstWorkoutDesc.localized, icon: "dumbbell.fill", category: .workout, targetValue: 1),
+        Achievement(title: LocalizationKeys.Achievements.Item.w10Title.localized, description: LocalizationKeys.Achievements.Item.w10Desc.localized, icon: "10.circle.fill", category: .workout, targetValue: 10),
+        Achievement(title: LocalizationKeys.Achievements.Item.w50Title.localized, description: LocalizationKeys.Achievements.Item.w50Desc.localized, icon: "50.circle.fill", category: .workout, targetValue: 50),
+        Achievement(title: LocalizationKeys.Achievements.Item.w100Title.localized, description: LocalizationKeys.Achievements.Item.w100Desc.localized, icon: "100.circle.fill", category: .workout, targetValue: 100),
+        Achievement(title: LocalizationKeys.Achievements.Item.weekendWarriorTitle.localized, description: LocalizationKeys.Achievements.Item.weekendWarriorDesc.localized, icon: "calendar.badge.clock", category: .workout, targetValue: 10),
+        Achievement(title: LocalizationKeys.Achievements.Item.weightHunterTitle.localized, description: LocalizationKeys.Achievements.Item.weightHunterDesc.localized, icon: "scalemass.fill", category: .workout, targetValue: 10000),
         
         // Weight Tracking Achievements
-        Achievement(title: "İlk Kilo Kaydı", description: "İlk kilo kaydını gir", icon: "scalemass.fill", category: .weight, targetValue: 1),
-        Achievement(title: "Takipçi", description: "30 gün kilo takibi", icon: "chart.line.uptrend.xyaxis", category: .weight, targetValue: 30),
+        Achievement(title: LocalizationKeys.Achievements.Item.firstWeightTitle.localized, description: LocalizationKeys.Achievements.Item.firstWeightDesc.localized, icon: "scalemass.fill", category: .weight, targetValue: 1),
+        Achievement(title: LocalizationKeys.Achievements.Item.trackerTitle.localized, description: LocalizationKeys.Achievements.Item.trackerDesc.localized, icon: "chart.line.uptrend.xyaxis", category: .weight, targetValue: 30),
         
         // Nutrition Achievements
-        Achievement(title: "İlk Beslenme Kaydı", description: "İlk öğünü kaydet", icon: "fork.knife", category: .nutrition, targetValue: 1),
-        Achievement(title: "Beslenme Uzmanı", description: "100 öğün kaydı", icon: "leaf.fill", category: .nutrition, targetValue: 100),
+        Achievement(title: LocalizationKeys.Achievements.Item.firstMealTitle.localized, description: LocalizationKeys.Achievements.Item.firstMealDesc.localized, icon: "fork.knife", category: .nutrition, targetValue: 1),
+        Achievement(title: LocalizationKeys.Achievements.Item.nutritionExpertTitle.localized, description: LocalizationKeys.Achievements.Item.nutritionExpertDesc.localized, icon: "leaf.fill", category: .nutrition, targetValue: 100),
         
         // Streak Achievements
-        Achievement(title: "3 Günlük Seri", description: "3 gün üst üste antrenman", icon: "flame.fill", category: .streak, targetValue: 3),
-        Achievement(title: "Haftalık Seri", description: "7 gün üst üste antrenman", icon: "flame.fill", category: .streak, targetValue: 7),
+        Achievement(title: LocalizationKeys.Achievements.Item.streak3Title.localized, description: LocalizationKeys.Achievements.Item.streak3Desc.localized, icon: "flame.fill", category: .streak, targetValue: 3),
+        Achievement(title: LocalizationKeys.Achievements.Item.streak7Title.localized, description: LocalizationKeys.Achievements.Item.streak7Desc.localized, icon: "flame.fill", category: .streak, targetValue: 7),
         
         // Social Achievements
-        Achievement(title: "Paylaşımcı", description: "İlk ilerleme fotoğrafı", icon: "camera.fill", category: .social, targetValue: 1),
-        Achievement(title: "Motivatör", description: "5 ilerleme fotoğrafı paylaş", icon: "photo.stack.fill", category: .social, targetValue: 5)
+        Achievement(title: LocalizationKeys.Achievements.Item.sharerTitle.localized, description: LocalizationKeys.Achievements.Item.sharerDesc.localized, icon: "camera.fill", category: .social, targetValue: 1),
+        Achievement(title: LocalizationKeys.Achievements.Item.motivatorTitle.localized, description: LocalizationKeys.Achievements.Item.motivatorDesc.localized, icon: "photo.stack.fill", category: .social, targetValue: 5)
     ]
 }
 
@@ -408,14 +408,14 @@ struct Achievement: Identifiable {
 enum AchievementCategory: CaseIterable {
     case all, workout, weight, nutrition, streak, social
     
-    var displayName: String {
+    var localizedName: String {
         switch self {
-        case .all: return "Tümü"
-        case .workout: return "Antrenman"
-        case .weight: return "Kilo"
-        case .nutrition: return "Beslenme"
-        case .streak: return "Seri"
-        case .social: return "Sosyal"
+        case .all: return LocalizationKeys.Achievements.Category.all.localized
+        case .workout: return LocalizationKeys.Achievements.Category.workout.localized
+        case .weight: return LocalizationKeys.Achievements.Category.weight.localized
+        case .nutrition: return LocalizationKeys.Achievements.Category.nutrition.localized
+        case .streak: return LocalizationKeys.Achievements.Category.streak.localized
+        case .social: return LocalizationKeys.Achievements.Category.social.localized
         }
     }
     
@@ -443,7 +443,7 @@ enum AchievementCategory: CaseIterable {
 }
 
 #Preview {
-    NavigationView {
+    NavigationStack {
         AchievementsView()
     }
 }

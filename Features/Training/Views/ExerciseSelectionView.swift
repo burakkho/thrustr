@@ -31,7 +31,7 @@ struct ExerciseSelectionView: View {
     }
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             VStack(spacing: 0) {
                 // Search bar
                 SearchBar(text: $searchText)

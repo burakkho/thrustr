@@ -778,7 +778,7 @@ enum ChartType: CaseIterable {
 }
 
 #Preview {
-    NavigationView {
+    NavigationStack {
         ProgressChartsView()
     }
 }

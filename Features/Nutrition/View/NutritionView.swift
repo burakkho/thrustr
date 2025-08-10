@@ -10,7 +10,7 @@ struct NutritionView: View {
     @State private var showingFoodSelection = false
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             ZStack {
                 ScrollView {
                     VStack(spacing: 20) {

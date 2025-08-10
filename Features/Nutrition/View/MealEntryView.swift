@@ -19,7 +19,7 @@ struct MealEntryView: View {
     }
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             VStack(spacing: 20) {
                 // Food bilgisi
                 VStack(alignment: .leading, spacing: 8) {

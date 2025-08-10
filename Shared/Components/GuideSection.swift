@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct GuideSection: View {
+    @Environment(\.theme) private var theme
     let title: String
     let icon: String
     let description: String
@@ -16,7 +17,7 @@ struct GuideSection: View {
     
     var body: some View {
         Button(action: action) {
-            HStack(spacing: 16) {
+            HStack(spacing: theme.spacing.m) {
                 // Icon
                 ZStack {
                     Circle()
@@ -29,14 +30,14 @@ struct GuideSection: View {
                 }
                 
                 // Content
-                VStack(alignment: .leading, spacing: 4) {
+                VStack(alignment: .leading, spacing: theme.spacing.xs) {
                     Text(title)
                         .font(.headline)
-                        .foregroundColor(.primary)
+                        .foregroundColor(theme.colors.textPrimary)
                     
                     Text(description)
                         .font(.subheadline)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(theme.colors.textSecondary)
                         .multilineTextAlignment(.leading)
                 }
                 
@@ -44,15 +45,15 @@ struct GuideSection: View {
                 
                 // Chevron
                 Image(systemName: "chevron.right")
-                    .foregroundColor(.secondary)
+                    .foregroundColor(theme.colors.textSecondary)
                     .font(.caption)
             }
-            .padding()
-            .background(Color(.systemBackground))
-            .cornerRadius(12)
-            .shadow(color: .black.opacity(0.05), radius: 2, x: 0, y: 1)
+            .cardStyle()
         }
         .buttonStyle(PlainButtonStyle())
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel(Text(title))
+        .accessibilityHint(Text(description))
     }
 }
 

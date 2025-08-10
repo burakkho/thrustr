@@ -24,7 +24,7 @@ struct RestTimerView: View {
     }
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             VStack(spacing: 40) {
                 Spacer()
                 

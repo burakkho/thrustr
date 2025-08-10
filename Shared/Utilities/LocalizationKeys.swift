@@ -583,18 +583,18 @@ enum LocalizationKeys {
         static let continueButton = "onboarding.continue"
         
         // MARK: - Missing Measurements Keys
-                static let navyMethodTitle = "onboarding.measurements.navyMethod.title"
-                static let navyMethodDesc = "onboarding.measurements.navyMethod.desc"
-                static let neckLabel = "onboarding.measurements.neck.label"
-                static let waistMaleLabel = "onboarding.measurements.waist.male.label"
-                static let waistFemaleLabel = "onboarding.measurements.waist.female.label"
-                static let hipLabel = "onboarding.measurements.hip.label"
-                static let bodyFatTitle = "onboarding.measurements.bodyFat.title"
-                static let bodyFatNavy = "onboarding.measurements.bodyFat.navy"
-                static let optionalInfo = "onboarding.measurements.optional.info"
-                static let optionalDesc = "onboarding.measurements.optional.desc"
-                static let skipStep = "onboarding.measurements.skipStep"
-                static let optional = "onboarding.measurements.optional"
+        static let navyMethodTitle = "onboarding.measurements.navyMethod.title"
+        static let navyMethodDesc = "onboarding.measurements.navyMethod.desc"
+        static let neckLabel = "onboarding.measurements.neck.label"
+        static let waistMaleLabel = "onboarding.measurements.waist.male.label"
+        static let waistFemaleLabel = "onboarding.measurements.waist.female.label"
+        static let hipLabel = "onboarding.measurements.hip.label"
+        static let bodyFatTitle = "onboarding.measurements.bodyFat.title"
+        static let bodyFatNavy = "onboarding.measurements.bodyFat.navy"
+        static let optionalInfo = "onboarding.measurements.optional.info"
+        static let optionalDesc = "onboarding.measurements.optional.desc"
+        static let skipStep = "onboarding.measurements.skipStep"
+        static let optional = "onboarding.measurements.optional"
         
         // MARK: - Direct access properties for legacy compatibility
         static let measurementsTitle = "onboarding.measurements.title"
@@ -822,8 +822,379 @@ enum LocalizationKeys {
     // Mevcut LocalizationKeys.swift dosyanızın Profile bölümünden sonra,
     // Common bölümünden önce bu bölümleri ekleyin:
 
+
+
+        // MARK: - Preferences
+        enum Preferences {
+            static let title = "preferences.title"
+            static let language = "preferences.language"
+            static let theme = "preferences.theme"
+            static let units = "preferences.units"
+            static let notifications = "preferences.notifications"
+            static let soundEffects = "preferences.sound_effects"
+            static let timerSounds = "preferences.timer_sounds"
+            static let hapticFeedback = "preferences.haptic_feedback"
+            static let vibrationFeedback = "preferences.vibration_feedback"
+            static let appInfo = "preferences.app_info"
+            static let systemDefault = "preferences.system_default"
+            static let alwaysLight = "preferences.always_light"
+            static let alwaysDark = "preferences.always_dark"
+            static let autoLanguage = "preferences.auto_language"
+            static let notificationsAll = "preferences.notifications_all"
+            static let workoutRemindersDesc = "preferences.workout_reminders_desc"
+            static let nutritionRemindersDesc = "preferences.nutrition_reminders_desc"
+        }
+
+        // MARK: - Progress Photos
+        enum ProgressPhotos {
+            static let title = "progress_photos.title"
+            static let subtitle = "progress_photos.subtitle"
+            static let addFirst = "progress_photos.add_first"
+            static let addPhoto = "progress_photos.add_photo"
+            static let photoType = "progress_photos.photo_type"
+            static let selectPhoto = "progress_photos.select_photo"
+            static let cameraGallery = "progress_photos.camera_gallery"
+            static let notesOptional = "progress_photos.notes_optional"
+            static let notesPlaceholder = "progress_photos.notes_placeholder"
+            static let selectSource = "progress_photos.select_source"
+            static let camera = "progress_photos.camera"
+            static let gallery = "progress_photos.gallery"
+            static let deletePhoto = "progress_photos.delete_photo"
+            static let deleteMessage = "progress_photos.delete_message"
+            static let photoTypes = "progress_photos.photo_types"
+            static let noPhoto = "progress_photos.no_photo"
+            static let photosCount = "progress_photos.photos_count"
+            static let timeline = "progress_photos.timeline"
+            static let fullScreen = "progress_photos.full_screen"
+        }
+
+        // MARK: - Measurement Types
+        enum MeasurementTypes {
+            static let chest = "measurement_chest"
+            static let waist = "measurement_waist"
+            static let hips = "measurement_hips"
+            static let leftArm = "measurement_left_arm"
+            static let rightArm = "measurement_right_arm"
+            static let leftThigh = "measurement_left_thigh"
+            static let rightThigh = "measurement_right_thigh"
+            static let neck = "measurement_neck"
+        }
         
+        // MARK: - Achievements
+        enum Achievements {
+            static let title = "achievements.title"
+            static let subtitle = "achievements.subtitle"
+            static let noAchievements = "achievements.no_achievements"
+            static let noAchievementsDesc = "achievements.no_achievements_desc"
+            static let recentAchievements = "achievements.recent_achievements"
+            static let allAchievements = "achievements.all_achievements"
+            static let unlocked = "achievements.unlocked"
+            static let locked = "achievements.locked"
+            static let progress = "achievements.progress"
+            static let points = "achievements.points"
+            static let level = "achievements.level"
+            static let nextLevel = "achievements.next_level"
+            static let totalPoints = "achievements.total_points"
+
+        // Categories
+        enum Category {
+            static let all = "achievements.category.all"
+            static let workout = "achievements.category.workout"
+            static let weight = "achievements.category.weight"
+            static let nutrition = "achievements.category.nutrition"
+            static let streak = "achievements.category.streak"
+            static let social = "achievements.category.social"
+        }
+
+        // Items (Titles & Descriptions)
+        enum Item {
+            // Workout
+            static let firstWorkoutTitle = "achievements.item.first_workout.title"
+            static let firstWorkoutDesc = "achievements.item.first_workout.desc"
+            static let w10Title = "achievements.item.workout_10.title"
+            static let w10Desc = "achievements.item.workout_10.desc"
+            static let w50Title = "achievements.item.workout_50.title"
+            static let w50Desc = "achievements.item.workout_50.desc"
+            static let w100Title = "achievements.item.workout_100.title"
+            static let w100Desc = "achievements.item.workout_100.desc"
+            static let weekendWarriorTitle = "achievements.item.weekend_warrior.title"
+            static let weekendWarriorDesc = "achievements.item.weekend_warrior.desc"
+            static let weightHunterTitle = "achievements.item.weight_hunter.title"
+            static let weightHunterDesc = "achievements.item.weight_hunter.desc"
+
+            // Weight
+            static let firstWeightTitle = "achievements.item.first_weight.title"
+            static let firstWeightDesc = "achievements.item.first_weight.desc"
+            static let trackerTitle = "achievements.item.tracker_30.title"
+            static let trackerDesc = "achievements.item.tracker_30.desc"
+
+            // Nutrition
+            static let firstMealTitle = "achievements.item.first_meal.title"
+            static let firstMealDesc = "achievements.item.first_meal.desc"
+            static let nutritionExpertTitle = "achievements.item.nutrition_100.title"
+            static let nutritionExpertDesc = "achievements.item.nutrition_100.desc"
+
+            // Streak
+            static let streak3Title = "achievements.item.streak_3.title"
+            static let streak3Desc = "achievements.item.streak_3.desc"
+            static let streak7Title = "achievements.item.streak_7.title"
+            static let streak7Desc = "achievements.item.streak_7.desc"
+
+            // Social
+            static let sharerTitle = "achievements.item.sharer.title"
+            static let sharerDesc = "achievements.item.sharer.desc"
+            static let motivatorTitle = "achievements.item.motivator_5.title"
+            static let motivatorDesc = "achievements.item.motivator_5.desc"
+        }
+        }
         
+        // MARK: - Goal Tracking
+        enum GoalTracking {
+            static let title = "goal_tracking.title"
+            static let subtitle = "goal_tracking.subtitle"
+            static let currentGoals = "goal_tracking.current_goals"
+            static let completedGoals = "goal_tracking.completed_goals"
+            static let addGoal = "goal_tracking.add_goal"
+            static let editGoal = "goal_tracking.edit_goal"
+            static let deleteGoal = "goal_tracking.delete_goal"
+            static let goalType = "goal_tracking.goal_type"
+            static let goalTarget = "goal_tracking.goal_target"
+            static let goalDeadline = "goal_tracking.goal_deadline"
+            static let goalProgress = "goal_tracking.goal_progress"
+            static let goalCompleted = "goal_tracking.goal_completed"
+            static let goalFailed = "goal_tracking.goal_failed"
+            static let goalInProgress = "goal_tracking.goal_in_progress"
+        }
+        
+        // MARK: - Progress Charts
+        enum ProgressCharts {
+            static let title = "progress_charts.title"
+            static let subtitle = "progress_charts.subtitle"
+            static let weightChart = "progress_charts.weight_chart"
+            static let bodyFatChart = "progress_charts.body_fat_chart"
+            static let muscleChart = "progress_charts.muscle_chart"
+            static let workoutChart = "progress_charts.workout_chart"
+            static let nutritionChart = "progress_charts.nutrition_chart"
+            static let timeRange = "progress_charts.time_range"
+            static let week = "progress_charts.week"
+            static let month = "progress_charts.month"
+            static let year = "progress_charts.year"
+            static let allTime = "progress_charts.all_time"
+            static let noData = "progress_charts.no_data"
+            static let noDataDesc = "progress_charts.no_data_desc"
+        }
+        
+        // MARK: - Weight Tracking
+        enum WeightTracking {
+            static let title = "weight_tracking.title"
+            static let subtitle = "weight_tracking.subtitle"
+            static let addWeight = "weight_tracking.add_weight"
+            static let editWeight = "weight_tracking.edit_weight"
+            static let deleteWeight = "weight_tracking.delete_weight"
+            static let weightEntry = "weight_tracking.weight_entry"
+            static let weightUnit = "weight_tracking.weight_unit"
+            static let date = "weight_tracking.date"
+            static let notes = "weight_tracking.notes"
+            static let notesPlaceholder = "weight_tracking.notes_placeholder"
+            static let currentWeight = "weight_tracking.current_weight"
+            static let startingWeight = "weight_tracking.starting_weight"
+            static let goalWeight = "weight_tracking.goal_weight"
+            static let weightChange = "weight_tracking.weight_change"
+            static let averageWeight = "weight_tracking.average_weight"
+            static let trend = "weight_tracking.trend"
+            static let gaining = "weight_tracking.gaining"
+            static let losing = "weight_tracking.losing"
+            static let maintaining = "weight_tracking.maintaining"
+        }
+        
+        // MARK: - Body Tracking
+        enum BodyTracking {
+            static let title = "body_tracking.title"
+            static let subtitle = "body_tracking.subtitle"
+            static let bodyComposition = "body_tracking.body_composition"
+            static let bodyFat = "body_tracking.body_fat"
+            static let muscleMass = "body_tracking.muscle_mass"
+            static let waterWeight = "body_tracking.water_weight"
+            static let boneMass = "body_tracking.bone_mass"
+            static let visceralFat = "body_tracking.visceral_fat"
+            static let bmi = "body_tracking.bmi"
+            static let bmr = "body_tracking.bmr"
+            static let tdee = "body_tracking.tdee"
+            static let lbm = "body_tracking.lbm"
+            static let ffmi = "body_tracking.ffmi"
+        }
+        
+        // MARK: - Help & Support
+        enum Help {
+            static let title = "help.title"
+            static let subtitle = "help.subtitle"
+            static let faq = "help.faq"
+            static let contact = "help.contact"
+            static let feedback = "help.feedback"
+            static let bugReport = "help.bug_report"
+            static let featureRequest = "help.feature_request"
+            static let email = "help.email"
+            static let website = "help.website"
+            static let privacyPolicy = "help.privacy_policy"
+            static let termsOfService = "help.terms_of_service"
+            static let about = "help.about"
+            static let version = "help.version"
+            static let build = "help.build"
+        }
+        
+        // MARK: - Logout
+        enum Logout {
+            static let title = "logout.title"
+            static let message = "logout.message"
+            static let confirm = "logout.confirm"
+            static let cancel = "logout.cancel"
+            static let success = "logout.success"
+            static let error = "logout.error"
+        }
+        
+        // MARK: - Tools
+        enum Tools {
+            static let title = "tools.title"
+            static let subtitle = "tools.subtitle"
+            static let calculators = "tools.calculators"
+            static let converters = "tools.converters"
+            static let planners = "tools.planners"
+            static let trackers = "tools.trackers"
+        }
+        
+        // MARK: - Progress Reports
+        enum ProgressReports {
+            static let title = "progress_reports.title"
+            static let subtitle = "progress_reports.subtitle"
+            static let generateReport = "progress_reports.generate_report"
+            static let weeklyReport = "progress_reports.weekly_report"
+            static let monthlyReport = "progress_reports.monthly_report"
+            static let customReport = "progress_reports.custom_report"
+            static let exportReport = "progress_reports.export_report"
+            static let shareReport = "progress_reports.share_report"
+            static let reportDate = "progress_reports.report_date"
+            static let reportPeriod = "progress_reports.report_period"
+        }
+        
+        // MARK: - Edit Profile
+        enum EditProfile {
+            static let title = "edit_profile.title"
+            static let subtitle = "edit_profile.subtitle"
+            static let saveChanges = "edit_profile.save_changes"
+            static let discardChanges = "edit_profile.discard_changes"
+            static let changesSaved = "edit_profile.changes_saved"
+            static let errorSaving = "edit_profile.error_saving"
+        }
+        
+        // MARK: - Calculator Specific
+        enum FFMICalculator {
+            static let title = "ffmi_calculator.title"
+            static let subtitle = "ffmi_calculator.subtitle"
+            static let height = "ffmi_calculator.height"
+            static let weight = "ffmi_calculator.weight"
+            static let bodyFat = "ffmi_calculator.body_fat"
+            static let calculate = "ffmi_calculator.calculate"
+            static let result = "ffmi_calculator.result"
+            static let interpretation = "ffmi_calculator.interpretation"
+        }
+        
+        enum OneRMCalculator {
+            static let title = "one_rm_calculator.title"
+            static let subtitle = "one_rm_calculator.subtitle"
+            static let exercise = "one_rm_calculator.exercise"
+            static let weight = "one_rm_calculator.weight"
+            static let reps = "one_rm_calculator.reps"
+            static let calculate = "one_rm_calculator.calculate"
+            static let result = "one_rm_calculator.result"
+            static let formula = "one_rm_calculator.formula"
+        }
+        
+        enum NavyMethodCalculator {
+            static let title = "navy_method_calculator.title"
+            static let subtitle = "navy_method_calculator.subtitle"
+            static let height = "navy_method_calculator.height"
+            static let neck = "navy_method_calculator.neck"
+            static let waist = "navy_method_calculator.waist"
+            static let hip = "navy_method_calculator.hip"
+            static let gender = "navy_method_calculator.gender"
+            static let calculate = "navy_method_calculator.calculate"
+            static let result = "navy_method_calculator.result"
+            static let bodyFatPercentage = "navy_method_calculator.body_fat_percentage"
+        }
+        
+        enum FitnessCalculators {
+            static let title = "fitness_calculators.title"
+            static let subtitle = "fitness_calculators.subtitle"
+            static let bmr = "fitness_calculators.bmr"
+            static let tdee = "fitness_calculators.tdee"
+            static let bmi = "fitness_calculators.bmi"
+            static let bodyFat = "fitness_calculators.body_fat"
+            static let oneRM = "fitness_calculators.one_rm"
+            static let ffmi = "fitness_calculators.ffmi"
+        }
+        
+        // MARK: - BMI Categories
+        enum BMI {
+            static let underweight = "bmi_underweight"
+            static let normal = "bmi_normal"
+            static let overweight = "bmi_overweight"
+            static let obese = "bmi_obese"
+            static let unknown = "bmi_unknown"
+        }
+        
+        // MARK: - Goal Status
+        enum GoalStatus {
+            static let completed = "goal_status_completed"
+            static let expired = "goal_status_expired"
+            static let daysRemaining = "goal_status_days_remaining"
+            static let endsToday = "goal_status_ends_today"
+            static let active = "goal_status_active"
+        }
+        
+        // MARK: - Goal Units
+        enum GoalUnits {
+            static let weight = "goal_unit_weight"
+            static let bodyFat = "goal_unit_body_fat"
+            static let muscle = "goal_unit_muscle"
+            static let workout = "goal_unit_workout"
+            static let nutrition = "goal_unit_nutrition"
+        }
+        
+        // MARK: - Goal Types
+        enum GoalTypes {
+            static let weight = "goal_type_weight"
+            static let bodyFat = "goal_type_body_fat"
+            static let muscle = "goal_type_muscle"
+            static let workout = "goal_type_workout"
+            static let nutrition = "goal_type_nutrition"
+        }
+        
+        // MARK: - Measurement Categories
+        enum MeasurementCategories {
+            static let bodyComposition = "measurement_category_body_composition"
+            static let bodyMeasurements = "measurement_category_body_measurements"
+            static let performance = "measurement_category_performance"
+            static let nutrition = "measurement_category_nutrition"
+        }
+        
+
+        
+        // MARK: - Photo Types
+        enum PhotoTypes {
+            static let front = "photo_type_front"
+            static let back = "photo_type_back"
+            static let side = "photo_type_side"
+            static let progress = "photo_type_progress"
+        }
+        
+        // MARK: - Photo Instructions
+        enum PhotoInstructions {
+            static let front = "photo_instruction_front"
+            static let back = "photo_instruction_back"
+            static let side = "photo_instruction_side"
+            static let progress = "photo_instruction_progress"
+        }
+    
     // MARK: - Common
     enum Common {
         static let save = "common.save"
@@ -841,12 +1212,142 @@ enum LocalizationKeys {
         static let loading = "common.loading"
         static let retry = "common.retry"
         static let user = "common.user"
+        static let completed = "common.completed"
+        static let category = "common.category"
+        static let categoryStats = "common.category_stats"
     }
     
     // MARK: - Action Keys (Legacy compatibility)
     enum Action {
         static let save = "action.save"
         static let cancel = "action.cancel"
+    }
+    
+    // MARK: - Language
+    enum Language {
+        static let changeTitle = "language.change_title"
+        static let changeMessage = "language.change_message"
+        static let changeConfirm = "language.change_confirm"
+        static let changeCancel = "language.change_cancel"
+        static let restartRequired = "language.restart_required"
+        static let restartMessage = "language.restart_message"
+    }
+    
+    // MARK: - Preferences Extended
+    enum PreferencesExtended {
+        static let autoLanguage = "preferences.auto_language"
+        static let systemDefault = "preferences.system_default"
+        static let alwaysLight = "preferences.always_light"
+        static let alwaysDark = "preferences.always_dark"
+        static let notificationsAll = "preferences.notifications_all"
+        static let workoutRemindersDesc = "preferences.workout_reminders_desc"
+        static let nutritionRemindersDesc = "preferences.nutrition_reminders_desc"
+        static let soundEffects = "preferences.sound_effects"
+        static let timerSounds = "preferences.timer_sounds"
+        static let hapticFeedback = "preferences.haptic_feedback"
+        static let vibrationFeedback = "preferences.vibration_feedback"
+        static let soundEffectsTitle = "PREFERENCES.SOUND_EFFECTS"
+        static let appInfoTitle = "PREFERENCES.APP_INFO"
+    }
+
+    // MARK: - Settings (standardized for UI usage)
+    enum Settings {
+        static let title = "settings.title"
+        static let appPreferences = "settings.app_preferences"
+        static let language = "settings.language"
+        static let units = "settings.units"
+        static let theme = "settings.theme"
+        static let notifications = "settings.notifications"
+        static let systemTheme = "settings.system_theme"
+        static let lightMode = "settings.light_mode"
+        static let darkMode = "settings.dark_mode"
+        static let metric = "settings.metric"
+        static let imperial = "settings.imperial"
+        static let allowNotifications = "settings.allow_notifications"
+        static let workoutReminders = "settings.workout_reminders"
+        static let nutritionReminders = "settings.nutrition_reminders"
+        static let version = "settings.version"
+        static let privacyPolicy = "settings.privacy_policy"
+        static let termsOfService = "settings.terms_of_service"
+    }
+    
+    // MARK: - Progress Photos Extended
+    enum ProgressPhotosExtended {
+        static let title = "progress_photos.title"
+        static let subtitle = "progress_photos.subtitle"
+        static let addFirst = "progress_photos.add_first"
+    }
+    
+    // MARK: - Body Measurements Extended
+    enum BodyMeasurementsExtended {
+        static let subtitle = "body_measurements.subtitle"
+        static let currentMeasurements = "body_measurements.current_measurements"
+    }
+    
+    // MARK: - Personal Info Extended
+    enum PersonalInfoExtended {
+        static let updateTitle = "personal_info.update_title"
+        static let updateSubtitle = "personal_info.update_subtitle"
+        static let basicInfo = "personal_info.basic_info"
+        static let name = "personal_info.name"
+        static let age = "personal_info.age"
+        static let gender = "personal_info.gender"
+        static let physicalMeasurements = "personal_info.physical_measurements"
+        static let height = "personal_info.height"
+        static let currentWeight = "personal_info.current_weight"
+        static let goalsActivity = "personal_info.goals_activity"
+        static let fitnessGoal = "personal_info.fitness_goal"
+        static let activityLevel = "personal_info.activity_level"
+        static let calculatedValues = "personal_info.calculated_values"
+        static let basalMetabolism = "personal_info.basal_metabolism"
+        static let dailyExpenditure = "personal_info.daily_expenditure"
+        static let calorieGoal = "personal_info.calorie_goal"
+        static let dailyTarget = "personal_info.daily_target"
+        static let infoUpdated = "personal_info.info_updated"
+        static let updateSuccess = "personal_info.update_success"
+    }
+    
+    // MARK: - Gender
+    enum Gender {
+        static let male = "gender.male"
+        static let female = "gender.female"
+    }
+    
+    // MARK: - Account Management
+    enum Account {
+        static let title = "account.title"
+        static let info = "account.info"
+        static let localAccount = "account.local_account"
+        static let registrationDate = "account.registration_date"
+        static let currentWeight = "account.current_weight"
+        static let goal = "account.goal"
+        static let activity = "account.activity"
+        static let dataManagement = "account.data_management"
+        static let backupData = "account.backup_data"
+        static let exportDesc = "account.export_desc"
+        static let appInfo = "account.app_info"
+        static let version = "account.version"
+        static let dangerousActions = "account.dangerous_actions"
+        static let resetData = "account.reset_data"
+        static let resetDesc = "account.reset_desc"
+        static let deleteAccount = "account.delete_account"
+        static let deleteDesc = "account.delete_desc"
+        static let cannotUndo = "account.cannot_undo"
+    }
+    
+    // MARK: - Goal Types Extended
+    enum GoalTypesExtended {
+        static let strength = "goal_type_strength"
+        static let endurance = "goal_type_endurance"
+        static let flexibility = "goal_type_flexibility"
+        static let newGoalTitle = "new_goal.title"
+        static let addGoal = "add_goal.title"
+        static let goalTitle = "goal.title"
+        static let goalDescription = "goal.description"
+        static let goalValue = "goal.value"
+        static let setEndDate = "goal.set_end_date"
+        static let goalTitlePlaceholder = "goal.title_placeholder"
+        static let goalDescriptionPlaceholder = "goal.description_placeholder"
     }
 }
 

@@ -27,7 +27,7 @@ struct ProgressPhotosView: View {
     }
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             Group {
                 if progressPhotos.isEmpty {
                     EmptyProgressPhotosView(onAddPhoto: { showingAddPhotoSheet = true })
@@ -54,7 +54,7 @@ struct ProgressPhotosView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button(LocalizationKeys.Common.close) {
+                    Button("common.close".localized) {
                         dismiss()
                     }
                 }
@@ -79,12 +79,12 @@ struct ProgressPhotosView: View {
             )
         }
         .alert("progress_photos.delete_photo".localized, isPresented: $showingDeleteAlert) {
-            Button(LocalizationKeys.Common.delete, role: .destructive) {
+            Button("common.delete".localized, role: .destructive) {
                 if let photo = photoToDelete {
                     deletePhoto(photo)
                 }
             }
-            Button(LocalizationKeys.Common.cancel, role: .cancel) { }
+            Button("common.cancel".localized, role: .cancel) { }
         } message: {
             Text("progress_photos.delete_message".localized)
         }
@@ -348,7 +348,7 @@ struct PhotoGridItem: View {
             Button(role: .destructive) {
                 onDelete()
             } label: {
-                Label(LocalizationKeys.Common.delete, systemImage: "trash")
+                Label("common.delete".localized, systemImage: "trash")
             }
         }
         .fullScreenCover(isPresented: $showingFullScreen) {
@@ -373,7 +373,7 @@ struct FullScreenPhotoView: View {
     let photo: ProgressPhoto
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             ZStack {
                 Color.black.ignoresSafeArea()
                 
@@ -386,7 +386,7 @@ struct FullScreenPhotoView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(LocalizationKeys.Common.close) {
+                    Button("common.close".localized) {
                         dismiss()
                     }
                     .foregroundColor(.white)
@@ -424,7 +424,7 @@ struct AddProgressPhotoView: View {
     @State private var notes = ""
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             ScrollView {
                 VStack(spacing: 24) {
                     // Header
@@ -530,13 +530,13 @@ struct AddProgressPhotoView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button(LocalizationKeys.Common.cancel) {
+                    Button("common.cancel".localized) {
                         dismiss()
                     }
                 }
                 
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(LocalizationKeys.Common.save) {
+                    Button("common.save".localized) {
                         savePhoto()
                     }
                     .fontWeight(.semibold)

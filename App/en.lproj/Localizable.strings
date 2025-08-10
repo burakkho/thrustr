@@ -28,7 +28,75 @@
 
 // MARK: - Profile
 "profile.title" = "Profile";
+"profile.edit_profile" = "Edit Profile";
+"profile.personal_info" = "Personal Information";
+"profile.measurements" = "Measurements";
+"profile.tools" = "Tools";
+"profile.progress_reports" = "Progress Reports";
 "profile.settings" = "Settings";
+"profile.premium" = "Premium";
+"profile.help" = "Help";
+"profile.logout" = "Logout";
+"profile.version" = "Version";
+
+// Profile - Personal Info
+"profile.name" = "Name";
+"profile.age" = "Age";
+"profile.height" = "Height";
+"profile.weight" = "Weight";
+"profile.gender" = "Gender";
+"profile.male" = "Male";
+"profile.female" = "Female";
+"profile.fitness_goal" = "Fitness Goal";
+"profile.activity_level" = "Activity Level";
+
+// Profile - Goals
+"profile.goal.cut" = "Cut";
+"profile.goal.bulk" = "Bulk";
+"profile.goal.maintain" = "Maintain";
+
+// Profile - Activity Levels
+"profile.activity.sedentary" = "Sedentary";
+"profile.activity.lightly_active" = "Lightly Active";
+"profile.activity.moderately_active" = "Moderately Active";
+"profile.activity.very_active" = "Very Active";
+"profile.activity.extremely_active" = "Extremely Active";
+
+// Profile - Subtitles
+"profile.personal_info_subtitle" = "Manage your personal information";
+"profile.account_management" = "Account Management";
+"profile.account_subtitle" = "Manage your account settings";
+"profile.body_tracking" = "Body Tracking";
+"profile.weight_tracking" = "Weight Tracking";
+"profile.weight_subtitle" = "Track your weight changes";
+"profile.measurements_subtitle" = "Track your body measurements";
+"profile.progress_photos" = "Progress Photos";
+"profile.photos_subtitle" = "Track your progress with photos";
+"profile.settings_subtitle" = "App preferences and settings";
+"profile.progress_charts" = "Progress Charts";
+"profile.charts_subtitle" = "Visualize your progress";
+"profile.achievements_subtitle" = "Track your achievements";
+"profile.goal_tracking" = "Goal Tracking";
+"profile.goals_subtitle" = "Set and track your goals";
+
+// MARK: - Settings
+"settings.title" = "Settings";
+"settings.app_preferences" = "App Preferences";
+"settings.language" = "Language";
+"settings.units" = "Units";
+"settings.theme" = "Theme";
+"settings.notifications" = "Notifications";
+"settings.system_theme" = "System";
+"settings.light_mode" = "Light";
+"settings.dark_mode" = "Dark";
+"settings.metric" = "Metric";
+"settings.imperial" = "Imperial";
+"settings.allow_notifications" = "Allow Notifications";
+"settings.workout_reminders" = "Workout Reminders";
+"settings.nutrition_reminders" = "Nutrition Reminders";
+"settings.version" = "Version";
+"settings.privacy_policy" = "Privacy Policy";
+"settings.terms_of_service" = "Terms of Service";
 
 // MARK: - Common
 "action.save" = "Save";
@@ -107,6 +175,19 @@
 "onboarding.measurements.skip" = "Skip This Step";
 "onboarding.measurements.optional" = "Optional";
 
+// MARK: - Missing Onboarding Measurements Keys
+"onboarding.measurements.navyMethod.title" = "Navy Method";
+"onboarding.measurements.navyMethod.desc" = "With these measurements we can calculate your body fat percentage. You can skip this and add them later from Profile.";
+"onboarding.measurements.neck.label" = "Neck Circumference (Below Adam's apple)";
+"onboarding.measurements.waist.male.label" = "Waist Circumference (At navel level)";
+"onboarding.measurements.waist.female.label" = "Waist Circumference (At narrowest point)";
+"onboarding.measurements.hip.label" = "Hip Circumference (At widest point)";
+"onboarding.measurements.bodyFat.title" = "Calculated Body Fat %";
+"onboarding.measurements.bodyFat.navy" = "Navy Method:";
+"onboarding.measurements.optional.info" = "These measurements are completely optional";
+"onboarding.measurements.optional.desc" = "You can skip and add them later from Profile settings.";
+"onboarding.measurements.skipStep" = "Skip This Step";
+
 // Summary Step
 "onboarding.summary.title" = "Your Plan is Ready! 🎉";
 "onboarding.summary.subtitle" = "Values calculated based on your information";
@@ -140,10 +221,10 @@
 "onboarding.summary.label.fat" = "Fat";
 
 // MARK: - Dashboard
-"dashboard.title" = "Dashboard";
+// duplicate removed
 "dashboard.welcome" = "Hello, %@!";
 "dashboard.howFeeling" = "How are you feeling today?";
-"dashboard.quickActions" = "Quick Actions";
+// duplicate removed
 "dashboard.recentWorkouts" = "Recent Workouts";
 "dashboard.thisWeek" = "This Week";
 "dashboard.seeAll" = "See All";
@@ -462,36 +543,6 @@
 "nutrition.days.friday" = "Fri";
 "nutrition.days.saturday" = "Sat";
 
-// MARK: - Profile Main
-"profile.title" = "Profile";
-"profile.edit_profile" = "Edit Profile";
-"profile.personal_info" = "Personal Information";
-"profile.measurements" = "Measurements";
-"profile.tools" = "Tools";
-"profile.progress_reports" = "Progress Reports";
-"profile.settings" = "Settings";
-"profile.premium" = "Premium";
-"profile.help" = "Help & Support";
-"profile.logout" = "Logout";
-"profile.version" = "Version";
-"profile.name" = "Name";
-"profile.age" = "Age";
-"profile.height" = "Height";
-"profile.weight" = "Weight";
-"profile.gender" = "Gender";
-"profile.male" = "Male";
-"profile.female" = "Female";
-"profile.fitness_goal" = "Fitness Goal";
-"profile.activity_level" = "Activity Level";
-"profile.goal.cut" = "Cut";
-"profile.goal.bulk" = "Bulk";
-"profile.goal.maintain" = "Maintain";
-"profile.activity.sedentary" = "Sedentary";
-"profile.activity.lightly_active" = "Lightly Active";
-"profile.activity.moderately_active" = "Moderately Active";
-"profile.activity.very_active" = "Very Active";
-"profile.activity.extremely_active" = "Extremely Active";
-
 // MARK: - Measurements
 "measurements.title" = "Measurements";
 "measurements.body_measurements" = "Body Measurements";
@@ -585,77 +636,382 @@
 "calculators.all_fields_required" = "All fields are required";
 "calculators.select_exercise" = "Select exercise";
 
-// MARK: - Settings
-"settings.title" = "Settings";
-"settings.app_preferences" = "App Preferences";
-"settings.language" = "Language";
-"settings.theme" = "Theme";
-"settings.units" = "Units";
-"settings.notifications" = "Notifications";
-"settings.privacy" = "Privacy";
-"settings.data_management" = "Data Management";
-"settings.about" = "About";
-"settings.system_language" = "System Language";
-"settings.turkish" = "Turkish";
-"settings.english" = "English";
-"settings.system_theme" = "System Theme";
-"settings.light_mode" = "Light Mode";
-"settings.dark_mode" = "Dark Mode";
-"settings.metric" = "Metric";
-"settings.imperial" = "Imperial";
-"settings.weight_unit" = "Weight Unit";
-"settings.height_unit" = "Height Unit";
-"settings.workout_reminders" = "Workout Reminders";
-"settings.nutrition_reminders" = "Nutrition Reminders";
-"settings.progress_updates" = "Progress Updates";
-"settings.allow_notifications" = "Allow Notifications";
-"settings.privacy_policy" = "Privacy Policy";
-"settings.terms_of_service" = "Terms of Service";
-"settings.data_usage" = "Data Usage";
-"settings.healthkit_integration" = "HealthKit Integration";
-"settings.export_data" = "Export Data";
-"settings.import_data" = "Import Data";
-"settings.clear_all_data" = "Clear All Data";
-"settings.confirm_clear_data" = "Confirm Clear Data";
-"settings.clear_data_message" = "This will delete all your data. This action cannot be undone.";
-"settings.backup" = "Backup";
-"settings.restore" = "Restore";
-"settings.version" = "Version";
-"settings.developer" = "Developer";
-"settings.contact" = "Contact";
-"settings.rate_app" = "Rate App";
-"settings.share_app" = "Share App";
-"settings.feedback" = "Feedback";
+// MARK: - Achievements
+"achievements.title" = "Achievements";
+"achievements.subtitle" = "Track your progress and unlock badges";
+"achievements.no_achievements" = "No achievements yet";
+"achievements.no_achievements_desc" = "Start working out to unlock your first achievement!";
+"achievements.recent_achievements" = "Recent Achievements";
+"achievements.all_achievements" = "All Achievements";
+"achievements.unlocked" = "Unlocked";
+"achievements.locked" = "Locked";
+"achievements.progress" = "Progress";
+"achievements.points" = "Points";
+"achievements.level" = "Level";
+"achievements.next_level" = "Next Level";
+"achievements.total_points" = "Total Points";
+"achievements.category.all" = "All";
+"achievements.category.workout" = "Workout";
+"achievements.category.weight" = "Weight";
+"achievements.category.nutrition" = "Nutrition";
+"achievements.category.streak" = "Streak";
+"achievements.category.social" = "Social";
 
-// MARK: - Premium
-"premium.title" = "Premium";
-"premium.upgrade_to_premium" = "Upgrade to Premium";
-"premium.premium_features" = "Premium Features";
-"premium.current_plan" = "Current Plan";
-"premium.free_plan" = "Free Plan";
-"premium.premium_plan" = "Premium Plan";
-"premium.subscribe_now" = "Subscribe Now";
-"premium.restore_purchases" = "Restore Purchases";
-"premium.manage_subscription" = "Manage Subscription";
-"premium.advanced_analytics" = "Advanced Analytics";
-"premium.unlimited_templates" = "Unlimited Templates";
-"premium.export_data" = "Data Export";
-"premium.priority_support" = "Priority Support";
-"premium.ad_free" = "Ad-Free Experience";
-"premium.cloud_sync" = "Cloud Sync";
-"premium.monthly" = "Monthly";
-"premium.yearly" = "Yearly";
-"premium.free_trial" = "Free Trial";
-"premium.save_percent" = "Save %@%%";
-"premium.per_month" = "/month";
-"premium.per_year" = "/year";
-"premium.subscription_active" = "Subscription Active";
-"premium.subscription_expired" = "Subscription Expired";
-"premium.trial_active" = "Trial Active";
-"premium.trial_expired" = "Trial Expired";
+// Achievements items
+"achievements.item.first_workout.title" = "First Workout";
+"achievements.item.first_workout.desc" = "Complete your first workout";
+"achievements.item.workout_10.title" = "10 Workouts";
+"achievements.item.workout_10.desc" = "Complete 10 workouts";
+"achievements.item.workout_50.title" = "50 Workouts";
+"achievements.item.workout_50.desc" = "Complete 50 workouts";
+"achievements.item.workout_100.title" = "100 Workouts";
+"achievements.item.workout_100.desc" = "Complete 100 workouts";
+"achievements.item.weekend_warrior.title" = "Weekend Warrior";
+"achievements.item.weekend_warrior.desc" = "10 weekend workouts";
+"achievements.item.weight_hunter.title" = "Weight Hunter";
+"achievements.item.weight_hunter.desc" = "10,000 kg total volume";
 
+"achievements.item.first_weight.title" = "First Weight Log";
+"achievements.item.first_weight.desc" = "Add your first weight log";
+"achievements.item.tracker_30.title" = "Tracker";
+"achievements.item.tracker_30.desc" = "30 days of weight tracking";
+
+"achievements.item.first_meal.title" = "First Meal Log";
+"achievements.item.first_meal.desc" = "Log your first meal";
+"achievements.item.nutrition_100.title" = "Nutrition Expert";
+"achievements.item.nutrition_100.desc" = "Log 100 meals";
+
+"achievements.item.streak_3.title" = "3-Day Streak";
+"achievements.item.streak_3.desc" = "Work out 3 days in a row";
+"achievements.item.streak_7.title" = "Weekly Streak";
+"achievements.item.streak_7.desc" = "Work out 7 days in a row";
+
+"achievements.item.sharer.title" = "Sharer";
+"achievements.item.sharer.desc" = "First progress photo";
+"achievements.item.motivator_5.title" = "Motivator";
+"achievements.item.motivator_5.desc" = "Share 5 progress photos";
 
 // MARK: - Common
+"common.completed" = "Completed";
+"common.category" = "Category";
+"common.category_stats" = "Category Statistics";
+
+// MARK: - Goal Tracking
+"goal_tracking.title" = "Goal Tracking";
+"goal_tracking.subtitle" = "Set and track your fitness goals";
+"goal_tracking.current_goals" = "Current Goals";
+"goal_tracking.completed_goals" = "Completed Goals";
+"goal_tracking.add_goal" = "Add Goal";
+"goal_tracking.edit_goal" = "Edit Goal";
+"goal_tracking.delete_goal" = "Delete Goal";
+"goal_tracking.goal_type" = "Goal Type";
+"goal_tracking.goal_target" = "Goal Target";
+"goal_tracking.goal_deadline" = "Goal Deadline";
+"goal_tracking.goal_progress" = "Goal Progress";
+"goal_tracking.goal_completed" = "Goal Completed";
+"goal_tracking.goal_failed" = "Goal Failed";
+"goal_tracking.goal_in_progress" = "Goal In Progress";
+
+// MARK: - Progress Charts
+"progress_charts.title" = "Progress Charts";
+"progress_charts.subtitle" = "Visualize your fitness journey";
+"progress_charts.weight_chart" = "Weight Chart";
+"progress_charts.body_fat_chart" = "Body Fat Chart";
+"progress_charts.muscle_chart" = "Muscle Chart";
+"progress_charts.workout_chart" = "Workout Chart";
+"progress_charts.nutrition_chart" = "Nutrition Chart";
+"progress_charts.time_range" = "Time Range";
+"progress_charts.week" = "Week";
+"progress_charts.month" = "Month";
+"progress_charts.year" = "Year";
+"progress_charts.all_time" = "All Time";
+"progress_charts.no_data" = "No Data";
+"progress_charts.no_data_desc" = "Add some data to see your progress charts";
+
+// MARK: - Weight Tracking
+"weight_tracking.title" = "Weight Tracking";
+"weight_tracking.subtitle" = "Track your weight changes over time";
+"weight_tracking.add_weight" = "Add Weight";
+"weight_tracking.edit_weight" = "Edit Weight";
+"weight_tracking.delete_weight" = "Delete Weight";
+"weight_tracking.weight_entry" = "Weight Entry";
+"weight_tracking.weight_unit" = "Weight Unit";
+"weight_tracking.date" = "Date";
+"weight_tracking.notes" = "Notes";
+"weight_tracking.notes_placeholder" = "Add notes about this weight entry...";
+"weight_tracking.current_weight" = "Current Weight";
+"weight_tracking.starting_weight" = "Starting Weight";
+"weight_tracking.goal_weight" = "Goal Weight";
+"weight_tracking.weight_change" = "Weight Change";
+"weight_tracking.average_weight" = "Average Weight";
+"weight_tracking.trend" = "Trend";
+"weight_tracking.gaining" = "Gaining";
+"weight_tracking.losing" = "Losing";
+"weight_tracking.maintaining" = "Maintaining";
+
+// MARK: - Body Tracking
+"body_tracking.title" = "Body Tracking";
+"body_tracking.subtitle" = "Track your body composition";
+"body_tracking.body_composition" = "Body Composition";
+"body_tracking.body_fat" = "Body Fat";
+"body_tracking.muscle_mass" = "Muscle Mass";
+"body_tracking.water_weight" = "Water Weight";
+"body_tracking.bone_mass" = "Bone Mass";
+"body_tracking.visceral_fat" = "Visceral Fat";
+"body_tracking.bmi" = "BMI";
+"body_tracking.bmr" = "BMR";
+"body_tracking.tdee" = "TDEE";
+"body_tracking.lbm" = "LBM";
+"body_tracking.ffmi" = "FFMI";
+
+// MARK: - Help & Support
+"help.title" = "Help & Support";
+"help.subtitle" = "Get help and contact support";
+"help.faq" = "Frequently Asked Questions";
+"help.contact" = "Contact Support";
+"help.feedback" = "Send Feedback";
+"help.bug_report" = "Report a Bug";
+"help.feature_request" = "Request a Feature";
+"help.email" = "Email";
+"help.website" = "Website";
+"help.privacy_policy" = "Privacy Policy";
+"help.terms_of_service" = "Terms of Service";
+"help.about" = "About";
+"help.version" = "Version";
+"help.build" = "Build";
+
+// MARK: - Logout
+"logout.title" = "Logout";
+"logout.message" = "Are you sure you want to logout?";
+"logout.confirm" = "Logout";
+"logout.cancel" = "Cancel";
+"logout.success" = "Successfully logged out";
+"logout.error" = "Error logging out";
+
+// MARK: - Tools
+"tools.title" = "Tools";
+"tools.subtitle" = "Fitness tools and utilities";
+"tools.calculators" = "Calculators";
+"tools.converters" = "Converters";
+"tools.planners" = "Planners";
+"tools.trackers" = "Trackers";
+
+// MARK: - Progress Reports
+"progress_reports.title" = "Progress Reports";
+"progress_reports.subtitle" = "Generate detailed progress reports";
+"progress_reports.generate_report" = "Generate Report";
+"progress_reports.weekly_report" = "Weekly Report";
+"progress_reports.monthly_report" = "Monthly Report";
+"progress_reports.custom_report" = "Custom Report";
+"progress_reports.export_report" = "Export Report";
+"progress_reports.share_report" = "Share Report";
+"progress_reports.report_date" = "Report Date";
+"progress_reports.report_period" = "Report Period";
+
+// MARK: - Edit Profile
+"edit_profile.title" = "Edit Profile";
+"edit_profile.subtitle" = "Update your profile information";
+"edit_profile.save_changes" = "Save Changes";
+"edit_profile.discard_changes" = "Discard Changes";
+"edit_profile.changes_saved" = "Changes Saved";
+"edit_profile.error_saving" = "Error Saving Changes";
+
+// MARK: - Calculator Specific
+"ffmi_calculator.title" = "FFMI Calculator";
+"ffmi_calculator.subtitle" = "Calculate your Fat-Free Mass Index";
+"ffmi_calculator.height" = "Height";
+"ffmi_calculator.weight" = "Weight";
+"ffmi_calculator.body_fat" = "Body Fat %";
+"ffmi_calculator.calculate" = "Calculate";
+"ffmi_calculator.result" = "Result";
+"ffmi_calculator.interpretation" = "Interpretation";
+
+"one_rm_calculator.title" = "1RM Calculator";
+"one_rm_calculator.subtitle" = "Calculate your One Rep Max";
+"one_rm_calculator.exercise" = "Exercise";
+"one_rm_calculator.weight" = "Weight";
+"one_rm_calculator.reps" = "Reps";
+"one_rm_calculator.calculate" = "Calculate";
+"one_rm_calculator.result" = "Result";
+"one_rm_calculator.formula" = "Formula";
+
+"navy_method_calculator.title" = "Navy Method Calculator";
+"navy_method_calculator.subtitle" = "Calculate body fat using Navy Method";
+"navy_method_calculator.height" = "Height";
+"navy_method_calculator.neck" = "Neck";
+"navy_method_calculator.waist" = "Waist";
+"navy_method_calculator.hip" = "Hip";
+"navy_method_calculator.gender" = "Gender";
+"navy_method_calculator.calculate" = "Calculate";
+"navy_method_calculator.result" = "Result";
+"navy_method_calculator.body_fat_percentage" = "Body Fat Percentage";
+
+"fitness_calculators.title" = "Fitness Calculators";
+"fitness_calculators.subtitle" = "Various fitness calculators";
+"fitness_calculators.bmr" = "BMR Calculator";
+"fitness_calculators.tdee" = "TDEE Calculator";
+"fitness_calculators.bmi" = "BMI Calculator";
+"fitness_calculators.body_fat" = "Body Fat Calculator";
+"fitness_calculators.one_rm" = "1RM Calculator";
+"fitness_calculators.ffmi" = "FFMI Calculator";
+
+// MARK: - BMI Categories
+"bmi_underweight" = "Underweight";
+"bmi_normal" = "Normal";
+"bmi_overweight" = "Overweight";
+"bmi_obese" = "Obese";
+"bmi_unknown" = "Unknown";
+
+// MARK: - Goal Status
+"goal_status_completed" = "Completed";
+"goal_status_expired" = "Expired";
+"goal_status_days_remaining" = "%d days remaining";
+"goal_status_ends_today" = "Ends today";
+"goal_status_active" = "Active";
+
+// MARK: - Goal Units
+"goal_unit_weight" = "kg";
+"goal_unit_body_fat" = "%";
+"goal_unit_muscle" = "kg";
+"goal_unit_workout" = "workouts";
+"goal_unit_nutrition" = "calories";
+
+// MARK: - Goal Types
+"goal_type_weight" = "Weight Goal";
+"goal_type_body_fat" = "Body Fat Goal";
+"goal_type_muscle" = "Muscle Goal";
+"goal_type_workout" = "Workout Goal";
+"goal_type_nutrition" = "Nutrition Goal";
+
+// MARK: - Measurement Categories
+"measurement_category_body_composition" = "Body Composition";
+"measurement_category_body_measurements" = "Body Measurements";
+"measurement_category_performance" = "Performance";
+"measurement_category_nutrition" = "Nutrition";
+
+// MARK: - Measurements
+"measurement_weight" = "Weight";
+"measurement_body_fat" = "Body Fat";
+"measurement_muscle" = "Muscle";
+"measurement_chest" = "Chest";
+"measurement_waist" = "Waist";
+"measurement_hips" = "Hips";
+"measurement_left_arm" = "Left Arm";
+"measurement_right_arm" = "Right Arm";
+"measurement_left_thigh" = "Left Thigh";
+"measurement_right_thigh" = "Right Thigh";
+"measurement_neck" = "Neck";
+
+// Extra measurement types
+"measurement_forearm" = "Forearm";
+"measurement_calf" = "Calf";
+"measurement_shoulders" = "Shoulders";
+
+// MARK: - Photo Types
+"photo_type_front" = "Front";
+"photo_type_back" = "Back";
+"photo_type_side" = "Side";
+"photo_type_progress" = "Progress";
+
+// MARK: - Photo Instructions
+"photo_instruction_front" = "Take a photo from the front";
+"photo_instruction_back" = "Take a photo from the back";
+"photo_instruction_side" = "Take a photo from the side";
+"photo_instruction_progress" = "Take a progress photo to track your fitness journey";
+
+// MARK: - Language
+"language.change_title" = "Change Language";
+"language.change_message" = "The app will restart to apply the language change. All unsaved data will be lost.";
+"language.change_confirm" = "Change Language";
+"language.change_cancel" = "Cancel";
+"language.restart_required" = "Restart Required";
+"language.restart_message" = "Please restart the app for the language change to take effect.";
+
+// MARK: - Preferences Extended
+"preferences.auto_language" = "Follows your device's language setting";
+"preferences.system_default" = "Follows your device's theme setting";
+"preferences.always_light" = "Always use light theme";
+"preferences.always_dark" = "Always use dark theme";
+"preferences.notifications_all" = "Allow all notifications from the app";
+"preferences.workout_reminders_desc" = "Get reminded about your scheduled workouts";
+"preferences.nutrition_reminders_desc" = "Get reminded to log your meals";
+"preferences.sound_effects" = "Sound Effects";
+"preferences.timer_sounds" = "Play sounds during workout timers";
+"preferences.haptic_feedback" = "Haptic Feedback";
+"preferences.vibration_feedback" = "Vibrate on important actions";
+"PREFERENCES.SOUND_EFFECTS" = "SOUND EFFECTS";
+"PREFERENCES.APP_INFO" = "APP INFO";
+
+// MARK: - Progress Photos Extended
+"progress_photos.title" = "Progress Photos";
+"progress_photos.subtitle" = "Track your fitness journey with photos";
+"progress_photos.add_first" = "Add Your First Photo";
+
+// MARK: - Body Measurements Extended
+"body_measurements.subtitle" = "Track your body measurements over time";
+"body_measurements.current_measurements" = "Current Measurements";
+
+// MARK: - Personal Info Extended
+"personal_info.update_title" = "Update Personal Information";
+"personal_info.update_subtitle" = "Keep your information up to date for accurate calculations";
+"personal_info.basic_info" = "Basic Information";
+"personal_info.name" = "Name";
+"personal_info.age" = "Age";
+"personal_info.gender" = "Gender";
+"personal_info.physical_measurements" = "Physical Measurements";
+"personal_info.height" = "Height";
+"personal_info.current_weight" = "Current Weight";
+"personal_info.goals_activity" = "Goals & Activity";
+"personal_info.fitness_goal" = "Fitness Goal";
+"personal_info.activity_level" = "Activity Level";
+"personal_info.calculated_values" = "Calculated Values";
+"personal_info.basal_metabolism" = "Basal Metabolism";
+"personal_info.daily_expenditure" = "Daily Energy Expenditure";
+"personal_info.calorie_goal" = "Calorie Goal";
+"personal_info.daily_target" = "Daily Target";
+"personal_info.info_updated" = "Information Updated";
+"personal_info.update_success" = "Your information has been updated successfully!";
+
+// MARK: - Gender
+"gender.male" = "Male";
+"gender.female" = "Female";
+
+// MARK: - Account Management
+"account.title" = "Account Management";
+"account.info" = "Account Information";
+"account.local_account" = "Local Account";
+"account.registration_date" = "Registration Date";
+"account.current_weight" = "Current Weight";
+"account.goal" = "Goal";
+"account.activity" = "Activity";
+"account.data_management" = "Data Management";
+"account.backup_data" = "Backup Data";
+"account.export_desc" = "Export all your data";
+"account.app_info" = "App Information";
+"account.version" = "Version 1.0 - Beta";
+"account.dangerous_actions" = "Dangerous Actions";
+"account.reset_data" = "Reset All Data";
+"account.reset_desc" = "Delete workout and nutrition data";
+"account.delete_account" = "Delete Account";
+"account.delete_desc" = "Permanently delete account and all data";
+"account.cannot_undo" = "This action cannot be undone.";
+
+// MARK: - Goal Types Extended
+"goal_type_strength" = "Strength Goal";
+"goal_type_endurance" = "Endurance Goal";
+"goal_type_flexibility" = "Flexibility Goal";
+"new_goal.title" = "Add New Goal";
+"add_goal.title" = "Add Goal";
+"goal.title" = "Goal Title";
+"goal.description" = "Description";
+"goal.value" = "Goal Value";
+"goal.set_end_date" = "Set End Date";
+"goal.title_placeholder" = "e.g.: Lose 5 kg";
+"goal.description_placeholder" = "Details about the goal";
+
+// MARK: - Profile
+
+// MARK: - Common (missing)
 "common.save" = "Save";
 "common.cancel" = "Cancel";
 "common.delete" = "Delete";
@@ -670,331 +1026,54 @@
 "common.success" = "Success";
 "common.loading" = "Loading";
 "common.retry" = "Retry";
-"common.user" = "User";  
+"common.user" = "User";
 
-// MARK: - Profile Additional Strings
-"profile.personal_info_subtitle" = "Name, age, height, weight information";
-"profile.account_management" = "Account Management";
-"profile.account_subtitle" = "Data backup and account settings";
-"profile.body_tracking" = "Body Tracking";
-"profile.weight_tracking" = "Weight Tracking";
-"profile.weight_subtitle" = "Daily weight logging and progress";
-"profile.measurements_subtitle" = "Body measurements and dimensions";
-"profile.progress_photos" = "Progress Photos";
-"profile.photos_subtitle" = "Visual progress tracking";
-"profile.settings_subtitle" = "App preferences and settings";
-"profile.progress_charts" = "Progress Charts";
-"profile.charts_subtitle" = "Weekly and monthly analysis charts";
-"profile.achievements_subtitle" = "Achievement badges and milestones";
-"profile.goal_tracking" = "Goal Tracking";
-"profile.goals_subtitle" = "Personal goals and progress";
-
-// MARK: - Language Settings
-"settings.system_language" = "System Language";
-
-// MARK: - Common Actions
-"common.done" = "Done";
-
-// ============================================
-// ADD TO: en.lproj/Localizable.strings (English)
-// ============================================
-
-// Personal Info Edit
-"personal_info.cancel" = "Cancel";
-"personal_info.save" = "Save";
-"personal_info.update_title" = "Update Your Information";
-"personal_info.update_subtitle" = "Keep your information up to date for accurate goals";
-"personal_info.basic_info" = "Basic Information";
-"personal_info.name" = "Name";
-"personal_info.name_placeholder" = "Enter your name";
-"personal_info.age" = "Age";
-"personal_info.gender" = "Gender";
-"personal_info.physical_measurements" = "Physical Measurements";
-"personal_info.height" = "Height (cm)";
-"personal_info.current_weight" = "Current Weight (kg)";
-"personal_info.goals_activity" = "Goals and Activity";
-"personal_info.fitness_goal" = "Fitness Goal";
-"personal_info.activity_level" = "Activity Level";
-"personal_info.calculated_values" = "Calculated Values";
-"personal_info.basal_metabolism" = "Basal Metabolism";
-"personal_info.daily_expenditure" = "Daily Expenditure";
-"personal_info.calorie_goal" = "Calorie Goal";
-"personal_info.daily_target" = "Daily Target";
-"personal_info.info_updated" = "Information Updated";
-"personal_info.update_success" = "Your personal information has been successfully updated and new goals have been calculated.";
-
-// Account Management
-"account.title" = "Account Management";
-"account.info" = "Account Information";
-"account.data_management" = "Data Management";
-"account.dangerous_actions" = "Dangerous Actions";
-"account.reset_data" = "Reset All Data";
-"account.delete_account" = "Delete Account";
-"account.backup_data" = "Backup Data";
-"account.app_info" = "App Information";
-"account.version" = "Version 1.0 - Beta";
-"account.local_account" = "Local Account";
-"account.registration_date" = "Registration Date";
-"account.current_weight" = "Current Weight";
-"account.goal" = "Goal";
-"account.activity" = "Activity";
-"account.export_desc" = "Export all your data";
-"account.reset_desc" = "Delete workout and nutrition data";
-"account.delete_desc" = "Permanently delete account and all data";
-"account.cannot_undo" = "This action cannot be undone.";
-
-// Preferences
-"preferences.title" = "Settings";
+// MARK: - Preferences (base titles)
+"preferences.title" = "Preferences";
 "preferences.language" = "Language";
 "preferences.theme" = "Theme";
 "preferences.units" = "Units";
 "preferences.notifications" = "Notifications";
-"preferences.sound_effects" = "Sound Effects";
-"preferences.timer_sounds" = "Timer and notification sounds";
-"preferences.haptic_feedback" = "Haptic Feedback";
-"preferences.vibration_feedback" = "Vibration feedback";
-"preferences.app_info" = "App Information";
-"preferences.system_default" = "Follow system settings";
-"preferences.always_light" = "Always light theme";
-"preferences.always_dark" = "Always dark theme";
-"preferences.auto_language" = "Automatic based on system";
-"preferences.notifications_all" = "Enable/disable all notifications";
-"preferences.workout_reminders_desc" = "Rest timer and workout suggestions";
-"preferences.nutrition_reminders_desc" = "Meal times and water reminders";
+"preferences.app_info" = "App Info";
 
-// Language Change
-"language.change_title" = "Language Change";
-"language.change_message" = "You may need to restart the app for the language change to take effect. Do you want to continue?";
-"language.change_cancel" = "Cancel";
-"language.change_confirm" = "Change";
+// MARK: - Progress Photos (missing set)
+"progress_photos.add_photo" = "Add Photo";
+"progress_photos.photo_type" = "Photo Type";
+"progress_photos.select_photo" = "Select Photo";
+"progress_photos.camera_gallery" = "Camera / Gallery";
+"progress_photos.notes_optional" = "Notes (Optional)";
+"progress_photos.notes_placeholder" = "Add a note about this photo...";
+"progress_photos.select_source" = "Select Source";
+"progress_photos.camera" = "Camera";
+"progress_photos.gallery" = "Gallery";
+"progress_photos.delete_photo" = "Delete Photo";
+"progress_photos.delete_message" = "Are you sure you want to delete this photo?";
+"progress_photos.photo_types" = "Photo Types";
+"progress_photos.no_photo" = "No photo";
+"progress_photos.photos_count" = "photos";
+"progress_photos.timeline" = "Timeline";
+"progress_photos.full_screen" = "Full Screen";
 
-// ============================================
-// ADD TO: tr.lproj/Localizable.strings (Turkish)
-// ============================================
-
-// Personal Info Edit
-"personal_info.cancel" = "İptal";
-"personal_info.save" = "Kaydet";
-"personal_info.update_title" = "Bilgilerini Güncelle";
-"personal_info.update_subtitle" = "Doğru hedefler için bilgilerinin güncel olmasını sağla";
-"personal_info.basic_info" = "Temel Bilgiler";
-"personal_info.name" = "İsim";
-"personal_info.name_placeholder" = "Adınızı girin";
-"personal_info.age" = "Yaş";
-"personal_info.gender" = "Cinsiyet";
-"personal_info.physical_measurements" = "Fiziksel Ölçümler";
-"personal_info.height" = "Boy (cm)";
-"personal_info.current_weight" = "Güncel Kilo (kg)";
-"personal_info.goals_activity" = "Hedefler ve Aktivite";
-"personal_info.fitness_goal" = "Fitness Hedefi";
-"personal_info.activity_level" = "Aktivite Seviyesi";
-"personal_info.calculated_values" = "Hesaplanan Değerler";
-"personal_info.basal_metabolism" = "Bazal Metabolizma";
-"personal_info.daily_expenditure" = "Günlük Harcama";
-"personal_info.calorie_goal" = "Kalori Hedefi";
-"personal_info.daily_target" = "Günlük Hedef";
-"personal_info.info_updated" = "Bilgiler Güncellendi";
-"personal_info.update_success" = "Kişisel bilgileriniz başarıyla güncellendi ve yeni hedefler hesaplandı.";
-
-// Account Management
-"account.title" = "Hesap Yönetimi";
-"account.info" = "Hesap Bilgileri";
-"account.data_management" = "Veri Yönetimi";
-"account.dangerous_actions" = "Tehlikeli İşlemler";
-"account.reset_data" = "Tüm Verileri Sıfırla";
-"account.delete_account" = "Hesabı Sil";
-"account.backup_data" = "Verileri Yedekle";
-"account.app_info" = "Uygulama Bilgileri";
-"account.version" = "Versiyon 1.0 - Beta";
-"account.local_account" = "Yerel Hesap";
-"account.registration_date" = "Kayıt Tarihi";
-"account.current_weight" = "Güncel Kilo";
-"account.goal" = "Hedef";
-"account.activity" = "Aktivite";
-"account.export_desc" = "Tüm verilerinizi dışa aktarın";
-"account.reset_desc" = "Antrenman ve beslenme verilerini sil";
-"account.delete_desc" = "Hesabı ve tüm verileri kalıcı olarak sil";
-"account.cannot_undo" = "Bu işlem geri alınamaz.";
-
-// Preferences
-"preferences.title" = "Ayarlar";
-"preferences.language" = "Dil";
-"preferences.theme" = "Tema";
-"preferences.units" = "Birimler";
-"preferences.notifications" = "Bildirimler";
-"preferences.sound_effects" = "Ses Efektleri";
-"preferences.timer_sounds" = "Timer ve bildirim sesleri";
-"preferences.haptic_feedback" = "Haptic Feedback";
-"preferences.vibration_feedback" = "Titreşim geri bildirimleri";
-"preferences.app_info" = "Uygulama Bilgisi";
-"preferences.system_default" = "Sistem ayarını takip et";
-"preferences.always_light" = "Her zaman açık tema";
-"preferences.always_dark" = "Her zaman koyu tema";
-"preferences.auto_language" = "Sisteme göre otomatik";
-"preferences.notifications_all" = "Tüm bildirimleri aç/kapat";
-"preferences.workout_reminders_desc" = "Dinlenme timer'ı ve antrenman önerileri";
-"preferences.nutrition_reminders_desc" = "Öğün zamanları ve su hatırlatmaları";
-
-// Language Change
-"language.change_title" = "Dil Değişikliği";
-"language.change_message" = "Dil değişikliğinin etkili olabilmesi için uygulamayı yeniden başlatmanız gerekebilir. Devam etmek istiyor musunuz?";
-"language.change_cancel" = "İptal";
-"language.change_confirm" = "Değiştir";
-
-// Mevcut en.lproj/Localizable.strings dosyanıza aşağıdaki satırları ekleyin:
-
-// MARK: - Body Measurements
-"body_measurements.subtitle" = "Track your body measurements and see your progress";
+// MARK: - Body Measurements (missing set)
 "body_measurements.measurement_saved" = "Measurement Saved";
-"body_measurements.saved_message" = "Your new measurement has been successfully saved.";
-"body_measurements.current_measurements" = "Current Measurements";
+"body_measurements.saved_message" = "Your measurement has been saved successfully.";
 "body_measurements.progress_summary" = "Progress Summary";
 "body_measurements.total_measurements" = "Total Measurements";
-"body_measurements.last_6_months" = "Last 6 months";
+"body_measurements.last_6_months" = "Last 6 Months";
 "body_measurements.weight_entries" = "Weight Entries";
 "body_measurements.last_measurement" = "Last Measurement";
-"body_measurements.active_tracking" = "Active Tracking";
-"body_measurements.measurement_types" = "measurement types";
+"body_measurements.active_tracking" = "Active Measurement Types";
+"body_measurements.measurement_types" = "Measurement Types";
 "body_measurements.recent_entries" = "Recent Entries";
 "body_measurements.no_measurements" = "No measurements yet";
-"body_measurements.first_tip" = "Add your first measurement and start tracking your progress!";
+"body_measurements.first_tip" = "Tip";
 "body_measurements.measurement_tips" = "Measurement Tips";
 "body_measurements.correct_timing" = "Correct Timing";
-"body_measurements.timing_desc" = "Take measurements in the morning, fasting and after using the bathroom";
+"body_measurements.timing_desc" = "Measure at the same time of day for consistency.";
 "body_measurements.correct_technique" = "Correct Technique";
-"body_measurements.technique_desc" = "Keep measuring tape loose, don't squeeze";
+"body_measurements.technique_desc" = "Use consistent technique and posture.";
 "body_measurements.regular_tracking" = "Regular Tracking";
-"body_measurements.tracking_desc" = "Measure once a week on the same day";
+"body_measurements.tracking_desc" = "Track regularly to see meaningful trends.";
 "body_measurements.trend_focus" = "Focus on Trends";
-"body_measurements.trend_desc" = "Focus on weekly trends, not daily changes";
-"body_measurements.add_new" = "Add New Measurement";
-
-// MARK: - Language Change
-"language.change_title" = "Language Change";
-"language.change_message" = "You may need to restart the app for the language change to take effect. Do you want to continue?";
-"language.change_cancel" = "Cancel";
-"language.change_confirm" = "Change";
-
-// MARK: - English (en.lproj/Localizable.strings)
-"personal_info.title" = "Personal Information";
-"personal_info.cancel" = "Cancel";
-"personal_info.save" = "Save";
-"personal_info.update_title" = "Update Your Information";
-"personal_info.update_subtitle" = "Keep your information up to date for accurate goals";
-"personal_info.basic_info" = "Basic Information";
-"personal_info.name" = "Name";
-"personal_info.name_placeholder" = "Enter your name";
-"personal_info.age" = "Age";
-"personal_info.gender" = "Gender";
-"personal_info.physical_measurements" = "Physical Measurements";
-"personal_info.height" = "Height (cm)";
-"personal_info.current_weight" = "Current Weight (kg)";
-"personal_info.goals_activity" = "Goals and Activity";
-"personal_info.fitness_goal" = "Fitness Goal";
-"personal_info.activity_level" = "Activity Level";
-"personal_info.calculated_values" = "Calculated Values";
-"personal_info.basal_metabolism" = "Basal Metabolism";
-"personal_info.daily_expenditure" = "Daily Expenditure";
-"personal_info.calorie_goal" = "Calorie Goal";
-"personal_info.daily_target" = "Daily Target";
-"personal_info.info_updated" = "Information Updated";
-"personal_info.update_success" = "Your personal information has been successfully updated and new goals have been calculated.";
-
-// EN dosyasına (en.lproj/Localizable.strings) ekle:
-
-// Goal Options (English)
-"onboarding.goals.cut.title" = "Fat Loss";
-"onboarding.goals.cut.subtitle" = "Lose weight and reduce body fat";
-"onboarding.goals.bulk.title" = "Muscle Gain";
-"onboarding.goals.bulk.subtitle" = "Build muscle mass and get stronger";
-"onboarding.goals.maintain.title" = "Maintain";
-"onboarding.goals.maintain.subtitle" = "Maintain current weight while getting stronger";
-
-// Activity Levels (English)
-"onboarding.activity.sedentary" = "Sedentary";
-"onboarding.activity.sedentary.desc" = "Desk job, little movement";
-"onboarding.activity.light" = "Lightly Active";
-"onboarding.activity.light.desc" = "1-2 workouts per week";
-"onboarding.activity.moderate" = "Moderately Active";
-"onboarding.activity.moderate.desc" = "3-4 workouts per week";
-"onboarding.activity.active" = "Active";
-"onboarding.activity.active.desc" = "5-6 workouts per week";
-"onboarding.activity.veryActive" = "Very Active";
-"onboarding.activity.veryActive.desc" = "Daily workouts, physical job";
-
-// en.lproj/Localizable.strings dosyasına ekle:
-"onboarding.goals.cut.title" = "Fat Loss";
-"onboarding.goals.cut.subtitle" = "Lose weight and reduce body fat";
-"onboarding.goals.bulk.title" = "Muscle Gain";
-"onboarding.goals.bulk.subtitle" = "Build muscle mass and get stronger";
-"onboarding.goals.maintain.title" = "Maintain";
-"onboarding.goals.maintain.subtitle" = "Maintain current weight while getting stronger";
-
-"onboarding.activity.sedentary" = "Sedentary";
-"onboarding.activity.sedentary.desc" = "Desk job, little movement";
-"onboarding.activity.light" = "Lightly Active";
-"onboarding.activity.light.desc" = "1-2 workouts per week";
-"onboarding.activity.moderate" = "Moderately Active";
-"onboarding.activity.moderate.desc" = "3-4 workouts per week";
-"onboarding.activity.active" = "Active";
-"onboarding.activity.active.desc" = "5-6 workouts per week";
-"onboarding.activity.veryActive" = "Very Active";
-"onboarding.activity.veryActive.desc" = "Daily workouts, physical job";
-
-// Goal Options
-"onboarding.goals.cut.title" = "Fat Loss";
-"onboarding.goals.cut.subtitle" = "Lose weight and reduce body fat";
-"onboarding.goals.bulk.title" = "Muscle Gain";
-"onboarding.goals.bulk.subtitle" = "Build muscle mass and get stronger";
-"onboarding.goals.maintain.title" = "Maintain";
-"onboarding.goals.maintain.subtitle" = "Maintain current weight while getting stronger";
-
-// Activity Levels
-"onboarding.activity.sedentary" = "Sedentary";
-"onboarding.activity.sedentary.desc" = "Desk job, little movement";
-"onboarding.activity.light" = "Lightly Active";
-"onboarding.activity.light.desc" = "1-2 workouts per week";
-"onboarding.activity.moderate" = "Moderately Active";
-"onboarding.activity.moderate.desc" = "3-4 workouts per week";
-"onboarding.activity.active" = "Active";
-"onboarding.activity.active.desc" = "5-6 workouts per week";
-"onboarding.activity.veryActive" = "Very Active";
-"onboarding.activity.veryActive.desc" = "Daily workouts, physical job";
-
-// EN (en.lproj/Localizable.strings) dosyasına ekle:
-
-// Body Measurements
-"body_measurements.subtitle" = "Track your body measurements and see your progress";
-"body_measurements.measurement_saved" = "Measurement Saved";
-"body_measurements.saved_message" = "Your new measurement has been successfully saved.";
-"body_measurements.current_measurements" = "Current Measurements";
-"body_measurements.progress_summary" = "Progress Summary";
-"body_measurements.total_measurements" = "Total Measurements";
-"body_measurements.last_6_months" = "Last 6 months";
-"body_measurements.weight_entries" = "Weight Entries";
-"body_measurements.last_measurement" = "Last Measurement";
-"body_measurements.active_tracking" = "Active Tracking";
-"body_measurements.measurement_types" = "measurement types";
-"body_measurements.recent_entries" = "Recent Entries";
-"body_measurements.no_measurements" = "No measurements yet";
-"body_measurements.first_tip" = "Add your first measurement and start tracking your progress!";
-"body_measurements.measurement_tips" = "Measurement Tips";
-"body_measurements.correct_timing" = "Correct Timing";
-"body_measurements.timing_desc" = "Take measurements in the morning, fasting and after using the bathroom";
-"body_measurements.correct_technique" = "Correct Technique";
-"body_measurements.technique_desc" = "Keep measuring tape loose, don't squeeze";
-"body_measurements.regular_tracking" = "Regular Tracking";
-"body_measurements.tracking_desc" = "Measure once a week on the same day";
-"body_measurements.trend_focus" = "Focus on Trends";
-"body_measurements.trend_desc" = "Focus on weekly trends, not daily changes";
-"body_measurements.add_new" = "Add New Measurement";
-
-// Measurement Types
-"measurement.chest" = "Chest";
-"measurement.waist" = "Waist";
-"measurement.hips" = "Hips";
-"measurement.left_arm" = "Left Arm";
-"measurement.right_arm" = "Right Arm";
-"measurement.left_thigh" = "Left Thigh";
-"measurement.right_thigh" = "Right Thigh";
-"measurement.neck" = "Neck";
+"body_measurements.trend_desc" = "Short-term fluctuations are normal; focus on long-term trends.";
+"body_measurements.add_new" = "Add New";

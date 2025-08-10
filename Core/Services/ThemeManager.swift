@@ -100,6 +100,12 @@ class ThemeManager: ObservableObject {
     private func updateCurrentTheme() {
         isDarkMode = checkDarkMode()
     }
+
+    // MARK: - Design Theme Accessor
+    /// Design system teması (Environment'e enjekte edilecek)
+    var designTheme: Theme {
+        isDarkMode ? DefaultDarkTheme() : DefaultLightTheme()
+    }
     
     /// Theme'i sisteme uygula
     private func applyTheme() {
@@ -143,6 +149,11 @@ extension View {
     func withThemeManager(_ themeManager: ThemeManager) -> some View {
         self.environmentObject(themeManager)
     }
+}
+
+// MARK: - Tab Router for TabView coordination
+final class TabRouter: ObservableObject {
+    @Published var selected: Int = 0
 }
 
 // MARK: - Color Extensions for Dark Mode

@@ -15,7 +15,7 @@ struct SetTrackingView: View {
     @State private var notes = ""
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             VStack(spacing: 0) {
                 // Exercise header
                 ExerciseHeader(exercise: exercise)

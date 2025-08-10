@@ -13,7 +13,7 @@ struct TrainingView: View {
     @State private var showWorkoutDetail = false
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             VStack(spacing: 0) {
                 // Segment Control
                 Picker(LocalizationKeys.Training.title.localized, selection: $selectedTab) {

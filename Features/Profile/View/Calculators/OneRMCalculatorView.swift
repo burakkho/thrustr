@@ -402,7 +402,7 @@ enum RMFormula: String, CaseIterable {
 }
 
 #Preview {
-    NavigationView {
+    NavigationStack {
         OneRMCalculatorView()
     }
 }

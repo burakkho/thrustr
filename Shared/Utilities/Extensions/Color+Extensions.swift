@@ -433,3 +433,109 @@ extension Color {
         ))
     }
 }
+
+// MARK: - Design System (embedded to avoid project file edits)
+
+// Tokens
+struct Colors {
+    let accent: Color
+    let backgroundPrimary: Color
+    let backgroundSecondary: Color
+    let cardBackground: Color
+    let textPrimary: Color
+    let textSecondary: Color
+    let success: Color
+    let warning: Color
+    let error: Color
+}
+
+struct Spacing {
+    let xs: CGFloat = 4
+    let s: CGFloat = 8
+    let m: CGFloat = 12
+    let l: CGFloat = 16
+    let xl: CGFloat = 24
+}
+
+struct Radius {
+    let s: CGFloat = 8
+    let m: CGFloat = 12
+    let l: CGFloat = 16
+    let xl: CGFloat = 20
+}
+
+struct Shadows {
+    let card: Color = Color.shadowLight
+}
+
+// Theme protocol
+protocol Theme {
+    var colors: Colors { get }
+    var spacing: Spacing { get }
+    var radius: Radius { get }
+    var shadows: Shadows { get }
+}
+
+// Environment key
+private struct ThemeKey: EnvironmentKey {
+    static let defaultValue: Theme = DefaultLightTheme()
+}
+
+extension EnvironmentValues {
+    var theme: Theme {
+        get { self[ThemeKey.self] }
+        set { self[ThemeKey.self] = newValue }
+    }
+}
+
+// Theme implementations
+struct DefaultLightTheme: Theme {
+    let colors = Colors(
+        accent: .appPrimary,
+        backgroundPrimary: .backgroundPrimary,
+        backgroundSecondary: .backgroundSecondary,
+        cardBackground: .cardBackground,
+        textPrimary: .textPrimary,
+        textSecondary: .textSecondary,
+        success: .appSuccess,
+        warning: .appWarning,
+        error: .appError
+    )
+    let spacing = Spacing()
+    let radius = Radius()
+    let shadows = Shadows()
+}
+
+struct DefaultDarkTheme: Theme {
+    let colors = Colors(
+        accent: .appPrimary,
+        backgroundPrimary: .backgroundPrimary,
+        backgroundSecondary: .backgroundSecondary,
+        cardBackground: .cardBackground,
+        textPrimary: .textPrimary,
+        textSecondary: .textSecondary,
+        success: .appSuccess,
+        warning: .appWarning,
+        error: .appError
+    )
+    let spacing = Spacing()
+    let radius = Radius()
+    let shadows = Shadows()
+}
+
+// Common modifiers
+struct CardStyle: ViewModifier {
+    @Environment(\.theme) private var theme
+    func body(content: Content) -> some View {
+        content
+            .padding(theme.spacing.m)
+            .background(theme.colors.cardBackground)
+            .cornerRadius(theme.radius.m)
+            .shadow(color: theme.shadows.card, radius: 2, y: 1)
+    }
+}
+
+extension View {
+    func cardStyle() -> some View { modifier(CardStyle()) }
+}
+

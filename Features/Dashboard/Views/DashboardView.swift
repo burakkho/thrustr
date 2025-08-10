@@ -3,6 +3,7 @@ import SwiftData
 
 struct DashboardView: View {
     @Environment(\.modelContext) private var modelContext
+    @EnvironmentObject private var tabRouter: TabRouter
     @Query private var users: [User]
     @Query private var workouts: [Workout]
     @StateObject private var healthKitService = HealthKitService()
@@ -20,7 +21,7 @@ struct DashboardView: View {
     }
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             ScrollView {
                 VStack(spacing: 20) {
                     // Welcome Section
@@ -46,6 +47,15 @@ struct DashboardView: View {
             }
             .sheet(isPresented: $showingWeightEntry) {
                 WeightEntryView(user: currentUser)
+            }
+        }
+        .overlay(alignment: .center) {
+            if isLoading {
+                ZStack {
+                    Color.overlayLoading.ignoresSafeArea()
+                    ProgressView()
+                        .scaleEffect(1.2)
+                }
             }
         }
         .onAppear {
@@ -146,7 +156,7 @@ struct DashboardView: View {
                     description: LocalizationKeys.Dashboard.Actions.startWorkoutDesc.localized,
                     color: .blue
                 ) {
-                    // Navigate to Training
+                    tabRouter.selected = 1
                 }
                 
                 // Log Weight
@@ -166,7 +176,7 @@ struct DashboardView: View {
                     description: LocalizationKeys.Dashboard.Actions.nutritionDesc.localized,
                     color: .orange
                 ) {
-                    // Navigate to Nutrition
+                    tabRouter.selected = 2
                 }
             }
             .padding(.horizontal)

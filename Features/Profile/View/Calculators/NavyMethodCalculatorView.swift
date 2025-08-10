@@ -535,7 +535,7 @@ enum BodyFatCategory: CaseIterable {
 }
 
 #Preview {
-    NavigationView {
+    NavigationStack {
         NavyMethodCalculatorView()
     }
 }

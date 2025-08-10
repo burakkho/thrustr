@@ -11,7 +11,7 @@ struct AccountManagementView: View {
     @State private var showingResetAlert = false
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             List {
                 // Account Info Section
                 Section {

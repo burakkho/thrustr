@@ -13,7 +13,7 @@ struct WorkoutDetailView: View {
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
 
     var body: some View {
-        NavigationView {
+        NavigationStack {
             VStack(spacing: 0) {
                 WorkoutHeaderView(
                     workoutName: workout.name ?? LocalizationKeys.Training.Detail.defaultName.localized,

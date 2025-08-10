@@ -64,6 +64,11 @@
 		41E63DA92E48B152006A2117 /* DataSeeder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41E63DA82E48B14D006A2117 /* DataSeeder.swift */; };
 		41E63DAB2E48B1C2006A2117 /* foods.csv in Resources */ = {isa = PBXBuildFile; fileRef = 41E63DAA2E48B1C2006A2117 /* foods.csv */; };
 		41E63DAD2E48B53B006A2117 /* FoodCategory+UI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41E63DAC2E48B53A006A2117 /* FoodCategory+UI.swift */; };
+        41E7D0012E50010100A2AAAA /* Tokens.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41E7D0002E50010100A2AAAA /* Tokens.swift */; };
+        41E7D0032E50010100A2AAAA /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41E7D0022E50010100A2AAAA /* Theme.swift */; };
+        41E7D0052E50010100A2AAAA /* CardStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41E7D0042E50010100A2AAAA /* CardStyle.swift */; };
+        41E7D0072E50010100A2AAAA /* DefaultLightTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41E7D0062E50010100A2AAAA /* DefaultLightTheme.swift */; };
+        41E7D0092E50010100A2AAAA /* DefaultDarkTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41E7D0082E50010100A2AAAA /* DefaultDarkTheme.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -145,6 +150,11 @@
 		41E63DA82E48B14D006A2117 /* DataSeeder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataSeeder.swift; sourceTree = "<group>"; };
 		41E63DAA2E48B1C2006A2117 /* foods.csv */ = {isa = PBXFileReference; lastKnownFileType = text; path = foods.csv; sourceTree = "<group>"; };
 		41E63DAC2E48B53A006A2117 /* FoodCategory+UI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FoodCategory+UI.swift"; sourceTree = "<group>"; };
+        41E7D0002E50010100A2AAAA /* Tokens.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tokens.swift; sourceTree = "<group>"; };
+        41E7D0022E50010100A2AAAA /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
+        41E7D0042E50010100A2AAAA /* CardStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardStyle.swift; sourceTree = "<group>"; };
+        41E7D0062E50010100A2AAAA /* DefaultLightTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultLightTheme.swift; sourceTree = "<group>"; };
+        41E7D0082E50010100A2AAAA /* DefaultDarkTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultDarkTheme.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -244,10 +254,39 @@
 			children = (
 				41E3166B2E4677A200A27990 /* Utilities */,
 				41E3166A2E46779C00A27990 /* Components */,
+				41E7D0102E50010100A2AAAA /* DesignSystem */,
 			);
 			path = Shared;
 			sourceTree = "<group>";
 		};
+        41E7D0102E50010100A2AAAA /* DesignSystem */ = {
+            isa = PBXGroup;
+            children = (
+                41E7D0022E50010100A2AAAA /* Theme.swift */,
+                41E7D0002E50010100A2AAAA /* Tokens.swift */,
+                41E7D0112E50010100A2AAAA /* Modifiers */,
+                41E7D0122E50010100A2AAAA /* Themes */,
+            );
+            path = DesignSystem;
+            sourceTree = "<group>";
+        };
+        41E7D0112E50010100A2AAAA /* Modifiers */ = {
+            isa = PBXGroup;
+            children = (
+                41E7D0042E50010100A2AAAA /* CardStyle.swift */,
+            );
+            path = Modifiers;
+            sourceTree = "<group>";
+        };
+        41E7D0122E50010100A2AAAA /* Themes */ = {
+            isa = PBXGroup;
+            children = (
+                41E7D0062E50010100A2AAAA /* DefaultLightTheme.swift */,
+                41E7D0082E50010100A2AAAA /* DefaultDarkTheme.swift */,
+            );
+            path = Themes;
+            sourceTree = "<group>";
+        };
 		41E316632E46772F00A27990 /* Models */ = {
 			isa = PBXGroup;
 			children = (

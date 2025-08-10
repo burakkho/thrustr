@@ -4,6 +4,7 @@ import SwiftData
 struct MainTabView: View {
     @Environment(\.modelContext) private var modelContext
     @EnvironmentObject private var languageManager: LanguageManager
+    @EnvironmentObject private var tabRouter: TabRouter
     @Query private var users: [User]
     @State private var selectedTab = 0
     
@@ -12,7 +13,7 @@ struct MainTabView: View {
     }
     
     var body: some View {
-        TabView(selection: $selectedTab) {
+        TabView(selection: $tabRouter.selected) {
             DashboardView()
                 .tabItem {
                     Image(systemName: "house.fill")
@@ -41,7 +42,7 @@ struct MainTabView: View {
                 }
                 .tag(3)
         }
-        .accentColor(.blue)
+        .tint(Color.appPrimary)
         .onAppear {
             if users.isEmpty {
                 let defaultUser = createDefaultUser()
