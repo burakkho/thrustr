@@ -63,13 +63,13 @@ struct PersonalInfoEditView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button("personal_info.cancel".localized) {
+                    Button("common.cancel".localized) {
                         dismiss()
                     }
                 }
                 
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("personal_info.save".localized) {
+                    Button("common.save".localized) {
                         saveChanges()
                     }
                     .fontWeight(.semibold)

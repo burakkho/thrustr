@@ -3,7 +3,12 @@ import SwiftData
 
 @main
 struct SporHocamApp: App {
+    // Model Container
     let container: ModelContainer
+    
+    // Theme ve Language Manager'ları ekle
+    @StateObject private var themeManager = ThemeManager()
+    @StateObject private var languageManager = LanguageManager.shared
     
     init() {
         do {
@@ -26,8 +31,10 @@ struct SporHocamApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environmentObject(themeManager)      // ⬅️ ThemeManager eklendi
+                .environmentObject(languageManager)    // ⬅️ LanguageManager eklendi
+                .preferredColorScheme(themeManager.isDarkMode ? .dark : .light) // ⬅️ Dark mode desteği
                 .task {
-                    // await kaldırıldı çünkü fonksiyon async değil
                     DataSeeder.seedDatabaseIfNeeded(
                         modelContext: container.mainContext
                     )

@@ -306,7 +306,7 @@ enum FitnessLevel: String, CaseIterable {
     }
 }
 
-// MARK: - Activity Level
+// MARK: - Activity Level - UPDATED FOR LOCALIZATION
 enum ActivityLevel: String, CaseIterable {
     case sedentary = "sedentary"
     case light = "light"
@@ -316,21 +316,21 @@ enum ActivityLevel: String, CaseIterable {
 
     var displayName: String {
         switch self {
-        case .sedentary: return "Hareketsiz"
-        case .light: return "Hafif Aktif"
-        case .moderate: return "Orta Aktif"
-        case .active: return "Aktif"
-        case .veryActive: return "Çok Aktif"
+        case .sedentary: return "onboarding.activity.sedentary".localized
+        case .light: return "onboarding.activity.light".localized
+        case .moderate: return "onboarding.activity.moderate".localized
+        case .active: return "onboarding.activity.active".localized
+        case .veryActive: return "onboarding.activity.veryActive".localized
         }
     }
 
     var description: String {
         switch self {
-        case .sedentary: return "Masa başı iş, minimal hareket"
-        case .light: return "Haftada 1-3 antrenman"
-        case .moderate: return "Haftada 3-5 antrenman"
-        case .active: return "Haftada 6-7 antrenman"
-        case .veryActive: return "Günde 2x antrenman veya fiziksel iş"
+        case .sedentary: return "onboarding.activity.sedentary.desc".localized
+        case .light: return "onboarding.activity.light.desc".localized
+        case .moderate: return "onboarding.activity.moderate.desc".localized
+        case .active: return "onboarding.activity.active.desc".localized
+        case .veryActive: return "onboarding.activity.veryActive.desc".localized
         }
     }
 
@@ -345,7 +345,7 @@ enum ActivityLevel: String, CaseIterable {
     }
 }
 
-// MARK: - Fitness Goal (FIXED VERSION WITH calorieMultiplier)
+// MARK: - Fitness Goal - UPDATED FOR LOCALIZATION
 enum FitnessGoal: String, CaseIterable {
     case cut = "cut"
     case bulk = "bulk"
@@ -355,19 +355,19 @@ enum FitnessGoal: String, CaseIterable {
 
     var displayName: String {
         switch self {
-        case .cut: return "Yağ Yakımı"
-        case .bulk: return "Kas Kazanımı"
-        case .maintain: return "Form Koruma"
-        case .recomp: return "Vücut Kompozisyonu"
+        case .cut: return "onboarding.goals.cut.title".localized
+        case .bulk: return "onboarding.goals.bulk.title".localized
+        case .maintain: return "onboarding.goals.maintain.title".localized
+        case .recomp: return "Recomposition"
         case .performance: return "Performans"
         }
     }
 
     var description: String {
         switch self {
-        case .cut: return "Vücut yağını azalt, kas kütlesini koru"
-        case .bulk: return "Kas kütlesi ve güç artır"
-        case .maintain: return "Mevcut formu ve kiloyu koru"
+        case .cut: return "onboarding.goals.cut.subtitle".localized
+        case .bulk: return "onboarding.goals.bulk.subtitle".localized
+        case .maintain: return "onboarding.goals.maintain.subtitle".localized
         case .recomp: return "Aynı anda yağ yak ve kas kazan"
         case .performance: return "Atletik performansı artır"
         }

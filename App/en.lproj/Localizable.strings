@@ -874,3 +874,127 @@
 "language.change_message" = "You may need to restart the app for the language change to take effect. Do you want to continue?";
 "language.change_cancel" = "Cancel";
 "language.change_confirm" = "Change";
+
+// MARK: - English (en.lproj/Localizable.strings)
+"personal_info.title" = "Personal Information";
+"personal_info.cancel" = "Cancel";
+"personal_info.save" = "Save";
+"personal_info.update_title" = "Update Your Information";
+"personal_info.update_subtitle" = "Keep your information up to date for accurate goals";
+"personal_info.basic_info" = "Basic Information";
+"personal_info.name" = "Name";
+"personal_info.name_placeholder" = "Enter your name";
+"personal_info.age" = "Age";
+"personal_info.gender" = "Gender";
+"personal_info.physical_measurements" = "Physical Measurements";
+"personal_info.height" = "Height (cm)";
+"personal_info.current_weight" = "Current Weight (kg)";
+"personal_info.goals_activity" = "Goals and Activity";
+"personal_info.fitness_goal" = "Fitness Goal";
+"personal_info.activity_level" = "Activity Level";
+"personal_info.calculated_values" = "Calculated Values";
+"personal_info.basal_metabolism" = "Basal Metabolism";
+"personal_info.daily_expenditure" = "Daily Expenditure";
+"personal_info.calorie_goal" = "Calorie Goal";
+"personal_info.daily_target" = "Daily Target";
+"personal_info.info_updated" = "Information Updated";
+"personal_info.update_success" = "Your personal information has been successfully updated and new goals have been calculated.";
+
+// EN dosyasına (en.lproj/Localizable.strings) ekle:
+
+// Goal Options (English)
+"onboarding.goals.cut.title" = "Fat Loss";
+"onboarding.goals.cut.subtitle" = "Lose weight and reduce body fat";
+"onboarding.goals.bulk.title" = "Muscle Gain";
+"onboarding.goals.bulk.subtitle" = "Build muscle mass and get stronger";
+"onboarding.goals.maintain.title" = "Maintain";
+"onboarding.goals.maintain.subtitle" = "Maintain current weight while getting stronger";
+
+// Activity Levels (English)
+"onboarding.activity.sedentary" = "Sedentary";
+"onboarding.activity.sedentary.desc" = "Desk job, little movement";
+"onboarding.activity.light" = "Lightly Active";
+"onboarding.activity.light.desc" = "1-2 workouts per week";
+"onboarding.activity.moderate" = "Moderately Active";
+"onboarding.activity.moderate.desc" = "3-4 workouts per week";
+"onboarding.activity.active" = "Active";
+"onboarding.activity.active.desc" = "5-6 workouts per week";
+"onboarding.activity.veryActive" = "Very Active";
+"onboarding.activity.veryActive.desc" = "Daily workouts, physical job";
+
+// en.lproj/Localizable.strings dosyasına ekle:
+"onboarding.goals.cut.title" = "Fat Loss";
+"onboarding.goals.cut.subtitle" = "Lose weight and reduce body fat";
+"onboarding.goals.bulk.title" = "Muscle Gain";
+"onboarding.goals.bulk.subtitle" = "Build muscle mass and get stronger";
+"onboarding.goals.maintain.title" = "Maintain";
+"onboarding.goals.maintain.subtitle" = "Maintain current weight while getting stronger";
+
+"onboarding.activity.sedentary" = "Sedentary";
+"onboarding.activity.sedentary.desc" = "Desk job, little movement";
+"onboarding.activity.light" = "Lightly Active";
+"onboarding.activity.light.desc" = "1-2 workouts per week";
+"onboarding.activity.moderate" = "Moderately Active";
+"onboarding.activity.moderate.desc" = "3-4 workouts per week";
+"onboarding.activity.active" = "Active";
+"onboarding.activity.active.desc" = "5-6 workouts per week";
+"onboarding.activity.veryActive" = "Very Active";
+"onboarding.activity.veryActive.desc" = "Daily workouts, physical job";
+
+// Goal Options
+"onboarding.goals.cut.title" = "Fat Loss";
+"onboarding.goals.cut.subtitle" = "Lose weight and reduce body fat";
+"onboarding.goals.bulk.title" = "Muscle Gain";
+"onboarding.goals.bulk.subtitle" = "Build muscle mass and get stronger";
+"onboarding.goals.maintain.title" = "Maintain";
+"onboarding.goals.maintain.subtitle" = "Maintain current weight while getting stronger";
+
+// Activity Levels
+"onboarding.activity.sedentary" = "Sedentary";
+"onboarding.activity.sedentary.desc" = "Desk job, little movement";
+"onboarding.activity.light" = "Lightly Active";
+"onboarding.activity.light.desc" = "1-2 workouts per week";
+"onboarding.activity.moderate" = "Moderately Active";
+"onboarding.activity.moderate.desc" = "3-4 workouts per week";
+"onboarding.activity.active" = "Active";
+"onboarding.activity.active.desc" = "5-6 workouts per week";
+"onboarding.activity.veryActive" = "Very Active";
+"onboarding.activity.veryActive.desc" = "Daily workouts, physical job";
+
+// EN (en.lproj/Localizable.strings) dosyasına ekle:
+
+// Body Measurements
+"body_measurements.subtitle" = "Track your body measurements and see your progress";
+"body_measurements.measurement_saved" = "Measurement Saved";
+"body_measurements.saved_message" = "Your new measurement has been successfully saved.";
+"body_measurements.current_measurements" = "Current Measurements";
+"body_measurements.progress_summary" = "Progress Summary";
+"body_measurements.total_measurements" = "Total Measurements";
+"body_measurements.last_6_months" = "Last 6 months";
+"body_measurements.weight_entries" = "Weight Entries";
+"body_measurements.last_measurement" = "Last Measurement";
+"body_measurements.active_tracking" = "Active Tracking";
+"body_measurements.measurement_types" = "measurement types";
+"body_measurements.recent_entries" = "Recent Entries";
+"body_measurements.no_measurements" = "No measurements yet";
+"body_measurements.first_tip" = "Add your first measurement and start tracking your progress!";
+"body_measurements.measurement_tips" = "Measurement Tips";
+"body_measurements.correct_timing" = "Correct Timing";
+"body_measurements.timing_desc" = "Take measurements in the morning, fasting and after using the bathroom";
+"body_measurements.correct_technique" = "Correct Technique";
+"body_measurements.technique_desc" = "Keep measuring tape loose, don't squeeze";
+"body_measurements.regular_tracking" = "Regular Tracking";
+"body_measurements.tracking_desc" = "Measure once a week on the same day";
+"body_measurements.trend_focus" = "Focus on Trends";
+"body_measurements.trend_desc" = "Focus on weekly trends, not daily changes";
+"body_measurements.add_new" = "Add New Measurement";
+
+// Measurement Types
+"measurement.chest" = "Chest";
+"measurement.waist" = "Waist";
+"measurement.hips" = "Hips";
+"measurement.left_arm" = "Left Arm";
+"measurement.right_arm" = "Right Arm";
+"measurement.left_thigh" = "Left Thigh";
+"measurement.right_thigh" = "Right Thigh";
+"measurement.neck" = "Neck";

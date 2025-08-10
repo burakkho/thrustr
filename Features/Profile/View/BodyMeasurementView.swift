@@ -63,11 +63,11 @@ struct BodyMeasurementsView: View {
                 }
                 .padding()
             }
-            .navigationTitle(LocalizationKeys.Measurements.title)
+            .navigationTitle("measurements.title".localized)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button(LocalizationKeys.Common.close) {
+                    Button("common.close".localized) {
                         dismiss()
                     }
                 }
@@ -93,7 +93,7 @@ struct BodyMeasurementsView: View {
             )
         }
         .alert("body_measurements.measurement_saved".localized, isPresented: $showingSuccessAlert) {
-            Button(LocalizationKeys.Common.ok) { }
+            Button("common.ok".localized) { }
         } message: {
             Text("body_measurements.saved_message".localized)
         }
@@ -135,7 +135,7 @@ struct MeasurementsHeaderSection: View {
                 .foregroundColor(.blue)
             
             VStack(spacing: 8) {
-                Text(LocalizationKeys.Measurements.title)
+                Text("measurements.title".localized)
                     .font(.title2)
                     .fontWeight(.semibold)
                 
@@ -211,7 +211,7 @@ struct MeasurementCard: View {
                     .font(.headline)
                     .foregroundColor(.secondary)
                 
-                Text(LocalizationKeys.Measurements.noMeasurements)
+                Text("measurements.no_measurements".localized)
                     .font(.caption2)
                     .foregroundColor(.secondary)
             }
@@ -258,7 +258,7 @@ struct ProgressOverviewSection: View {
                 ProgressStatCard(
                     title: "body_measurements.last_measurement".localized,
                     value: latestMeasurementDate,
-                    subtitle: LocalizationKeys.Measurements.date,
+                    subtitle: "measurements.date".localized,
                     color: .orange
                 )
                 
@@ -278,7 +278,7 @@ struct ProgressOverviewSection: View {
     
     private var latestMeasurementDate: String {
         let latest = measurements.max(by: { $0.date < $1.date })
-        guard let date = latest?.date else { return LocalizationKeys.Analytics.noData }
+        guard let date = latest?.date else { return "analytics.no_data".localized }
         
         let formatter = DateFormatter()
         formatter.dateStyle = .short
@@ -402,7 +402,7 @@ struct RecentWeightRow: View {
                 .frame(width: 24)
             
             VStack(alignment: .leading, spacing: 2) {
-                Text(LocalizationKeys.Measurements.weight)
+                Text("measurements.weight".localized)
                     .font(.subheadline)
                     .fontWeight(.medium)
                 
@@ -605,7 +605,7 @@ struct AddMeasurementView: View {
                             HStack {
                                 Image(systemName: "calendar")
                                     .foregroundColor(.blue)
-                                Text(LocalizationKeys.Measurements.date)
+                                Text("measurements.date".localized)
                                     .fontWeight(.medium)
                             }
                             
@@ -619,7 +619,7 @@ struct AddMeasurementView: View {
                             HStack {
                                 Image(systemName: "note.text")
                                     .foregroundColor(.green)
-                                Text(LocalizationKeys.Measurements.notes)
+                                Text("measurements.notes".localized)
                                     .fontWeight(.medium)
                             }
                             
@@ -635,17 +635,17 @@ struct AddMeasurementView: View {
                 }
                 .padding()
             }
-            .navigationTitle(LocalizationKeys.Measurements.addMeasurement)
+            .navigationTitle("measurements.add_measurement".localized)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button(LocalizationKeys.Common.cancel) {
+                    Button("common.cancel".localized) {
                         dismiss()
                     }
                 }
                 
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(LocalizationKeys.Common.save) {
+                    Button("common.save".localized) {
                         onSave()
                     }
                     .fontWeight(.semibold)

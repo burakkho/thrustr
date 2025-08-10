@@ -753,3 +753,67 @@
 "language.change_message" = "Dil değişikliğinin etkili olabilmesi için uygulamayı yeniden başlatmanız gerekebilir. Devam etmek istiyor musunuz?";
 "language.change_cancel" = "İptal";
 "language.change_confirm" = "Değiştir";
+
+// MARK: - Turkish (tr.lproj/Localizable.strings)
+"personal_info.title" = "Kişisel Bilgiler";
+"personal_info.cancel" = "İptal";
+"personal_info.save" = "Kaydet";
+"personal_info.update_title" = "Bilgilerini Güncelle";
+"personal_info.update_subtitle" = "Doğru hedefler için bilgilerinin güncel olmasını sağla";
+"personal_info.basic_info" = "Temel Bilgiler";
+"personal_info.name" = "İsim";
+"personal_info.name_placeholder" = "Adınızı girin";
+"personal_info.age" = "Yaş";
+"personal_info.gender" = "Cinsiyet";
+"personal_info.physical_measurements" = "Fiziksel Ölçümler";
+"personal_info.height" = "Boy (cm)";
+"personal_info.current_weight" = "Güncel Kilo (kg)";
+"personal_info.goals_activity" = "Hedefler ve Aktivite";
+"personal_info.fitness_goal" = "Fitness Hedefi";
+"personal_info.activity_level" = "Aktivite Seviyesi";
+"personal_info.calculated_values" = "Hesaplanan Değerler";
+"personal_info.basal_metabolism" = "Bazal Metabolizma";
+"personal_info.daily_expenditure" = "Günlük Harcama";
+"personal_info.calorie_goal" = "Kalori Hedefi";
+"personal_info.daily_target" = "Günlük Hedef";
+"personal_info.info_updated" = "Bilgiler Güncellendi";
+"personal_info.update_success" = "Kişisel bilgileriniz başarıyla güncellendi ve yeni hedefler hesaplandı.";
+
+// TR (tr.lproj/Localizable.strings) dosyasına ekle:
+
+// Body Measurements
+"body_measurements.subtitle" = "Vücut ölçümlerinizi takip edin ve ilerlemenizi görün";
+"body_measurements.measurement_saved" = "Ölçüm Kaydedildi";
+"body_measurements.saved_message" = "Yeni ölçümünüz başarıyla kaydedildi.";
+"body_measurements.current_measurements" = "Mevcut Ölçümler";
+"body_measurements.progress_summary" = "İlerleme Özeti";
+"body_measurements.total_measurements" = "Toplam Ölçüm";
+"body_measurements.last_6_months" = "Son 6 ay";
+"body_measurements.weight_entries" = "Kilo Girişleri";
+"body_measurements.last_measurement" = "Son Ölçüm";
+"body_measurements.active_tracking" = "Aktif Takip";
+"body_measurements.measurement_types" = "ölçüm türü";
+"body_measurements.recent_entries" = "Son Girişler";
+"body_measurements.no_measurements" = "Henüz ölçüm yok";
+"body_measurements.first_tip" = "İlk ölçümünüzü ekleyin ve ilerlemeni takip etmeye başlayın!";
+"body_measurements.measurement_tips" = "Ölçüm İpuçları";
+"body_measurements.correct_timing" = "Doğru Zamanlama";
+"body_measurements.timing_desc" = "Ölçümleri sabah, açken ve tuvaletten sonra yapın";
+"body_measurements.correct_technique" = "Doğru Teknik";
+"body_measurements.technique_desc" = "Ölçüm şeridini gevşek tutun, sıkmayın";
+"body_measurements.regular_tracking" = "Düzenli Takip";
+"body_measurements.tracking_desc" = "Haftada bir aynı günde ölçüm yapın";
+"body_measurements.trend_focus" = "Trend Odaklı";
+"body_measurements.trend_desc" = "Günlük değişimlere değil, haftalık trende odaklanın";
+"body_measurements.add_new" = "Yeni Ölçüm Ekle";
+
+// Measurement Types
+"measurement.chest" = "Göğüs";
+"measurement.waist" = "Bel";
+"measurement.hips" = "Kalça";
+"measurement.left_arm" = "Sol Kol";
+"measurement.right_arm" = "Sağ Kol";
+"measurement.left_thigh" = "Sol Uyluk";
+"measurement.right_thigh" = "Sağ Uyluk";
+"measurement.neck" = "Boyun";
+
