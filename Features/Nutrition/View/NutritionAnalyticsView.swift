@@ -40,7 +40,16 @@ struct NutritionAnalyticsView: View {
             let date = calendar.date(byAdding: .day, value: -6 + i, to: today) ?? today
             let dayStart = calendar.startOfDay(for: date)
             let dayName = calendar.component(.weekday, from: date)
-            let dayNames = ["", "Paz", "Pzt", "Sal", "Çar", "Per", "Cum", "Cmt"]
+            
+            // Localized day names
+            let dayNames = ["",
+                            LocalizationKeys.Nutrition.Days.sunday.localized,
+                            LocalizationKeys.Nutrition.Days.monday.localized,
+                            LocalizationKeys.Nutrition.Days.tuesday.localized,
+                            LocalizationKeys.Nutrition.Days.wednesday.localized,
+                            LocalizationKeys.Nutrition.Days.thursday.localized,
+                            LocalizationKeys.Nutrition.Days.friday.localized,
+                            LocalizationKeys.Nutrition.Days.saturday.localized]
             
             if let data = dailyTotals[dayStart] {
                 weekData.append(DayData(
@@ -72,14 +81,14 @@ struct NutritionAnalyticsView: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("Haftalık Analiz")
+            Text(LocalizationKeys.Nutrition.Analytics.title.localized)
                 .font(.title2)
                 .fontWeight(.semibold)
                 .padding(.horizontal)
             
             // Kalori chart
             VStack(alignment: .leading, spacing: 8) {
-                Text("Günlük Kalori")
+                Text(LocalizationKeys.Nutrition.Analytics.dailyCalories.localized)
                     .font(.headline)
                     .padding(.horizontal)
                 
@@ -109,7 +118,7 @@ struct NutritionAnalyticsView: View {
             
             // Macro özeti
             VStack(alignment: .leading, spacing: 12) {
-                Text("Haftalık Ortalama")
+                Text(LocalizationKeys.Nutrition.Analytics.weeklyAverage.localized)
                     .font(.headline)
                     .padding(.horizontal)
                 
@@ -119,10 +128,30 @@ struct NutritionAnalyticsView: View {
                 let avgFat = weeklyData.map { $0.fat }.reduce(0, +) / 7
                 
                 HStack(spacing: 20) {
-                    MacroSummaryView(value: Int(avgCalories), label: "Kalori", color: .orange, unit: "kcal")
-                    MacroSummaryView(value: Int(avgProtein), label: "Protein", color: .red, unit: "g")
-                    MacroSummaryView(value: Int(avgCarbs), label: "Carbs", color: .blue, unit: "g")
-                    MacroSummaryView(value: Int(avgFat), label: "Fat", color: .yellow, unit: "g")
+                    MacroSummaryView(
+                        value: Int(avgCalories),
+                        label: LocalizationKeys.Nutrition.calories.localized,
+                        color: .orange,
+                        unit: LocalizationKeys.Nutrition.Units.kcal.localized
+                    )
+                    MacroSummaryView(
+                        value: Int(avgProtein),
+                        label: LocalizationKeys.Nutrition.DailySummary.protein.localized,
+                        color: .red,
+                        unit: LocalizationKeys.Nutrition.Units.g.localized
+                    )
+                    MacroSummaryView(
+                        value: Int(avgCarbs),
+                        label: LocalizationKeys.Nutrition.DailySummary.carbs.localized,
+                        color: .blue,
+                        unit: LocalizationKeys.Nutrition.Units.g.localized
+                    )
+                    MacroSummaryView(
+                        value: Int(avgFat),
+                        label: LocalizationKeys.Nutrition.DailySummary.fat.localized,
+                        color: .yellow,
+                        unit: LocalizationKeys.Nutrition.Units.g.localized
+                    )
                 }
                 .padding(.horizontal)
             }
@@ -170,3 +199,4 @@ struct MacroSummaryView: View {
     NutritionAnalyticsView(nutritionEntries: [])
         .modelContainer(for: [Food.self, NutritionEntry.self], inMemory: true)
 }
+

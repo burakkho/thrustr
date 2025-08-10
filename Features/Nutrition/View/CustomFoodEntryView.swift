@@ -29,11 +29,11 @@ struct CustomFoodEntryView: View {
                 VStack(spacing: 20) {
                     // Header
                     VStack(alignment: .leading, spacing: 8) {
-                        Text("Yeni Yiyecek Ekle")
+                        Text(LocalizationKeys.Nutrition.CustomFood.newFood.localized)
                             .font(.title2)
                             .fontWeight(.semibold)
                         
-                        Text("Evde yaptığınız yemekler veya bulamadığınız yiyecekler için")
+                        Text(LocalizationKeys.Nutrition.CustomFood.subtitle.localized)
                             .font(.caption)
                             .foregroundColor(.secondary)
                     }
@@ -41,34 +41,34 @@ struct CustomFoodEntryView: View {
                     
                     // Temel bilgiler
                     VStack(alignment: .leading, spacing: 16) {
-                        Text("Temel Bilgiler")
+                        Text(LocalizationKeys.Nutrition.CustomFood.basicInfo.localized)
                             .font(.headline)
                             .fontWeight(.medium)
                         
                         VStack(alignment: .leading, spacing: 8) {
-                            Text("Yiyecek Adı *")
+                            Text(LocalizationKeys.Nutrition.CustomFood.foodNameRequired.localized)
                                 .font(.subheadline)
                                 .fontWeight(.medium)
                             
-                            TextField("örn: Ev Yapımı Menemen", text: $foodName)
+                            TextField(LocalizationKeys.Nutrition.CustomFood.foodNamePlaceholder.localized, text: $foodName)
                                 .textFieldStyle(.roundedBorder)
                         }
                         
                         VStack(alignment: .leading, spacing: 8) {
-                            Text("Marka (Opsiyonel)")
+                            Text(LocalizationKeys.Nutrition.CustomFood.brandOptional.localized)
                                 .font(.subheadline)
                                 .fontWeight(.medium)
                             
-                            TextField("örn: Ev Yapımı", text: $brand)
+                            TextField(LocalizationKeys.Nutrition.CustomFood.brandPlaceholder.localized, text: $brand)
                                 .textFieldStyle(.roundedBorder)
                         }
                         
                         VStack(alignment: .leading, spacing: 8) {
-                            Text("Kategori")
+                            Text(LocalizationKeys.Nutrition.CustomFood.category.localized)
                                 .font(.subheadline)
                                 .fontWeight(.medium)
                             
-                            Picker("Kategori", selection: $selectedCategory) {
+                            Picker(LocalizationKeys.Nutrition.CustomFood.category.localized, selection: $selectedCategory) {
                                 ForEach(FoodCategory.allCases, id: \.self) { category in
                                     Label(category.displayName, systemImage: category.icon)
                                         .tag(category)
@@ -82,13 +82,13 @@ struct CustomFoodEntryView: View {
                     // Besin değerleri
                     VStack(alignment: .leading, spacing: 16) {
                         HStack {
-                            Text("Besin Değerleri")
+                            Text(LocalizationKeys.Nutrition.CustomFood.nutritionValues.localized)
                                 .font(.headline)
                                 .fontWeight(.medium)
                             
                             Spacer()
                             
-                            Text("100g başına")
+                            Text(LocalizationKeys.Nutrition.CustomFood.per100g.localized)
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                         }
@@ -98,30 +98,30 @@ struct CustomFoodEntryView: View {
                             GridItem(.flexible())
                         ], spacing: 16) {
                             NutritionInputField(
-                                title: "Kalori *",
+                                title: LocalizationKeys.Nutrition.CustomFood.caloriesRequired.localized,
                                 value: $calories,
-                                unit: "kcal",
+                                unit: LocalizationKeys.Nutrition.Units.kcal.localized,
                                 color: .orange
                             )
                             
                             NutritionInputField(
-                                title: "Protein",
+                                title: LocalizationKeys.Nutrition.CustomFood.protein.localized,
                                 value: $protein,
-                                unit: "g",
+                                unit: LocalizationKeys.Nutrition.Units.g.localized,
                                 color: .red
                             )
                             
                             NutritionInputField(
-                                title: "Karbonhidrat",
+                                title: LocalizationKeys.Nutrition.CustomFood.carbs.localized,
                                 value: $carbs,
-                                unit: "g",
+                                unit: LocalizationKeys.Nutrition.Units.g.localized,
                                 color: .blue
                             )
                             
                             NutritionInputField(
-                                title: "Yağ",
+                                title: LocalizationKeys.Nutrition.CustomFood.fat.localized,
                                 value: $fat,
-                                unit: "g",
+                                unit: LocalizationKeys.Nutrition.Units.g.localized,
                                 color: .yellow
                             )
                         }
@@ -130,7 +130,7 @@ struct CustomFoodEntryView: View {
                     // Önizleme
                     if isValid {
                         VStack(alignment: .leading, spacing: 8) {
-                            Text("Önizleme")
+                            Text(LocalizationKeys.Nutrition.CustomFood.preview.localized)
                                 .font(.headline)
                                 .fontWeight(.medium)
                             
@@ -145,7 +145,7 @@ struct CustomFoodEntryView: View {
                                         .italic()
                                 }
                                 
-                                Text("\(Int(calories)) kcal • P: \(Int(protein))g • C: \(Int(carbs))g • F: \(Int(fat))g")
+                                Text("\(Int(calories)) \(LocalizationKeys.Nutrition.Units.kcal.localized) • P: \(Int(protein))\(LocalizationKeys.Nutrition.Units.g.localized) • C: \(Int(carbs))\(LocalizationKeys.Nutrition.Units.g.localized) • F: \(Int(fat))\(LocalizationKeys.Nutrition.Units.g.localized)")
                                     .font(.caption)
                                     .foregroundColor(.secondary)
                             }
@@ -156,7 +156,7 @@ struct CustomFoodEntryView: View {
                     }
                     
                     // Ekle butonu
-                    Button("Yiyecek Ekle") {
+                    Button(LocalizationKeys.Nutrition.CustomFood.addFood.localized) {
                         createCustomFood()
                     }
                     .buttonStyle(.borderedProminent)
@@ -167,18 +167,18 @@ struct CustomFoodEntryView: View {
                 }
                 .padding()
             }
-            .navigationTitle("Yeni Yiyecek")
+            .navigationTitle(LocalizationKeys.Nutrition.CustomFood.title.localized)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button("İptal") {
+                    Button(LocalizationKeys.Nutrition.CustomFood.cancel.localized) {
                         dismiss()
                     }
                 }
             }
         }
-        .alert("Hata", isPresented: $showingAlert) {
-            Button("Tamam") { }
+        .alert(LocalizationKeys.Nutrition.CustomFood.error.localized, isPresented: $showingAlert) {
+            Button(LocalizationKeys.Nutrition.CustomFood.ok.localized) { }
         } message: {
             Text(alertMessage)
         }

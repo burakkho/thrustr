@@ -30,7 +30,7 @@ struct DailyNutritionSummary: View {
     var body: some View {
         if !todaysEntries.isEmpty {
             VStack(alignment: .leading, spacing: 12) {
-                Text("Bugün Yediklerim")
+                Text(LocalizationKeys.Nutrition.DailySummary.title.localized)
                     .font(.title2)
                     .fontWeight(.semibold)
                     .padding(.horizontal)
@@ -41,14 +41,14 @@ struct DailyNutritionSummary: View {
                         VStack(alignment: .leading, spacing: 2) {
                             Text(entry.foodName)
                                 .font(.headline)
-                            Text("\(entry.displayMealType) • \(Int(entry.gramsConsumed))g")
+                            Text("\(entry.displayMealType) • \(Int(entry.gramsConsumed))\(LocalizationKeys.Nutrition.Units.g.localized)")
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                         }
                         
                         Spacer()
                         
-                        Text("\(Int(entry.calories)) kcal")
+                        Text("\(Int(entry.calories)) \(LocalizationKeys.Nutrition.Units.kcal.localized)")
                             .font(.subheadline)
                             .fontWeight(.medium)
                     }
@@ -58,21 +58,33 @@ struct DailyNutritionSummary: View {
                 // Toplam özet
                 VStack(alignment: .leading, spacing: 8) {
                     HStack {
-                        Text("Toplam:")
+                        Text(LocalizationKeys.Nutrition.DailySummary.total.localized)
                             .font(.headline)
                         
                         Spacer()
                         
-                        Text("\(Int(totalCalories)) kcal")
+                        Text("\(Int(totalCalories)) \(LocalizationKeys.Nutrition.Units.kcal.localized)")
                             .font(.title2)
                             .fontWeight(.bold)
                             .foregroundColor(.orange)
                     }
                     
                     HStack(spacing: 20) {
-                        MacroView(value: Int(totalProtein), label: "Protein", color: .red)
-                        MacroView(value: Int(totalCarbs), label: "Carbs", color: .blue)
-                        MacroView(value: Int(totalFat), label: "Fat", color: .yellow)
+                        MacroView(
+                            value: Int(totalProtein),
+                            label: LocalizationKeys.Nutrition.DailySummary.protein.localized,
+                            color: .red
+                        )
+                        MacroView(
+                            value: Int(totalCarbs),
+                            label: LocalizationKeys.Nutrition.DailySummary.carbs.localized,
+                            color: .blue
+                        )
+                        MacroView(
+                            value: Int(totalFat),
+                            label: LocalizationKeys.Nutrition.DailySummary.fat.localized,
+                            color: .yellow
+                        )
                     }
                 }
                 .padding(.horizontal)
@@ -93,7 +105,7 @@ struct MacroView: View {
     
     var body: some View {
         VStack(spacing: 2) {
-            Text("\(value)g")
+            Text("\(value)\(LocalizationKeys.Nutrition.Units.g.localized)")
                 .font(.subheadline)
                 .fontWeight(.semibold)
                 .foregroundColor(color)

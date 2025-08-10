@@ -17,14 +17,14 @@ struct AccountManagementView: View {
                 Section {
                     AccountInfoSection(user: user)
                 } header: {
-                    Text("Hesap Bilgileri")
+                    Text("account.info".localized)
                 }
                 
                 // Data Management Section
                 Section {
                     DataManagementSection()
                 } header: {
-                    Text("Veri Yönetimi")
+                    Text("account.data_management".localized)
                 }
                 
                 // Dangerous Actions Section
@@ -34,39 +34,39 @@ struct AccountManagementView: View {
                         showingDelete: $showingDeleteAlert
                     )
                 } header: {
-                    Text("Tehlikeli İşlemler")
+                    Text("account.dangerous_actions".localized)
                 } footer: {
-                    Text("Bu işlemler geri alınamaz.")
+                    Text("account.cannot_undo".localized)
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
             }
-            .navigationTitle("Hesap Yönetimi")
+            .navigationTitle("account.title".localized)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Tamam") {
+                    Button("common.done".localized) {
                         dismiss()
                     }
                     .fontWeight(.semibold)
                 }
             }
         }
-        .alert("Verileri Sıfırla", isPresented: $showingResetAlert) {
-            Button("Sıfırla", role: .destructive) {
+        .alert("account.reset_data".localized, isPresented: $showingResetAlert) {
+            Button("account.reset_data".localized, role: .destructive) {
                 resetData()
             }
-            Button("İptal", role: .cancel) { }
+            Button("common.cancel".localized, role: .cancel) { }
         } message: {
-            Text("Bu işlem tüm verilerinizi silecektir.")
+            Text("account.reset_desc".localized)
         }
-        .alert("Hesabı Sil", isPresented: $showingDeleteAlert) {
-            Button("Sil", role: .destructive) {
+        .alert("account.delete_account".localized, isPresented: $showingDeleteAlert) {
+            Button("common.delete".localized, role: .destructive) {
                 deleteAccount()
             }
-            Button("İptal", role: .cancel) { }
+            Button("common.cancel".localized, role: .cancel) { }
         } message: {
-            Text("Bu işlem hesabınızı kalıcı olarak silecektir.")
+            Text("account.delete_desc".localized)
         }
     }
     
@@ -91,11 +91,11 @@ struct AccountInfoSection: View {
                     .foregroundColor(.blue)
                 
                 VStack(alignment: .leading, spacing: 2) {
-                    Text(user?.name ?? "Kullanıcı")
+                    Text(user?.name ?? "common.user".localized)
                         .font(.headline)
                         .fontWeight(.semibold)
                     
-                    Text("Yerel Hesap")
+                    Text("account.local_account".localized)
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                 }
@@ -107,23 +107,23 @@ struct AccountInfoSection: View {
             
             VStack(spacing: 8) {
                 AccountInfoRow(
-                    title: "Kayıt Tarihi",
+                    title: "account.registration_date".localized,
                     value: formatDate(user?.createdAt ?? Date())
                 )
                 
                 AccountInfoRow(
-                    title: "Güncel Kilo",
+                    title: "account.current_weight".localized,
                     value: String(format: "%.1f kg", user?.currentWeight ?? 0)
                 )
                 
                 AccountInfoRow(
-                    title: "Hedef",
-                    value: user?.fitnessGoal ?? "Bilinmiyor"
+                    title: "account.goal".localized,
+                    value: user?.fitnessGoalEnum.displayName ?? "analytics.no_data".localized
                 )
                 
                 AccountInfoRow(
-                    title: "Aktivite",
-                    value: user?.activityLevel ?? "Bilinmiyor"
+                    title: "account.activity".localized,
+                    value: user?.activityLevelEnum.displayName ?? "analytics.no_data".localized
                 )
             }
         }
@@ -133,7 +133,15 @@ struct AccountInfoSection: View {
     private func formatDate(_ date: Date) -> String {
         let formatter = DateFormatter()
         formatter.dateStyle = .medium
-        formatter.locale = Locale(identifier: "tr")
+        
+        // Use current language setting
+        let savedLanguage = UserDefaults.standard.string(forKey: "app_language") ?? "system"
+        if savedLanguage == "tr" {
+            formatter.locale = Locale(identifier: "tr_TR")
+        } else if savedLanguage == "en" {
+            formatter.locale = Locale(identifier: "en_US")
+        }
+        
         return formatter.string(from: date)
     }
 }
@@ -170,11 +178,11 @@ struct DataManagementSection: View {
                         .frame(width: 24)
                     
                     VStack(alignment: .leading, spacing: 2) {
-                        Text("Verileri Yedekle")
+                        Text("account.backup_data".localized)
                             .foregroundColor(.primary)
                             .fontWeight(.medium)
                         
-                        Text("Tüm verilerinizi dışa aktarın")
+                        Text("account.export_desc".localized)
                             .font(.caption)
                             .foregroundColor(.secondary)
                     }
@@ -196,11 +204,11 @@ struct DataManagementSection: View {
                     .frame(width: 24)
                 
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("Uygulama Bilgileri")
+                    Text("account.app_info".localized)
                         .foregroundColor(.primary)
                         .fontWeight(.medium)
                     
-                    Text("Versiyon 1.0 - Beta")
+                    Text("account.version".localized)
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
@@ -227,11 +235,11 @@ struct DangerousActionsSection: View {
                         .frame(width: 24)
                     
                     VStack(alignment: .leading, spacing: 2) {
-                        Text("Tüm Verileri Sıfırla")
+                        Text("account.reset_data".localized)
                             .foregroundColor(.orange)
                             .fontWeight(.medium)
                         
-                        Text("Antrenman ve beslenme verilerini sil")
+                        Text("account.reset_desc".localized)
                             .font(.caption)
                             .foregroundColor(.secondary)
                     }
@@ -252,11 +260,11 @@ struct DangerousActionsSection: View {
                         .frame(width: 24)
                     
                     VStack(alignment: .leading, spacing: 2) {
-                        Text("Hesabı Sil")
+                        Text("account.delete_account".localized)
                             .foregroundColor(.red)
                             .fontWeight(.medium)
                         
-                        Text("Hesabı ve tüm verileri kalıcı olarak sil")
+                        Text("account.delete_desc".localized)
                             .font(.caption)
                             .foregroundColor(.secondary)
                     }

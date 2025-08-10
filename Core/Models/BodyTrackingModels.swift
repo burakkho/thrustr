@@ -46,11 +46,11 @@ final class WeightEntry {
         guard let bmi = bmi else { return nil }
         
         switch bmi {
-        case ..<18.5: return "Zayıf"
-        case 18.5..<25: return "Normal"
-        case 25..<30: return "Fazla Kilolu"
-        case 30...: return "Obez"
-        default: return "Bilinmiyor"
+        case ..<18.5: return "bmi_underweight".localized
+        case 18.5..<25: return "bmi_normal".localized
+        case 25..<30: return "bmi_overweight".localized
+        case 30...: return "bmi_obese".localized
+        default: return "bmi_unknown".localized
         }
     }
     
@@ -59,7 +59,7 @@ final class WeightEntry {
         let formatter = DateFormatter()
         formatter.dateStyle = .medium
         formatter.timeStyle = .none
-        formatter.locale = Locale(identifier: "tr_TR")
+        formatter.locale = Locale.current
         return formatter.string(from: date)
     }
     
@@ -193,7 +193,7 @@ final class ProgressPhoto {
         let formatter = DateFormatter()
         formatter.dateStyle = .short
         formatter.timeStyle = .none
-        formatter.locale = Locale(identifier: "tr_TR")
+        formatter.locale = Locale.current
         return formatter.string(from: date)
     }
     
@@ -235,7 +235,7 @@ final class Goal {
         self.type = type.rawValue
         self.targetValue = targetValue
         self.currentValue = currentValue
-        self.unit = type.unit
+        self.unit = "goal_unit_\(type.rawValue)".localized
         self.deadline = deadline
         self.priority = priority
         self.category = category
@@ -282,13 +282,13 @@ final class Goal {
     
     /// Goal status text
     var statusText: String {
-        if isCompleted { return "Tamamlandı" }
-        if isExpired { return "Süresi Geçti" }
+        if isCompleted { return "goal_status_completed".localized }
+        if isExpired { return "goal_status_expired".localized }
         if let days = daysRemaining {
-            if days > 0 { return "\(days) gün kaldı" }
-            if days == 0 { return "Bugün bitiyor" }
+            if days > 0 { return "goal_status_days_remaining".localized(with: days) }
+            if days == 0 { return "goal_status_ends_today".localized }
         }
-        return "Aktif"
+        return "goal_status_active".localized
     }
     
     /// Priority emoji
@@ -343,6 +343,28 @@ final class Goal {
     }
 }
 
+// MARK: - Supporting Enums
+
+enum MeasurementCategory: String, CaseIterable {
+    case torso = "torso"
+    case arms = "arms"
+    case legs = "legs"
+    case head = "head"
+    
+    var displayName: String {
+        return "measurement_category_\(self.rawValue)".localized
+    }
+    
+    var icon: String {
+        switch self {
+        case .torso: return "person.crop.rectangle"
+        case .arms: return "figure.strengthtraining.traditional"
+        case .legs: return "figure.walk"
+        case .head: return "person.crop.circle"
+        }
+    }
+}
+
 // MARK: - Measurement Type Enum (Enhanced)
 enum MeasurementType: String, CaseIterable, Codable {
     case chest = "chest"
@@ -358,19 +380,7 @@ enum MeasurementType: String, CaseIterable, Codable {
     case shoulders = "shoulders"
     
     var displayName: String {
-        switch self {
-        case .chest: return "Göğüs"
-        case .waist: return "Bel"
-        case .hips: return "Kalça"
-        case .leftArm: return "Sol Kol"
-        case .rightArm: return "Sağ Kol"
-        case .leftThigh: return "Sol Bacak"
-        case .rightThigh: return "Sağ Bacak"
-        case .neck: return "Boyun"
-        case .forearm: return "Önkol"
-        case .calf: return "Baldır"
-        case .shoulders: return "Omuz"
-        }
+        return "measurement_\(self.rawValue)".localized
     }
     
     var shortName: String {
@@ -440,12 +450,11 @@ enum PhotoType: String, CaseIterable, Codable {
     case closeUp = "close_up"
     
     var displayName: String {
-        switch self {
-        case .front: return "Ön"
-        case .side: return "Yan"
-        case .back: return "Arka"
-        case .closeUp: return "Yakın Çekim"
-        }
+        return "photo_type_\(self.rawValue)".localized
+    }
+    
+    var instruction: String {
+        return "photo_instruction_\(self.rawValue)".localized
     }
     
     var icon: String {
@@ -465,15 +474,6 @@ enum PhotoType: String, CaseIterable, Codable {
         case .closeUp: return .purple
         }
     }
-    
-    var instruction: String {
-        switch self {
-        case .front: return "Kameraya doğru bakın, kollar yanında"
-        case .side: return "Yana dönün, profil pozisyonunda"
-        case .back: return "Arkaya dönün, omuzlar düz"
-        case .closeUp: return "Odaklanmak istediğiniz bölgeyi çekin"
-        }
-    }
 }
 
 // MARK: - Goal Type Enum (Enhanced)
@@ -486,24 +486,11 @@ enum GoalType: String, CaseIterable, Codable {
     case flexibility = "flexibility"
     
     var displayName: String {
-        switch self {
-        case .weight: return "Kilo"
-        case .bodyFat: return "Yağ Oranı"
-        case .muscle: return "Kas Kütlesi"
-        case .strength: return "Kuvvet"
-        case .endurance: return "Dayanıklılık"
-        case .flexibility: return "Esneklik"
-        }
+        return "goal_type_\(self.rawValue)".localized
     }
     
     var unit: String {
-        switch self {
-        case .weight, .muscle: return "kg"
-        case .bodyFat: return "%"
-        case .strength: return "kg"
-        case .endurance: return "dakika"
-        case .flexibility: return "cm"
-        }
+        return "goal_unit_\(self.rawValue)".localized
     }
     
     var icon: String {
@@ -525,33 +512,6 @@ enum GoalType: String, CaseIterable, Codable {
         case .strength: return .purple
         case .endurance: return .green
         case .flexibility: return .cyan
-        }
-    }
-}
-
-// MARK: - Supporting Enums
-
-enum MeasurementCategory: String, CaseIterable {
-    case torso = "torso"
-    case arms = "arms"
-    case legs = "legs"
-    case head = "head"
-    
-    var displayName: String {
-        switch self {
-        case .torso: return "Gövde"
-        case .arms: return "Kollar"
-        case .legs: return "Bacaklar"
-        case .head: return "Baş/Boyun"
-        }
-    }
-    
-    var icon: String {
-        switch self {
-        case .torso: return "person.crop.rectangle"
-        case .arms: return "figure.strengthtraining.traditional"
-        case .legs: return "figure.walk"
-        case .head: return "person.crop.circle"
         }
     }
 }

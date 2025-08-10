@@ -52,7 +52,7 @@ struct RestTimerView: View {
                             .font(.system(size: 48, weight: .bold, design: .monospaced))
                             .foregroundColor(timeRemaining <= 10 ? .red : .primary)
                         
-                        Text("kalan süre")
+                        Text(LocalizationKeys.Training.Rest.remaining.localized)
                             .font(.subheadline)
                             .foregroundColor(.secondary)
                     }
@@ -60,15 +60,15 @@ struct RestTimerView: View {
                 
                 // Quick time adjustments
                 HStack(spacing: 20) {
-                    TimeAdjustButton(title: "-15s", action: { adjustTime(-15) })
-                    TimeAdjustButton(title: "+15s", action: { adjustTime(15) })
-                    TimeAdjustButton(title: "+30s", action: { adjustTime(30) })
+                    TimeAdjustButton(title: "-15\(LocalizationKeys.Training.Time.seconds.localized)", action: { adjustTime(-15) })
+                    TimeAdjustButton(title: "+15\(LocalizationKeys.Training.Time.seconds.localized)", action: { adjustTime(15) })
+                    TimeAdjustButton(title: "+30\(LocalizationKeys.Training.Time.seconds.localized)", action: { adjustTime(30) })
                 }
                 
                 // Control buttons
                 HStack(spacing: 20) {
                     // Reset button
-                    Button("Sıfırla") {
+                    Button(LocalizationKeys.Training.Rest.reset.localized) {
                         resetTimer()
                     }
                     .font(.headline)
@@ -79,7 +79,7 @@ struct RestTimerView: View {
                     .cornerRadius(10)
                     
                     // Play/Pause button
-                    Button(isActive ? "Duraklat" : "Başlat") {
+                    Button(isActive ? LocalizationKeys.Training.Rest.pause.localized : LocalizationKeys.Training.Rest.start.localized) {
                         toggleTimer()
                     }
                     .font(.headline)
@@ -90,7 +90,7 @@ struct RestTimerView: View {
                     .cornerRadius(10)
                     
                     // Skip button
-                    Button("Geç") {
+                    Button(LocalizationKeys.Training.Rest.skip.localized) {
                         completeRest()
                     }
                     .font(.headline)
@@ -104,11 +104,11 @@ struct RestTimerView: View {
                 Spacer()
             }
             .padding()
-            .navigationTitle("Dinlenme")
+            .navigationTitle(LocalizationKeys.Training.Rest.title.localized)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Kapat") {
+                    Button(LocalizationKeys.Training.Rest.close.localized) {
                         dismiss()
                     }
                 }
@@ -246,11 +246,11 @@ struct RestTimerPresetView: View {
     let onTimeSelected: (Int) -> Void
     
     private let presetTimes = [
-        (title: "Kısa Dinlenme", subtitle: "Hafif egzersizler için", duration: 30),
-        (title: "Orta Dinlenme", subtitle: "Orta ağırlık egzersizleri", duration: 60),
-        (title: "Uzun Dinlenme", subtitle: "Ağır compound hareketler", duration: 90),
-        (title: "Güç Dinlenmesi", subtitle: "1RM ve maksimal setler", duration: 180),
-        (title: "Özel", subtitle: "Manuel süre ayarla", duration: -1)
+        (titleKey: LocalizationKeys.Training.Rest.Preset.short, descKey: LocalizationKeys.Training.Rest.Preset.shortDesc, duration: 30),
+        (titleKey: LocalizationKeys.Training.Rest.Preset.medium, descKey: LocalizationKeys.Training.Rest.Preset.mediumDesc, duration: 60),
+        (titleKey: LocalizationKeys.Training.Rest.Preset.long, descKey: LocalizationKeys.Training.Rest.Preset.longDesc, duration: 90),
+        (titleKey: LocalizationKeys.Training.Rest.Preset.power, descKey: LocalizationKeys.Training.Rest.Preset.powerDesc, duration: 180),
+        (titleKey: LocalizationKeys.Training.Rest.Preset.custom, descKey: LocalizationKeys.Training.Rest.Preset.customDesc, duration: -1)
     ]
     
     @State private var customMinutes = 2
@@ -261,11 +261,11 @@ struct RestTimerPresetView: View {
             VStack(spacing: 20) {
                 // Header
                 VStack(spacing: 8) {
-                    Text("Dinlenme Süresi")
+                    Text(LocalizationKeys.Training.Rest.Preset.title.localized)
                         .font(.largeTitle)
                         .fontWeight(.bold)
                     
-                    Text("Egzersiz türüne göre uygun dinlenme süresini seç")
+                    Text(LocalizationKeys.Training.Rest.Preset.subtitle.localized)
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                         .multilineTextAlignment(.center)
@@ -277,8 +277,8 @@ struct RestTimerPresetView: View {
                     VStack(spacing: 12) {
                         ForEach(presetTimes, id: \.duration) { preset in
                             PresetTimeButton(
-                                title: preset.title,
-                                subtitle: preset.subtitle,
+                                title: preset.titleKey.localized,
+                                subtitle: preset.descKey.localized,
                                 duration: preset.duration
                             ) {
                                 if preset.duration == -1 {
@@ -299,7 +299,7 @@ struct RestTimerPresetView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button("İptal") {
+                    Button(LocalizationKeys.Training.Rest.Preset.cancel.localized) {
                         dismiss()
                     }
                 }
@@ -328,11 +328,11 @@ struct PresetTimeButton: View {
         if duration == -1 {
             return "Custom"
         } else if duration < 60 {
-            return "\(duration)s"
+            return "\(duration)\(LocalizationKeys.Training.Time.seconds.localized)"
         } else {
             let minutes = duration / 60
             let seconds = duration % 60
-            return seconds == 0 ? "\(minutes)m" : "\(minutes)m \(seconds)s"
+            return seconds == 0 ? "\(minutes)\(LocalizationKeys.Training.Time.minutes.localized)" : "\(minutes)\(LocalizationKeys.Training.Time.minutes.localized) \(seconds)\(LocalizationKeys.Training.Time.seconds.localized)"
         }
     }
     
@@ -382,21 +382,21 @@ struct CustomTimePickerView: View {
     var body: some View {
         NavigationView {
             VStack(spacing: 30) {
-                Text("Özel Dinlenme Süresi")
+                Text(LocalizationKeys.Training.Rest.Custom.title.localized)
                     .font(.title2)
                     .fontWeight(.bold)
                 
                 // Time picker
                 VStack(spacing: 20) {
                     HStack {
-                        Text("Süre:")
+                        Text(LocalizationKeys.Training.Rest.Custom.label.localized)
                             .font(.headline)
                         Spacer()
                     }
                     
                     Picker("Minutes", selection: $selectedMinutes) {
                         ForEach(1...10, id: \.self) { minute in
-                            Text("\(minute) dakika")
+                            Text(LocalizationKeys.Training.Rest.Custom.minutes.localized(with: minute))
                                 .tag(minute)
                         }
                     }
@@ -407,7 +407,7 @@ struct CustomTimePickerView: View {
                 Spacer()
                 
                 // Confirm button
-                Button("Süreyi Ayarla") {
+                Button(LocalizationKeys.Training.Rest.Custom.set.localized) {
                     onTimeSelected(selectedMinutes)
                 }
                 .font(.headline)
@@ -422,7 +422,7 @@ struct CustomTimePickerView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button("İptal") {
+                    Button(LocalizationKeys.Training.Rest.Custom.cancel.localized) {
                         dismiss()
                     }
                 }

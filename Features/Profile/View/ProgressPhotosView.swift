@@ -22,7 +22,6 @@ struct ProgressPhotosView: View {
         Dictionary(grouping: progressPhotos) { photo in
             let formatter = DateFormatter()
             formatter.dateFormat = "MMMM yyyy"
-            formatter.locale = Locale(identifier: "tr")
             return formatter.string(from: photo.date)
         }
     }
@@ -51,11 +50,11 @@ struct ProgressPhotosView: View {
                     }
                 }
             }
-            .navigationTitle("İlerleme Fotoğrafları")
+            .navigationTitle("progress_photos.title".localized)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Kapat") {
+                    Button(LocalizationKeys.Common.close) {
                         dismiss()
                     }
                 }
@@ -79,15 +78,15 @@ struct ProgressPhotosView: View {
                 }
             )
         }
-        .alert("Fotoğrafı Sil", isPresented: $showingDeleteAlert) {
-            Button("Sil", role: .destructive) {
+        .alert("progress_photos.delete_photo".localized, isPresented: $showingDeleteAlert) {
+            Button(LocalizationKeys.Common.delete, role: .destructive) {
                 if let photo = photoToDelete {
                     deletePhoto(photo)
                 }
             }
-            Button("İptal", role: .cancel) { }
+            Button(LocalizationKeys.Common.cancel, role: .cancel) { }
         } message: {
-            Text("Bu fotoğrafı kalıcı olarak silmek istediğinizden emin misiniz?")
+            Text("progress_photos.delete_message".localized)
         }
     }
     
@@ -115,11 +114,11 @@ struct EmptyProgressPhotosView: View {
                     .font(.system(size: 80))
                     .foregroundColor(.blue)
                 
-                Text("İlerleme Fotoğrafları")
+                Text("progress_photos.title".localized)
                     .font(.title2)
                     .fontWeight(.semibold)
                 
-                Text("Görsel ilerlemenizi fotoğraflarla takip edin. Ön, yan ve arka açılardan fotoğraflar ekleyerek değişiminizi görebilirsiniz.")
+                Text("progress_photos.subtitle".localized)
                     .font(.subheadline)
                     .foregroundColor(.secondary)
                     .multilineTextAlignment(.center)
@@ -131,7 +130,7 @@ struct EmptyProgressPhotosView: View {
             } label: {
                 HStack {
                     Image(systemName: "camera.fill")
-                    Text("İlk Fotoğrafı Ekle")
+                    Text("progress_photos.add_first".localized)
                         .fontWeight(.semibold)
                 }
                 .foregroundColor(.white)
@@ -161,7 +160,7 @@ struct PhotoTypesOverviewSection: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("Fotoğraf Türleri")
+            Text("progress_photos.photo_types".localized)
                 .font(.headline)
                 .fontWeight(.semibold)
             
@@ -208,7 +207,7 @@ struct PhotoTypeCard: View {
                                     .font(.title2)
                                     .foregroundColor(.secondary)
                                 
-                                Text("Fotoğraf\nYok")
+                                Text("progress_photos.no_photo".localized)
                                     .font(.caption2)
                                     .foregroundColor(.secondary)
                                     .multilineTextAlignment(.center)
@@ -222,7 +221,7 @@ struct PhotoTypeCard: View {
                     .font(.caption)
                     .fontWeight(.medium)
                 
-                Text("\(count) fotoğraf")
+                Text("\(count) \("progress_photos.photos_count".localized)")
                     .font(.caption2)
                     .foregroundColor(.secondary)
             }
@@ -240,7 +239,6 @@ struct PhotoTimelineSection: View {
         groupedPhotos.keys.sorted { month1, month2 in
             let formatter = DateFormatter()
             formatter.dateFormat = "MMMM yyyy"
-            formatter.locale = Locale(identifier: "tr")
             
             guard let date1 = formatter.date(from: month1),
                   let date2 = formatter.date(from: month2) else {
@@ -253,7 +251,7 @@ struct PhotoTimelineSection: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
-            Text("Zaman Çizelgesi")
+            Text("progress_photos.timeline".localized)
                 .font(.headline)
                 .fontWeight(.semibold)
             
@@ -344,13 +342,13 @@ struct PhotoGridItem: View {
             Button {
                 showingFullScreen = true
             } label: {
-                Label("Tam Ekran Görüntüle", systemImage: "arrow.up.left.and.arrow.down.right")
+                Label("progress_photos.full_screen".localized, systemImage: "arrow.up.left.and.arrow.down.right")
             }
             
             Button(role: .destructive) {
                 onDelete()
             } label: {
-                Label("Sil", systemImage: "trash")
+                Label(LocalizationKeys.Common.delete, systemImage: "trash")
             }
         }
         .fullScreenCover(isPresented: $showingFullScreen) {
@@ -364,7 +362,6 @@ struct PhotoGridItem: View {
     private func formatDate(_ date: Date) -> String {
         let formatter = DateFormatter()
         formatter.dateStyle = .short
-        formatter.locale = Locale(identifier: "tr")
         return formatter.string(from: date)
     }
 }
@@ -389,7 +386,7 @@ struct FullScreenPhotoView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Kapat") {
+                    Button(LocalizationKeys.Common.close) {
                         dismiss()
                     }
                     .foregroundColor(.white)
@@ -436,14 +433,14 @@ struct AddProgressPhotoView: View {
                             .font(.system(size: 60))
                             .foregroundColor(.blue)
                         
-                        Text("Fotoğraf Ekle")
+                        Text("progress_photos.add_photo".localized)
                             .font(.title2)
                             .fontWeight(.semibold)
                     }
                     
                     // Photo Type Selection
                     VStack(alignment: .leading, spacing: 12) {
-                        Text("Fotoğraf Türü")
+                        Text("progress_photos.photo_type".localized)
                             .font(.headline)
                             .fontWeight(.semibold)
                         
@@ -496,11 +493,11 @@ struct AddProgressPhotoView: View {
                                         .font(.system(size: 40))
                                         .foregroundColor(.blue)
                                     
-                                    Text("Fotoğraf Seç")
+                                    Text("progress_photos.select_photo".localized)
                                         .font(.headline)
                                         .foregroundColor(.blue)
                                     
-                                    Text("Kamera veya galeri")
+                                    Text("progress_photos.camera_gallery".localized)
                                         .font(.caption)
                                         .foregroundColor(.secondary)
                                 }
@@ -518,28 +515,28 @@ struct AddProgressPhotoView: View {
                     
                     // Notes
                     VStack(alignment: .leading, spacing: 8) {
-                        Text("Notlar (İsteğe Bağlı)")
+                        Text("progress_photos.notes_optional".localized)
                             .font(.headline)
                             .fontWeight(.semibold)
                         
-                        TextField("Antrenman programı, kilo vs.", text: $notes, axis: .vertical)
+                        TextField("progress_photos.notes_placeholder".localized, text: $notes, axis: .vertical)
                             .textFieldStyle(RoundedBorderTextFieldStyle())
                             .lineLimit(3...6)
                     }
                 }
                 .padding()
             }
-            .navigationTitle("Fotoğraf Ekle")
+            .navigationTitle("progress_photos.add_photo".localized)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button("İptal") {
+                    Button(LocalizationKeys.Common.cancel) {
                         dismiss()
                     }
                 }
                 
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Kaydet") {
+                    Button(LocalizationKeys.Common.save) {
                         savePhoto()
                     }
                     .fontWeight(.semibold)
@@ -556,13 +553,13 @@ struct AddProgressPhotoView: View {
         }
         .actionSheet(isPresented: $showingCamera) {
             ActionSheet(
-                title: Text("Fotoğraf Seç"),
+                title: Text("progress_photos.select_source".localized),
                 buttons: [
-                    .default(Text("Kamera")) {
+                    .default(Text("progress_photos.camera".localized)) {
                         sourceType = .camera
                         showingImagePicker = true
                     },
-                    .default(Text("Galeri")) {
+                    .default(Text("progress_photos.gallery".localized)) {
                         sourceType = .photoLibrary
                         showingImagePicker = true
                     },

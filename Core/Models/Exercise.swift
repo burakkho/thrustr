@@ -34,29 +34,3 @@ final class Exercise {
     }
 }
 
-// MARK: - Exercise Categories
-extension Exercise {
-    enum Category: String, CaseIterable {
-        case push = "push"
-        case pull = "pull"
-        case legs = "legs"
-        case core = "core"
-        case cardio = "cardio"
-        case olympic = "olympic"
-        case functional = "functional"
-        case isolation = "isolation"
-        
-        var displayName: String {
-            switch self {
-            case .push: return "Push (Göğüs/Omuz/Tricep)"
-            case .pull: return "Pull (Sırt/Bicep)"
-            case .legs: return "Legs (Bacak)"
-            case .core: return "Core (Karın)"
-            case .cardio: return "Cardio"
-            case .olympic: return "Olympic Lifts"
-            case .functional: return "Functional"
-            case .isolation: return "İzolasyon"
-            }
-        }
-    }
-}

@@ -41,7 +41,7 @@ struct FoodSelectionView: View {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 12) {
                         FoodCategoryChip(
-                            title: "Tümü",
+                            title: LocalizationKeys.Nutrition.FoodSelection.all.localized,
                             isSelected: selectedCategory == nil,
                             color: .gray
                         ) {
@@ -69,12 +69,14 @@ struct FoodSelectionView: View {
                             .font(.system(size: 40))
                             .foregroundColor(.gray)
                         
-                        Text(searchText.isEmpty ? "Yiyecek bulunamadı" : "'\(searchText)' için sonuç yok")
+                        Text(searchText.isEmpty ?
+                             LocalizationKeys.Nutrition.FoodSelection.noResults.localized :
+                             LocalizationKeys.Nutrition.FoodSelection.noResultsForSearch.localized(with: searchText))
                             .font(.headline)
                             .foregroundColor(.gray)
                         
                         if !searchText.isEmpty {
-                            Text("Farklı arama terimlerini deneyin")
+                            Text(LocalizationKeys.Nutrition.FoodSelection.tryDifferentTerms.localized)
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                         }
@@ -89,17 +91,17 @@ struct FoodSelectionView: View {
                     .listStyle(.plain)
                 }
             }
-            .navigationTitle("Yiyecek Seç")
+            .navigationTitle(LocalizationKeys.Nutrition.FoodSelection.title.localized)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button("İptal") {
+                    Button(LocalizationKeys.Nutrition.FoodSelection.cancel.localized) {
                         dismiss()
                     }
                 }
                 
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Yeni Ekle") {
+                    Button(LocalizationKeys.Nutrition.FoodSelection.addNew.localized) {
                         showingCustomFoodEntry = true
                     }
                     .foregroundColor(.blue)
@@ -123,11 +125,11 @@ struct FoodSearchBar: View {
             Image(systemName: "magnifyingglass")
                 .foregroundColor(.secondary)
             
-            TextField("Yiyecek ara...", text: $text)
+            TextField(LocalizationKeys.Nutrition.FoodSelection.searchPlaceholder.localized, text: $text)
                 .textFieldStyle(.plain)
             
             if !text.isEmpty {
-                Button("Temizle") {
+                Button(LocalizationKeys.Nutrition.FoodSelection.clear.localized) {
                     text = ""
                 }
                 .foregroundColor(.secondary)
@@ -179,7 +181,7 @@ struct FoodRowView: View {
                         .font(.headline)
                         .foregroundColor(.primary)
                     
-                    Text("\(Int(food.calories)) kcal • P: \(Int(food.protein))g • C: \(Int(food.carbs))g • F: \(Int(food.fat))g")
+                    Text("\(Int(food.calories)) \(LocalizationKeys.Nutrition.Units.kcal.localized) • P: \(Int(food.protein))\(LocalizationKeys.Nutrition.Units.g.localized) • C: \(Int(food.carbs))\(LocalizationKeys.Nutrition.Units.g.localized) • F: \(Int(food.fat))\(LocalizationKeys.Nutrition.Units.g.localized)")
                         .font(.caption)
                         .foregroundColor(.secondary)
                     

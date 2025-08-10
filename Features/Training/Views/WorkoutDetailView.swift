@@ -16,7 +16,7 @@ struct WorkoutDetailView: View {
         NavigationView {
             VStack(spacing: 0) {
                 WorkoutHeaderView(
-                    workoutName: workout.name ?? "Antrenman",
+                    workoutName: workout.name ?? LocalizationKeys.Training.Detail.defaultName.localized,
                     duration: formatDuration(Int(currentTime.timeIntervalSince(workout.startTime))),
                     isActive: !workout.isCompleted
                 )
@@ -45,10 +45,10 @@ struct WorkoutDetailView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Geri") { dismiss() }
+                    Button(LocalizationKeys.Training.Detail.back.localized) { dismiss() }
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Bitir") { finishWorkout() }
+                    Button(LocalizationKeys.Training.Detail.finish.localized) { finishWorkout() }
                         .foregroundColor(.red)
                 }
             }
@@ -89,14 +89,14 @@ struct WorkoutHeaderView: View {
                     Text(workoutName).font(.title2).fontWeight(.bold)
                     HStack(spacing: 4) {
                         Circle().fill(isActive ? Color.green : Color.gray).frame(width: 8, height: 8)
-                        Text(isActive ? "Aktif" : "Tamamlandı").font(.caption).foregroundColor(.secondary)
+                        Text(isActive ? LocalizationKeys.Training.Active.statusActive.localized : LocalizationKeys.Training.Active.statusCompleted.localized).font(.caption).foregroundColor(.secondary)
                     }
                 }
                 Spacer()
                 VStack(alignment: .trailing, spacing: 4) {
                     Text(duration).font(.title).fontWeight(.bold)
                         .foregroundColor(isActive ? .blue : .secondary)
-                    Text("Süre").font(.caption).foregroundColor(.secondary)
+                    Text(LocalizationKeys.Training.Active.duration.localized).font(.caption).foregroundColor(.secondary)
                 }
             }
             .padding(.horizontal)
@@ -112,10 +112,10 @@ struct EmptyWorkoutState: View {
     var body: some View {
         VStack(spacing: 20) {
             Image(systemName: "plus.circle.dashed").font(.system(size: 60)).foregroundColor(.gray)
-            Text("Antrenmanına Başla").font(.title2).fontWeight(.semibold)
-            Text("İlk bölümünü ekleyerek antrenmanına başla")
+            Text(LocalizationKeys.Training.Detail.emptyTitle.localized).font(.title2).fontWeight(.semibold)
+            Text(LocalizationKeys.Training.Detail.emptySubtitle.localized)
                 .foregroundColor(.secondary).multilineTextAlignment(.center)
-            Button("Bölüm Ekle", action: action)
+            Button(LocalizationKeys.Training.Detail.emptyAddPart.localized, action: action)
                 .font(.headline).foregroundColor(.white)
                 .padding().background(Color.blue).cornerRadius(12)
         }
@@ -134,6 +134,21 @@ struct WorkoutPartCard: View {
         WorkoutPartType(rawValue: part.type) ?? .strength
     }
 
+    var localizedPartName: String {
+        switch partType {
+        case .strength:
+            return LocalizationKeys.Training.Part.strength.localized
+        case .conditioning:
+            return LocalizationKeys.Training.Part.conditioning.localized
+        case .accessory:
+            return LocalizationKeys.Training.Part.accessory.localized
+        case .warmup:
+            return LocalizationKeys.Training.Part.warmup.localized
+        case .functional:
+            return LocalizationKeys.Training.Part.functional.localized
+        }
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
@@ -146,24 +161,24 @@ struct WorkoutPartCard: View {
                     Circle()
                         .fill(part.isCompleted ? Color.green : Color.orange)
                         .frame(width: 8, height: 8)
-                    Text(part.isCompleted ? "Tamamlandı" : "Devam ediyor")
+                    Text(part.isCompleted ? LocalizationKeys.Training.Part.statusCompleted.localized : LocalizationKeys.Training.Part.statusInProgress.localized)
                         .font(.caption).foregroundColor(.secondary)
                 }
             }
 
             if part.exerciseSets.isEmpty && part.wodResult == nil {
                 VStack(spacing: 8) {
-                    Text("Henüz egzersiz eklenmedi")
+                    Text(LocalizationKeys.Training.Part.noExercise.localized)
                         .foregroundColor(.secondary).font(.subheadline)
-                    Button("Egzersiz Ekle") { showingExerciseSelection = true }
+                    Button(LocalizationKeys.Training.Part.addExercise.localized) { showingExerciseSelection = true }
                         .font(.subheadline).foregroundColor(.blue)
                 }
             } else if let wodResult = part.wodResult {
                 HStack {
-                    Text("Sonuç:").foregroundColor(.secondary)
+                    Text(LocalizationKeys.Training.Part.result.localized).foregroundColor(.secondary)
                     Text(wodResult).fontWeight(.semibold).foregroundColor(.green)
                 }
-                Button("Egzersiz Ekle") { showingExerciseSelection = true }
+                Button(LocalizationKeys.Training.Part.addExercise.localized) { showingExerciseSelection = true }
                     .font(.caption).foregroundColor(.blue)
             } else {
                 VStack(spacing: 8) {
@@ -177,14 +192,14 @@ struct WorkoutPartCard: View {
                             }
                         )
                     }
-                    Button("+ Egzersiz Ekle") { showingExerciseSelection = true }
+                    Button("+ \(LocalizationKeys.Training.Part.addExercise.localized)") { showingExerciseSelection = true }
                         .font(.caption).foregroundColor(.blue).padding(.top, 4)
                 }
             }
 
             HStack(spacing: 16) {
-                StatBadge(title: "Set", value: "\(part.completedSets)/\(part.totalSets)")
-                StatBadge(title: "Volume", value: "\(Int(part.totalVolume))kg")
+                StatBadge(title: LocalizationKeys.Training.Stats.sets.localized, value: "\(part.completedSets)/\(part.totalSets)")
+                StatBadge(title: LocalizationKeys.Training.Stats.volume.localized, value: "\(Int(part.totalVolume))kg")
             }
         }
         .padding()
@@ -240,15 +255,15 @@ struct ExerciseGroupView: View {
             HStack {
                 Text(exercise.nameTR).font(.subheadline).fontWeight(.medium)
                 Spacer()
-                Text("\(completedSets.count)/\(sets.count)")
+                Text(String(format: LocalizationKeys.Training.Exercise.setCount.localized, completedSets.count, sets.count))
                     .font(.caption).foregroundColor(.secondary)
-                Button("+ Set") { onAddSet() }
+                Button("+ \(LocalizationKeys.Training.Stats.sets.localized)") { onAddSet() }
                     .font(.caption).foregroundColor(.blue)
             }
 
             ForEach(completedSets.prefix(3), id: \.id) { set in
                 HStack {
-                    Text("Set \(set.setNumber):")
+                    Text(String(format: LocalizationKeys.Training.Exercise.setNumber.localized, set.setNumber))
                         .font(.caption).foregroundColor(.secondary)
                         .frame(width: 50, alignment: .leading)
                     Text(set.displayText).font(.caption).fontWeight(.medium)
@@ -261,7 +276,7 @@ struct ExerciseGroupView: View {
             }
 
             if completedSets.count > 3 {
-                Text("... ve \(completedSets.count - 3) set daha")
+                Text(String(format: LocalizationKeys.Training.Exercise.moreSets.localized, completedSets.count - 3))
                     .font(.caption2).foregroundColor(.secondary)
             }
         }
@@ -279,7 +294,7 @@ struct AddPartButton: View {
         Button(action: action) {
             HStack {
                 Image(systemName: "plus.circle.fill").foregroundColor(.blue)
-                Text("Bölüm Ekle").fontWeight(.medium)
+                Text(LocalizationKeys.Training.Detail.addPart.localized).fontWeight(.medium)
                 Spacer()
             }
             .padding()
@@ -298,12 +313,12 @@ struct WorkoutActionBar: View {
             Divider()
             HStack(spacing: 12) {
                 HStack(spacing: 16) {
-                    StatBadge(title: "Bölüm", value: "\(workout.parts.count)")
-                    StatBadge(title: "Set", value: "\(workout.totalSets)")
-                    StatBadge(title: "Volume", value: "\(Int(workout.totalVolume))kg")
+                    StatBadge(title: LocalizationKeys.Training.Stats.parts.localized, value: "\(workout.parts.count)")
+                    StatBadge(title: LocalizationKeys.Training.Stats.sets.localized, value: "\(workout.totalSets)")
+                    StatBadge(title: LocalizationKeys.Training.Stats.volume.localized, value: "\(Int(workout.totalVolume))kg")
                 }
                 Spacer()
-                Button("Antrenmanı Bitir", action: onFinish)
+                Button(LocalizationKeys.Training.Detail.finishWorkout.localized, action: onFinish)
                     .font(.headline).foregroundColor(.white)
                     .padding(.horizontal, 20).padding(.vertical, 12)
                     .background(Color.green).cornerRadius(8)
@@ -337,21 +352,21 @@ struct AddPartSheet: View {
         NavigationView {
             VStack(spacing: 24) {
                 VStack(spacing: 8) {
-                    Text("Bölüm Ekle").font(.largeTitle).fontWeight(.bold)
-                    Text("Hangi tür bölüm eklemek istiyorsun?")
+                    Text(LocalizationKeys.Training.AddPart.title.localized).font(.largeTitle).fontWeight(.bold)
+                    Text(LocalizationKeys.Training.AddPart.subtitle.localized)
                         .font(.subheadline).foregroundColor(.secondary)
                 }
                 .padding(.top)
 
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("Bölüm Adı").font(.headline)
-                    TextField("Örn: Warm-up, Strength", text: $partName)
+                    Text(LocalizationKeys.Training.AddPart.nameLabel.localized).font(.headline)
+                    TextField(LocalizationKeys.Training.AddPart.namePlaceholder.localized, text: $partName)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                 }
                 .padding(.horizontal)
 
                 VStack(alignment: .leading, spacing: 12) {
-                    Text("Bölüm Türü").font(.headline).padding(.horizontal)
+                    Text(LocalizationKeys.Training.AddPart.typeLabel.localized).font(.headline).padding(.horizontal)
                     ScrollView {
                         VStack(spacing: 8) {
                             ForEach(WorkoutPartType.allCases, id: \.self) { partType in
@@ -360,7 +375,9 @@ struct AddPartSheet: View {
                                     isSelected: selectedPartType == partType
                                 ) {
                                     selectedPartType = partType
-                                    if partName.isEmpty { partName = partType.displayName }
+                                    if partName.isEmpty {
+                                        partName = getLocalizedPartName(for: partType)
+                                    }
                                 }
                             }
                         }
@@ -370,7 +387,7 @@ struct AddPartSheet: View {
 
                 Spacer()
 
-                Button("Bölüm Ekle") { addPart() }
+                Button(LocalizationKeys.Training.AddPart.add.localized) { addPart() }
                     .font(.headline).foregroundColor(.white)
                     .frame(maxWidth: .infinity).padding()
                     .background(partName.isEmpty ? Color.gray : Color.blue)
@@ -382,7 +399,7 @@ struct AddPartSheet: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button("İptal") { dismiss() }
+                    Button(LocalizationKeys.Training.AddPart.cancel.localized) { dismiss() }
                 }
             }
         }
@@ -392,6 +409,21 @@ struct AddPartSheet: View {
         _ = workout.addPart(name: partName, type: selectedPartType)
         dismiss()
     }
+    
+    private func getLocalizedPartName(for partType: WorkoutPartType) -> String {
+        switch partType {
+        case .strength:
+            return LocalizationKeys.Training.Part.strength.localized
+        case .conditioning:
+            return LocalizationKeys.Training.Part.conditioning.localized
+        case .accessory:
+            return LocalizationKeys.Training.Part.accessory.localized
+        case .warmup:
+            return LocalizationKeys.Training.Part.warmup.localized
+        case .functional:
+            return LocalizationKeys.Training.Part.functional.localized
+        }
+    }
 }
 
 struct PartTypeSelectionRow: View {
@@ -399,14 +431,44 @@ struct PartTypeSelectionRow: View {
     let isSelected: Bool
     let action: () -> Void
 
+    var localizedDisplayName: String {
+        switch partType {
+        case .strength:
+            return LocalizationKeys.Training.Part.strength.localized
+        case .conditioning:
+            return LocalizationKeys.Training.Part.conditioning.localized
+        case .accessory:
+            return LocalizationKeys.Training.Part.accessory.localized
+        case .warmup:
+            return LocalizationKeys.Training.Part.warmup.localized
+        case .functional:
+            return LocalizationKeys.Training.Part.functional.localized
+        }
+    }
+    
+    var localizedDescription: String {
+        switch partType {
+        case .strength:
+            return LocalizationKeys.Training.Part.strengthDesc.localized
+        case .conditioning:
+            return LocalizationKeys.Training.Part.conditioningDesc.localized
+        case .accessory:
+            return LocalizationKeys.Training.Part.accessoryDesc.localized
+        case .warmup:
+            return LocalizationKeys.Training.Part.warmupDesc.localized
+        case .functional:
+            return LocalizationKeys.Training.Part.functionalDesc.localized
+        }
+    }
+
     var body: some View {
         Button(action: action) {
             HStack(spacing: 12) {
                 Image(systemName: partType.icon)
                     .font(.title2).foregroundColor(partColor).frame(width: 30)
                 VStack(alignment: .leading, spacing: 2) {
-                    Text(partType.displayName).font(.headline).foregroundColor(.primary)
-                    Text(partTypeDescription).font(.caption).foregroundColor(.secondary)
+                    Text(localizedDisplayName).font(.headline).foregroundColor(.primary)
+                    Text(localizedDescription).font(.caption).foregroundColor(.secondary)
                 }
                 Spacer()
                 if isSelected {
@@ -434,16 +496,6 @@ struct PartTypeSelectionRow: View {
         case .functional: return .purple
         }
     }
-
-    private var partTypeDescription: String {
-        switch partType {
-        case .strength: return "Ağırlık antrenmanı, set/rep tracking"
-        case .conditioning: return "WOD, kardiyo, kondisyon antrenmanı"
-        case .accessory: return "Yardımcı hareketler, izolasyon"
-        case .warmup: return "Isınma hareketleri"
-        case .functional: return "Fonksiyonel hareketler, crossfit"
-        }
-    }
 }
 
 // MARK: - Preview
@@ -452,4 +504,3 @@ struct PartTypeSelectionRow: View {
     WorkoutDetailView(workout: workout)
         .modelContainer(for: [Workout.self, WorkoutPart.self, ExerciseSet.self, Exercise.self], inMemory: true)
 }
-

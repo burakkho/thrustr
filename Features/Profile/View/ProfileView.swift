@@ -50,7 +50,7 @@ struct ProfileView: View {
                 }
                 .padding()
             }
-            .navigationTitle("Profil")
+            .navigationTitle("profile.title".localized)
             .background(Color(.systemGroupedBackground))
         }
         .sheet(isPresented: $showingPersonalInfoSheet) {
@@ -104,12 +104,12 @@ struct UserHeaderCard: View {
                 )
             
             VStack(alignment: .leading, spacing: 4) {
-                Text(user?.name ?? "Kullanıcı")
+                Text(user?.name ?? "common.user".localized)
                     .font(.title2)
                     .fontWeight(.semibold)
                 
                 if let user = user {
-                    Text("\(user.age) yaş • \(Int(user.height)) cm • \(Int(user.currentWeight)) kg")
+                    Text("\(user.age) \("profile.age".localized) • \(Int(user.height)) cm • \(Int(user.currentWeight)) kg")
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                     
@@ -132,20 +132,20 @@ struct UserHeaderCard: View {
     }
 }
 
-// MARK: - Quick Stats Section (FIXED)
+// MARK: - Quick Stats Section
 struct QuickStatsSection: View {
     let user: User?
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Günlük Hedefler")
+            Text("analytics.daily_calories".localized)
                 .font(.headline)
                 .fontWeight(.semibold)
             
             LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 2), spacing: 12) {
                 QuickStatCard(
                     icon: "flame.fill",
-                    title: "Kalori",
+                    title: "analytics.daily_calories".localized,
                     value: "\(Int(user?.dailyCalorieGoal ?? 0))",
                     subtitle: "kcal",
                     color: .orange
@@ -153,7 +153,7 @@ struct QuickStatsSection: View {
                 
                 QuickStatCard(
                     icon: "fish.fill",
-                    title: "Protein",
+                    title: "nutrition.dailySummary.protein".localized,
                     value: "\(Int(user?.dailyProteinGoal ?? 0))",
                     subtitle: "g",
                     color: .red
@@ -161,7 +161,7 @@ struct QuickStatsSection: View {
                 
                 QuickStatCard(
                     icon: "heart.fill",
-                    title: "BMR",
+                    title: "calculators.bmr".localized,
                     value: "\(Int(user?.bmr ?? 0))",
                     subtitle: "kcal",
                     color: .green
@@ -169,7 +169,7 @@ struct QuickStatsSection: View {
                 
                 QuickStatCard(
                     icon: "bolt.fill",
-                    title: "TDEE",
+                    title: "calculators.tdee".localized,
                     value: "\(Int(user?.tdee ?? 0))",
                     subtitle: "kcal",
                     color: .blue
@@ -185,18 +185,18 @@ struct PersonalSettingsSection: View {
     @Binding var showingAccount: Bool
     
     var body: some View {
-        SettingsSection(title: "Kişisel Bilgiler") {
+        SettingsSection(title: "profile.personal_info".localized) {
             SettingsRow(
                 icon: "person.fill",
-                title: "Kişisel Bilgiler",
-                subtitle: "Boy, kilo, yaş, hedef",
+                title: "profile.personal_info".localized,
+                subtitle: "profile.personal_info_subtitle".localized,
                 action: { showingPersonalInfo = true }
             )
             
             SettingsRow(
                 icon: "person.badge.key.fill",
-                title: "Hesap Yönetimi",
-                subtitle: "Veri yedekleme, gizlilik",
+                title: "profile.account_management".localized,
+                subtitle: "profile.account_subtitle".localized,
                 action: { showingAccount = true }
             )
         }
@@ -209,25 +209,25 @@ struct BodyTrackingSection: View {
     @Binding var showingPhotos: Bool
     
     var body: some View {
-        SettingsSection(title: "Vücut Takibi") {
+        SettingsSection(title: "profile.body_tracking".localized) {
             SettingsRow(
                 icon: "scalemass.fill",
-                title: "Kilo Takibi",
-                subtitle: "Kilo geçmişi ve grafikler",
+                title: "profile.weight_tracking".localized,
+                subtitle: "profile.weight_subtitle".localized,
                 action: { showingWeightEntry = true }
             )
             
             SettingsRow(
                 icon: "ruler.fill",
-                title: "Vücut Ölçüleri",
-                subtitle: "Göğüs, bel, kol ölçüleri",
+                title: "profile.measurements".localized,
+                subtitle: "profile.measurements_subtitle".localized,
                 action: { showingMeasurements = true }
             )
             
             SettingsRow(
                 icon: "camera.fill",
-                title: "İlerleme Fotoğrafları",
-                subtitle: "Görsel ilerleme takibi",
+                title: "profile.progress_photos".localized,
+                subtitle: "profile.photos_subtitle".localized,
                 action: { showingPhotos = true }
             )
         }
@@ -236,11 +236,11 @@ struct BodyTrackingSection: View {
 
 struct FitnessCalculatorsSection: View {
     var body: some View {
-        SettingsSection(title: "Fitness Hesaplayıcıları") {
+        SettingsSection(title: "calculators.fitness_calculators".localized) {
             NavigationLink(destination: FitnessCalculatorsView()) {
                 SettingsRowContent(
                     icon: "function",
-                    title: "Hesaplayıcılar",
+                    title: "calculators.title".localized,
                     subtitle: "1RM, FFMI, Navy Method"
                 )
             }
@@ -252,11 +252,11 @@ struct AppPreferencesSection: View {
     @Binding var showingPreferences: Bool
     
     var body: some View {
-        SettingsSection(title: "Uygulama Ayarları") {
+        SettingsSection(title: "settings.app_preferences".localized) {
             SettingsRow(
                 icon: "gear",
-                title: "Tercihler",
-                subtitle: "Dil, birimler, bildirimler",
+                title: "profile.settings".localized,
+                subtitle: "profile.settings_subtitle".localized,
                 action: { showingPreferences = true }
             )
         }
@@ -265,35 +265,35 @@ struct AppPreferencesSection: View {
 
 struct ProgressAnalyticsSection: View {
     var body: some View {
-        SettingsSection(title: "İlerleme ve Analitik") {
+        SettingsSection(title: "analytics.progress_analytics".localized) {
             NavigationLink(destination: ProgressChartsView()) {
                 SettingsRowContent(
                     icon: "chart.line.uptrend.xyaxis",
-                    title: "İlerleme Grafikleri",
-                    subtitle: "Kilo, ölçüler, performans"
+                    title: "profile.progress_charts".localized,
+                    subtitle: "profile.charts_subtitle".localized
                 )
             }
             
             NavigationLink(destination: AchievementsView()) {
                 SettingsRowContent(
                     icon: "trophy.fill",
-                    title: "Başarımlar",
-                    subtitle: "Rozetler ve hedefler"
+                    title: "analytics.achievements".localized,
+                    subtitle: "profile.achievements_subtitle".localized
                 )
             }
             
             NavigationLink(destination: GoalTrackingView()) {
                 SettingsRowContent(
                     icon: "target",
-                    title: "Hedef Takibi",
-                    subtitle: "Kişisel hedefler"
+                    title: "profile.goal_tracking".localized,
+                    subtitle: "profile.goals_subtitle".localized
                 )
             }
         }
     }
 }
 
-// MARK: - Reusable Components
+// MARK: - Reusable Components (No changes needed)
 struct SettingsSection<Content: View>: View {
     let title: String
     @ViewBuilder let content: Content

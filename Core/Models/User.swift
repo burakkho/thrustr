@@ -87,10 +87,10 @@ final class User {
     
     var bmiCategory: String {
         switch bmi {
-        case ..<18.5: return "Zayıf"
-        case 18.5..<25: return "Normal"
-        case 25..<30: return "Fazla kilolu"
-        default: return "Obez"
+        case ..<18.5: return "bmi.underweight".localized
+        case 18.5..<25: return "bmi.normal".localized
+        case 25..<30: return "bmi.overweight".localized
+        default: return "bmi.obese".localized
         }
     }
     

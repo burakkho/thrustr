@@ -9,12 +9,14 @@ struct MealEntryView: View {
     @State private var gramsConsumed: Double = 100
     @State private var selectedMealType = "breakfast"
     
-    private let mealTypes = [
-        ("breakfast", "Kahvaltı"),
-        ("lunch", "Öğle"),
-        ("dinner", "Akşam"),
-        ("snack", "Atıştırmalık")
-    ]
+    private var mealTypes: [(String, String)] {
+        [
+            ("breakfast", LocalizationKeys.Nutrition.MealEntry.MealTypes.breakfast.localized),
+            ("lunch", LocalizationKeys.Nutrition.MealEntry.MealTypes.lunch.localized),
+            ("dinner", LocalizationKeys.Nutrition.MealEntry.MealTypes.dinner.localized),
+            ("snack", LocalizationKeys.Nutrition.MealEntry.MealTypes.snack.localized)
+        ]
+    }
     
     var body: some View {
         NavigationView {
@@ -38,7 +40,7 @@ struct MealEntryView: View {
                         }
                     }
                     
-                    Text("100g başına: \(Int(food.calories)) kcal")
+                    Text(LocalizationKeys.Nutrition.MealEntry.per100gCalories.localized(with: Int(food.calories)))
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
@@ -46,20 +48,20 @@ struct MealEntryView: View {
                 
                 // Porsiyon girişi
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("Porsiyon (gram)")
+                    Text(LocalizationKeys.Nutrition.MealEntry.portion.localized)
                         .font(.headline)
                     
-                    TextField("Gram", value: $gramsConsumed, format: .number)
+                    TextField(LocalizationKeys.Nutrition.MealEntry.portionGrams.localized, value: $gramsConsumed, format: .number)
                         .textFieldStyle(.roundedBorder)
                         .keyboardType(.decimalPad)
                 }
                 
                 // Öğün seçimi
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("Öğün")
+                    Text(LocalizationKeys.Nutrition.MealEntry.meal.localized)
                         .font(.headline)
                     
-                    Picker("Öğün", selection: $selectedMealType) {
+                    Picker(LocalizationKeys.Nutrition.MealEntry.meal.localized, selection: $selectedMealType) {
                         ForEach(mealTypes, id: \.0) { type, name in
                             Text(name).tag(type)
                         }
@@ -71,9 +73,9 @@ struct MealEntryView: View {
                 if gramsConsumed > 0 {
                     let nutrition = food.calculateNutrition(for: gramsConsumed)
                     VStack(spacing: 4) {
-                        Text("Toplam: \(Int(nutrition.calories)) kcal")
+                        Text(LocalizationKeys.Nutrition.MealEntry.total.localized(with: Int(nutrition.calories)))
                             .font(.headline)
-                        Text("Protein: \(Int(nutrition.protein))g • Carbs: \(Int(nutrition.carbs))g • Fat: \(Int(nutrition.fat))g")
+                        Text("Protein: \(Int(nutrition.protein))\(LocalizationKeys.Nutrition.Units.g.localized) • Carbs: \(Int(nutrition.carbs))\(LocalizationKeys.Nutrition.Units.g.localized) • Fat: \(Int(nutrition.fat))\(LocalizationKeys.Nutrition.Units.g.localized)")
                             .font(.caption)
                             .foregroundColor(.secondary)
                     }
@@ -85,18 +87,18 @@ struct MealEntryView: View {
                 Spacer()
                 
                 // Ekle butonu
-                Button("Öğüne Ekle") {
+                Button(LocalizationKeys.Nutrition.MealEntry.addToMeal.localized) {
                     addMealEntry()
                 }
                 .buttonStyle(.borderedProminent)
                 .disabled(gramsConsumed <= 0)
             }
             .padding()
-            .navigationTitle("Öğün Ekle")
+            .navigationTitle(LocalizationKeys.Nutrition.MealEntry.title.localized)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button("İptal") {
+                    Button(LocalizationKeys.Nutrition.MealEntry.cancel.localized) {
                         onDismiss()
                     }
                 }

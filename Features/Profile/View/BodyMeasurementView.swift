@@ -63,11 +63,11 @@ struct BodyMeasurementsView: View {
                 }
                 .padding()
             }
-            .navigationTitle("Vücut Ölçüleri")
+            .navigationTitle(LocalizationKeys.Measurements.title)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Kapat") {
+                    Button(LocalizationKeys.Common.close) {
                         dismiss()
                     }
                 }
@@ -92,10 +92,10 @@ struct BodyMeasurementsView: View {
                 onSave: { saveMeasurement() }
             )
         }
-        .alert("Ölçü Kaydedildi", isPresented: $showingSuccessAlert) {
-            Button("Tamam") { }
+        .alert("body_measurements.measurement_saved".localized, isPresented: $showingSuccessAlert) {
+            Button(LocalizationKeys.Common.ok) { }
         } message: {
-            Text("Yeni ölçünüz başarıyla kaydedildi.")
+            Text("body_measurements.saved_message".localized)
         }
     }
     
@@ -135,11 +135,11 @@ struct MeasurementsHeaderSection: View {
                 .foregroundColor(.blue)
             
             VStack(spacing: 8) {
-                Text("Vücut Ölçüleri")
+                Text(LocalizationKeys.Measurements.title)
                     .font(.title2)
                     .fontWeight(.semibold)
                 
-                Text("İlerlemenizi ölçümlerle takip edin")
+                Text("body_measurements.subtitle".localized)
                     .font(.subheadline)
                     .foregroundColor(.secondary)
                     .multilineTextAlignment(.center)
@@ -162,7 +162,7 @@ struct CurrentMeasurementsSection: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("Güncel Ölçüler")
+            Text("body_measurements.current_measurements".localized)
                 .font(.headline)
                 .fontWeight(.semibold)
             
@@ -211,7 +211,7 @@ struct MeasurementCard: View {
                     .font(.headline)
                     .foregroundColor(.secondary)
                 
-                Text("Ölçüm yok")
+                Text(LocalizationKeys.Measurements.noMeasurements)
                     .font(.caption2)
                     .foregroundColor(.secondary)
             }
@@ -225,7 +225,6 @@ struct MeasurementCard: View {
     private func formatDate(_ date: Date) -> String {
         let formatter = DateFormatter()
         formatter.dateStyle = .short
-        formatter.locale = Locale(identifier: "tr")
         return formatter.string(from: date)
     }
 }
@@ -237,36 +236,36 @@ struct ProgressOverviewSection: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("İlerleme Özeti")
+            Text("body_measurements.progress_summary".localized)
                 .font(.headline)
                 .fontWeight(.semibold)
             
             LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 2), spacing: 12) {
                 ProgressStatCard(
-                    title: "Toplam Ölçüm",
+                    title: "body_measurements.total_measurements".localized,
                     value: "\(measurements.count)",
-                    subtitle: "Son 6 ay",
+                    subtitle: "body_measurements.last_6_months".localized,
                     color: .blue
                 )
                 
                 ProgressStatCard(
-                    title: "Kilo Girişi",
+                    title: "body_measurements.weight_entries".localized,
                     value: "\(weightEntries.count)",
-                    subtitle: "Son 6 ay",
+                    subtitle: "body_measurements.last_6_months".localized,
                     color: .green
                 )
                 
                 ProgressStatCard(
-                    title: "En Son Ölçüm",
+                    title: "body_measurements.last_measurement".localized,
                     value: latestMeasurementDate,
-                    subtitle: "Tarih",
+                    subtitle: LocalizationKeys.Measurements.date,
                     color: .orange
                 )
                 
                 ProgressStatCard(
-                    title: "Aktif Takip",
+                    title: "body_measurements.active_tracking".localized,
                     value: "\(activeMeasurementTypes)",
-                    subtitle: "Ölçüm türü",
+                    subtitle: "body_measurements.measurement_types".localized,
                     color: .purple
                 )
             }
@@ -279,11 +278,10 @@ struct ProgressOverviewSection: View {
     
     private var latestMeasurementDate: String {
         let latest = measurements.max(by: { $0.date < $1.date })
-        guard let date = latest?.date else { return "Yok" }
+        guard let date = latest?.date else { return LocalizationKeys.Analytics.noData }
         
         let formatter = DateFormatter()
         formatter.dateStyle = .short
-        formatter.locale = Locale(identifier: "tr")
         return formatter.string(from: date)
     }
     
@@ -329,7 +327,7 @@ struct RecentEntriesSection: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("Son Girişler")
+            Text("body_measurements.recent_entries".localized)
                 .font(.headline)
                 .fontWeight(.semibold)
             
@@ -389,7 +387,6 @@ struct RecentMeasurementRow: View {
     private func formatDate(_ date: Date) -> String {
         let formatter = DateFormatter()
         formatter.dateStyle = .short
-        formatter.locale = Locale(identifier: "tr")
         return formatter.string(from: date)
     }
 }
@@ -405,7 +402,7 @@ struct RecentWeightRow: View {
                 .frame(width: 24)
             
             VStack(alignment: .leading, spacing: 2) {
-                Text("Kilo")
+                Text(LocalizationKeys.Measurements.weight)
                     .font(.subheadline)
                     .fontWeight(.medium)
                 
@@ -427,7 +424,6 @@ struct RecentWeightRow: View {
     private func formatDate(_ date: Date) -> String {
         let formatter = DateFormatter()
         formatter.dateStyle = .short
-        formatter.locale = Locale(identifier: "tr")
         return formatter.string(from: date)
     }
 }
@@ -439,11 +435,11 @@ struct EmptyStateView: View {
                 .font(.system(size: 40))
                 .foregroundColor(.secondary)
             
-            Text("Henüz ölçüm yok")
+            Text("body_measurements.no_measurements".localized)
                 .font(.headline)
                 .foregroundColor(.secondary)
             
-            Text("İlk ölçümünüzü eklemek için + butonuna dokunun")
+            Text("body_measurements.first_tip".localized)
                 .font(.subheadline)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
@@ -456,36 +452,36 @@ struct EmptyStateView: View {
 struct MeasurementGuideSection: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("Ölçüm İpuçları")
+            Text("body_measurements.measurement_tips".localized)
                 .font(.headline)
                 .fontWeight(.semibold)
             
             VStack(spacing: 12) {
                 MeasurementTip(
                     icon: "clock.fill",
-                    title: "Doğru Zamanlama",
-                    description: "Ölçümlerinizi hep aynı saatte yapın, tercihen sabah açken.",
+                    title: "body_measurements.correct_timing".localized,
+                    description: "body_measurements.timing_desc".localized,
                     color: .blue
                 )
                 
                 MeasurementTip(
                     icon: "ruler.fill",
-                    title: "Doğru Teknik",
-                    description: "Mezura gevşek değil, çok sıkı da değil, kasların üzerinde olmalı.",
+                    title: "body_measurements.correct_technique".localized,
+                    description: "body_measurements.technique_desc".localized,
                     color: .green
                 )
                 
                 MeasurementTip(
                     icon: "calendar.circle.fill",
-                    title: "Düzenli Takip",
-                    description: "Haftada bir veya iki haftada bir ölçüm yapmak yeterli.",
+                    title: "body_measurements.regular_tracking".localized,
+                    description: "body_measurements.tracking_desc".localized,
                     color: .orange
                 )
                 
                 MeasurementTip(
                     icon: "chart.line.uptrend.xyaxis",
-                    title: "Trend Odağı",
-                    description: "Günlük değişimlere değil, uzun vadeli trende odaklanın.",
+                    title: "body_measurements.trend_focus".localized,
+                    description: "body_measurements.trend_desc".localized,
                     color: .purple
                 )
             }
@@ -550,7 +546,7 @@ struct AddMeasurementView: View {
                             .font(.system(size: 60))
                             .foregroundColor(.blue)
                         
-                        Text("Yeni Ölçüm Ekle")
+                        Text("body_measurements.add_new".localized)
                             .font(.title2)
                             .fontWeight(.semibold)
                     }
@@ -609,7 +605,7 @@ struct AddMeasurementView: View {
                             HStack {
                                 Image(systemName: "calendar")
                                     .foregroundColor(.blue)
-                                Text("Ölçüm Tarihi")
+                                Text(LocalizationKeys.Measurements.date)
                                     .fontWeight(.medium)
                             }
                             
@@ -623,7 +619,7 @@ struct AddMeasurementView: View {
                             HStack {
                                 Image(systemName: "note.text")
                                     .foregroundColor(.green)
-                                Text("Notlar (İsteğe Bağlı)")
+                                Text(LocalizationKeys.Measurements.notes)
                                     .fontWeight(.medium)
                             }
                             
@@ -639,17 +635,17 @@ struct AddMeasurementView: View {
                 }
                 .padding()
             }
-            .navigationTitle("Ölçüm Ekle")
+            .navigationTitle(LocalizationKeys.Measurements.addMeasurement)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button("İptal") {
+                    Button(LocalizationKeys.Common.cancel) {
                         dismiss()
                     }
                 }
                 
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Kaydet") {
+                    Button(LocalizationKeys.Common.save) {
                         onSave()
                     }
                     .fontWeight(.semibold)

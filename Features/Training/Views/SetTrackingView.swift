@@ -64,13 +64,13 @@ struct SetTrackingView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Geri") {
+                    Button(LocalizationKeys.Training.Set.back.localized) {
                         dismiss()
                     }
                 }
                 
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Kaydet") {
+                    Button(LocalizationKeys.Training.Set.save.localized) {
                         finishExercise()
                     }
                     .fontWeight(.semibold)
@@ -197,7 +197,7 @@ struct ExerciseHeader: View {
             
             if !exercise.equipment.isEmpty {
                 HStack {
-                    Text("Ekipman:")
+                    Text(LocalizationKeys.Training.Set.equipment.localized)
                         .font(.caption)
                         .foregroundColor(.secondary)
                     
@@ -223,14 +223,14 @@ struct SetTableHeader: View {
     var body: some View {
         HStack(spacing: 0) {
             // Set number
-            Text("Set")
+            Text(LocalizationKeys.Training.Set.Header.set.localized)
                 .font(.caption)
                 .fontWeight(.semibold)
                 .foregroundColor(.secondary)
                 .frame(width: 40)
             
             if exercise.supportsWeight {
-                Text("Ağırlık")
+                Text(LocalizationKeys.Training.Set.Header.weight.localized)
                     .font(.caption)
                     .fontWeight(.semibold)
                     .foregroundColor(.secondary)
@@ -238,7 +238,7 @@ struct SetTableHeader: View {
             }
             
             if exercise.supportsReps {
-                Text("Tekrar")
+                Text(LocalizationKeys.Training.Set.Header.reps.localized)
                     .font(.caption)
                     .fontWeight(.semibold)
                     .foregroundColor(.secondary)
@@ -246,7 +246,7 @@ struct SetTableHeader: View {
             }
             
             if exercise.supportsTime {
-                Text("Süre")
+                Text(LocalizationKeys.Training.Set.Header.time.localized)
                     .font(.caption)
                     .fontWeight(.semibold)
                     .foregroundColor(.secondary)
@@ -254,7 +254,7 @@ struct SetTableHeader: View {
             }
             
             if exercise.supportsDistance {
-                Text("Mesafe")
+                Text(LocalizationKeys.Training.Set.Header.distance.localized)
                     .font(.caption)
                     .fontWeight(.semibold)
                     .foregroundColor(.secondary)
@@ -262,7 +262,7 @@ struct SetTableHeader: View {
             }
             
             // RPE
-            Text("RPE")
+            Text(LocalizationKeys.Training.Set.Header.rpe.localized)
                 .font(.caption)
                 .fontWeight(.semibold)
                 .foregroundColor(.secondary)
@@ -298,7 +298,7 @@ struct SetRow: View {
             if exercise.supportsWeight {
                 NumberInputField(
                     value: $setData.weight,
-                    placeholder: "kg",
+                    placeholder: LocalizationKeys.Training.Set.kg.localized,
                     isEnabled: !setData.isCompleted
                 )
                 .frame(maxWidth: .infinity)
@@ -310,7 +310,7 @@ struct SetRow: View {
                         get: { Double(setData.reps) },
                         set: { setData.reps = Int($0) }
                     ),
-                    placeholder: "reps",
+                    placeholder: LocalizationKeys.Training.Set.reps.localized,
                     isEnabled: !setData.isCompleted,
                     allowDecimals: false
                 )
@@ -328,7 +328,7 @@ struct SetRow: View {
             if exercise.supportsDistance {
                 NumberInputField(
                     value: $setData.distance,
-                    placeholder: "m",
+                    placeholder: LocalizationKeys.Training.Set.meters.localized,
                     isEnabled: !setData.isCompleted
                 )
                 .frame(maxWidth: .infinity)
@@ -416,13 +416,13 @@ struct TimeInputField: View {
         .onAppear {
             updateFromSeconds()
         }
-        .onChange(of: minutes) {           // iOS 17 uyumlu (sıfır parametre)
+        .onChange(of: minutes) {
             updateSeconds()
         }
-        .onChange(of: secs) {              // iOS 17 uyumlu (sıfır parametre)
+        .onChange(of: secs) {
             updateSeconds()
         }
-        .onChange(of: seconds) {           // iOS 17 uyumlu (sıfır parametre)
+        .onChange(of: seconds) {
             updateFromSeconds()
         }
     }
@@ -468,7 +468,7 @@ struct AddSetButton: View {
             HStack {
                 Image(systemName: "plus.circle.fill")
                     .foregroundColor(.blue)
-                Text("Set Ekle")
+                Text(LocalizationKeys.Training.Set.addSet.localized)
                     .fontWeight(.medium)
                 Spacer()
             }
@@ -486,11 +486,11 @@ struct NotesSection: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("Notlar")
+            Text(LocalizationKeys.Training.Set.notes.localized)
                 .font(.headline)
                 .foregroundColor(.secondary)
             
-            TextField("Egzersiz hakkında notlar...", text: $notes, axis: .vertical)
+            TextField(LocalizationKeys.Training.Set.notesPlaceholder.localized, text: $notes, axis: .vertical)
                 .textFieldStyle(RoundedBorderTextFieldStyle())
                 .lineLimit(3...6)
         }
@@ -509,7 +509,7 @@ struct SetTrackingActionBar: View {
             
             HStack(spacing: 12) {
                 // Rest timer button
-                Button("Dinlenmede") {
+                Button(LocalizationKeys.Training.Set.rest.localized) {
                     onRestTimer()
                 }
                 .font(.subheadline)
@@ -522,7 +522,7 @@ struct SetTrackingActionBar: View {
                 Spacer()
                 
                 // Finish button
-                Button("Egzersizi Bitir") {
+                Button(LocalizationKeys.Training.Set.finishExercise.localized) {
                     onFinish()
                 }
                 .font(.headline)

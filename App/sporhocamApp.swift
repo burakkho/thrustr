@@ -3,6 +3,9 @@ import SwiftData
 
 @main
 struct sporhocamApp: App {
+    @StateObject private var themeManager = ThemeManager()
+    @StateObject private var languageManager = LanguageManager.shared
+    
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
             // Core Models
@@ -35,6 +38,11 @@ struct sporhocamApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environmentObject(themeManager)
+                .environmentObject(languageManager)
+                .onAppear {
+                    print("🚀 App started with language: \(languageManager.currentLanguage.displayName)")
+                }
         }
         .modelContainer(sharedModelContainer)
     }

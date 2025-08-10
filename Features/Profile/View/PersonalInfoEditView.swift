@@ -59,17 +59,17 @@ struct PersonalInfoEditView: View {
                 }
                 .padding()
             }
-            .navigationTitle("Kişisel Bilgiler")
+            .navigationTitle("personal_info.title".localized)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button("İptal") {
+                    Button("personal_info.cancel".localized) {
                         dismiss()
                     }
                 }
                 
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Kaydet") {
+                    Button("personal_info.save".localized) {
                         saveChanges()
                     }
                     .fontWeight(.semibold)
@@ -81,12 +81,12 @@ struct PersonalInfoEditView: View {
         .onAppear {
             loadUserData()
         }
-        .alert("Bilgiler Güncellendi", isPresented: $showingSaveAlert) {
-            Button("Tamam") {
+        .alert("personal_info.info_updated".localized, isPresented: $showingSaveAlert) {
+            Button("common.ok".localized) {
                 dismiss()
             }
         } message: {
-            Text("Kişisel bilgileriniz başarıyla güncellendi ve yeni hedefler hesaplandı.")
+            Text("personal_info.update_success".localized)
         }
     }
     
@@ -149,12 +149,12 @@ struct HeaderSection: View {
                 .font(.system(size: 60))
                 .foregroundColor(.blue)
             
-            Text("Kişisel Bilgilerini Güncelle")
+            Text("personal_info.update_title".localized)
                 .font(.title2)
                 .fontWeight(.semibold)
                 .multilineTextAlignment(.center)
             
-            Text("Doğru hedefler için bilgilerinin güncel olmasını sağla")
+            Text("personal_info.update_subtitle".localized)
                 .font(.subheadline)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
@@ -171,18 +171,18 @@ struct BasicInfoSection: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            SectionHeader(title: "Temel Bilgiler", icon: "info.circle.fill")
+            SectionHeader(title: "personal_info.basic_info".localized, icon: "info.circle.fill")
             
             VStack(spacing: 12) {
                 InputField(
-                    title: "İsim",
+                    title: "personal_info.name".localized,
                     text: $name,
-                    placeholder: "Adınızı girin",
+                    placeholder: "personal_info.name_placeholder".localized,
                     icon: "person.fill"
                 )
                 
                 InputField(
-                    title: "Yaş",
+                    title: "personal_info.age".localized,
                     text: $age,
                     placeholder: "25",
                     icon: "calendar",
@@ -205,11 +205,11 @@ struct PhysicalMeasurementsSection: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            SectionHeader(title: "Fiziksel Ölçümler", icon: "ruler.fill")
+            SectionHeader(title: "personal_info.physical_measurements".localized, icon: "ruler.fill")
             
             VStack(spacing: 12) {
                 InputField(
-                    title: "Boy (cm)",
+                    title: "personal_info.height".localized,
                     text: $height,
                     placeholder: "175",
                     icon: "ruler",
@@ -217,7 +217,7 @@ struct PhysicalMeasurementsSection: View {
                 )
                 
                 InputField(
-                    title: "Güncel Kilo (kg)",
+                    title: "personal_info.current_weight".localized,
                     text: $currentWeight,
                     placeholder: "70",
                     icon: "scalemass",
@@ -238,7 +238,7 @@ struct GoalsSection: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            SectionHeader(title: "Hedefler ve Aktivite", icon: "target")
+            SectionHeader(title: "personal_info.goals_activity".localized, icon: "target")
             
             VStack(spacing: 16) {
                 FitnessGoalSelector(selectedGoal: $selectedFitnessGoal)
@@ -277,38 +277,38 @@ struct CalculatedValuesPreview: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            SectionHeader(title: "Hesaplanan Değerler", icon: "calculator")
+            SectionHeader(title: "personal_info.calculated_values".localized, icon: "calculator")
             
             LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 2), spacing: 12) {
                 CalculatedValueCard(
-                    title: "BMR",
+                    title: "calculators.bmr".localized,
                     value: "\(Int(previewBMR))",
-                    unit: "kcal",
-                    subtitle: "Bazal Metabolizma",
+                    unit: "nutrition.units.kcal".localized,
+                    subtitle: "personal_info.basal_metabolism".localized,
                     color: .green
                 )
                 
                 CalculatedValueCard(
-                    title: "TDEE",
+                    title: "calculators.tdee".localized,
                     value: "\(Int(previewTDEE))",
-                    unit: "kcal",
-                    subtitle: "Günlük Harcama",
+                    unit: "nutrition.units.kcal".localized,
+                    subtitle: "personal_info.daily_expenditure".localized,
                     color: .blue
                 )
                 
                 CalculatedValueCard(
-                    title: "Kalori Hedefi",
+                    title: "personal_info.calorie_goal".localized,
                     value: "\(Int(previewCalorieGoal))",
-                    unit: "kcal",
+                    unit: "nutrition.units.kcal".localized,
                     subtitle: fitnessGoal.displayName,
                     color: .orange
                 )
                 
                 CalculatedValueCard(
-                    title: "Protein",
+                    title: "nutrition.dailySummary.protein".localized,
                     value: "\(Int(weight * 2))",
-                    unit: "g",
-                    subtitle: "Günlük Hedef",
+                    unit: "nutrition.units.g".localized,
+                    subtitle: "personal_info.daily_target".localized,
                     color: .red
                 )
             }
@@ -410,12 +410,12 @@ struct GenderSelector: View {
                     .font(.caption)
                     .foregroundColor(.blue)
                 
-                Text("Cinsiyet")
+                Text("personal_info.gender".localized)
                     .font(.subheadline)
                     .fontWeight(.medium)
             }
             
-            Picker("Cinsiyet", selection: $selectedGender) {
+            Picker("personal_info.gender".localized, selection: $selectedGender) {
                 ForEach(Gender.allCases, id: \.self) { gender in
                     Text(gender.displayName).tag(gender)
                 }
@@ -435,7 +435,7 @@ struct FitnessGoalSelector: View {
                     .font(.caption)
                     .foregroundColor(.blue)
                 
-                Text("Fitness Hedefi")
+                Text("personal_info.fitness_goal".localized)
                     .font(.subheadline)
                     .fontWeight(.medium)
             }
@@ -500,7 +500,7 @@ struct ActivityLevelSelector: View {
                     .font(.caption)
                     .foregroundColor(.blue)
                 
-                Text("Aktivite Seviyesi")
+                Text("personal_info.activity_level".localized)
                     .font(.subheadline)
                     .fontWeight(.medium)
             }

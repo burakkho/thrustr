@@ -10,14 +10,7 @@ enum FoodCategory: String, CaseIterable, Codable {
     case other = "other"
     
     var displayName: String {
-        switch self {
-        case .meat: return "Et & Tavuk"
-        case .dairy: return "Süt Ürünleri"
-        case .vegetables: return "Sebzeler"
-        case .fruits: return "Meyveler"
-        case .grains: return "Tahıllar"
-        case .other: return "Diğer"
-        }
+        return "food_category_\(self.rawValue)".localized
     }
     
     var icon: String {

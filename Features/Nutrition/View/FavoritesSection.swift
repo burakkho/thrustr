@@ -35,7 +35,7 @@ struct FavoritesSection: View {
                     HStack {
                         Image(systemName: "heart.fill")
                             .foregroundColor(.red)
-                        Text("Favoriler")
+                        Text(LocalizationKeys.Nutrition.Favorites.favorites.localized)
                             .font(.headline)
                             .fontWeight(.semibold)
                     }
@@ -60,7 +60,7 @@ struct FavoritesSection: View {
                     HStack {
                         Image(systemName: "clock.fill")
                             .foregroundColor(.blue)
-                        Text("Son Kullanılanlar")
+                        Text(LocalizationKeys.Nutrition.Favorites.recent.localized)
                             .font(.headline)
                             .fontWeight(.semibold)
                     }
@@ -85,7 +85,7 @@ struct FavoritesSection: View {
                     HStack {
                         Image(systemName: "flame.fill")
                             .foregroundColor(.orange)
-                        Text("Popüler")
+                        Text(LocalizationKeys.Nutrition.Favorites.popular.localized)
                             .font(.headline)
                             .fontWeight(.semibold)
                     }
@@ -134,12 +134,12 @@ struct QuickFoodCard: View {
                     .lineLimit(2)
                     .multilineTextAlignment(.leading)
                 
-                Text("\(Int(food.calories)) kcal")
+                Text("\(Int(food.calories)) \(LocalizationKeys.Nutrition.Units.kcal.localized)")
                     .font(.caption)
                     .foregroundColor(.secondary)
                 
                 if type == .popular {
-                    Text("\(food.usageCount) kez kullanıldı")
+                    Text(LocalizationKeys.Nutrition.Favorites.timesUsed.localized(with: food.usageCount))
                         .font(.caption2)
                         .foregroundColor(.orange)
                 }

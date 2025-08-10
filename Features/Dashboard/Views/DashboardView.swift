@@ -40,7 +40,7 @@ struct DashboardView: View {
                 }
                 .padding()
             }
-            .navigationTitle("Ana Sayfa")
+            .navigationTitle(LocalizationKeys.Dashboard.title.localized)
             .refreshable {
                 await refreshHealthData()
             }
@@ -60,12 +60,12 @@ struct DashboardView: View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
                 VStack(alignment: .leading) {
-                    // ✅ FIXED: User.name boş string check
-                    Text("Merhaba, \(currentUser.name.isEmpty ? "Kullanıcı" : currentUser.name)!")
+                    // ✅ LOCALIZED: Welcome message with user name fallback
+                    Text(LocalizationKeys.Dashboard.welcome.localized(with: currentUser.name.isEmpty ? LocalizationKeys.Common.user.localized : currentUser.name))
                         .font(.title2.bold())
                         .foregroundColor(.primary)
                     
-                    Text("Bugün nasıl hissediyorsun?")
+                    Text(LocalizationKeys.Dashboard.howFeeling.localized)
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                 }
@@ -78,8 +78,8 @@ struct DashboardView: View {
                         .fill(Color.blue.opacity(0.1))
                         .frame(width: 50, height: 50)
                     
-                    // ✅ FIXED: User.name boş string check for initials
-                    Text(String((currentUser.name.isEmpty ? "K" : currentUser.name).prefix(1)).uppercased())
+                    // ✅ LOCALIZED: User initials with fallback
+                    Text(String((currentUser.name.isEmpty ? LocalizationKeys.Common.user.localized : currentUser.name).prefix(1)).uppercased())
                         .font(.title2.bold())
                         .foregroundColor(.blue)
                 }
@@ -96,34 +96,34 @@ struct DashboardView: View {
             // Steps
             QuickStatCard(
                 icon: "figure.walk",
-                title: "Bugün",
+                title: LocalizationKeys.Dashboard.Stats.today.localized,
                 value: formatSteps(healthKitService.todaySteps),
-                subtitle: "adım",
+                subtitle: LocalizationKeys.Dashboard.Stats.steps.localized,
                 color: .blue
             )
             
             // Calories
             QuickStatCard(
                 icon: "flame.fill",
-                title: "Kalori",
+                title: LocalizationKeys.Dashboard.Stats.calories.localized,
                 value: formatCalories(healthKitService.todayCalories),
-                subtitle: "kcal",
+                subtitle: LocalizationKeys.Dashboard.Stats.kcal.localized,
                 color: .orange
             )
             
             // Weight
             QuickStatCard(
                 icon: "scalemass.fill",
-                title: "Kilo",
+                title: LocalizationKeys.Dashboard.Stats.weight.localized,
                 value: currentUser.displayWeight,
-                subtitle: "son ölçüm",
+                subtitle: LocalizationKeys.Dashboard.Stats.lastMeasurement.localized,
                 color: .green
             )
             
             // BMI
             QuickStatCard(
                 icon: "heart.fill",
-                title: "BMI",
+                title: LocalizationKeys.Dashboard.Stats.bmi.localized,
                 value: String(format: "%.1f", currentUser.bmi),
                 subtitle: currentUser.bmiCategory,
                 color: .red
@@ -134,16 +134,16 @@ struct DashboardView: View {
     // MARK: - Quick Actions (Using Shared Components)
     private var quickActionsSection: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("Hızlı İşlemler")
+            Text(LocalizationKeys.Dashboard.quickActions.localized)
                 .font(.headline)
                 .padding(.horizontal)
             
             VStack(spacing: 12) {
                 // Start Workout
                 GuideSection(
-                    title: "Antrenman Başlat",
+                    title: LocalizationKeys.Dashboard.Actions.startWorkout.localized,
                     icon: "dumbbell.fill",
-                    description: "Yeni antrenman oluştur ve egzersizlerini takip et",
+                    description: LocalizationKeys.Dashboard.Actions.startWorkoutDesc.localized,
                     color: .blue
                 ) {
                     // Navigate to Training
@@ -151,9 +151,9 @@ struct DashboardView: View {
                 
                 // Log Weight
                 GuideSection(
-                    title: "Kilo Gir",
+                    title: LocalizationKeys.Dashboard.Actions.logWeight.localized,
                     icon: "scalemass.fill",
-                    description: "Güncel kilonu kaydet ve ilerlemeyi takip et",
+                    description: LocalizationKeys.Dashboard.Actions.logWeightDesc.localized,
                     color: .green
                 ) {
                     showingWeightEntry = true
@@ -161,9 +161,9 @@ struct DashboardView: View {
                 
                 // Nutrition Tracking
                 GuideSection(
-                    title: "Beslenme Takibi",
+                    title: LocalizationKeys.Dashboard.Actions.nutrition.localized,
                     icon: "fork.knife",
-                    description: "Günlük kalori ve makro besinlerini kaydet",
+                    description: LocalizationKeys.Dashboard.Actions.nutritionDesc.localized,
                     color: .orange
                 ) {
                     // Navigate to Nutrition
@@ -177,13 +177,13 @@ struct DashboardView: View {
     private var recentWorkoutsSection: some View {
         VStack(alignment: .leading, spacing: 16) {
             HStack {
-                Text("Son Antrenmanlar")
+                Text(LocalizationKeys.Dashboard.recentWorkouts.localized)
                     .font(.headline)
                 
                 Spacer()
                 
                 if !recentWorkouts.isEmpty {
-                    Button("Tümünü Gör") {
+                    Button(LocalizationKeys.Dashboard.seeAll.localized) {
                         // Navigate to workout history
                     }
                     .font(.caption)
@@ -198,11 +198,11 @@ struct DashboardView: View {
                         .font(.largeTitle)
                         .foregroundColor(.secondary)
                     
-                    Text("Henüz antrenman yok")
+                    Text(LocalizationKeys.Dashboard.NoWorkouts.title.localized)
                         .font(.headline)
                         .foregroundColor(.secondary)
                     
-                    Text("İlk antrenmanını başlatmak için yukarıdaki butona tıkla!")
+                    Text(LocalizationKeys.Dashboard.NoWorkouts.subtitle.localized)
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                         .multilineTextAlignment(.center)
@@ -227,7 +227,7 @@ struct DashboardView: View {
     // MARK: - Weekly Progress Section
     private var weeklyProgressSection: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("Bu Hafta")
+            Text(LocalizationKeys.Dashboard.thisWeek.localized)
                 .font(.headline)
                 .padding(.horizontal)
             
@@ -235,7 +235,7 @@ struct DashboardView: View {
                 // Workout Count
                 HStack {
                     VStack(alignment: .leading) {
-                        Text("Antrenman Sayısı")
+                        Text(LocalizationKeys.Dashboard.Weekly.workoutCount.localized)
                             .font(.subheadline)
                             .foregroundColor(.secondary)
                         
@@ -256,7 +256,7 @@ struct DashboardView: View {
                 // Total Volume
                 HStack {
                     VStack(alignment: .leading) {
-                        Text("Toplam Hacim")
+                        Text(LocalizationKeys.Dashboard.Weekly.totalVolume.localized)
                             .font(.subheadline)
                             .foregroundColor(.secondary)
                         
@@ -277,7 +277,7 @@ struct DashboardView: View {
                 // Total Time
                 HStack {
                     VStack(alignment: .leading) {
-                        Text("Toplam Süre")
+                        Text(LocalizationKeys.Dashboard.Weekly.totalTime.localized)
                             .font(.subheadline)
                             .foregroundColor(.secondary)
                         
@@ -346,9 +346,9 @@ struct DashboardView: View {
         let minutes = (Int(duration) % 3600) / 60
         
         if hours > 0 {
-            return "\(hours)sa \(minutes)dk"
+            return "\(hours)\(LocalizationKeys.Dashboard.Time.hours.localized) \(minutes)\(LocalizationKeys.Dashboard.Time.minutes.localized)"
         } else {
-            return "\(minutes)dk"
+            return "\(minutes)\(LocalizationKeys.Dashboard.Time.minutes.localized)"
         }
     }
 }
@@ -360,14 +360,14 @@ struct WorkoutCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
-                // ✅ FIXED: workout.name is String? (optional)
-                Text(workout.name ?? "Antrenman")
+                // ✅ LOCALIZED: Workout name with fallback
+                Text(workout.name ?? LocalizationKeys.Dashboard.Workout.defaultName.localized)
                     .font(.headline)
                     .lineLimit(1)
                 
                 Spacer()
                 
-                // ✅ OK: workout.startTime is Date (not optional)
+                // ✅ DATE FORMATTING: Format workout date
                 Text(formatWorkoutDate(workout.startTime))
                     .font(.caption)
                     .foregroundColor(.secondary)
@@ -375,7 +375,7 @@ struct WorkoutCard: View {
             
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("Süre")
+                    Text(LocalizationKeys.Dashboard.Workout.duration.localized)
                         .font(.caption)
                         .foregroundColor(.secondary)
                     
@@ -388,11 +388,11 @@ struct WorkoutCard: View {
                 Spacer()
                 
                 VStack(alignment: .trailing, spacing: 4) {
-                    Text("Hacim")
+                    Text(LocalizationKeys.Dashboard.Workout.volume.localized)
                         .font(.caption)
                         .foregroundColor(.secondary)
                     
-                    // ✅ OK: workout.totalVolume is computed property (Double), not optional
+                    // ✅ OK: workout.totalVolume is computed property (Double)
                     Text("\(Int(workout.totalVolume)) kg")
                         .font(.subheadline.bold())
                         .foregroundColor(.green)
@@ -409,7 +409,8 @@ struct WorkoutCard: View {
     private func formatWorkoutDate(_ date: Date) -> String {
         let formatter = DateFormatter()
         formatter.dateFormat = "d MMM"
-        formatter.locale = Locale(identifier: "tr_TR")
+        // ✅ LOCALIZED: Use current locale instead of hardcoded Turkish
+        formatter.locale = Locale.current
         return formatter.string(from: date)
     }
     
@@ -418,9 +419,9 @@ struct WorkoutCard: View {
         if minutes >= 60 {
             let hours = minutes / 60
             let remainingMinutes = minutes % 60
-            return "\(hours)sa \(remainingMinutes)dk"
+            return "\(hours)\(LocalizationKeys.Dashboard.Time.hours.localized) \(remainingMinutes)\(LocalizationKeys.Dashboard.Time.minutes.localized)"
         } else {
-            return "\(minutes)dk"
+            return "\(minutes)\(LocalizationKeys.Dashboard.Time.minutes.localized)"
         }
     }
 }
@@ -435,21 +436,21 @@ struct WeightEntryView: View {
     var body: some View {
         NavigationView {
             VStack(spacing: 20) {
-                Text("Güncel Kilonu Gir")
+                Text(LocalizationKeys.Dashboard.WeightEntry.title.localized)
                     .font(.title2.bold())
                     .padding(.top)
                 
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("Kilo (kg)")
+                    Text(LocalizationKeys.Dashboard.WeightEntry.label.localized)
                         .font(.headline)
                     
-                    TextField("Örn: 70.5", text: $newWeight)
+                    TextField(LocalizationKeys.Dashboard.WeightEntry.placeholder.localized, text: $newWeight)
                         .keyboardType(.decimalPad)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                 }
                 .padding(.horizontal)
                 
-                Button("Kaydet") {
+                Button(LocalizationKeys.Dashboard.WeightEntry.save.localized) {
                     if let weight = Double(newWeight.replacingOccurrences(of: ",", with: ".")), weight > 0 {
                         user.currentWeight = weight
                         user.calculateMetrics()
@@ -464,7 +465,7 @@ struct WeightEntryView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("İptal") {
+                    Button(LocalizationKeys.Dashboard.WeightEntry.cancel.localized) {
                         dismiss()
                     }
                 }

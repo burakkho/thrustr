@@ -2,30 +2,39 @@ import SwiftUI
 
 struct AppPreferencesView: View {
     @Environment(\.dismiss) private var dismiss
-    @AppStorage("selectedLanguage") private var selectedLanguage = "tr"
+    @EnvironmentObject var themeManager: ThemeManager
+    @StateObject private var languageManager = LanguageManager.shared
     @AppStorage("unitSystem") private var unitSystem = "metric"
     @AppStorage("notificationsEnabled") private var notificationsEnabled = true
     @AppStorage("workoutReminders") private var workoutReminders = true
     @AppStorage("nutritionReminders") private var nutritionReminders = true
     @AppStorage("soundEnabled") private var soundEnabled = true
     @AppStorage("hapticEnabled") private var hapticEnabled = true
-    @AppStorage("darkModePreference") private var darkModePreference = "system"
     
     var body: some View {
         NavigationView {
             List {
                 // Language Section
                 Section {
-                    LanguageSelector(selectedLanguage: $selectedLanguage)
+                    LanguageSelector()
+                        .environmentObject(languageManager)
                 } header: {
-                    SectionHeaderView(title: "Dil", icon: "globe")
+                    SectionHeaderView(title: "settings.language".localized, icon: "globe")
                 }
                 
                 // Units Section
                 Section {
                     UnitSystemSelector(unitSystem: $unitSystem)
                 } header: {
-                    SectionHeaderView(title: "Birimler", icon: "ruler")
+                    SectionHeaderView(title: "settings.units".localized, icon: "ruler")
+                }
+                
+                // Appearance Section
+                Section {
+                    AppearanceSettings()
+                        .environmentObject(themeManager)
+                } header: {
+                    SectionHeaderView(title: "settings.theme".localized, icon: "paintbrush")
                 }
                 
                 // Notifications Section
@@ -36,7 +45,7 @@ struct AppPreferencesView: View {
                         nutritionReminders: $nutritionReminders
                     )
                 } header: {
-                    SectionHeaderView(title: "Bildirimler", icon: "bell")
+                    SectionHeaderView(title: "settings.notifications".localized, icon: "bell")
                 }
                 
                 // Audio & Haptic Section
@@ -46,28 +55,21 @@ struct AppPreferencesView: View {
                         hapticEnabled: $hapticEnabled
                     )
                 } header: {
-                    SectionHeaderView(title: "Ses ve Titreşim", icon: "speaker.wave.2")
-                }
-                
-                // Appearance Section
-                Section {
-                    AppearanceSettings(darkModePreference: $darkModePreference)
-                } header: {
-                    SectionHeaderView(title: "Görünüm", icon: "paintbrush")
+                    SectionHeaderView(title: "preferences.sound_effects".localized, icon: "speaker.wave.2")
                 }
                 
                 // App Info Section
                 Section {
                     AppInfoSection()
                 } header: {
-                    SectionHeaderView(title: "Uygulama Bilgisi", icon: "info.circle")
+                    SectionHeaderView(title: "preferences.app_info".localized, icon: "info.circle")
                 }
             }
-            .navigationTitle("Tercihler")
+            .navigationTitle("settings.title".localized)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Tamam") {
+                    Button("common.done".localized) {
                         dismiss()
                     }
                     .fontWeight(.semibold)
@@ -79,34 +81,62 @@ struct AppPreferencesView: View {
 
 // MARK: - Language Selector
 struct LanguageSelector: View {
-    @Binding var selectedLanguage: String
-    
-    private let languages = [
-        ("tr", "Türkçe", "🇹🇷"),
-        ("en", "English", "🇺🇸")
-    ]
+    @EnvironmentObject private var languageManager: LanguageManager
+    @State private var showingRestartAlert = false
+    @State private var selectedLanguage: LanguageManager.Language?
     
     var body: some View {
-        ForEach(languages, id: \.0) { code, name, flag in
+        ForEach(LanguageManager.Language.allCases) { language in
             Button {
-                selectedLanguage = code
+                guard languageManager.currentLanguage != language else { return }
+                
+                let impact = UIImpactFeedbackGenerator(style: .light)
+                impact.impactOccurred()
+                
+                selectedLanguage = language
+                showingRestartAlert = true
+                
             } label: {
                 HStack {
-                    Text(flag)
+                    Text(language.flag)
                         .font(.title2)
                     
-                    Text(name)
-                        .foregroundColor(.primary)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(language.displayName)
+                            .foregroundColor(Color.textPrimary)
+                            .fontWeight(.medium)
+                        
+                        if language == .system {
+                            Text("preferences.auto_language".localized)
+                                .font(.caption)
+                                .foregroundColor(Color.textSecondary)
+                        }
+                    }
                     
                     Spacer()
                     
-                    if selectedLanguage == code {
-                        Image(systemName: "checkmark")
-                            .foregroundColor(.blue)
-                            .fontWeight(.semibold)
+                    if languageManager.currentLanguage == language {
+                        Image(systemName: "checkmark.circle.fill")
+                            .foregroundColor(Color.appPrimary)
+                            .font(.title3)
                     }
                 }
+                .contentShape(Rectangle())
             }
+            .buttonStyle(PlainButtonStyle())
+        }
+        .alert("language.change_title".localized, isPresented: $showingRestartAlert) {
+            Button("language.change_cancel".localized, role: .cancel) {
+                selectedLanguage = nil
+            }
+            Button("language.change_confirm".localized) {
+                if let newLanguage = selectedLanguage {
+                    languageManager.setLanguage(newLanguage)
+                    print("🌍 Language changed to: \(newLanguage.displayName)")
+                }
+            }
+        } message: {
+            Text("language.change_message".localized)
         }
     }
 }
@@ -115,36 +145,97 @@ struct LanguageSelector: View {
 struct UnitSystemSelector: View {
     @Binding var unitSystem: String
     
-    private let units = [
-        ("metric", "Metrik", "kg, cm, km"),
-        ("imperial", "İngiliz", "lb, ft, mi")
-    ]
+    private var units: [(String, String, String)] {
+        [
+            ("metric", "settings.metric".localized, "kg, cm, km"),
+            ("imperial", "settings.imperial".localized, "lb, ft, mi")
+        ]
+    }
     
     var body: some View {
         ForEach(units, id: \.0) { system, name, description in
             Button {
-                unitSystem = system
+                withAnimation(.easeInOut(duration: 0.2)) {
+                    unitSystem = system
+                }
+                
+                let impact = UIImpactFeedbackGenerator(style: .light)
+                impact.impactOccurred()
             } label: {
                 HStack {
                     VStack(alignment: .leading, spacing: 2) {
                         Text(name)
-                            .foregroundColor(.primary)
+                            .foregroundColor(Color.textPrimary)
                             .fontWeight(.medium)
                         
                         Text(description)
                             .font(.caption)
-                            .foregroundColor(.secondary)
+                            .foregroundColor(Color.textSecondary)
                     }
                     
                     Spacer()
                     
                     if unitSystem == system {
-                        Image(systemName: "checkmark")
-                            .foregroundColor(.blue)
-                            .fontWeight(.semibold)
+                        Image(systemName: "checkmark.circle.fill")
+                            .foregroundColor(Color.appPrimary)
+                            .font(.title3)
                     }
                 }
+                .contentShape(Rectangle())
             }
+            .buttonStyle(PlainButtonStyle())
+        }
+    }
+}
+
+// MARK: - Appearance Settings
+struct AppearanceSettings: View {
+    @EnvironmentObject var themeManager: ThemeManager
+    
+    private var appearances: [(AppTheme, String, String)] {
+        [
+            (.system, "settings.system_theme".localized, "preferences.system_default".localized),
+            (.light, "settings.light_mode".localized, "preferences.always_light".localized),
+            (.dark, "settings.dark_mode".localized, "preferences.always_dark".localized)
+        ]
+    }
+    
+    var body: some View {
+        ForEach(appearances, id: \.0) { theme, name, description in
+            Button {
+                withAnimation(.easeInOut(duration: 0.3)) {
+                    themeManager.setTheme(theme)
+                }
+                
+                let impact = UIImpactFeedbackGenerator(style: .light)
+                impact.impactOccurred()
+            } label: {
+                HStack {
+                    Image(systemName: theme.icon)
+                        .foregroundColor(Color.appPrimary)
+                        .frame(width: 24)
+                    
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(name)
+                            .foregroundColor(Color.textPrimary)
+                            .fontWeight(.medium)
+                        
+                        Text(description)
+                            .font(.caption)
+                            .foregroundColor(Color.textSecondary)
+                    }
+                    
+                    Spacer()
+                    
+                    if themeManager.currentTheme == theme {
+                        Image(systemName: "checkmark.circle.fill")
+                            .foregroundColor(Color.appPrimary)
+                            .font(.title3)
+                    }
+                }
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(PlainButtonStyle())
         }
     }
 }
@@ -160,16 +251,17 @@ struct NotificationSettings: View {
             // Master notification toggle
             HStack {
                 Image(systemName: "bell.fill")
-                    .foregroundColor(notificationsEnabled ? .blue : .secondary)
+                    .foregroundColor(notificationsEnabled ? Color.appPrimary : Color.textSecondary)
                     .frame(width: 24)
                 
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("Bildirimleri Etkinleştir")
+                    Text("settings.allow_notifications".localized)
                         .fontWeight(.medium)
+                        .foregroundColor(Color.textPrimary)
                     
-                    Text("Tüm bildirimleri aç/kapat")
+                    Text("preferences.notifications_all".localized)
                         .font(.caption)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(Color.textSecondary)
                 }
                 
                 Spacer()
@@ -186,16 +278,17 @@ struct NotificationSettings: View {
                 // Workout reminders
                 HStack {
                     Image(systemName: "dumbbell.fill")
-                        .foregroundColor(.blue)
+                        .foregroundColor(Color.trainingPrimary)
                         .frame(width: 24)
                     
                     VStack(alignment: .leading, spacing: 2) {
-                        Text("Antrenman Hatırlatıcıları")
+                        Text("settings.workout_reminders".localized)
                             .fontWeight(.medium)
+                            .foregroundColor(Color.textPrimary)
                         
-                        Text("Dinlenme timer'ı ve antrenman önerileri")
+                        Text("preferences.workout_reminders_desc".localized)
                             .font(.caption)
-                            .foregroundColor(.secondary)
+                            .foregroundColor(Color.textSecondary)
                     }
                     
                     Spacer()
@@ -211,16 +304,17 @@ struct NotificationSettings: View {
                 // Nutrition reminders
                 HStack {
                     Image(systemName: "fork.knife")
-                        .foregroundColor(.orange)
+                        .foregroundColor(Color.nutritionPrimary)
                         .frame(width: 24)
                     
                     VStack(alignment: .leading, spacing: 2) {
-                        Text("Beslenme Hatırlatıcıları")
+                        Text("settings.nutrition_reminders".localized)
                             .fontWeight(.medium)
+                            .foregroundColor(Color.textPrimary)
                         
-                        Text("Öğün zamanları ve su içme hatırlatmaları")
+                        Text("preferences.nutrition_reminders_desc".localized)
                             .font(.caption)
-                            .foregroundColor(.secondary)
+                            .foregroundColor(Color.textSecondary)
                     }
                     
                     Spacer()
@@ -244,16 +338,17 @@ struct AudioHapticSettings: View {
             // Sound settings
             HStack {
                 Image(systemName: soundEnabled ? "speaker.wave.2.fill" : "speaker.slash.fill")
-                    .foregroundColor(soundEnabled ? .blue : .secondary)
+                    .foregroundColor(soundEnabled ? Color.appPrimary : Color.textSecondary)
                     .frame(width: 24)
                 
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("Ses Efektleri")
+                    Text("preferences.sound_effects".localized)
                         .fontWeight(.medium)
+                        .foregroundColor(Color.textPrimary)
                     
-                    Text("Timer sesleri ve bildirim sesleri")
+                    Text("preferences.timer_sounds".localized)
                         .font(.caption)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(Color.textSecondary)
                 }
                 
                 Spacer()
@@ -269,16 +364,17 @@ struct AudioHapticSettings: View {
             // Haptic settings
             HStack {
                 Image(systemName: "iphone.radiowaves.left.and.right")
-                    .foregroundColor(hapticEnabled ? .blue : .secondary)
+                    .foregroundColor(hapticEnabled ? Color.appPrimary : Color.textSecondary)
                     .frame(width: 24)
                 
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("Haptic Feedback")
+                    Text("preferences.haptic_feedback".localized)
                         .fontWeight(.medium)
+                        .foregroundColor(Color.textPrimary)
                     
-                    Text("Titreşim geri bildirimleri")
+                    Text("preferences.vibration_feedback".localized)
                         .font(.caption)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(Color.textSecondary)
                 }
                 
                 Spacer()
@@ -291,62 +387,11 @@ struct AudioHapticSettings: View {
     }
 }
 
-// MARK: - Appearance Settings
-struct AppearanceSettings: View {
-    @Binding var darkModePreference: String
-    
-    private let appearances = [
-        ("system", "Sistem", "Cihaz ayarını takip et"),
-        ("light", "Açık", "Her zaman açık tema"),
-        ("dark", "Koyu", "Her zaman koyu tema")
-    ]
-    
-    var body: some View {
-        ForEach(appearances, id: \.0) { mode, name, description in
-            Button {
-                darkModePreference = mode
-            } label: {
-                HStack {
-                    Image(systemName: iconForMode(mode))
-                        .foregroundColor(.blue)
-                        .frame(width: 24)
-                    
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text(name)
-                            .foregroundColor(.primary)
-                            .fontWeight(.medium)
-                        
-                        Text(description)
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                    }
-                    
-                    Spacer()
-                    
-                    if darkModePreference == mode {
-                        Image(systemName: "checkmark")
-                            .foregroundColor(.blue)
-                            .fontWeight(.semibold)
-                    }
-                }
-            }
-        }
-    }
-    
-    private func iconForMode(_ mode: String) -> String {
-        switch mode {
-        case "light": return "sun.max.fill"
-        case "dark": return "moon.fill"
-        default: return "circle.lefthalf.filled"
-        }
-    }
-}
-
 // MARK: - App Info Section
 struct AppInfoSection: View {
     var body: some View {
         VStack(spacing: 0) {
-            AppInfoRow(title: "Versiyon", value: "1.0.0")
+            AppInfoRow(title: "settings.version".localized, value: "1.0.0")
             
             Divider()
                 .padding(.vertical, 8)
@@ -357,21 +402,21 @@ struct AppInfoSection: View {
                 .padding(.vertical, 8)
             
             Button {
-                // Open privacy policy
+                // TODO: Open privacy policy
             } label: {
                 HStack {
                     Image(systemName: "hand.raised.fill")
-                        .foregroundColor(.blue)
+                        .foregroundColor(Color.appPrimary)
                         .frame(width: 24)
                     
-                    Text("Gizlilik Politikası")
-                        .foregroundColor(.primary)
+                    Text("settings.privacy_policy".localized)
+                        .foregroundColor(Color.textPrimary)
                     
                     Spacer()
                     
                     Image(systemName: "chevron.right")
                         .font(.caption)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(Color.textSecondary)
                 }
             }
             
@@ -379,21 +424,21 @@ struct AppInfoSection: View {
                 .padding(.vertical, 8)
             
             Button {
-                // Open terms of service
+                // TODO: Open terms of service
             } label: {
                 HStack {
                     Image(systemName: "doc.text.fill")
-                        .foregroundColor(.blue)
+                        .foregroundColor(Color.appPrimary)
                         .frame(width: 24)
                     
-                    Text("Kullanım Şartları")
-                        .foregroundColor(.primary)
+                    Text("settings.terms_of_service".localized)
+                        .foregroundColor(Color.textPrimary)
                     
                     Spacer()
                     
                     Image(systemName: "chevron.right")
                         .font(.caption)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(Color.textSecondary)
                 }
             }
         }
@@ -407,12 +452,12 @@ struct AppInfoRow: View {
     var body: some View {
         HStack {
             Text(title)
-                .foregroundColor(.primary)
+                .foregroundColor(Color.textPrimary)
             
             Spacer()
             
             Text(value)
-                .foregroundColor(.secondary)
+                .foregroundColor(Color.textSecondary)
         }
         .padding(.vertical, 4)
     }
@@ -427,7 +472,7 @@ struct SectionHeaderView: View {
         HStack(spacing: 6) {
             Image(systemName: icon)
                 .font(.caption)
-                .foregroundColor(.blue)
+                .foregroundColor(Color.appPrimary)
             
             Text(title)
                 .font(.subheadline)
@@ -438,4 +483,6 @@ struct SectionHeaderView: View {
 
 #Preview {
     AppPreferencesView()
+        .environmentObject(ThemeManager())
+        .environmentObject(LanguageManager.shared)
 }

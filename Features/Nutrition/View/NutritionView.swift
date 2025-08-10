@@ -17,7 +17,7 @@ struct NutritionView: View {
                         // Test butonları (geçici)
                         if foods.isEmpty {
                             VStack(spacing: 12) {
-                                Button("Test Yiyecek Ekle") {
+                                Button(LocalizationKeys.Nutrition.Test.addTestFood.localized) {
                                     addTestFoods()
                                 }
                                 .buttonStyle(.borderedProminent)
@@ -75,10 +75,10 @@ struct NutritionView: View {
                     }
                 }
             }
-            .navigationTitle("Beslenme")
+            .navigationTitle(LocalizationKeys.Nutrition.title.localized)
             .toolbar {
                 if !foods.isEmpty {
-                    Button("Temizle") {
+                    Button(LocalizationKeys.Nutrition.Test.clear.localized) {
                         clearAllFoods()
                     }
                     .foregroundColor(.red)

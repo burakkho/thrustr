@@ -16,10 +16,10 @@ struct TrainingView: View {
         NavigationView {
             VStack(spacing: 0) {
                 // Segment Control
-                Picker("Training Options", selection: $selectedTab) {
-                    Text("Geçmiş").tag(0)
-                    Text("Aktif").tag(1)
-                    Text("Şablonlar").tag(2)
+                Picker(LocalizationKeys.Training.title.localized, selection: $selectedTab) {
+                    Text(LocalizationKeys.Training.history.localized).tag(0)
+                    Text(LocalizationKeys.Training.active.localized).tag(1)
+                    Text(LocalizationKeys.Training.templates.localized).tag(2)
                 }
                 .pickerStyle(SegmentedPickerStyle())
                 .padding()
@@ -39,7 +39,7 @@ struct TrainingView: View {
                     EmptyView()
                 }
             }
-            .navigationTitle("Antrenman")
+            .navigationTitle(LocalizationKeys.Training.title.localized)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(action: { showingNewWorkout = true }) {
@@ -82,11 +82,11 @@ struct WorkoutHistoryView: View {
                             .font(.system(size: 50))
                             .foregroundColor(.gray)
                         
-                        Text("Henüz antrenman yok")
+                        Text(LocalizationKeys.Training.History.emptyTitle.localized)
                             .font(.title2)
                             .fontWeight(.semibold)
                         
-                        Text("İlk antrenmanını başlatmak için + butonuna bas!")
+                        Text(LocalizationKeys.Training.History.emptySubtitle.localized)
                             .foregroundColor(.secondary)
                             .multilineTextAlignment(.center)
                     }
@@ -111,7 +111,7 @@ struct WorkoutHistoryCard: View {
             // Header
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
-                    Text(workout.name ?? "Antrenman")
+                    Text(workout.name ?? LocalizationKeys.Training.History.defaultName.localized)
                         .font(.headline)
                         .fontWeight(.semibold)
                     
@@ -123,11 +123,11 @@ struct WorkoutHistoryCard: View {
                 Spacer()
                 
                 VStack(alignment: .trailing, spacing: 4) {
-                    Text("\(workout.durationInMinutes) dk")
+                    Text("\(workout.durationInMinutes) \(LocalizationKeys.Training.Time.minutes.localized)")
                         .font(.subheadline)
                         .fontWeight(.medium)
                     
-                    Text("\(workout.totalSets) set")
+                    Text("\(workout.totalSets) \(LocalizationKeys.Training.Stats.sets.localized.lowercased())")
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
@@ -140,7 +140,7 @@ struct WorkoutHistoryCard: View {
                 }
                 
                 if workout.parts.isEmpty {
-                    Text("Bölüm yok")
+                    Text(LocalizationKeys.Training.History.noParts.localized)
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
@@ -153,7 +153,7 @@ struct WorkoutHistoryCard: View {
                         .foregroundColor(.blue)
                         .font(.caption)
                     
-                    Text("Toplam Volume: \(Int(workout.totalVolume)) kg")
+                    Text(LocalizationKeys.Training.History.totalVolume.localized(with: Int(workout.totalVolume)))
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
@@ -169,11 +169,26 @@ struct WorkoutHistoryCard: View {
 struct PartTypeChip: View {
     let partType: WorkoutPartType
     
+    var localizedDisplayName: String {
+        switch partType {
+        case .strength:
+            return LocalizationKeys.Training.Part.strength.localized
+        case .conditioning:
+            return LocalizationKeys.Training.Part.conditioning.localized
+        case .accessory:
+            return LocalizationKeys.Training.Part.accessory.localized
+        case .warmup:
+            return LocalizationKeys.Training.Part.warmup.localized
+        case .functional:
+            return LocalizationKeys.Training.Part.functional.localized
+        }
+    }
+    
     var body: some View {
         HStack(spacing: 4) {
             Image(systemName: partType.icon)
                 .font(.caption)
-            Text(partType.displayName)
+            Text(localizedDisplayName)
                 .font(.caption)
         }
         .padding(.horizontal, 8)
@@ -216,15 +231,15 @@ struct ActiveWorkoutView: View {
                             .font(.system(size: 50))
                             .foregroundColor(.blue)
                         
-                        Text("Aktif Antrenman Yok")
+                        Text(LocalizationKeys.Training.Active.emptyTitle.localized)
                             .font(.title2)
                             .fontWeight(.semibold)
                         
-                        Text("Yeni bir antrenman başlatmak için + butonuna bas")
+                        Text(LocalizationKeys.Training.Active.emptySubtitle.localized)
                             .foregroundColor(.secondary)
                             .multilineTextAlignment(.center)
                         
-                        Button("Antrenman Başlat") {
+                        Button(LocalizationKeys.Training.Active.startButton.localized) {
                             startNewWorkout()
                         }
                         .font(.headline)
@@ -241,7 +256,7 @@ struct ActiveWorkoutView: View {
     }
     
     private func startNewWorkout() {
-        let newWorkout = Workout(name: "Antrenman")
+        let newWorkout = Workout(name: LocalizationKeys.Training.History.defaultName.localized)
         modelContext.insert(newWorkout)
         onWorkoutTap(newWorkout)
     }
@@ -260,11 +275,11 @@ struct ActiveWorkoutCard: View {
             // Header with timer
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("Aktif Antrenman")
+                    Text(LocalizationKeys.Training.Active.title.localized)
                         .font(.caption)
                         .foregroundColor(.secondary)
                     
-                    Text(workout.name ?? "Antrenman")
+                    Text(workout.name ?? LocalizationKeys.Training.History.defaultName.localized)
                         .font(.title2)
                         .fontWeight(.bold)
                 }
@@ -272,7 +287,7 @@ struct ActiveWorkoutCard: View {
                 Spacer()
                 
                 VStack(alignment: .trailing, spacing: 4) {
-                    Text("Süre")
+                    Text(LocalizationKeys.Training.Active.duration.localized)
                         .font(.caption)
                         .foregroundColor(.secondary)
                     
@@ -285,14 +300,14 @@ struct ActiveWorkoutCard: View {
             
             // Quick stats
             HStack(spacing: 20) {
-                StatItem(title: "Bölüm", value: "\(workout.parts.count)")
-                StatItem(title: "Set", value: "\(workout.totalSets)")
-                StatItem(title: "Volume", value: "\(Int(workout.totalVolume))kg")
+                StatItem(title: LocalizationKeys.Training.Stats.parts.localized, value: "\(workout.parts.count)")
+                StatItem(title: LocalizationKeys.Training.Stats.sets.localized, value: "\(workout.totalSets)")
+                StatItem(title: LocalizationKeys.Training.Stats.volume.localized, value: "\(Int(workout.totalVolume))kg")
             }
             
             // Actions
             HStack(spacing: 12) {
-                Button("Devam Et") {
+                Button(LocalizationKeys.Training.Active.continueButton.localized) {
                     onTap()
                 }
                 .font(.headline)
@@ -302,7 +317,7 @@ struct ActiveWorkoutCard: View {
                 .background(Color.blue)
                 .cornerRadius(12)
                 
-                Button("Bitir") {
+                Button(LocalizationKeys.Training.Active.finish.localized) {
                     workout.finishWorkout()
                 }
                 .font(.headline)
@@ -364,11 +379,11 @@ struct WorkoutTemplatesView: View {
                     .font(.system(size: 50))
                     .foregroundColor(.green)
                 
-                Text("Şablonlar")
+                Text(LocalizationKeys.Training.Templates.title.localized)
                     .font(.title2)
                     .fontWeight(.semibold)
                 
-                Text("Hazır antrenman şablonları yakında eklenecek!")
+                Text(LocalizationKeys.Training.Templates.empty.localized)
                     .foregroundColor(.secondary)
                     .multilineTextAlignment(.center)
             }
@@ -391,11 +406,11 @@ struct NewWorkoutView: View {
             VStack(spacing: 24) {
                 // Header
                 VStack(spacing: 8) {
-                    Text("Yeni Antrenman")
+                    Text(LocalizationKeys.Training.New.title.localized)
                         .font(.largeTitle)
                         .fontWeight(.bold)
                     
-                    Text("Antrenmanına nasıl başlamak istiyorsun?")
+                    Text(LocalizationKeys.Training.New.subtitle.localized)
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                         .multilineTextAlignment(.center)
@@ -404,25 +419,25 @@ struct NewWorkoutView: View {
                 
                 // Workout name
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("Antrenman Adı")
+                    Text(LocalizationKeys.Training.New.nameLabel.localized)
                         .font(.headline)
                     
-                    TextField("Örn: Push Day, Bacak Günü", text: $workoutName)
+                    TextField(LocalizationKeys.Training.New.namePlaceholder.localized, text: $workoutName)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                 }
                 .padding(.horizontal)
                 
                 // Quick start options
                 VStack(spacing: 12) {
-                    Text("Hızlı Başlangıç")
+                    Text(LocalizationKeys.Training.New.quickStart.localized)
                         .font(.headline)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(.horizontal)
                     
                     VStack(spacing: 8) {
                         QuickStartButton(
-                            title: "Boş Antrenman",
-                            subtitle: "Sıfırdan başla",
+                            title: LocalizationKeys.Training.New.Empty.title.localized,
+                            subtitle: LocalizationKeys.Training.New.Empty.subtitle.localized,
                             icon: "plus.circle.fill",
                             color: .blue
                         ) {
@@ -430,8 +445,8 @@ struct NewWorkoutView: View {
                         }
                         
                         QuickStartButton(
-                            title: "Fonksiyonel Antrenman",
-                            subtitle: "Functional fitness movements",
+                            title: LocalizationKeys.Training.New.Functional.title.localized,
+                            subtitle: LocalizationKeys.Training.New.Functional.subtitle.localized,
                             icon: "figure.strengthtraining.functional",
                             color: .green
                         ) {
@@ -439,8 +454,8 @@ struct NewWorkoutView: View {
                         }
                         
                         QuickStartButton(
-                            title: "Kardiyo",
-                            subtitle: "Kardiyovasküler antrenman",
+                            title: LocalizationKeys.Training.New.Cardio.title.localized,
+                            subtitle: LocalizationKeys.Training.New.Cardio.subtitle.localized,
                             icon: "heart.fill",
                             color: .red
                         ) {
@@ -456,7 +471,7 @@ struct NewWorkoutView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button("İptal") {
+                    Button(LocalizationKeys.Training.New.cancel.localized) {
                         dismiss()
                     }
                 }
@@ -465,7 +480,7 @@ struct NewWorkoutView: View {
     }
     
     private func startEmptyWorkout() {
-        let workout = Workout(name: workoutName.isEmpty ? "Antrenman" : workoutName)
+        let workout = Workout(name: workoutName.isEmpty ? LocalizationKeys.Training.History.defaultName.localized : workoutName)
         modelContext.insert(workout)
         
         dismiss()
@@ -477,10 +492,10 @@ struct NewWorkoutView: View {
     }
     
     private func startFunctionalWorkout() {
-        let workout = Workout(name: workoutName.isEmpty ? "Fonksiyonel Antrenman" : workoutName)
+        let workout = Workout(name: workoutName.isEmpty ? LocalizationKeys.Training.New.Functional.title.localized : workoutName)
         
         // Add functional training part
-        let _ = workout.addPart(name: "Fonksiyonel", type: .functional)
+        let _ = workout.addPart(name: LocalizationKeys.Training.Part.functional.localized, type: .functional)
         
         modelContext.insert(workout)
         
@@ -493,10 +508,10 @@ struct NewWorkoutView: View {
     }
     
     private func startCardioWorkout() {
-        let workout = Workout(name: workoutName.isEmpty ? "Kardiyo" : workoutName)
+        let workout = Workout(name: workoutName.isEmpty ? LocalizationKeys.Training.New.Cardio.title.localized : workoutName)
         
         // Add cardio part
-        let _ = workout.addPart(name: "Kardiyo", type: .conditioning)
+        let _ = workout.addPart(name: LocalizationKeys.Training.Part.conditioning.localized, type: .conditioning)
         
         modelContext.insert(workout)
         

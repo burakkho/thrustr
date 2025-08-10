@@ -7,8 +7,8 @@ enum Gender: String, CaseIterable, Codable {
     
     var displayName: String {
         switch self {
-        case .male: return "Erkek"
-        case .female: return "Kadın"
+        case .male: return "gender.male".localized
+        case .female: return "gender.female".localized
         }
     }
     

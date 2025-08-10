@@ -46,6 +46,19 @@
 		41E63D112E4803BF006A2117 /* QuickStatCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41E63D0E2E48023F006A2117 /* QuickStatCard.swift */; };
 		41E63D142E4804C0006A2117 /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41E63D132E4804BD006A2117 /* DashboardView.swift */; };
 		41E63D162E480A6F006A2117 /* WorkoutService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41E63D152E480A69006A2117 /* WorkoutService.swift */; };
+		41E63D322E482867006A2117 /* UserService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41E63D312E482863006A2117 /* UserService.swift */; };
+		41E63D482E482C17006A2117 /* Date+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41E63D472E482C10006A2117 /* Date+Extension.swift */; };
+		41E63D4A2E482C7B006A2117 /* Double+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41E63D492E482C75006A2117 /* Double+Extensions.swift */; };
+		41E63D4E2E482D48006A2117 /* Color+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41E63D4D2E482D42006A2117 /* Color+Extensions.swift */; };
+		41E63D522E483027006A2117 /* ThemeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41E63D512E483021006A2117 /* ThemeManager.swift */; };
+		41E63D552E4836AE006A2117 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 41E63D532E4836AE006A2117 /* Localizable.strings */; };
+		41E63D5B2E483D0B006A2117 /* WelcomeStepView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41E63D5A2E483D03006A2117 /* WelcomeStepView.swift */; };
+		41E63D5D2E483DAE006A2117 /* PersonalInfoStepView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41E63D5C2E483DA9006A2117 /* PersonalInfoStepView.swift */; };
+		41E63D5F2E483DD8006A2117 /* GoalsStepView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41E63D5E2E483DD2006A2117 /* GoalsStepView.swift */; };
+		41E63D612E483E26006A2117 /* MeasurementsStepView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41E63D602E483E1F006A2117 /* MeasurementsStepView.swift */; };
+		41E63D632E483E6D006A2117 /* SummaryStepView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41E63D622E483E6D006A2117 /* SummaryStepView.swift */; };
+		41E63D652E485914006A2117 /* LanguageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41E63D642E48590E006A2117 /* LanguageManager.swift */; };
+		41E63D692E487A0D006A2117 /* LocalizationKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41E63D682E487A06006A2117 /* LocalizationKeys.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -108,27 +121,23 @@
 		41E63D0F2E48024C006A2117 /* GuideSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GuideSection.swift; sourceTree = "<group>"; };
 		41E63D132E4804BD006A2117 /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
 		41E63D152E480A69006A2117 /* WorkoutService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutService.swift; sourceTree = "<group>"; };
+		41E63D312E482863006A2117 /* UserService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserService.swift; sourceTree = "<group>"; };
+		41E63D472E482C10006A2117 /* Date+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+Extension.swift"; sourceTree = "<group>"; };
+		41E63D492E482C75006A2117 /* Double+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Double+Extensions.swift"; sourceTree = "<group>"; };
+		41E63D4D2E482D42006A2117 /* Color+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Extensions.swift"; sourceTree = "<group>"; };
+		41E63D512E483021006A2117 /* ThemeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeManager.swift; sourceTree = "<group>"; };
+		41E63D542E4836AE006A2117 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
+		41E63D562E483752006A2117 /* tr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = tr; path = tr.lproj/Localizable.strings; sourceTree = "<group>"; };
+		41E63D5A2E483D03006A2117 /* WelcomeStepView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeStepView.swift; sourceTree = "<group>"; };
+		41E63D5C2E483DA9006A2117 /* PersonalInfoStepView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonalInfoStepView.swift; sourceTree = "<group>"; };
+		41E63D5E2E483DD2006A2117 /* GoalsStepView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoalsStepView.swift; sourceTree = "<group>"; };
+		41E63D602E483E1F006A2117 /* MeasurementsStepView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeasurementsStepView.swift; sourceTree = "<group>"; };
+		41E63D622E483E6D006A2117 /* SummaryStepView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SummaryStepView.swift; sourceTree = "<group>"; };
+		41E63D642E48590E006A2117 /* LanguageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LanguageManager.swift; sourceTree = "<group>"; };
+		41E63D682E487A06006A2117 /* LocalizationKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalizationKeys.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
-/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		41E316502E46320A00A27990 /* Exceptions for "sporhocam" folder in "sporhocam" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				Info.plist,
-			);
-			target = 41E3162C2E46320900A27990 /* sporhocam */;
-		};
-/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
-
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		41E3162F2E46320900A27990 /* sporhocam */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				41E316502E46320A00A27990 /* Exceptions for "sporhocam" folder in "sporhocam" target */,
-			);
-			path = sporhocam;
-			sourceTree = "<group>";
-		};
 		41E316BF2E47A4AE00A27990 /* Calculators */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = Calculators;
@@ -169,7 +178,6 @@
 		41E316242E46320900A27990 = {
 			isa = PBXGroup;
 			children = (
-				41E3162F2E46320900A27990 /* sporhocam */,
 				41E3162E2E46320900A27990 /* Products */,
 				41E3165D2E4676B700A27990 /* App */,
 				41E3165F2E4676CC00A27990 /* Core */,
@@ -194,6 +202,7 @@
 				41E316742E467FAB00A27990 /* MainTabView.swift */,
 				41E316302E46320900A27990 /* sporhocamApp.swift */,
 				41E316322E46320900A27990 /* ContentView.swift */,
+				41E63D532E4836AE006A2117 /* Localizable.strings */,
 			);
 			path = App;
 			sourceTree = "<group>";
@@ -249,6 +258,9 @@
 		41E316642E46773600A27990 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				41E63D642E48590E006A2117 /* LanguageManager.swift */,
+				41E63D512E483021006A2117 /* ThemeManager.swift */,
+				41E63D312E482863006A2117 /* UserService.swift */,
 				41E63D152E480A69006A2117 /* WorkoutService.swift */,
 				41E3168E2E46C3D900A27990 /* HealthKitService.swift */,
 			);
@@ -289,6 +301,7 @@
 		41E316692E46779400A27990 /* Profile */ = {
 			isa = PBXGroup;
 			children = (
+				41E63D592E483CD4006A2117 /* Onboarding */,
 				41E316AC2E479A8D00A27990 /* View */,
 			);
 			path = Profile;
@@ -306,6 +319,8 @@
 		41E3166B2E4677A200A27990 /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
+				41E63D682E487A06006A2117 /* LocalizationKeys.swift */,
+				41E63D462E482BEA006A2117 /* Extensions */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -346,7 +361,6 @@
 				41E316B12E479AEA00A27990 /* AppPreferencesView.swift */,
 				41E316AF2E479AD200A27990 /* PersonalInfoEditView.swift */,
 				41E316AD2E479AB700A27990 /* ProfileView.swift */,
-				41E316762E4680A900A27990 /* OnboardingView.swift */,
 				41E316CC2E47A93100A27990 /* Analytics */,
 				41E316BF2E47A4AE00A27990 /* Calculators */,
 			);
@@ -359,6 +373,29 @@
 				41E63D132E4804BD006A2117 /* DashboardView.swift */,
 			);
 			path = Views;
+			sourceTree = "<group>";
+		};
+		41E63D462E482BEA006A2117 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				41E63D4D2E482D42006A2117 /* Color+Extensions.swift */,
+				41E63D492E482C75006A2117 /* Double+Extensions.swift */,
+				41E63D472E482C10006A2117 /* Date+Extension.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
+		41E63D592E483CD4006A2117 /* Onboarding */ = {
+			isa = PBXGroup;
+			children = (
+				41E63D622E483E6D006A2117 /* SummaryStepView.swift */,
+				41E63D602E483E1F006A2117 /* MeasurementsStepView.swift */,
+				41E63D5E2E483DD2006A2117 /* GoalsStepView.swift */,
+				41E63D5C2E483DA9006A2117 /* PersonalInfoStepView.swift */,
+				41E316762E4680A900A27990 /* OnboardingView.swift */,
+				41E63D5A2E483D03006A2117 /* WelcomeStepView.swift */,
+			);
+			path = Onboarding;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -377,7 +414,6 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				41E3162F2E46320900A27990 /* sporhocam */,
 				41E316BF2E47A4AE00A27990 /* Calculators */,
 				41E316CC2E47A93100A27990 /* Analytics */,
 			);
@@ -457,6 +493,7 @@
 			knownRegions = (
 				en,
 				Base,
+				tr,
 			);
 			mainGroup = 41E316242E46320900A27990;
 			minimizedProjectReferenceProxies = 1;
@@ -477,6 +514,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				41E63D552E4836AE006A2117 /* Localizable.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -503,9 +541,14 @@
 			files = (
 				41E3168F2E46C3E400A27990 /* HealthKitService.swift in Sources */,
 				41E316842E4696EA00A27990 /* RestTimerView.swift in Sources */,
+				41E63D4A2E482C7B006A2117 /* Double+Extensions.swift in Sources */,
+				41E63D5B2E483D0B006A2117 /* WelcomeStepView.swift in Sources */,
+				41E63D632E483E6D006A2117 /* SummaryStepView.swift in Sources */,
 				41E3166F2E467E3600A27990 /* User.swift in Sources */,
 				41E316B22E479B0000A27990 /* AppPreferencesView.swift in Sources */,
 				41E3167B2E4690DB00A27990 /* WorkoutDetailView.swift in Sources */,
+				41E63D652E485914006A2117 /* LanguageManager.swift in Sources */,
+				41E63D482E482C17006A2117 /* Date+Extension.swift in Sources */,
 				41E316822E4696C500A27990 /* SetTrackingView.swift in Sources */,
 				41E63D112E4803BF006A2117 /* QuickStatCard.swift in Sources */,
 				41E316862E46985000A27990 /* ExerciseSet.swift in Sources */,
@@ -518,15 +561,20 @@
 				41E63D102E4803BC006A2117 /* GuideSection.swift in Sources */,
 				41E63D142E4804C0006A2117 /* DashboardView.swift in Sources */,
 				41E316AE2E479ABD00A27990 /* ProfileView.swift in Sources */,
+				41E63D5D2E483DAE006A2117 /* PersonalInfoStepView.swift in Sources */,
 				41E3169F2E47696D00A27990 /* MealEntryView.swift in Sources */,
 				41E316BC2E47A02C00A27990 /* ProgressPhotosView.swift in Sources */,
+				41E63D692E487A0D006A2117 /* LocalizationKeys.swift in Sources */,
 				41E316B02E479AD800A27990 /* PersonalInfoEditView.swift in Sources */,
+				41E63D322E482867006A2117 /* UserService.swift in Sources */,
 				41E316962E4764D500A27990 /* Food.swift in Sources */,
+				41E63D5F2E483DD8006A2117 /* GoalsStepView.swift in Sources */,
 				41E316AB2E4777CB00A27990 /* CustomFoodEntryView.swift in Sources */,
 				41E3169D2E4767FF00A27990 /* NutritionEntry.swift in Sources */,
 				41E316732E467F0F00A27990 /* Workout.swift in Sources */,
 				41E63D162E480A6F006A2117 /* WorkoutService.swift in Sources */,
 				41E3169B2E47660B00A27990 /* NutritionView.swift in Sources */,
+				41E63D612E483E26006A2117 /* MeasurementsStepView.swift in Sources */,
 				41E316B42E479B1900A27990 /* AccountManagementView.swift in Sources */,
 				41E316792E468C5F00A27990 /* TrainingView.swift in Sources */,
 				41E316752E467FB000A27990 /* MainTabView.swift in Sources */,
@@ -537,6 +585,8 @@
 				41E316A32E476FE200A27990 /* FoodSelectionView.swift in Sources */,
 				41E316A92E47771B00A27990 /* DailyGoalsCard.swift in Sources */,
 				41E316B62E479D0D00A27990 /* Gender.swift in Sources */,
+				41E63D522E483027006A2117 /* ThemeManager.swift in Sources */,
+				41E63D4E2E482D48006A2117 /* Color+Extensions.swift in Sources */,
 				41E3166D2E467D5A00A27990 /* Exercise.swift in Sources */,
 				41E316A52E47738E00A27990 /* NutritionAnalyticsView.swift in Sources */,
 				41E316772E46815400A27990 /* OnboardingView.swift in Sources */,
@@ -571,6 +621,18 @@
 			targetProxy = 41E316492E46320A00A27990 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		41E63D532E4836AE006A2117 /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				41E63D542E4836AE006A2117 /* en */,
+				41E63D562E483752006A2117 /* tr */,
+			);
+			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		41E316522E46320A00A27990 /* Debug */ = {
@@ -644,6 +706,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
@@ -708,6 +771,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
