@@ -51,6 +51,8 @@ struct RestTimerView: View {
                         Text(formatTime(timeRemaining))
                             .font(.system(size: 48, weight: .bold, design: .monospaced))
                             .foregroundColor(timeRemaining <= 10 ? .red : .primary)
+                            .accessibilityLabel(LocalizationKeys.Training.Rest.remaining.localized)
+                            .accessibilityValue(formatTime(timeRemaining))
                         
                         Text(LocalizationKeys.Training.Rest.remaining.localized)
                             .font(.subheadline)
@@ -77,6 +79,7 @@ struct RestTimerView: View {
                     .padding(.vertical, 12)
                     .background(Color.orange.opacity(0.1))
                     .cornerRadius(10)
+                    .accessibilityLabel(LocalizationKeys.Training.Rest.reset.localized)
                     
                     // Play/Pause button
                     Button(isActive ? LocalizationKeys.Training.Rest.pause.localized : LocalizationKeys.Training.Rest.start.localized) {
@@ -88,6 +91,7 @@ struct RestTimerView: View {
                     .padding(.vertical, 12)
                     .background(isActive ? Color.orange : Color.blue)
                     .cornerRadius(10)
+                    .accessibilityLabel(isActive ? LocalizationKeys.Training.Rest.pause.localized : LocalizationKeys.Training.Rest.start.localized)
                     
                     // Skip button
                     Button(LocalizationKeys.Training.Rest.skip.localized) {
@@ -99,6 +103,7 @@ struct RestTimerView: View {
                     .padding(.vertical, 12)
                     .background(Color.green.opacity(0.1))
                     .cornerRadius(10)
+                    .accessibilityLabel(LocalizationKeys.Training.Rest.skip.localized)
                 }
                 
                 Spacer()
@@ -326,7 +331,7 @@ struct PresetTimeButton: View {
     
     var durationText: String {
         if duration == -1 {
-            return "Custom"
+            return LocalizationKeys.Training.Rest.Preset.custom.localized
         } else if duration < 60 {
             return "\(duration)\(LocalizationKeys.Training.Time.seconds.localized)"
         } else {

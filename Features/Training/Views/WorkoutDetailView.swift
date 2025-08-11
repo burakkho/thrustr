@@ -80,6 +80,10 @@ struct WorkoutDetailView: View {
                     }
                 }
             }
+            // TEST: Header duration & sheet cleanup
+            // 1) Active workout → time increases
+            // 2) Finish workout → time constant (totalDuration)
+            // 3) Open ExerciseSelection then dismiss → no ghost overlay, no placeholders
         .sheet(isPresented: $showingAddPart, onDismiss: {
             removeOrphanPlaceholders()
         }) {

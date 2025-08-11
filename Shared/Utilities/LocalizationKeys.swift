@@ -335,6 +335,7 @@ enum LocalizationKeys {
                 static let powerDesc = "training.rest.preset.power.desc"
                 static let custom = "training.rest.preset.custom"
                 static let customDesc = "training.rest.preset.custom.desc"
+                static let customLabel = "training.rest.preset.custom.label"
             }
             
             enum Custom {
