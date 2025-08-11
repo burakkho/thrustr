@@ -20,13 +20,23 @@ Leg Press,Leg Press,strength,machine,true,true,false,false,Hareketi kontrollü y
 Leg Curl,Leg Curl,strength,machine,true,true,false,false,Hareketi kontrollü yap.
 Leg Extension,Leg Extension,strength,machine,true,true,false,false,Hareketi kontrollü yap.
 Calf Raise,Calf Raise,strength,machine,true,true,false,false,Hareketi kontrollü yap.
+Smith Machine Squat,Smith Machine Squat,strength,machine,true,true,false,false,Hareketi kontrollü yap.
+Smith Machine Bench Press,Smith Machine Bench Press,strength,machine,true,true,false,false,Hareketi kontrollü yap.
+Hack Squat,Hack Squat,strength,machine,true,true,false,false,Hareketi kontrollü yap.
+Hip Thrust Machine,Hip Thrust Machine,strength,machine,true,true,false,false,Hareketi kontrollü yap.
+Seated Leg Curl,Seated Leg Curl,strength,machine,true,true,false,false,Hareketi kontrollü yap.
+Lying Leg Curl,Lying Leg Curl,strength,machine,true,true,false,false,Hareketi kontrollü yap.
+Pull-up,Pull-up,strength,bodyweight,false,true,false,false,Hareketi kontrollü yap.
+Weighted Pull-up,Weighted Pull-up,strength,bodyweight,true,true,false,false,Hareketi kontrollü yap.
+Dips,Dips,strength,bodyweight,false,true,false,false,Hareketi kontrollü yap.
+Weighted Dips,Weighted Dips,strength,bodyweight,true,true,false,false,Hareketi kontrollü yap.
 Thrusters,Thrusters,functional,barbell,true,true,false,false,Hareketi kontrollü yap.
-Burpees,Burpees,functional,bodyweight,false,true,false,false,Hareketi kontrollü yap.
 Wall Ball,Wall Ball,functional,ball,true,true,false,false,Hareketi kontrollü yap.
 Kettlebell Swing,Kettlebell Swing,functional,kettlebell,true,true,false,false,Hareketi kontrollü yap.
-Sandbag Clean,Sandbag Clean,functional,other,true,true,false,false,Hareketi kontrollü yap.
 Farmer's Carry,Farmer's Carry,functional,dumbbell,true,false,false,true,Hareketi kontrollü yap.
-Turkish Get-Up,Turkish Get-Up,functional,kettlebell,true,true,false,false,Hareketi kontrollü yap.
 Box Step-Up,Box Step-Up,functional,box,true,true,false,false,Hareketi kontrollü yap.
 Sled Push,Sled Push,functional,sled,true,false,true,true,Hareketi kontrollü yap.
-Battle Rope,Battle Rope,functional,rope,false,true,true,false,Hareketi kontrollü yap.
+Sled Pull,Sled Pull,functional,sled,true,false,true,true,Hareketi kontrollü yap.
+Burpee Broad Jump,Burpee Broad Jump,functional,bodyweight,false,true,false,false,Hareketi kontrollü yap.
+Sandbag Walking Lunge,Sandbag Walking Lunge,functional,other,true,true,false,false,Hareketi kontrollü yap.
+Sandbag Carry,Sandbag Carry,functional,other,true,false,false,true,Hareketi kontrollü yap.
