@@ -225,7 +225,6 @@ struct DashboardView: View {
                 }
                 .padding()
                 .cardStyle()
-                .padding(.horizontal)
             } else {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 12) {
@@ -233,7 +232,6 @@ struct DashboardView: View {
                             WorkoutCard(workout: workout)
                         }
                     }
-                    .padding(.horizontal)
                 }
             }
         }
@@ -310,7 +308,6 @@ struct DashboardView: View {
             }
             .padding()
             .cardStyle()
-            .padding(.horizontal)
         }
     }
     
