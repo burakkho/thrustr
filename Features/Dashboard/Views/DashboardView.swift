@@ -106,60 +106,49 @@ struct DashboardView: View {
     
     // MARK: - Health Stat Strip (Single Row)
     private var healthStatStrip: some View {
-        Group {
-            if healthKitService.isAuthorized {
-                HStack(spacing: theme.spacing.s) {
-                    DashboardHealthStatStripItem(
-                        icon: "figure.walk",
-                        title: LocalizationKeys.Dashboard.Stats.steps.localized,
-                        value: formatSteps(healthKitService.todaySteps),
-                        color: .blue
-                    ) { showStepsInfo = true }
-                    .frame(maxWidth: .infinity)
+        HStack(spacing: theme.spacing.s) {
+            DashboardHealthStatStripItem(
+                icon: "figure.walk",
+                title: LocalizationKeys.Dashboard.Stats.steps.localized,
+                value: formatSteps(healthKitService.todaySteps),
+                color: .blue
+            ) { showStepsInfo = true }
+            .frame(maxWidth: .infinity)
 
-                    DashboardHealthStatStripItem(
-                        icon: "flame.fill",
-                        title: LocalizationKeys.Dashboard.Stats.calories.localized,
-                        value: "\(formatCalories(healthKitService.todayCalories)) \(LocalizationKeys.Dashboard.Stats.kcal.localized)",
-                        color: .orange
-                    ) { showCaloriesInfo = true }
-                    .frame(maxWidth: .infinity)
+            DashboardHealthStatStripItem(
+                icon: "flame.fill",
+                title: LocalizationKeys.Dashboard.Stats.calories.localized,
+                value: "\(formatCalories(healthKitService.todayCalories)) \(LocalizationKeys.Dashboard.Stats.kcal.localized)",
+                color: .orange
+            ) { showCaloriesInfo = true }
+            .frame(maxWidth: .infinity)
 
-                    DashboardHealthStatStripItem(
-                        icon: "fork.knife",
-                        title: LocalizationKeys.Dashboard.Stats.consumed.localized,
-                        value: String(format: "%.0f %@", todayConsumedCalories(), LocalizationKeys.Dashboard.Stats.kcal.localized),
-                        color: .green
-                    ) { tabRouter.selected = 2 }
-                    .frame(maxWidth: .infinity)
+            DashboardHealthStatStripItem(
+                icon: "fork.knife",
+                title: LocalizationKeys.Dashboard.Stats.consumed.localized,
+                value: String(format: "%.0f %@", todayConsumedCalories(), LocalizationKeys.Dashboard.Stats.kcal.localized),
+                color: .green
+            ) { tabRouter.selected = 2 }
+            .frame(maxWidth: .infinity)
 
-                    DashboardHealthStatStripItem(
-                        icon: "dumbbell.fill",
-                        title: LocalizationKeys.Dashboard.Stats.today.localized,
-                        value: formatDuration(todayWorkoutDuration()),
-                        color: .blue
-                    ) { tabRouter.selected = 1 }
-                    .frame(maxWidth: .infinity)
-                }
-                .padding(.horizontal, theme.spacing.xs)
-                .alert(LocalizationKeys.Dashboard.HealthKit.infoTitle.localized, isPresented: $showStepsInfo) {
-                    Button(LocalizationKeys.Common.ok.localized, role: .cancel) {}
-                } message: {
-                    Text(LocalizationKeys.Dashboard.HealthKit.stepsInfoMessage.localized)
-                }
-                .alert(LocalizationKeys.Dashboard.HealthKit.infoTitle.localized, isPresented: $showCaloriesInfo) {
-                    Button(LocalizationKeys.Common.ok.localized, role: .cancel) {}
-                } message: {
-                    Text(LocalizationKeys.Dashboard.HealthKit.caloriesInfoMessage.localized)
-                }
-            } else {
-                DashboardHealthStatStripPlaceholder(
-                    message: LocalizationKeys.Dashboard.HealthPermission.message.localized,
-                    actionTitle: ""
-                ) {
-                    // no-op
-                }
-            }
+            DashboardHealthStatStripItem(
+                icon: "dumbbell.fill",
+                title: LocalizationKeys.Dashboard.Stats.today.localized,
+                value: formatDuration(todayWorkoutDuration()),
+                color: .blue
+            ) { tabRouter.selected = 1 }
+            .frame(maxWidth: .infinity)
+        }
+        .padding(.horizontal, theme.spacing.xs)
+        .alert(LocalizationKeys.Dashboard.HealthKit.infoTitle.localized, isPresented: $showStepsInfo) {
+            Button(LocalizationKeys.Common.ok.localized, role: .cancel) {}
+        } message: {
+            Text(LocalizationKeys.Dashboard.HealthKit.stepsInfoMessage.localized)
+        }
+        .alert(LocalizationKeys.Dashboard.HealthKit.infoTitle.localized, isPresented: $showCaloriesInfo) {
+            Button(LocalizationKeys.Common.ok.localized, role: .cancel) {}
+        } message: {
+            Text(LocalizationKeys.Dashboard.HealthKit.caloriesInfoMessage.localized)
         }
     }
     
