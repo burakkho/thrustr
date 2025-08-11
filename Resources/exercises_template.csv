@@ -1,2 +1,22 @@
 nameEN,nameTR,category,equipment,supportsWeight,supportsReps,supportsTime,supportsDistance,instructions
 
+Barbell Back Squat,Barbell Back Squat,strength,barbell,true,true,false,false,Hareketi kontrollü yap.
+Front Squat,Front Squat,strength,barbell,true,true,false,false,Hareketi kontrollü yap.
+Romanian Deadlift,Romanian Deadlift,strength,barbell,true,true,false,false,Hareketi kontrollü yap.
+Deadlift,Deadlift,strength,barbell,true,true,false,false,Hareketi kontrollü yap.
+Bench Press,Bench Press,strength,barbell,true,true,false,false,Hareketi kontrollü yap.
+Incline Bench Press,Incline Bench Press,strength,barbell,true,true,false,false,Hareketi kontrollü yap.
+Overhead Press,Overhead Press,strength,barbell,true,true,false,false,Hareketi kontrollü yap.
+Barbell Row,Barbell Row,strength,barbell,true,true,false,false,Hareketi kontrollü yap.
+Pendlay Row,Pendlay Row,strength,barbell,true,true,false,false,Hareketi kontrollü yap.
+Hip Thrust,Hip Thrust,strength,barbell,true,true,false,false,Hareketi kontrollü yap.
+Bulgarian Split Squat,Bulgarian Split Squat,strength,dumbbell,true,true,false,false,Hareketi kontrollü yap.
+Dumbbell Bench Press,Dumbbell Bench Press,strength,dumbbell,true,true,false,false,Hareketi kontrollü yap.
+Dumbbell Row,Dumbbell Row,strength,dumbbell,true,true,false,false,Hareketi kontrollü yap.
+Lateral Raise,Lateral Raise,strength,dumbbell,true,true,false,false,Hareketi kontrollü yap.
+Seated Cable Row,Seated Cable Row,strength,cable,true,true,false,false,Hareketi kontrollü yap.
+Lat Pulldown,Lat Pulldown,strength,machine,true,true,false,false,Hareketi kontrollü yap.
+Leg Press,Leg Press,strength,machine,true,true,false,false,Hareketi kontrollü yap.
+Leg Curl,Leg Curl,strength,machine,true,true,false,false,Hareketi kontrollü yap.
+Leg Extension,Leg Extension,strength,machine,true,true,false,false,Hareketi kontrollü yap.
+Calf Raise,Calf Raise,strength,machine,true,true,false,false,Hareketi kontrollü yap.
