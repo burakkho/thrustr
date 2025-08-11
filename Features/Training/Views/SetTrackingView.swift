@@ -74,6 +74,7 @@ struct SetTrackingView: View {
                     Button(LocalizationKeys.Training.Set.back.localized) {
                         dismiss()
                     }
+                    .accessibilityLabel(LocalizationKeys.Training.Set.back.localized)
                 }
                 
                 ToolbarItem(placement: .navigationBarTrailing) {
@@ -81,6 +82,7 @@ struct SetTrackingView: View {
                         finishExercise()
                     }
                     .fontWeight(.semibold)
+                    .accessibilityLabel(LocalizationKeys.Training.Set.save.localized)
                 }
             }
             .sheet(isPresented: $showingRestTimer) { RestTimerView(duration: restDuration) }
@@ -101,6 +103,10 @@ struct SetTrackingView: View {
             // Notify parent; if user dismissed without saving, inform false
             onDismiss?(didSaveAnySet)
         }
+        // Test Cases (Manual):
+        // 1) Same exercise multiple completed sets -> set numbers should continue from max existing.
+        // 2) Dismiss without completing any set -> no placeholder in part after parent onDismiss.
+        // 3) Save with invalid data -> shows error alert.
     }
         .alert(isPresented: $showSaveErrorAlert) {
             Alert(
@@ -113,7 +119,7 @@ struct SetTrackingView: View {
     private func setupInitialSets() {
         if sets.isEmpty {
             // Add 3 empty sets to start
-            for _ in 0..<3 {
+            for _ in 0..<WorkoutConstants.defaultSetCount {
                 sets.append(SetData())
             }
         }

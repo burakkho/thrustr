@@ -247,6 +247,7 @@ struct WorkoutPartCard: View {
     @State private var showingRename = false
     @State private var tempName: String = ""
     @State private var selectionTimer = Timer.publish(every: WorkoutConstants.timerUpdateInterval, on: .main, in: .common).autoconnect()
+    @State private var shouldOpenSetTracking = false
 
     var partType: WorkoutPartType {
         WorkoutPartType(rawValue: part.type) ?? .strength
@@ -290,8 +291,14 @@ struct WorkoutPartCard: View {
             Button(role: .destructive) { deletePart() } label: { Text(LocalizationKeys.Training.Part.deletePart.localized) }
         }
         .sheet(isPresented: $showingExerciseSelection, onDismiss: {
-            // If dismissed without selecting, cleanup placeholders
-            cleanupPlaceholdersIfNeeded()
+            // If an exercise was picked, open set tracking after sheet fully dismisses
+            if shouldOpenSetTracking {
+                showingSetTracking = true
+                shouldOpenSetTracking = false
+            } else {
+                // If dismissed without selecting, cleanup possible placeholders
+                cleanupPlaceholdersIfNeeded()
+            }
         }) {
             ExerciseSelectionView(
                 workoutPart: part,
@@ -310,12 +317,9 @@ struct WorkoutPartCard: View {
                     modelContext.insert(placeholder)
                     do { try modelContext.save() } catch { /* ignore here */ }
 
-                    // Dismiss selection sheet before presenting set tracking to avoid overlay
+                    // Dismiss selection sheet, then present set tracking in onDismiss callback
+                    shouldOpenSetTracking = true
                     showingExerciseSelection = false
-                    // Present set tracking immediately on next runloop tick
-                    DispatchQueue.main.async {
-                        showingSetTracking = true
-                    }
                 }
             )
         }
@@ -445,6 +449,16 @@ struct WorkoutPartCard: View {
     private func deletePart() {
         modelContext.delete(part)
         do { try modelContext.save() } catch { /* ignore */ }
+    }
+
+    // Cleans up placeholder sets for the last selected exercise if user dismissed without proceeding
+    private func cleanupPlaceholdersIfNeeded() {
+        guard !shouldOpenSetTracking, let exercise = selectedExercise else { return }
+        let placeholders = part.exerciseSets.filter { $0.exercise?.id == exercise.id && !$0.isCompleted }
+        guard !placeholders.isEmpty else { return }
+        placeholders.forEach { modelContext.delete($0) }
+        do { try modelContext.save() } catch { /* ignore */ }
+        selectedExercise = nil
     }
 }
 
