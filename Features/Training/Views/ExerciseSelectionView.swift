@@ -12,6 +12,13 @@ struct ExerciseSelectionView: View {
     
     @State private var searchText = ""
     @State private var selectedPartType: WorkoutPartType? = nil
+    @State private var selectedSegment: ExercisePickerSegment = .all
+    @State private var recentIds: [UUID] = []
+
+    enum ExercisePickerSegment: Int, CaseIterable {
+        case all = 0, favorites = 1, recent = 2
+        var title: String { switch self { case .all: return LocalizationKeys.Training.Exercise.all.localized; case .favorites: return "Favoriler"; case .recent: return "Son" } }
+    }
 
     private var availablePartTypes: [WorkoutPartType] {
         WorkoutPartType.allCases.filter { partType in
@@ -22,6 +29,17 @@ struct ExerciseSelectionView: View {
     
     var filteredExercises: [Exercise] {
         var result = exercises.filter { $0.isActive }
+
+        // Segment filter
+        switch selectedSegment {
+        case .favorites:
+            result = result.filter { $0.isFavorite }
+        case .recent:
+            let setIds = Set(recentIds)
+            result = result.filter { setIds.contains($0.id) }
+        case .all:
+            break
+        }
 
         if let partType = selectedPartType {
             let allowed = Set(partType.suggestedExerciseCategories.map { $0.rawValue })
@@ -52,6 +70,15 @@ struct ExerciseSelectionView: View {
                         .multilineTextAlignment(.center)
                 }
                 .padding(.top)
+
+                // Segments
+                Picker("", selection: $selectedSegment) {
+                    Text(ExercisePickerSegment.all.title).tag(ExercisePickerSegment.all)
+                    Text(ExercisePickerSegment.favorites.title).tag(ExercisePickerSegment.favorites)
+                    Text(ExercisePickerSegment.recent.title).tag(ExercisePickerSegment.recent)
+                }
+                .pickerStyle(.segmented)
+                .padding(.horizontal)
 
                 // Search bar
                 SearchBar(text: $searchText)
@@ -100,11 +127,20 @@ struct ExerciseSelectionView: View {
         .onAppear {
             // Varsayılan olarak geçerli bölüm türünü seçili getir (varsa)
             selectedPartType = workoutPart?.workoutPartType
+            // Load recent from UserDefaults
+            if let data = UserDefaults.standard.array(forKey: "training.recent.exerciseIds") as? [String] {
+                recentIds = data.compactMap { UUID(uuidString: $0) }
+            }
         }
     }
     
     private func selectExercise(_ exercise: Exercise) {
         onExerciseSelected(exercise)
+        // Track recent
+        var current = Set(recentIds)
+        current.insert(exercise.id)
+        recentIds = Array(current).prefix(30).map { $0 }
+        UserDefaults.standard.set(recentIds.map { $0.uuidString }, forKey: "training.recent.exerciseIds")
         dismiss()
     }
 }
@@ -202,6 +238,7 @@ struct CategoryChip: View {
 struct ExerciseRow: View {
     let exercise: Exercise
     let action: () -> Void
+    @Environment(\.modelContext) private var modelContext
     
     var category: ExerciseCategory {
         ExerciseCategory(rawValue: exercise.category) ?? .other
@@ -237,6 +274,15 @@ struct ExerciseRow: View {
                     if exercise.supportsDistance {
                         InputTypeIcon(icon: "ruler", color: .green)
                     }
+                }
+
+                // Favorite toggle
+                Button(action: {
+                    exercise.isFavorite.toggle()
+                    try? modelContext.save()
+                }) {
+                    Image(systemName: exercise.isFavorite ? "heart.fill" : "heart")
+                        .foregroundColor(.red)
                 }
             }
             .padding()

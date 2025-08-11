@@ -13,6 +13,7 @@ final class Exercise {
     var supportsTime: Bool
     var supportsDistance: Bool
     var instructions: String?
+    var isFavorite: Bool
     var isActive: Bool
     var createdAt: Date
     var updatedAt: Date
@@ -28,6 +29,7 @@ final class Exercise {
         self.supportsTime = false
         self.supportsDistance = false
         self.instructions = nil
+        self.isFavorite = false
         self.isActive = true
         self.createdAt = Date()
         self.updatedAt = Date()
