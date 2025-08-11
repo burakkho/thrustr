@@ -9,6 +9,7 @@ struct WorkoutDetailView: View {
     let workout: Workout
     @State private var showingAddPart = false
     @State private var currentTime = Date()
+    @State private var showingShare = false
 
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
 
@@ -48,8 +49,16 @@ struct WorkoutDetailView: View {
                     Button(LocalizationKeys.Training.Detail.back.localized) { dismiss() }
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(LocalizationKeys.Training.Detail.finish.localized) { finishWorkout() }
-                        .foregroundColor(.red)
+                    HStack(spacing: 12) {
+                        if workout.isCompleted {
+                            ShareLink(item: shareMessage) {
+                                Image(systemName: "square.and.arrow.up")
+                            }
+                            .accessibilityLabel("Share workout summary")
+                        }
+                        Button(LocalizationKeys.Training.Detail.finish.localized) { finishWorkout() }
+                            .foregroundColor(.red)
+                    }
                 }
             }
             .sheet(isPresented: $showingAddPart) {
@@ -73,7 +82,28 @@ struct WorkoutDetailView: View {
     private func finishWorkout() {
         workout.finishWorkout()
         try? modelContext.save()
-        dismiss()
+        // Keep the view so user can share; do not dismiss immediately
+    }
+
+    private var shareMessage: String {
+        let durationString = formatDuration(workout.totalDuration)
+        let exerciseCount: Int = {
+            let exerciseIds = workout.parts.flatMap { part in
+                part.exerciseSets.compactMap { $0.exercise?.id }
+            }
+            return Set(exerciseIds).count
+        }()
+        let totalVolume = Int(workout.totalVolume)
+
+        return """
+        💪 Antrenmanımı tamamladım!
+
+        ⏱ Süre: \(durationString)
+        🏋️ Egzersizler: \(exerciseCount)
+        📊 Toplam: \(totalVolume) kg
+
+        Sen de katıl: Spor Hocam 🚀
+        """
     }
 }
 
