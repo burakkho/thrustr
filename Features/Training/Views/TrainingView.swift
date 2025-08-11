@@ -181,9 +181,9 @@ struct PartTypeChip: View {
         case .functional:
             return LocalizationKeys.Training.Part.functional.localized
         case .olympic:
-            return "Olimpik"
+            return LocalizationKeys.Training.Part.olympic.localized
         case .plyometric:
-            return "Plyometrik"
+            return LocalizationKeys.Training.Part.plyometric.localized
         }
     }
     
@@ -323,7 +323,7 @@ struct ActiveWorkoutCard: View {
                 .foregroundColor(.white)
                 .frame(maxWidth: .infinity)
                 .padding(theme.spacing.m)
-                .background(theme.colors.accent)
+                .background(theme.colors.success)
                 .cornerRadius(12)
                 .buttonStyle(PressableStyle())
                 .accessibilityLabel(LocalizationKeys.Training.Active.continueButton.localized)
@@ -334,10 +334,10 @@ struct ActiveWorkoutCard: View {
                     UIImpactFeedbackGenerator(style: .light).impactOccurred()
                 }
                 .font(.headline)
-                .foregroundColor(theme.colors.accent)
+                .foregroundColor(theme.colors.success)
                 .frame(maxWidth: .infinity)
                 .padding(theme.spacing.m)
-                .background(theme.colors.accent.opacity(0.1))
+                .background(theme.colors.success.opacity(0.1))
                 .cornerRadius(12)
                 .buttonStyle(PressableStyle())
                 .accessibilityLabel(LocalizationKeys.Training.Active.finish.localized)
@@ -610,7 +610,9 @@ struct NewWorkoutFlowView: View {
         case .cardio: return .conditioning
         case .functional: return .functional
         case .core, .isolation: return .accessory
-        case .warmup, .flexibility, .plyometric: return .warmup
+        case .warmup, .flexibility: return .warmup
+        case .plyometric: return .plyometric
+        case .olympic: return .olympic
         default: return .strength
         }
     }

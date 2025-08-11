@@ -29,6 +29,9 @@ class DataSeeder {
             print("✅ Foods already present: \(foodCount)")
         }
 
+        // Always run a normalization step to ensure critical categories are correct
+        fixOlympicExerciseCategories(modelContext: modelContext)
+
         if didSeed {
             print("✅ Database seeding completed!")
         }
@@ -258,6 +261,50 @@ class DataSeeder {
         }
         try? modelContext.save()
         print("🗑️ Exercises cleared (foods preserved)")
+    }
+}
+
+// MARK: - Data Repair & Normalization
+extension DataSeeder {
+    /// Ensures well-known Olympic weightlifting movements are categorized correctly as `olympic`.
+    /// This is safe to run on every launch; it only updates records that are miscategorized.
+    @MainActor
+    static func fixOlympicExerciseCategories(modelContext: ModelContext) {
+        let olympicExactNames: Set<String> = [
+            "clean and jerk",
+            "snatch",
+            "power clean",
+            "split jerk",
+            "power snatch"
+        ]
+
+        let descriptor = FetchDescriptor<Exercise>()
+        guard let exercises = try? modelContext.fetch(descriptor) else { return }
+
+        var updatedCount = 0
+        for exercise in exercises {
+            let nameENLower = exercise.nameEN.lowercased()
+            let nameTRLower = exercise.nameTR.lowercased()
+
+            let isOlympicByName = olympicExactNames.contains(nameENLower) ||
+                                  olympicExactNames.contains(nameTRLower)
+
+            if isOlympicByName && exercise.category != ExerciseCategory.olympic.rawValue {
+                exercise.category = ExerciseCategory.olympic.rawValue
+                updatedCount += 1
+            }
+        }
+
+        if updatedCount > 0 {
+            do {
+                try modelContext.save()
+                print("🔧 Normalized olympic categories for \(updatedCount) exercises.")
+            } catch {
+                print("❌ Failed to normalize olympic categories: \(error)")
+            }
+        } else {
+            print("ℹ️ Olympic category normalization: no changes needed.")
+        }
     }
 }
 

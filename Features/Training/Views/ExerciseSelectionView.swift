@@ -123,14 +123,7 @@ struct ExerciseSelectionView: View {
                      }
                      .accessibilityLabel(LocalizationKeys.Training.Exercise.cancel.localized)
                  }
-                
-                 ToolbarItem(placement: .navigationBarTrailing) {
-                     Button("Özel Ekle") {
-                         // TODO: Add custom exercise
-                     }
-                     .font(.subheadline)
-                     .accessibilityLabel(LocalizationKeys.Training.Exercise.addCustom.localized)
-                 }
+                 // Trailing "Özel Ekle" butonu henüz uygulanmadığından gizlendi
             }
         }
         .onAppear {
@@ -319,57 +312,56 @@ struct ExerciseRow: View {
     }
     
     var body: some View {
-        Button(action: action) {
-            HStack(spacing: 12) {
-                 Image(systemName: category.icon)
-                    .font(.title2)
-                    .foregroundColor(category.color)
-                    .frame(width: 30)
-                     .accessibilityLabel(category.icon)
+        HStack(spacing: 12) {
+            Image(systemName: category.icon)
+                .font(.title2)
+                .foregroundColor(category.color)
+                .frame(width: 30)
+                .accessibilityHidden(true)
 
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(exercise.nameTR)
-                        .font(.headline)
-                        .foregroundColor(.primary)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(exercise.nameTR)
+                    .font(.headline)
+                    .foregroundColor(.primary)
 
-                    if !exercise.equipment.isEmpty {
-                        EquipmentTags(equipment: exercise.equipment)
-                    }
+                if !exercise.equipment.isEmpty {
+                    EquipmentTags(equipment: exercise.equipment)
                 }
-
-                Spacer()
-
-                VStack(alignment: .trailing, spacing: 4) {
-                    if exercise.supportsWeight {
-                        InputTypeIcon(icon: "scalemass", color: .blue)
-                    }
-                    if exercise.supportsTime {
-                        InputTypeIcon(icon: "timer", color: .orange)
-                    }
-                    if exercise.supportsDistance {
-                        InputTypeIcon(icon: "ruler", color: .green)
-                    }
-                }
-
-                // Favorite toggle
-                 Button(action: {
-                     exercise.isFavorite.toggle()
-                     do { try modelContext.save() } catch { /* ignore */ }
-                 }) {
-                    Image(systemName: exercise.isFavorite ? "heart.fill" : "heart")
-                        .foregroundColor(.red)
-                }
-                 .accessibilityLabel(exercise.isFavorite ? LocalizationKeys.Common.delete.localized : LocalizationKeys.Common.add.localized)
             }
-            .padding(theme.spacing.m)
-            .background(theme.colors.cardBackground)
-            .overlay(
-                RoundedRectangle(cornerRadius: 12)
-                    .stroke(category.color.opacity(0.2), lineWidth: 2)
-            )
-            .cornerRadius(12)
+
+            Spacer()
+
+            VStack(alignment: .trailing, spacing: 4) {
+                if exercise.supportsWeight {
+                    InputTypeIcon(icon: "scalemass", color: .blue)
+                }
+                if exercise.supportsTime {
+                    InputTypeIcon(icon: "timer", color: .orange)
+                }
+                if exercise.supportsDistance {
+                    InputTypeIcon(icon: "ruler", color: .green)
+                }
+            }
+
+            // Favorite toggle (bağımsız dokunma hedefi)
+            Button(action: {
+                exercise.isFavorite.toggle()
+                do { try modelContext.save() } catch { /* ignore */ }
+            }) {
+                Image(systemName: exercise.isFavorite ? "heart.fill" : "heart")
+                    .foregroundColor(.red)
+            }
+            .accessibilityLabel(exercise.isFavorite ? LocalizationKeys.Common.delete.localized : LocalizationKeys.Common.add.localized)
         }
-        .buttonStyle(PlainButtonStyle())
+        .padding(theme.spacing.m)
+        .background(theme.colors.cardBackground)
+        .overlay(
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(category.color.opacity(0.2), lineWidth: 2)
+        )
+        .cornerRadius(12)
+        .contentShape(Rectangle())
+        .onTapGesture { action() }
     }
 }
 

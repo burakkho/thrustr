@@ -505,7 +505,11 @@ struct TimeInputField: View {
     }
     
     private func updateSeconds() {
-        seconds = minutes * 60 + secs
+        let safeMinutes = max(0, minutes)
+        let clampedSecs = min(max(0, secs), 59)
+        minutes = safeMinutes
+        secs = clampedSecs
+        seconds = safeMinutes * 60 + clampedSecs
     }
     
     private func updateFromSeconds() {
