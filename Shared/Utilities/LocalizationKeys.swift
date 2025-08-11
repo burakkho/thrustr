@@ -220,6 +220,13 @@ enum LocalizationKeys {
             static let noExercise = "training.part.noExercise"
             static let addExercise = "training.part.addExercise"
             static let result = "training.part.result"
+            // Context menu actions
+            static let rename = "training.part.rename"
+            static let moveUp = "training.part.moveUp"
+            static let moveDown = "training.part.moveDown"
+            static let markCompletedAction = "training.part.markCompleted"
+            static let markInProgressAction = "training.part.markInProgress"
+            static let deletePart = "training.part.deletePart"
             
             // Legacy Status enum support
             enum Status {

@@ -63,7 +63,7 @@ struct WorkoutDetailView: View {
                             ShareLink(item: shareMessage) {
                                 Image(systemName: "square.and.arrow.up")
                             }
-                            .accessibilityLabel(LocalizationKeys.Common.share ?? "Share")
+                            .accessibilityLabel("Share workout summary")
                         }
                         Button(LocalizationKeys.Training.Detail.finish.localized) { finishWorkout() }
                             .foregroundColor(theme.colors.error)
@@ -280,14 +280,14 @@ struct WorkoutPartCard: View {
         .padding(theme.spacing.l)
         .cardStyle()
         .contextMenu {
-            Button("Rename") { tempName = part.name; showingRename = true }
-            Button("Move Up") { movePart(direction: -1) }
-            Button("Move Down") { movePart(direction: 1) }
+            Button(LocalizationKeys.Training.Part.rename.localized) { tempName = part.name; showingRename = true }
+            Button(LocalizationKeys.Training.Part.moveUp.localized) { movePart(direction: -1) }
+            Button(LocalizationKeys.Training.Part.moveDown.localized) { movePart(direction: 1) }
             Divider()
-            Button(part.isCompleted ? "Mark In Progress" : "Mark Completed") {
-                part.isCompleted.toggle(); try? modelContext.save()
+            Button(part.isCompleted ? LocalizationKeys.Training.Part.markInProgressAction.localized : LocalizationKeys.Training.Part.markCompletedAction.localized) {
+                part.isCompleted.toggle(); do { try modelContext.save() } catch { /* ignore */ }
             }
-            Button(role: .destructive) { deletePart() } label: { Text("Delete Part") }
+            Button(role: .destructive) { deletePart() } label: { Text(LocalizationKeys.Training.Part.deletePart.localized) }
         }
         .sheet(isPresented: $showingExerciseSelection, onDismiss: {
             // If dismissed without selecting, cleanup placeholders
