@@ -5,6 +5,7 @@ import SwiftData
 struct WorkoutDetailView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.theme) private var theme
 
     let workout: Workout
     @State private var showingAddPart = false
@@ -59,7 +60,7 @@ struct WorkoutDetailView: View {
                             .accessibilityLabel("Share workout summary")
                         }
                         Button(LocalizationKeys.Training.Detail.finish.localized) { finishWorkout() }
-                            .foregroundColor(.red)
+                            .foregroundColor(theme.colors.error)
                     }
                 }
             }
@@ -150,6 +151,7 @@ struct WorkoutHeaderView: View {
     let workoutName: String
     let duration: String
     let isActive: Bool
+    @Environment(\.theme) private var theme
 
     var body: some View {
         VStack(spacing: 12) {
@@ -158,32 +160,41 @@ struct WorkoutHeaderView: View {
                     Text(workoutName).font(.title2).fontWeight(.bold)
                     HStack(spacing: 4) {
                         Circle().fill(isActive ? Color.green : Color.gray).frame(width: 8, height: 8)
-                        Text(isActive ? LocalizationKeys.Training.Active.statusActive.localized : LocalizationKeys.Training.Active.statusCompleted.localized).font(.caption).foregroundColor(.secondary)
+                        Text(isActive ? LocalizationKeys.Training.Active.statusActive.localized : LocalizationKeys.Training.Active.statusCompleted.localized)
+                            .font(.caption)
+                            .foregroundColor(theme.colors.textSecondary)
                     }
                 }
                 Spacer()
                 VStack(alignment: .trailing, spacing: 4) {
-                    Text(duration).font(.title).fontWeight(.bold)
-                        .foregroundColor(isActive ? .blue : .secondary)
-                    Text(LocalizationKeys.Training.Active.duration.localized).font(.caption).foregroundColor(.secondary)
+                    Text(duration)
+                        .font(.title)
+                        .fontWeight(.bold)
+                        .foregroundColor(isActive ? theme.colors.accent : theme.colors.textSecondary)
+                    Text(LocalizationKeys.Training.Active.duration.localized)
+                        .font(.caption)
+                        .foregroundColor(theme.colors.textSecondary)
                 }
             }
             .padding(.horizontal)
             Divider()
         }
-        .background(Color(.systemBackground))
+        .background(theme.colors.backgroundPrimary)
     }
 }
 
 // MARK: - Empty State
 struct EmptyWorkoutState: View {
     let action: () -> Void
+    @Environment(\.theme) private var theme
     var body: some View {
         VStack(spacing: 20) {
-            Image(systemName: "plus.circle.dashed").font(.system(size: 60)).foregroundColor(.gray)
+            Image(systemName: "plus.circle.dashed")
+                .font(.system(size: 60))
+                .foregroundColor(theme.colors.textSecondary)
             Text(LocalizationKeys.Training.Detail.emptyTitle.localized).font(.title2).fontWeight(.semibold)
             Text(LocalizationKeys.Training.Detail.emptySubtitle.localized)
-                .foregroundColor(.secondary).multilineTextAlignment(.center)
+                .foregroundColor(theme.colors.textSecondary).multilineTextAlignment(.center)
         }
         .padding(.top, 60)
     }
@@ -193,6 +204,7 @@ struct EmptyWorkoutState: View {
 struct WorkoutPartCard: View {
     let part: WorkoutPart
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.theme) private var theme
     @State private var showingExerciseSelection = false
     @State private var showingSetTracking = false
     @State private var selectedExercise: Exercise?
@@ -224,102 +236,12 @@ struct WorkoutPartCard: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
-            // Header
-            HStack(alignment: .center) {
-                HStack(spacing: 10) {
-                    Image(systemName: partType.icon)
-                        .foregroundColor(partColor)
-                        .font(.system(size: 28, weight: .semibold))
-                    Text(part.name)
-                        .font(.title3)
-                        .fontWeight(.bold)
-                }
-                Spacer()
-                HStack(spacing: 6) {
-                    Circle()
-                        .fill(part.isCompleted ? Color.green : Color.orange)
-                        .frame(width: 10, height: 10)
-                    Text(part.isCompleted ? LocalizationKeys.Training.Part.statusCompleted.localized : LocalizationKeys.Training.Part.statusInProgress.localized)
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                }
-            }
-
-            if part.exerciseSets.isEmpty && part.wodResult == nil {
-                VStack(spacing: 10) {
-                    Text(LocalizationKeys.Training.Part.noExercise.localized)
-                        .foregroundColor(.secondary).font(.subheadline)
-                    Button(action: { showingExerciseSelection = true }) {
-                        HStack { Image(systemName: "plus.circle.fill"); Text(LocalizationKeys.Training.Part.addExercise.localized).fontWeight(.semibold) }
-                            .frame(maxWidth: .infinity)
-                    }
-                    .padding(.vertical, 10)
-                    .background(Color.blue)
-                    .foregroundColor(.white)
-                    .cornerRadius(10)
-                }
-                .padding(.top, 4)
-            } else if let wodResult = part.wodResult {
-                HStack {
-                    Text(LocalizationKeys.Training.Part.result.localized).foregroundColor(.secondary)
-                    Text(wodResult).fontWeight(.semibold).foregroundColor(.green)
-                }
-                Button(action: { showingExerciseSelection = true }) {
-                    HStack { Image(systemName: "plus.circle.fill"); Text(LocalizationKeys.Training.Part.addExercise.localized).fontWeight(.medium) }
-                        .frame(maxWidth: .infinity)
-                }
-                .padding(.vertical, 8)
-                .background(Color.blue.opacity(0.12))
-                .foregroundColor(.blue)
-                .cornerRadius(10)
-            } else {
-                VStack(spacing: 10) {
-                    ForEach(groupedExercises, id: \.exercise.id) { group in
-                        ExerciseGroupView(
-                            exercise: group.exercise,
-                            sets: group.sets,
-                            workoutPart: part,
-                            onAddSet: {
-                                selectedExercise = group.exercise
-                                showingSetTracking = true
-                            }
-                        )
-                    }
-                    Button(action: { showingExerciseSelection = true }) {
-                        HStack { Image(systemName: "plus.circle.fill"); Text(LocalizationKeys.Training.Part.addExercise.localized).fontWeight(.semibold) }
-                            .frame(maxWidth: .infinity)
-                    }
-                    .padding(.vertical, 10)
-                    .background(Color.green)
-                    .foregroundColor(.white)
-                    .cornerRadius(10)
-                    .padding(.top, 6)
-                }
-            }
-
-            if part.totalSets > 0 {
-                VStack(spacing: 4) {
-                    ProgressView(value: Double(part.completedSets), total: Double(part.totalSets))
-                        .tint(partColor)
-                    HStack {
-                        Text("\(part.completedSets)/\(part.totalSets) \(LocalizationKeys.Training.Stats.sets.localized)")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                        Spacer()
-                        Text("\(Int(part.totalVolume))kg")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                    }
-                }
-            }
+            headerSection
+            contentSection
+            if part.totalSets > 0 { progressSection }
         }
-        .padding(16)
-        .background(Color(.systemGray6))
-        .overlay(
-            RoundedRectangle(cornerRadius: 14)
-                .stroke(partColor.opacity(0.2), lineWidth: 2)
-        )
-        .cornerRadius(14)
+        .padding(theme.spacing.l)
+        .cardStyle()
         .contextMenu {
             Button("Rename") { tempName = part.name; showingRename = true }
             Button("Move Up") { movePart(direction: -1) }
@@ -372,6 +294,117 @@ struct WorkoutPartCard: View {
         }
     }
 
+    // MARK: - Sections
+    @ViewBuilder private var headerSection: some View {
+        HStack(alignment: .center) {
+            HStack(spacing: 10) {
+                Image(systemName: partType.icon)
+                    .foregroundColor(partColor)
+                    .font(.system(size: 28, weight: .semibold))
+                Text(part.name)
+                    .font(.title3)
+                    .fontWeight(.bold)
+            }
+            Spacer()
+            HStack(spacing: 6) {
+                Circle()
+                    .fill(part.isCompleted ? theme.colors.success : theme.colors.warning)
+                    .frame(width: 10, height: 10)
+                Text(part.isCompleted ? LocalizationKeys.Training.Part.statusCompleted.localized : LocalizationKeys.Training.Part.statusInProgress.localized)
+                    .font(.caption)
+                    .foregroundColor(theme.colors.textSecondary)
+            }
+        }
+    }
+
+    @ViewBuilder private var contentSection: some View {
+        if part.exerciseSets.isEmpty && part.wodResult == nil {
+            VStack(spacing: 10) {
+                Text(LocalizationKeys.Training.Part.noExercise.localized)
+                    .foregroundColor(theme.colors.textSecondary)
+                    .font(.subheadline)
+                Button(action: { showingExerciseSelection = true }) {
+                    HStack {
+                        Image(systemName: "plus.circle.fill")
+                        Text(LocalizationKeys.Training.Part.addExercise.localized)
+                            .fontWeight(.semibold)
+                    }
+                    .frame(maxWidth: .infinity)
+                }
+                .padding(.vertical, 10)
+                .background(theme.colors.accent)
+                .foregroundColor(.white)
+                .cornerRadius(theme.radius.m)
+                .buttonStyle(PressableStyle())
+            }
+            .padding(.top, 4)
+        } else if let wodResult = part.wodResult {
+            HStack {
+                Text(LocalizationKeys.Training.Part.result.localized)
+                    .foregroundColor(theme.colors.textSecondary)
+                Text(wodResult)
+                    .fontWeight(.semibold)
+                    .foregroundColor(theme.colors.success)
+            }
+            Button(action: { showingExerciseSelection = true }) {
+                HStack {
+                    Image(systemName: "plus.circle.fill")
+                    Text(LocalizationKeys.Training.Part.addExercise.localized)
+                        .fontWeight(.medium)
+                }
+                .frame(maxWidth: .infinity)
+            }
+            .padding(.vertical, 8)
+            .background(theme.colors.accent.opacity(0.12))
+            .foregroundColor(theme.colors.accent)
+            .cornerRadius(theme.radius.m)
+            .buttonStyle(PressableStyle())
+        } else {
+            VStack(spacing: 10) {
+                ForEach(groupedExercises, id: \.exercise.id) { group in
+                    ExerciseGroupView(
+                        exercise: group.exercise,
+                        sets: group.sets,
+                        onAddSet: {
+                            selectedExercise = group.exercise
+                            showingSetTracking = true
+                        }
+                    )
+                }
+                Button(action: { showingExerciseSelection = true }) {
+                    HStack {
+                        Image(systemName: "plus.circle.fill")
+                        Text(LocalizationKeys.Training.Part.addExercise.localized)
+                            .fontWeight(.semibold)
+                    }
+                    .frame(maxWidth: .infinity)
+                }
+                .padding(.vertical, 10)
+                .background(theme.colors.success)
+                .foregroundColor(.white)
+                .cornerRadius(theme.radius.m)
+                .padding(.top, 6)
+                .buttonStyle(PressableStyle())
+            }
+        }
+    }
+
+    @ViewBuilder private var progressSection: some View {
+        VStack(spacing: 4) {
+            ProgressView(value: Double(part.completedSets), total: Double(part.totalSets))
+                .tint(partColor)
+            HStack {
+                Text("\(part.completedSets)/\(part.totalSets) \(LocalizationKeys.Training.Stats.sets.localized)")
+                    .font(.caption)
+                    .foregroundColor(theme.colors.textSecondary)
+                Spacer()
+                Text("\(Int(part.totalVolume))kg")
+                    .font(.caption)
+                    .foregroundColor(theme.colors.textSecondary)
+            }
+        }
+    }
+
     private var groupedExercises: [(exercise: Exercise, sets: [ExerciseSet])] {
         let dict = Dictionary(grouping: part.exerciseSets) { $0.exercise }
         return dict.compactMap { (ex, sets) in
@@ -391,6 +424,22 @@ struct WorkoutPartCard: View {
         case .plyometric: return .pink
         }
     }
+
+    private func movePart(direction: Int) {
+        guard let workout = part.workout else { return }
+        var parts = workout.parts.sorted { $0.orderIndex < $1.orderIndex }
+        guard let currentIndex = parts.firstIndex(where: { $0.id == part.id }) else { return }
+        let newIndex = currentIndex + direction
+        guard newIndex >= 0 && newIndex < parts.count else { return }
+        parts.swapAt(currentIndex, newIndex)
+        for (i, p) in parts.enumerated() { p.orderIndex = i }
+        try? modelContext.save()
+    }
+
+    private func deletePart() {
+        modelContext.delete(part)
+        try? modelContext.save()
+    }
 }
 
 // MARK: - Exercise group view
@@ -398,6 +447,7 @@ struct ExerciseGroupView: View {
     let exercise: Exercise
     let sets: [ExerciseSet]
     let onAddSet: () -> Void
+    @Environment(\.theme) private var theme
 
     var completedSets: [ExerciseSet] {
         sets.filter { $0.isCompleted }
@@ -409,15 +459,18 @@ struct ExerciseGroupView: View {
                 Text(exercise.nameTR).font(.subheadline).fontWeight(.medium)
                 Spacer()
                 Text(String(format: LocalizationKeys.Training.Exercise.setCount.localized, completedSets.count, sets.count))
-                    .font(.caption).foregroundColor(.secondary)
+                    .font(.caption)
+                    .foregroundColor(theme.colors.textSecondary)
                 Button("+ \(LocalizationKeys.Training.Stats.sets.localized)") { onAddSet() }
-                    .font(.caption).foregroundColor(.blue)
+                    .font(.caption)
+                    .foregroundColor(theme.colors.accent)
             }
 
             ForEach(completedSets.prefix(3), id: \.id) { set in
                 HStack {
                     Text(String(format: LocalizationKeys.Training.Exercise.setNumber.localized, set.setNumber))
-                        .font(.caption).foregroundColor(.secondary)
+                        .font(.caption)
+                        .foregroundColor(theme.colors.textSecondary)
                         .frame(width: 50, alignment: .leading)
                     Text(set.displayText).font(.caption).fontWeight(.medium)
                     Spacer()
@@ -430,12 +483,13 @@ struct ExerciseGroupView: View {
 
             if completedSets.count > 3 {
                 Text(String(format: LocalizationKeys.Training.Exercise.moreSets.localized, completedSets.count - 3))
-                    .font(.caption2).foregroundColor(.secondary)
+                    .font(.caption2)
+                    .foregroundColor(theme.colors.textSecondary)
             }
         }
         .padding(.vertical, 4)
         .padding(.horizontal, 8)
-        .background(Color(.systemBackground))
+        .background(theme.colors.cardBackground)
         .cornerRadius(6)
     }
 }
@@ -443,43 +497,48 @@ struct ExerciseGroupView: View {
 // MARK: - Action bar and helpers
 struct AddPartButton: View {
     let action: () -> Void
+    @Environment(\.theme) private var theme
     var body: some View {
         Button(action: action) {
             HStack {
-                Image(systemName: "plus.circle.fill").foregroundColor(.blue)
+                Image(systemName: "plus.circle.fill").foregroundColor(theme.colors.accent)
                 Text(LocalizationKeys.Training.Detail.addPart.localized).fontWeight(.medium)
                 Spacer()
             }
             .padding()
-            .background(Color.blue.opacity(0.1))
+            .background(theme.colors.accent.opacity(0.1))
             .cornerRadius(12)
         }
-        .foregroundColor(.blue)
+        .foregroundColor(theme.colors.accent)
+        .buttonStyle(PressableStyle())
     }
 }
 
 struct AddExercisesButton: View {
     let action: () -> Void
+    @Environment(\.theme) private var theme
     var body: some View {
         Button(action: action) {
             HStack {
                 Image(systemName: "plus")
-                    .foregroundColor(.green)
+                    .foregroundColor(theme.colors.success)
                 Text(LocalizationKeys.Training.Part.addExercise.localized)
                     .fontWeight(.medium)
                 Spacer()
             }
             .padding()
-            .background(Color.green.opacity(0.1))
+            .background(theme.colors.success.opacity(0.1))
             .cornerRadius(12)
         }
-        .foregroundColor(.green)
+        .foregroundColor(theme.colors.success)
+        .buttonStyle(PressableStyle())
     }
 }
 
 struct WorkoutActionBar: View {
     let workout: Workout
     let onFinish: () -> Void
+    @Environment(\.theme) private var theme
     var body: some View {
         VStack(spacing: 0) {
             Divider()
@@ -493,21 +552,22 @@ struct WorkoutActionBar: View {
                 Button(LocalizationKeys.Training.Detail.finishWorkout.localized, action: onFinish)
                     .font(.headline).foregroundColor(.white)
                     .padding(.horizontal, 20).padding(.vertical, 12)
-                    .background(Color.green).cornerRadius(8)
+                    .background(theme.colors.success).cornerRadius(8)
             }
             .padding()
         }
-        .background(Color(.systemBackground))
+        .background(theme.colors.backgroundPrimary)
     }
 }
 
 struct StatBadge: View {
     let title: String
     let value: String
+    @Environment(\.theme) private var theme
     var body: some View {
         VStack(spacing: 2) {
             Text(value).font(.headline).fontWeight(.semibold)
-            Text(title).font(.caption).foregroundColor(.secondary)
+            Text(title).font(.caption).foregroundColor(theme.colors.textSecondary)
         }
     }
 }
@@ -516,6 +576,7 @@ struct StatBadge: View {
 struct AddPartSheet: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.theme) private var theme
     let workout: Workout
 
     @State private var selectedPartType: WorkoutPartType = .strength
@@ -563,7 +624,7 @@ struct AddPartSheet: View {
                 Button(LocalizationKeys.Training.AddPart.add.localized) { addPart() }
                     .font(.headline).foregroundColor(.white)
                     .frame(maxWidth: .infinity).padding()
-                    .background(partName.isEmpty ? Color.gray : Color.blue)
+                    .background(partName.isEmpty ? Color.gray : theme.colors.accent)
                     .cornerRadius(12)
                     .disabled(partName.isEmpty)
                     .padding(.horizontal)
@@ -608,6 +669,7 @@ struct PartTypeSelectionRow: View {
     let partType: WorkoutPartType
     let isSelected: Bool
     let action: () -> Void
+    @Environment(\.theme) private var theme
 
     var localizedDisplayName: String {
         switch partType {
@@ -654,7 +716,7 @@ struct PartTypeSelectionRow: View {
                     .font(.title2).foregroundColor(partColor).frame(width: 30)
                 VStack(alignment: .leading, spacing: 2) {
                     Text(localizedDisplayName).font(.headline).foregroundColor(.primary)
-                    Text(localizedDescription).font(.caption).foregroundColor(.secondary)
+                    Text(localizedDescription).font(.caption).foregroundColor(theme.colors.textSecondary)
                 }
                 Spacer()
                 if isSelected {
@@ -663,7 +725,7 @@ struct PartTypeSelectionRow: View {
                 }
             }
             .padding()
-            .background(isSelected ? partColor.opacity(0.1) : Color(.systemGray6))
+            .background(theme.colors.cardBackground)
             .overlay(
                 RoundedRectangle(cornerRadius: 12)
                     .stroke(isSelected ? partColor : Color.clear, lineWidth: 2)
