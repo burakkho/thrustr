@@ -475,11 +475,8 @@ private struct DashboardWelcomeCardStyle: ViewModifier {
     }
     private var isLight: Bool { colorScheme == .light }
     private var backgroundColor: Color {
-        if isLight {
-            return theme.colors.accent.opacity(0.06)
-        } else {
-            return theme.colors.cardBackground
-        }
+        // Beyaz yüzeye geri dön: her iki modda da cardBackground
+        return theme.colors.cardBackground
     }
     private var strokeColor: Color { isLight ? Color(.systemGray5) : Color.white.opacity(0.18) }
     private var strokeWidth: CGFloat { isLight ? 1.0 : 2.0 }
