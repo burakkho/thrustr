@@ -354,7 +354,14 @@ struct WorkoutPartCard: View {
         }
         .sheet(isPresented: $showingSetTracking) {
             if let exercise = selectedExercise {
-                SetTrackingView(exercise: exercise, workoutPart: part)
+                SetTrackingView(exercise: exercise, workoutPart: part) { didSave in
+                    // If user didn't save any sets, clear placeholder sets for this exercise
+                    if !didSave {
+                        let placeholders = part.exerciseSets.filter { $0.exercise?.id == exercise.id && !$0.isCompleted }
+                        placeholders.forEach { modelContext.delete($0) }
+                        try? modelContext.save()
+                    }
+                }
             }
         }
         .sheet(isPresented: $showingRename) {

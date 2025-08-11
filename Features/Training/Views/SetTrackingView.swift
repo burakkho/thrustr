@@ -8,11 +8,16 @@ struct SetTrackingView: View {
     
     let exercise: Exercise
     let workoutPart: WorkoutPart
+    // Callback to inform parent whether any sets were saved
+    var onDismiss: ((Bool) -> Void)? = nil
     
     @State private var sets: [SetData] = []
     @State private var showingRestTimer = false
+    @State private var showingRestPreset = false
+    @AppStorage("setTracking.defaultRestSeconds") private var defaultRestSeconds: Int = 60
     @State private var restDuration = 60 // seconds
     @State private var notes = ""
+    @State private var didSaveAnySet = false
     
     var body: some View {
         NavigationStack {
@@ -52,7 +57,7 @@ struct SetTrackingView: View {
                 // Bottom action bar
                 SetTrackingActionBar(
                     onRestTimer: {
-                        showingRestTimer = true
+                        showingRestPreset = true
                     },
                     onFinish: {
                         finishExercise()
@@ -76,12 +81,23 @@ struct SetTrackingView: View {
                     .fontWeight(.semibold)
                 }
             }
-            .sheet(isPresented: $showingRestTimer) {
-                RestTimerView(duration: restDuration)
+            .sheet(isPresented: $showingRestTimer) { RestTimerView(duration: restDuration) }
+            .sheet(isPresented: $showingRestPreset) {
+                RestTimerPresetView { seconds in
+                    let sec = max(0, seconds)
+                    if sec > 0 { restDuration = sec; defaultRestSeconds = sec }
+                    showingRestPreset = false
+                    if restDuration > 0 { showingRestTimer = true }
+                }
             }
         }
         .onAppear {
             setupInitialSets()
+            restDuration = defaultRestSeconds
+        }
+        .onDisappear {
+            // Notify parent; if user dismissed without saving, inform false
+            onDismiss?(didSaveAnySet)
         }
     }
     
@@ -148,6 +164,8 @@ struct SetTrackingView: View {
         }
         
         try? modelContext.save()
+        didSaveAnySet = !completedSets.isEmpty
+        onDismiss?(didSaveAnySet)
         dismiss()
     }
 }
