@@ -101,7 +101,7 @@ struct DashboardView: View {
             }
         }
         .padding()
-        .cardStyle()
+        .dashboardWelcomeCardStyle()
     }
     
     // MARK: - Health Stats Grid (2x2)
@@ -456,6 +456,38 @@ struct WorkoutCard: View {
             return "\(minutes)\(LocalizationKeys.Dashboard.Time.minutes.localized)"
         }
     }
+}
+
+// MARK: - Dashboard Light-Only Styling Helpers
+private struct DashboardWelcomeCardStyle: ViewModifier {
+    @Environment(\.theme) private var theme
+    @Environment(\.colorScheme) private var colorScheme
+    func body(content: Content) -> some View {
+        content
+            .padding(theme.spacing.m)
+            .background(backgroundColor)
+            .cornerRadius(14)
+            .shadow(color: Color.shadowLight, radius: shadowRadius, y: 1)
+            .overlay(
+                RoundedRectangle(cornerRadius: 14)
+                    .stroke(strokeColor, lineWidth: strokeWidth)
+            )
+    }
+    private var isLight: Bool { colorScheme == .light }
+    private var backgroundColor: Color {
+        if isLight {
+            return theme.colors.accent.opacity(0.06)
+        } else {
+            return theme.colors.cardBackground
+        }
+    }
+    private var strokeColor: Color { isLight ? Color(.systemGray5) : Color.white.opacity(0.18) }
+    private var strokeWidth: CGFloat { isLight ? 1.0 : 2.0 }
+    private var shadowRadius: CGFloat { isLight ? 4.0 : 2.0 }
+}
+
+private extension View {
+    func dashboardWelcomeCardStyle() -> some View { modifier(DashboardWelcomeCardStyle()) }
 }
 
 // MARK: - Weight Entry View
