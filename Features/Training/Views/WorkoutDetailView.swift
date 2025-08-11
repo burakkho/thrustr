@@ -268,6 +268,26 @@ private struct WorkoutCompletionSheet: View {
     }
 }
 
+// Local row used by WorkoutCompletionSheet in case shared component is not in target
+private struct StatRow: View {
+    @Environment(\.theme) private var theme
+    let label: String
+    let value: String
+
+    var body: some View {
+        HStack {
+            Text(label)
+                .font(.subheadline)
+                .foregroundColor(theme.colors.textSecondary)
+            Spacer()
+            Text(value)
+                .font(.headline)
+        }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(label): \(value)")
+    }
+}
+
 // MARK: - Header
 struct WorkoutHeaderView: View {
     let workoutName: String
