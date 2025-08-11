@@ -55,7 +55,31 @@ class DataSeeder {
             .flexibility: 4
         ]
         var used: [ExerciseCategory: Int] = [:]
-        var seenKeys = Set<String>()
+        // Track best entry per exercise name to avoid dupes across equipment variants
+        var keptByName: [String: (exercise: Exercise, rank: Int, category: ExerciseCategory)] = [:]
+
+        // Equipment preference: lower rank is preferred
+        let equipmentPreference: [String: Int] = [
+            "barbell": 0,
+            "dumbbell": 1,
+            "machine": 2,
+            "cable": 3,
+            "kettlebell": 4,
+            "bodyweight": 5,
+            "rack": 6,
+            "bench": 7,
+            "box": 8,
+            "ball": 9,
+            "rope": 10,
+            "bike": 11,
+            "rower": 12,
+            "treadmill": 13,
+            "other": 99
+        ]
+
+        func equipmentRank(_ value: String) -> Int {
+            equipmentPreference[value, default: 50]
+        }
 
         // Helper closures
         func normalizeEquipment(_ raw: String) -> String {
@@ -93,11 +117,27 @@ class DataSeeder {
 
             // Skip categories we don't curate for initial set
             if quotas[category] == nil { continue }
-            if !canUse(category: category) { continue }
 
-            // Uniqueness by normalized key
-            let key = "\(nameEN.lowercased())|\(category.rawValue)|\(equipment)"
-            if seenKeys.contains(key) { continue }
+            // Prefer a single canonical entry per exercise name within the curated category quotas
+            let nameKey = nameEN.lowercased()
+            let newRank = equipmentRank(equipment)
+            if let kept = keptByName[nameKey] {
+                // Only consider replacement if same curated category and new equipment is preferred
+                if kept.category == category && newRank < kept.rank {
+                    // Update existing kept exercise with better equipment/flags/instructions
+                    let existing = kept.exercise
+                    existing.equipment = equipment
+                    existing.supportsWeight = columns[4].lowercased() == "true"
+                    existing.supportsReps = columns[5].lowercased() == "true"
+                    existing.supportsTime = columns[6].lowercased() == "true"
+                    existing.supportsDistance = columns[7].lowercased() == "true"
+                    existing.instructions = columns[8].isEmpty ? nil : columns[8]
+                    keptByName[nameKey] = (existing, newRank, category)
+                }
+                continue
+            }
+
+            if !canUse(category: category) { continue }
 
             let exercise = Exercise(
                 nameEN: nameEN,
@@ -114,7 +154,7 @@ class DataSeeder {
 
             modelContext.insert(exercise)
             successCount += 1
-            seenKeys.insert(key)
+            keptByName[nameKey] = (exercise, newRank, category)
             markUsed(category)
 
             if successCount >= 100 { break }
