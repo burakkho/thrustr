@@ -323,19 +323,6 @@ struct WorkoutPartCard: View {
                 Text(LocalizationKeys.Training.Part.noExercise.localized)
                     .foregroundColor(theme.colors.textSecondary)
                     .font(.subheadline)
-                Button(action: { showingExerciseSelection = true }) {
-                    HStack {
-                        Image(systemName: "plus.circle.fill")
-                        Text(LocalizationKeys.Training.Part.addExercise.localized)
-                            .fontWeight(.semibold)
-                    }
-                    .frame(maxWidth: .infinity)
-                }
-                .padding(.vertical, 10)
-                .background(theme.colors.accent)
-                .foregroundColor(.white)
-                .cornerRadius(theme.radius.m)
-                .buttonStyle(PressableStyle())
             }
             .padding(.top, 4)
         } else if let wodResult = part.wodResult {
@@ -346,19 +333,6 @@ struct WorkoutPartCard: View {
                     .fontWeight(.semibold)
                     .foregroundColor(theme.colors.success)
             }
-            Button(action: { showingExerciseSelection = true }) {
-                HStack {
-                    Image(systemName: "plus.circle.fill")
-                    Text(LocalizationKeys.Training.Part.addExercise.localized)
-                        .fontWeight(.medium)
-                }
-                .frame(maxWidth: .infinity)
-            }
-            .padding(.vertical, 8)
-            .background(theme.colors.accent.opacity(0.12))
-            .foregroundColor(theme.colors.accent)
-            .cornerRadius(theme.radius.m)
-            .buttonStyle(PressableStyle())
         } else {
             VStack(spacing: 10) {
                 ForEach(groupedExercises, id: \.exercise.id) { group in
@@ -371,20 +345,6 @@ struct WorkoutPartCard: View {
                         }
                     )
                 }
-                Button(action: { showingExerciseSelection = true }) {
-                    HStack {
-                        Image(systemName: "plus.circle.fill")
-                        Text(LocalizationKeys.Training.Part.addExercise.localized)
-                            .fontWeight(.semibold)
-                    }
-                    .frame(maxWidth: .infinity)
-                }
-                .padding(.vertical, 10)
-                .background(theme.colors.success)
-                .foregroundColor(.white)
-                .cornerRadius(theme.radius.m)
-                .padding(.top, 6)
-                .buttonStyle(PressableStyle())
             }
         }
     }
