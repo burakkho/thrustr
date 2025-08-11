@@ -604,6 +604,7 @@ struct AddPartSheet: View {
 
     @State private var selectedPartType: WorkoutPartType = .strength
     @State private var partName = ""
+    @State private var saveError: String? = nil
 
     var body: some View {
         NavigationView {
@@ -657,15 +658,30 @@ struct AddPartSheet: View {
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button(LocalizationKeys.Training.AddPart.cancel.localized) { dismiss() }
+                        .accessibilityLabel(LocalizationKeys.Training.AddPart.cancel.localized)
                 }
             }
+        }
+        .alert(isPresented: Binding<Bool>(
+            get: { saveError != nil },
+            set: { if !$0 { saveError = nil } }
+        )) {
+            Alert(
+                title: Text(LocalizationKeys.Common.error.localized),
+                message: Text(saveError ?? ""),
+                dismissButton: .default(Text(LocalizationKeys.Common.ok.localized))
+            )
         }
     }
 
     private func addPart() {
         _ = workout.addPart(name: partName, type: selectedPartType)
-        try? modelContext.save()
-        dismiss()
+        do {
+            try modelContext.save()
+            dismiss()
+        } catch {
+            saveError = error.localizedDescription
+        }
     }
     
     private func getLocalizedPartName(for partType: WorkoutPartType) -> String {
@@ -781,11 +797,11 @@ struct RenamePartSheet: View {
     var body: some View {
         NavigationView {
             VStack(spacing: 16) {
-                TextField("Part Name", text: $name)
+                TextField(LocalizationKeys.Training.AddPart.nameLabel.localized, text: $name)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                     .padding(.horizontal)
                 Spacer()
-                Button("Save") {
+                Button(LocalizationKeys.Common.save.localized) {
                     onSave(name.isEmpty ? initialName : name)
                     dismiss()
                 }
@@ -796,10 +812,11 @@ struct RenamePartSheet: View {
                 .background((name.isEmpty ? initialName : name).isEmpty ? Color.gray : Color.blue)
                 .cornerRadius(12)
                 .padding(.horizontal)
+                .accessibilityLabel(LocalizationKeys.Common.save.localized)
             }
-            .navigationTitle("Rename Part")
+            .navigationTitle(LocalizationKeys.Training.Part.rename.localized)
             .navigationBarTitleDisplayMode(.inline)
-            .toolbar { ToolbarItem(placement: .navigationBarLeading) { Button("Cancel") { dismiss() } } }
+            .toolbar { ToolbarItem(placement: .navigationBarLeading) { Button(LocalizationKeys.Common.cancel.localized) { dismiss() }.accessibilityLabel(LocalizationKeys.Common.cancel.localized) } }
             .onAppear { name = initialName }
         }
     }

@@ -49,6 +49,7 @@ struct TrainingView: View {
                     }) {
                         Image(systemName: "plus")
                             .font(.headline)
+                            .accessibilityLabel(LocalizationKeys.Common.add.localized)
                     }
                 }
             }

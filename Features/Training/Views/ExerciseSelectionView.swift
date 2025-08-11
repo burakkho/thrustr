@@ -81,7 +81,7 @@ struct ExerciseSelectionView: View {
                 .padding(.horizontal)
 
                 // Search bar
-                SearchBar(text: $searchText)
+                 SearchBar(text: $searchText)
                     .padding(.horizontal)
                     .padding(.top, 12)
                 
@@ -156,15 +156,17 @@ struct SearchBar: View {
             Image(systemName: "magnifyingglass")
                 .foregroundColor(.gray)
             
-            TextField("Egzersiz ara...", text: $text)
+            TextField(LocalizationKeys.Training.Exercise.searchPlaceholder.localized, text: $text)
                 .textFieldStyle(PlainTextFieldStyle())
+                .accessibilityLabel(LocalizationKeys.Training.Exercise.searchPlaceholder.localized)
             
             if !text.isEmpty {
-                Button("Temizle") {
+                Button(LocalizationKeys.Training.Exercise.clear.localized) {
                     text = ""
                 }
                 .foregroundColor(.gray)
                 .font(.caption)
+                .accessibilityLabel(LocalizationKeys.Training.Exercise.clear.localized)
             }
         }
             .padding(.horizontal, 12)
@@ -186,8 +188,8 @@ struct PartTypeFilterView: View {
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 12) {
-                CategoryChip(
-                    title: "Tümü",
+                 CategoryChip(
+                    title: LocalizationKeys.Training.Exercise.all.localized,
                     icon: "list.bullet",
                     isSelected: selectedPartType == nil
                 ) {
@@ -220,8 +222,9 @@ struct CategoryChip: View {
     var body: some View {
         Button(action: action) {
             HStack(spacing: 6) {
-                Image(systemName: icon)
+                 Image(systemName: icon)
                     .font(.caption)
+                    .accessibilityLabel(title)
                 Text(title)
                     .font(.caption)
                     .fontWeight(.medium)
@@ -249,10 +252,11 @@ struct ExerciseRow: View {
     var body: some View {
         Button(action: action) {
             HStack(spacing: 12) {
-                Image(systemName: category.icon)
+                 Image(systemName: category.icon)
                     .font(.title2)
                     .foregroundColor(category.color)
                     .frame(width: 30)
+                     .accessibilityLabel(category.icon)
 
                 VStack(alignment: .leading, spacing: 2) {
                     Text(exercise.nameTR)
@@ -286,6 +290,7 @@ struct ExerciseRow: View {
                     Image(systemName: exercise.isFavorite ? "heart.fill" : "heart")
                         .foregroundColor(.red)
                 }
+                 .accessibilityLabel(exercise.isFavorite ? LocalizationKeys.Common.delete.localized : LocalizationKeys.Common.add.localized)
             }
             .padding()
             .background(Color(.systemGray6))
