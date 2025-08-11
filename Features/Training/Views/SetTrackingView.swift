@@ -18,6 +18,8 @@ struct SetTrackingView: View {
     @State private var restDuration = 60 // seconds
     @State private var notes = ""
     @State private var didSaveAnySet = false
+    @State private var showSaveErrorAlert = false
+    @State private var saveErrorMessage = ""
     
     var body: some View {
         NavigationStack {
@@ -134,12 +136,24 @@ struct SetTrackingView: View {
     }
     
     private func finishExercise() {
-        // Save completed sets to Core Data
+        // 1) Remove placeholder sets for this exercise
+        let placeholders = workoutPart.exerciseSets.filter { $0.exercise?.id == exercise.id && $0.isCompleted == false }
+        placeholders.forEach { modelContext.delete($0) }
+
+        // 2) Determine next set number based on existing completed sets
+        let currentMaxSetNumber = workoutPart.exerciseSets
+            .filter { $0.exercise?.id == exercise.id }
+            .map { Int($0.setNumber) }
+            .max() ?? 0
+
+        // 3) Prepare completed sets from UI
         let completedSets = sets.filter { $0.isCompleted && $0.hasValidData }
-        
-        for (index, setData) in completedSets.enumerated() {
+
+        // 4) Insert new sets continuing numbering
+        for (offset, setData) in completedSets.enumerated() {
+            let nextNumber = currentMaxSetNumber + offset + 1
             let exerciseSet = ExerciseSet(
-                setNumber: Int16(index + 1),
+                setNumber: Int16(nextNumber),
                 weight: setData.weight,
                 reps: setData.reps != 0 ? Int16(setData.reps) : nil,
                 duration: setData.duration != 0 ? Int32(setData.duration) : nil,
@@ -147,14 +161,14 @@ struct SetTrackingView: View {
                 rpe: setData.rpe != 0 ? Int16(setData.rpe) : nil,
                 isCompleted: true
             )
-            
+
             exerciseSet.exercise = exercise
             exerciseSet.workoutPart = workoutPart
-            
+
             modelContext.insert(exerciseSet)
         }
-        
-        // Save notes if any
+
+        // 5) Save notes if any
         if !notes.isEmpty {
             if workoutPart.notes?.isEmpty ?? true {
                 workoutPart.notes = notes
@@ -162,11 +176,17 @@ struct SetTrackingView: View {
                 workoutPart.notes = (workoutPart.notes ?? "") + "\n\(exercise.nameTR): \(notes)"
             }
         }
-        
-        try? modelContext.save()
-        didSaveAnySet = !completedSets.isEmpty
-        onDismiss?(didSaveAnySet)
-        dismiss()
+
+        // 6) Persist and handle errors
+        do {
+            try modelContext.save()
+            didSaveAnySet = !completedSets.isEmpty
+            onDismiss?(didSaveAnySet)
+            dismiss()
+        } catch {
+            saveErrorMessage = error.localizedDescription
+            showSaveErrorAlert = true
+        }
     }
 }
 

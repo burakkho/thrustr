@@ -11,16 +11,21 @@ struct WorkoutDetailView: View {
     @State private var showingAddPart = false
     @State private var showingGlobalExerciseSelection = false
     @State private var currentTime = Date()
+    @State private var timer = Timer.publish(every: WorkoutConstants.timerUpdateInterval, on: .main, in: .common)
+        .autoconnect()
     @State private var showingShare = false
+    @State private var saveError: String? = nil
 
-    let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+    // removed; timer kept as @State
 
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
                 WorkoutHeaderView(
                     workoutName: workout.name ?? LocalizationKeys.Training.Detail.defaultName.localized,
-                    duration: formatDuration(Int(currentTime.timeIntervalSince(workout.startTime))),
+                    duration: workout.isCompleted
+                        ? formatDuration(workout.totalDuration)
+                        : formatDuration(Int(currentTime.timeIntervalSince(workout.startTime))),
                     isActive: !workout.isCompleted
                 )
 
@@ -64,10 +69,15 @@ struct WorkoutDetailView: View {
                     }
                 }
             }
-            .sheet(isPresented: $showingAddPart) {
-                AddPartSheet(workout: workout)
-            }
-            .sheet(isPresented: $showingGlobalExerciseSelection) {
+        .sheet(isPresented: $showingAddPart, onDismiss: {
+            removeOrphanPlaceholders()
+        }) {
+            AddPartSheet(workout: workout)
+        }
+            .sheet(isPresented: $showingGlobalExerciseSelection, onDismiss: {
+                // Cleanup orphan placeholders if user closed without adding
+                removeOrphanPlaceholders()
+            }) {
                 ExerciseSelectionView(workoutPart: nil) { exercise in
                     // Infer target part type from exercise and add placeholder set under that part
                     let targetType = inferPartType(from: exercise)
@@ -76,7 +86,7 @@ struct WorkoutDetailView: View {
                             return existing
                         }
                         let created = workout.addPart(name: targetType.displayName, type: targetType)
-                        try? modelContext.save()
+                        do { try modelContext.save() } catch { /* show later */ }
                         return created
                     }()
 
@@ -89,7 +99,7 @@ struct WorkoutDetailView: View {
                     placeholder.exercise = exercise
                     placeholder.workoutPart = part
                     modelContext.insert(placeholder)
-                    try? modelContext.save()
+                    do { try modelContext.save() } catch { /* show later */ }
 
                     // Explicitly dismiss the sheet to avoid ghost overlay on first add
                     showingGlobalExerciseSelection = false
@@ -97,6 +107,16 @@ struct WorkoutDetailView: View {
             }
         }
         .onReceive(timer) { _ in currentTime = Date() }
+        .onDisappear {
+            // Cancel timer to prevent leaks
+            timer.upstream.connect().cancel()
+        }
+        .alert(isPresented: Binding<Bool>(
+            get: { saveError != nil },
+            set: { if !$0 { saveError = nil } }
+        )) {
+            Alert(title: Text(LocalizationKeys.Common.error.localized), message: Text(saveError ?? ""), dismissButton: .default(Text(LocalizationKeys.Common.ok.localized)))
+        }
     }
 
     private func formatDuration(_ seconds: Int) -> String {
@@ -112,7 +132,7 @@ struct WorkoutDetailView: View {
 
     private func finishWorkout() {
         workout.finishWorkout()
-        try? modelContext.save()
+        do { try modelContext.save() } catch { saveError = error.localizedDescription }
         // Keep the view so user can share; do not dismiss immediately
     }
 
@@ -125,6 +145,17 @@ struct WorkoutDetailView: View {
         case .warmup, .flexibility, .plyometric: return .warmup
         default: return .strength
         }
+    }
+
+    // Remove any placeholder (isCompleted == false) sets that may have been created
+    // if user opened exercise selection and then dismissed without selecting.
+    private func removeOrphanPlaceholders() {
+        let placeholders = workout.parts.flatMap { part in
+            part.exerciseSets.filter { !$0.isCompleted }
+        }
+        guard !placeholders.isEmpty else { return }
+        placeholders.forEach { modelContext.delete($0) }
+        do { try modelContext.save() } catch { saveError = error.localizedDescription }
     }
 
     private var shareMessage: String {
@@ -213,6 +244,7 @@ struct WorkoutPartCard: View {
     @State private var selectedExercise: Exercise?
     @State private var showingRename = false
     @State private var tempName: String = ""
+    @State private var selectionTimer = Timer.publish(every: WorkoutConstants.timerUpdateInterval, on: .main, in: .common).autoconnect()
 
     var partType: WorkoutPartType {
         WorkoutPartType(rawValue: part.type) ?? .strength
@@ -255,7 +287,10 @@ struct WorkoutPartCard: View {
             }
             Button(role: .destructive) { deletePart() } label: { Text("Delete Part") }
         }
-        .sheet(isPresented: $showingExerciseSelection) {
+        .sheet(isPresented: $showingExerciseSelection, onDismiss: {
+            // If dismissed without selecting, cleanup placeholders
+            cleanupPlaceholdersIfNeeded()
+        }) {
             ExerciseSelectionView(
                 workoutPart: part,
                 onExerciseSelected: { exercise in
@@ -271,11 +306,12 @@ struct WorkoutPartCard: View {
                     placeholder.exercise = exercise
                     placeholder.workoutPart = part
                     modelContext.insert(placeholder)
-                    try? modelContext.save()
+                    do { try modelContext.save() } catch { /* ignore here */ }
 
-                    // Dismiss selection sheet before presenting set tracking to avoid blank overlay
+                    // Dismiss selection sheet before presenting set tracking to avoid overlay
                     showingExerciseSelection = false
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+                    // Present set tracking immediately on next runloop tick
+                    DispatchQueue.main.async {
                         showingSetTracking = true
                     }
                 }
@@ -288,7 +324,7 @@ struct WorkoutPartCard: View {
                     if !didSave {
                         let placeholders = part.exerciseSets.filter { $0.exercise?.id == exercise.id && !$0.isCompleted }
                         placeholders.forEach { modelContext.delete($0) }
-                        try? modelContext.save()
+                        do { try modelContext.save() } catch { /* ignore */ }
                     }
                 }
             }
@@ -296,7 +332,7 @@ struct WorkoutPartCard: View {
         .sheet(isPresented: $showingRename) {
             RenamePartSheet(initialName: part.name) { newName in
                 part.name = newName
-                try? modelContext.save()
+                do { try modelContext.save() } catch { /* ignore */ }
             }
         }
     }
@@ -400,12 +436,12 @@ struct WorkoutPartCard: View {
         guard newIndex >= 0 && newIndex < parts.count else { return }
         parts.swapAt(currentIndex, newIndex)
         for (i, p) in parts.enumerated() { p.orderIndex = i }
-        try? modelContext.save()
+        do { try modelContext.save() } catch { /* ignore */ }
     }
 
     private func deletePart() {
         modelContext.delete(part)
-        try? modelContext.save()
+        do { try modelContext.save() } catch { /* ignore */ }
     }
 }
 

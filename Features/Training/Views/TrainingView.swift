@@ -269,8 +269,8 @@ struct ActiveWorkoutCard: View {
     let onTap: () -> Void
     @Environment(\.modelContext) private var modelContext
     @State private var currentTime = Date()
-    
-    let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+    @State private var timerText: String = ""
+    @State private var timer = Timer.publish(every: WorkoutConstants.timerUpdateInterval, on: .main, in: .common).autoconnect()
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -292,8 +292,7 @@ struct ActiveWorkoutCard: View {
                     Text(LocalizationKeys.Training.Active.duration.localized)
                         .font(.caption)
                         .foregroundColor(.secondary)
-                    
-                    Text(formatDuration(Int(currentTime.timeIntervalSince(workout.startTime))))
+                    Text(timerText)
                         .font(.title2)
                         .fontWeight(.bold)
                         .foregroundColor(.blue)
@@ -340,6 +339,13 @@ struct ActiveWorkoutCard: View {
         .cornerRadius(12)
         .onReceive(timer) { _ in
             currentTime = Date()
+            timerText = formatDuration(Int(currentTime.timeIntervalSince(workout.startTime)))
+        }
+        .onAppear {
+            timerText = formatDuration(Int(Date().timeIntervalSince(workout.startTime)))
+        }
+        .onDisappear {
+            timer.upstream.connect().cancel()
         }
     }
     
