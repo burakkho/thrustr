@@ -90,6 +90,9 @@ struct WorkoutDetailView: View {
                     placeholder.workoutPart = part
                     modelContext.insert(placeholder)
                     try? modelContext.save()
+
+                    // Explicitly dismiss the sheet to avoid ghost overlay on first add
+                    showingGlobalExerciseSelection = false
                 }
             }
         }
@@ -270,7 +273,11 @@ struct WorkoutPartCard: View {
                     modelContext.insert(placeholder)
                     try? modelContext.save()
 
-                    showingSetTracking = true
+                    // Dismiss selection sheet before presenting set tracking to avoid blank overlay
+                    showingExerciseSelection = false
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+                        showingSetTracking = true
+                    }
                 }
             )
         }
