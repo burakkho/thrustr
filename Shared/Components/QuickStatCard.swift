@@ -9,12 +9,30 @@ import SwiftUI
 
 struct QuickStatCard: View {
     @Environment(\.theme) private var theme
+    @Environment(\.colorScheme) private var colorScheme
     let icon: String
     let title: String
     let value: String
     let subtitle: String
     let color: Color
+    let borderlessLight: Bool
     
+    init(
+        icon: String,
+        title: String,
+        value: String,
+        subtitle: String,
+        color: Color,
+        borderlessLight: Bool = false
+    ) {
+        self.icon = icon
+        self.title = title
+        self.value = value
+        self.subtitle = subtitle
+        self.color = color
+        self.borderlessLight = borderlessLight
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: theme.spacing.s) {
             HStack {
@@ -41,7 +59,7 @@ struct QuickStatCard: View {
                 }
             }
         }
-        .cardStyle()
+        .modifier(QuickStatCardSurfaceModifier(useBorderlessLight: borderlessLight))
     }
 }
 
@@ -52,7 +70,8 @@ struct QuickStatCard: View {
             title: "Bugün",
             value: "8,432",
             subtitle: "adım",
-            color: .blue
+            color: .blue,
+            borderlessLight: true
         )
         
         QuickStatCard(
@@ -60,8 +79,28 @@ struct QuickStatCard: View {
             title: "Kalori",
             value: "2,150",
             subtitle: "kcal",
-            color: .orange
+            color: .orange,
+            borderlessLight: true
         )
     }
     .padding()
+}
+
+// MARK: - Surface modifier (local to component to avoid global changes)
+private struct QuickStatCardSurfaceModifier: ViewModifier {
+    @Environment(\.theme) private var theme
+    @Environment(\.colorScheme) private var colorScheme
+    let useBorderlessLight: Bool
+    func body(content: Content) -> some View {
+        if useBorderlessLight && colorScheme == .light {
+            content
+                .padding(theme.spacing.m)
+                .background(theme.colors.cardBackground)
+                .cornerRadius(14)
+                .shadow(color: Color.shadowLight, radius: 6, y: 2)
+        } else {
+            content
+                .cardStyle()
+        }
+    }
 }

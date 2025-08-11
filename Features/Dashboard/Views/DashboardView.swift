@@ -112,28 +112,32 @@ struct DashboardView: View {
                 title: LocalizationKeys.Dashboard.Stats.today.localized,
                 value: formatSteps(healthKitService.todaySteps),
                 subtitle: LocalizationKeys.Dashboard.Stats.steps.localized,
-                color: .blue
+                color: .blue,
+                borderlessLight: true
             )
             QuickStatCard(
                 icon: "flame.fill",
                 title: LocalizationKeys.Dashboard.Stats.calories.localized,
                 value: formatCalories(healthKitService.todayCalories),
                 subtitle: LocalizationKeys.Dashboard.Stats.kcal.localized,
-                color: .orange
+                color: .orange,
+                borderlessLight: true
             )
             QuickStatCard(
                 icon: "scalemass.fill",
                 title: LocalizationKeys.Dashboard.Stats.weight.localized,
                 value: currentUser.displayWeight,
                 subtitle: LocalizationKeys.Dashboard.Stats.lastMeasurement.localized,
-                color: .green
+                color: .green,
+                borderlessLight: true
             )
             QuickStatCard(
                 icon: "heart.fill",
                 title: LocalizationKeys.Dashboard.Stats.bmi.localized,
                 value: String(format: "%.1f", currentUser.bmi),
                 subtitle: currentUser.bmiCategory,
-                color: .red
+                color: .red,
+                borderlessLight: true
             )
         }
     }
@@ -151,7 +155,8 @@ struct DashboardView: View {
                     title: LocalizationKeys.Dashboard.Actions.startWorkout.localized,
                     icon: "dumbbell.fill",
                     description: LocalizationKeys.Dashboard.Actions.startWorkoutDesc.localized,
-                    color: .blue
+                    color: .blue,
+                    borderlessLight: true
                 ) {
                     tabRouter.selected = 1
                 }
@@ -161,7 +166,8 @@ struct DashboardView: View {
                     title: LocalizationKeys.Dashboard.Actions.logWeight.localized,
                     icon: "scalemass.fill",
                     description: LocalizationKeys.Dashboard.Actions.logWeightDesc.localized,
-                    color: .green
+                    color: .green,
+                    borderlessLight: true
                 ) {
                     showingWeightEntry = true
                 }
@@ -171,7 +177,8 @@ struct DashboardView: View {
                     title: LocalizationKeys.Dashboard.Actions.nutrition.localized,
                     icon: "fork.knife",
                     description: LocalizationKeys.Dashboard.Actions.nutritionDesc.localized,
-                    color: .orange
+                    color: .orange,
+                    borderlessLight: true
                 ) {
                     tabRouter.selected = 2
                 }
@@ -224,7 +231,7 @@ struct DashboardView: View {
                     .buttonStyle(.borderedProminent)
                 }
                 .padding()
-                .cardStyle()
+                .dashboardSurfaceStyle()
             } else {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 12) {
@@ -307,7 +314,7 @@ struct DashboardView: View {
                 }
             }
             .padding()
-            .cardStyle()
+            .dashboardSurfaceStyle()
         }
     }
     
@@ -434,7 +441,7 @@ struct WorkoutCard: View {
             }
         }
         .padding()
-        .cardStyle()
+        .dashboardSurfaceStyle()
         .frame(width: 200)
     }
     
@@ -455,6 +462,26 @@ struct WorkoutCard: View {
 }
 
 // MARK: - Dashboard Light-Only Styling Helpers
+private struct DashboardSurfaceStyle: ViewModifier {
+    @Environment(\.theme) private var theme
+    @Environment(\.colorScheme) private var colorScheme
+    func body(content: Content) -> some View {
+        if colorScheme == .light {
+            content
+                .padding(theme.spacing.m)
+                .background(theme.colors.cardBackground)
+                .cornerRadius(14)
+                .shadow(color: Color.shadowLight, radius: 6, y: 2)
+        } else {
+            content.cardStyle()
+        }
+    }
+}
+
+private extension View {
+    func dashboardSurfaceStyle() -> some View { modifier(DashboardSurfaceStyle()) }
+}
+
 private struct DashboardWelcomeCardStyle: ViewModifier {
     @Environment(\.theme) private var theme
     @Environment(\.colorScheme) private var colorScheme

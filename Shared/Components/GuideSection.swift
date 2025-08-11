@@ -29,7 +29,24 @@ struct GuideSection: View {
     let description: String
     let color: Color
     let action: () -> Void
+    let borderlessLight: Bool
     
+    init(
+        title: String,
+        icon: String,
+        description: String,
+        color: Color,
+        borderlessLight: Bool = false,
+        action: @escaping () -> Void
+    ) {
+        self.title = title
+        self.icon = icon
+        self.description = description
+        self.color = color
+        self.borderlessLight = borderlessLight
+        self.action = action
+    }
+
     var body: some View {
         Button(action: {
             UIImpactFeedbackGenerator(style: .light).impactOccurred()
@@ -66,7 +83,7 @@ struct GuideSection: View {
                     .foregroundColor(theme.colors.textSecondary)
                     .font(.caption)
             }
-            .cardStyle()
+            .modifier(GuideSectionSurfaceModifier(useBorderlessLight: borderlessLight))
         }
         .buttonStyle(PressableStyle())
         .accessibilityElement(children: .combine)
@@ -81,7 +98,8 @@ struct GuideSection: View {
             title: "Antrenman Başlat",
             icon: "dumbbell.fill",
             description: "Yeni antrenman oluştur ve egzersizlerini takip et",
-            color: .blue
+            color: .blue,
+            borderlessLight: true
         ) {
             print("Antrenman başlat tıklandı")
         }
@@ -90,7 +108,8 @@ struct GuideSection: View {
             title: "Beslenme Takibi",
             icon: "fork.knife",
             description: "Günlük kalori ve makro besinlerini kaydet",
-            color: .orange
+            color: .orange,
+            borderlessLight: true
         ) {
             print("Beslenme takibi tıklandı")
         }
@@ -99,10 +118,30 @@ struct GuideSection: View {
             title: "Profil Ayarları",
             icon: "person.circle.fill",
             description: "Kişisel bilgilerini ve hedeflerini güncelle",
-            color: .green
+            color: .green,
+            borderlessLight: true
         ) {
             print("Profil ayarları tıklandı")
         }
     }
     .padding()
+}
+
+// MARK: - Surface modifier
+private struct GuideSectionSurfaceModifier: ViewModifier {
+    @Environment(\.theme) private var theme
+    @Environment(\.colorScheme) private var colorScheme
+    let useBorderlessLight: Bool
+    func body(content: Content) -> some View {
+        if useBorderlessLight && colorScheme == .light {
+            content
+                .padding(theme.spacing.m)
+                .background(theme.colors.cardBackground)
+                .cornerRadius(14)
+                .shadow(color: Color.shadowLight, radius: 6, y: 2)
+        } else {
+            content
+                .cardStyle()
+        }
+    }
 }
