@@ -46,7 +46,7 @@ struct DashboardView: View {
                 .padding()
             }
             .navigationTitle(LocalizationKeys.Dashboard.title.localized)
-            .background(Color(.systemGroupedBackground))
+            .background(theme.colors.backgroundPrimary)
             .refreshable {
                 await refreshHealthData()
             }
@@ -471,7 +471,7 @@ private struct DashboardSurfaceStyle: ViewModifier {
                 .padding(theme.spacing.m)
                 .background(theme.colors.cardBackground)
                 .cornerRadius(14)
-                .shadow(color: Color.shadowLight, radius: 6, y: 2)
+                .shadow(color: Color.shadowLight, radius: 4, y: 1)
         } else {
             content.cardStyle()
         }
