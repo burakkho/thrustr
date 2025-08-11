@@ -46,7 +46,7 @@ struct DashboardView: View {
                 .padding()
             }
             .navigationTitle(LocalizationKeys.Dashboard.title.localized)
-            .background(theme.colors.backgroundSecondary)
+            .background(Color(.systemGroupedBackground))
             .refreshable {
                 await refreshHealthData()
             }
