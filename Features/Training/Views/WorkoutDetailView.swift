@@ -196,6 +196,8 @@ struct WorkoutPartCard: View {
     @State private var showingExerciseSelection = false
     @State private var showingSetTracking = false
     @State private var selectedExercise: Exercise?
+    @State private var showingRename = false
+    @State private var tempName: String = ""
 
     var partType: WorkoutPartType {
         WorkoutPartType(rawValue: part.type) ?? .strength
@@ -221,61 +223,113 @@ struct WorkoutPartCard: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack {
-                HStack(spacing: 8) {
-                    Image(systemName: partType.icon).foregroundColor(partColor)
-                    Text(part.name).font(.headline).fontWeight(.semibold)
+        VStack(alignment: .leading, spacing: 14) {
+            // Header
+            HStack(alignment: .center) {
+                HStack(spacing: 10) {
+                    Image(systemName: partType.icon)
+                        .foregroundColor(partColor)
+                        .font(.system(size: 28, weight: .semibold))
+                    Text(part.name)
+                        .font(.title3)
+                        .fontWeight(.bold)
                 }
                 Spacer()
-                HStack(spacing: 4) {
+                HStack(spacing: 6) {
                     Circle()
                         .fill(part.isCompleted ? Color.green : Color.orange)
-                        .frame(width: 8, height: 8)
+                        .frame(width: 10, height: 10)
                     Text(part.isCompleted ? LocalizationKeys.Training.Part.statusCompleted.localized : LocalizationKeys.Training.Part.statusInProgress.localized)
-                        .font(.caption).foregroundColor(.secondary)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
                 }
             }
 
             if part.exerciseSets.isEmpty && part.wodResult == nil {
-                VStack(spacing: 8) {
+                VStack(spacing: 10) {
                     Text(LocalizationKeys.Training.Part.noExercise.localized)
                         .foregroundColor(.secondary).font(.subheadline)
-                    Button(LocalizationKeys.Training.Part.addExercise.localized) { showingExerciseSelection = true }
-                        .font(.subheadline).foregroundColor(.blue)
+                    Button(action: { showingExerciseSelection = true }) {
+                        HStack { Image(systemName: "plus.circle.fill"); Text(LocalizationKeys.Training.Part.addExercise.localized).fontWeight(.semibold) }
+                            .frame(maxWidth: .infinity)
+                    }
+                    .padding(.vertical, 10)
+                    .background(Color.blue)
+                    .foregroundColor(.white)
+                    .cornerRadius(10)
                 }
+                .padding(.top, 4)
             } else if let wodResult = part.wodResult {
                 HStack {
                     Text(LocalizationKeys.Training.Part.result.localized).foregroundColor(.secondary)
                     Text(wodResult).fontWeight(.semibold).foregroundColor(.green)
                 }
-                Button(LocalizationKeys.Training.Part.addExercise.localized) { showingExerciseSelection = true }
-                    .font(.caption).foregroundColor(.blue)
+                Button(action: { showingExerciseSelection = true }) {
+                    HStack { Image(systemName: "plus.circle.fill"); Text(LocalizationKeys.Training.Part.addExercise.localized).fontWeight(.medium) }
+                        .frame(maxWidth: .infinity)
+                }
+                .padding(.vertical, 8)
+                .background(Color.blue.opacity(0.12))
+                .foregroundColor(.blue)
+                .cornerRadius(10)
             } else {
-                VStack(spacing: 8) {
+                VStack(spacing: 10) {
                     ForEach(groupedExercises, id: \.exercise.id) { group in
                         ExerciseGroupView(
                             exercise: group.exercise,
                             sets: group.sets,
+                            workoutPart: part,
                             onAddSet: {
                                 selectedExercise = group.exercise
                                 showingSetTracking = true
                             }
                         )
                     }
-                    Button("+ \(LocalizationKeys.Training.Part.addExercise.localized)") { showingExerciseSelection = true }
-                        .font(.caption).foregroundColor(.blue).padding(.top, 4)
+                    Button(action: { showingExerciseSelection = true }) {
+                        HStack { Image(systemName: "plus.circle.fill"); Text(LocalizationKeys.Training.Part.addExercise.localized).fontWeight(.semibold) }
+                            .frame(maxWidth: .infinity)
+                    }
+                    .padding(.vertical, 10)
+                    .background(Color.green)
+                    .foregroundColor(.white)
+                    .cornerRadius(10)
+                    .padding(.top, 6)
                 }
             }
 
-            HStack(spacing: 16) {
-                StatBadge(title: LocalizationKeys.Training.Stats.sets.localized, value: "\(part.completedSets)/\(part.totalSets)")
-                StatBadge(title: LocalizationKeys.Training.Stats.volume.localized, value: "\(Int(part.totalVolume))kg")
+            if part.totalSets > 0 {
+                VStack(spacing: 4) {
+                    ProgressView(value: Double(part.completedSets), total: Double(part.totalSets))
+                        .tint(partColor)
+                    HStack {
+                        Text("\(part.completedSets)/\(part.totalSets) \(LocalizationKeys.Training.Stats.sets.localized)")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                        Spacer()
+                        Text("\(Int(part.totalVolume))kg")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                }
             }
         }
-        .padding()
+        .padding(16)
         .background(Color(.systemGray6))
-        .cornerRadius(12)
+        .overlay(
+            RoundedRectangle(cornerRadius: 14)
+                .stroke(partColor.opacity(0.2), lineWidth: 2)
+        )
+        .cornerRadius(14)
+        .contextMenu {
+            Button("Rename") { tempName = part.name; showingRename = true }
+            Button("Move Up") { movePart(direction: -1) }
+            Button("Move Down") { movePart(direction: 1) }
+            Divider()
+            Button(part.isCompleted ? "Mark In Progress" : "Mark Completed") {
+                part.isCompleted.toggle(); try? modelContext.save()
+            }
+            Button(role: .destructive) { deletePart() } label: { Text("Delete Part") }
+        }
         .sheet(isPresented: $showingExerciseSelection) {
             ExerciseSelectionView(
                 workoutPart: part,
@@ -301,6 +355,12 @@ struct WorkoutPartCard: View {
         .sheet(isPresented: $showingSetTracking) {
             if let exercise = selectedExercise {
                 SetTrackingView(exercise: exercise, workoutPart: part)
+            }
+        }
+        .sheet(isPresented: $showingRename) {
+            RenamePartSheet(initialName: part.name) { newName in
+                part.name = newName
+                try? modelContext.save()
             }
         }
     }
@@ -439,8 +499,8 @@ struct StatBadge: View {
     let value: String
     var body: some View {
         VStack(spacing: 2) {
-            Text(value).font(.subheadline).fontWeight(.semibold)
-            Text(title).font(.caption2).foregroundColor(.secondary)
+            Text(value).font(.headline).fontWeight(.semibold)
+            Text(title).font(.caption).foregroundColor(.secondary)
         }
     }
 }
@@ -615,6 +675,40 @@ struct PartTypeSelectionRow: View {
         case .functional: return .purple
         case .olympic: return .yellow
         case .plyometric: return .pink
+        }
+    }
+}
+
+// MARK: - Rename Part Sheet
+struct RenamePartSheet: View {
+    @Environment(\.dismiss) private var dismiss
+    let initialName: String
+    let onSave: (String) -> Void
+    @State private var name: String = ""
+
+    var body: some View {
+        NavigationView {
+            VStack(spacing: 16) {
+                TextField("Part Name", text: $name)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .padding(.horizontal)
+                Spacer()
+                Button("Save") {
+                    onSave(name.isEmpty ? initialName : name)
+                    dismiss()
+                }
+                .font(.headline)
+                .foregroundColor(.white)
+                .frame(maxWidth: .infinity)
+                .padding()
+                .background((name.isEmpty ? initialName : name).isEmpty ? Color.gray : Color.blue)
+                .cornerRadius(12)
+                .padding(.horizontal)
+            }
+            .navigationTitle("Rename Part")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar { ToolbarItem(placement: .navigationBarLeading) { Button("Cancel") { dismiss() } } }
+            .onAppear { name = initialName }
         }
     }
 }
