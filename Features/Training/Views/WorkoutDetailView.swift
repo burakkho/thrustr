@@ -8,6 +8,7 @@ struct WorkoutDetailView: View {
 
     let workout: Workout
     @State private var showingAddPart = false
+    @State private var showingGlobalExerciseSelection = false
     @State private var currentTime = Date()
     @State private var showingShare = false
 
@@ -33,6 +34,7 @@ struct WorkoutDetailView: View {
                         }
 
                         AddPartButton { showingAddPart = true }
+                        AddExercisesButton { showingGlobalExerciseSelection = true }
                     }
                     .padding()
                 }
@@ -64,6 +66,31 @@ struct WorkoutDetailView: View {
             .sheet(isPresented: $showingAddPart) {
                 AddPartSheet(workout: workout)
             }
+            .sheet(isPresented: $showingGlobalExerciseSelection) {
+                ExerciseSelectionView(workoutPart: nil) { exercise in
+                    // Infer target part type from exercise and add placeholder set under that part
+                    let targetType = inferPartType(from: exercise)
+                    let part: WorkoutPart = {
+                        if let existing = workout.parts.first(where: { WorkoutPartType(rawValue: $0.type) == targetType }) {
+                            return existing
+                        }
+                        let created = workout.addPart(name: targetType.displayName, type: targetType)
+                        try? modelContext.save()
+                        return created
+                    }()
+
+                    let nextIndexForExercise = (part.exerciseSets
+                        .filter { $0.exercise?.id == exercise.id }
+                        .map { Int($0.setNumber) }
+                        .max() ?? 0) + 1
+
+                    let placeholder = ExerciseSet(setNumber: Int16(nextIndexForExercise), isCompleted: false)
+                    placeholder.exercise = exercise
+                    placeholder.workoutPart = part
+                    modelContext.insert(placeholder)
+                    try? modelContext.save()
+                }
+            }
         }
         .onReceive(timer) { _ in currentTime = Date() }
     }
@@ -83,6 +110,17 @@ struct WorkoutDetailView: View {
         workout.finishWorkout()
         try? modelContext.save()
         // Keep the view so user can share; do not dismiss immediately
+    }
+
+    private func inferPartType(from exercise: Exercise) -> WorkoutPartType {
+        let category = ExerciseCategory(rawValue: exercise.category) ?? .other
+        switch category {
+        case .cardio: return .conditioning
+        case .functional: return .functional
+        case .core, .isolation: return .accessory
+        case .warmup, .flexibility, .plyometric: return .warmup
+        default: return .strength
+        }
     }
 
     private var shareMessage: String {
@@ -146,9 +184,6 @@ struct EmptyWorkoutState: View {
             Text(LocalizationKeys.Training.Detail.emptyTitle.localized).font(.title2).fontWeight(.semibold)
             Text(LocalizationKeys.Training.Detail.emptySubtitle.localized)
                 .foregroundColor(.secondary).multilineTextAlignment(.center)
-            Button(LocalizationKeys.Training.Detail.emptyAddPart.localized, action: action)
-                .font(.headline).foregroundColor(.white)
-                .padding().background(Color.blue).cornerRadius(12)
         }
         .padding(.top, 60)
     }
@@ -347,6 +382,25 @@ struct AddPartButton: View {
             .cornerRadius(12)
         }
         .foregroundColor(.blue)
+    }
+}
+
+struct AddExercisesButton: View {
+    let action: () -> Void
+    var body: some View {
+        Button(action: action) {
+            HStack {
+                Image(systemName: "plus")
+                    .foregroundColor(.green)
+                Text(LocalizationKeys.Training.Part.addExercise.localized)
+                    .fontWeight(.medium)
+                Spacer()
+            }
+            .padding()
+            .background(Color.green.opacity(0.1))
+            .cornerRadius(12)
+        }
+        .foregroundColor(.green)
     }
 }
 

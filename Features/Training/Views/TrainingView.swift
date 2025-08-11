@@ -42,16 +42,14 @@ struct TrainingView: View {
             .navigationTitle(LocalizationKeys.Training.title.localized)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(action: { showingNewWorkout = true }) {
+                    Button(action: {
+                        let newWorkout = Workout(name: LocalizationKeys.Training.History.defaultName.localized)
+                        modelContext.insert(newWorkout)
+                        workoutToShow = newWorkout
+                    }) {
                         Image(systemName: "plus")
                             .font(.headline)
                     }
-                }
-            }
-            .sheet(isPresented: $showingNewWorkout) {
-                NewWorkoutFlowView { createdWorkout in
-                    workoutToShow = createdWorkout
-                    showWorkoutDetail = true
                 }
             }
             .fullScreenCover(item: $workoutToShow) { workout in
