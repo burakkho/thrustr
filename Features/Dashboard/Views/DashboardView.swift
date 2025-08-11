@@ -31,8 +31,8 @@ struct DashboardView: View {
                     // Welcome Section
                     welcomeSection
                     
-                    // Health Stat Strip (single row)
-                    healthStatStrip
+                    // Health Stats Grid (2x2)
+                    healthStatsGrid
                     
                     // Quick Actions
                     quickActionsSection
@@ -104,51 +104,37 @@ struct DashboardView: View {
         .cardStyle()
     }
     
-    // MARK: - Health Stat Strip (Single Row)
-    private var healthStatStrip: some View {
-        HStack(spacing: theme.spacing.s) {
-            DashboardHealthStatStripItem(
+    // MARK: - Health Stats Grid (2x2)
+    private var healthStatsGrid: some View {
+        LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: theme.spacing.s), count: 2), spacing: theme.spacing.s) {
+            QuickStatCard(
                 icon: "figure.walk",
-                title: LocalizationKeys.Dashboard.Stats.steps.localized,
+                title: LocalizationKeys.Dashboard.Stats.today.localized,
                 value: formatSteps(healthKitService.todaySteps),
+                subtitle: LocalizationKeys.Dashboard.Stats.steps.localized,
                 color: .blue
-            ) { showStepsInfo = true }
-            .frame(maxWidth: .infinity)
-
-            DashboardHealthStatStripItem(
+            )
+            QuickStatCard(
                 icon: "flame.fill",
                 title: LocalizationKeys.Dashboard.Stats.calories.localized,
-                value: "\(formatCalories(healthKitService.todayCalories)) \(LocalizationKeys.Dashboard.Stats.kcal.localized)",
+                value: formatCalories(healthKitService.todayCalories),
+                subtitle: LocalizationKeys.Dashboard.Stats.kcal.localized,
                 color: .orange
-            ) { showCaloriesInfo = true }
-            .frame(maxWidth: .infinity)
-
-            DashboardHealthStatStripItem(
-                icon: "fork.knife",
-                title: LocalizationKeys.Dashboard.Stats.consumed.localized,
-                value: String(format: "%.0f %@", todayConsumedCalories(), LocalizationKeys.Dashboard.Stats.kcal.localized),
+            )
+            QuickStatCard(
+                icon: "scalemass.fill",
+                title: LocalizationKeys.Dashboard.Stats.weight.localized,
+                value: currentUser.displayWeight,
+                subtitle: LocalizationKeys.Dashboard.Stats.lastMeasurement.localized,
                 color: .green
-            ) { tabRouter.selected = 2 }
-            .frame(maxWidth: .infinity)
-
-            DashboardHealthStatStripItem(
-                icon: "dumbbell.fill",
-                title: LocalizationKeys.Dashboard.Stats.today.localized,
-                value: formatDuration(todayWorkoutDuration()),
-                color: .blue
-            ) { tabRouter.selected = 1 }
-            .frame(maxWidth: .infinity)
-        }
-        .padding(.horizontal, theme.spacing.xs)
-        .alert(LocalizationKeys.Dashboard.HealthKit.infoTitle.localized, isPresented: $showStepsInfo) {
-            Button(LocalizationKeys.Common.ok.localized, role: .cancel) {}
-        } message: {
-            Text(LocalizationKeys.Dashboard.HealthKit.stepsInfoMessage.localized)
-        }
-        .alert(LocalizationKeys.Dashboard.HealthKit.infoTitle.localized, isPresented: $showCaloriesInfo) {
-            Button(LocalizationKeys.Common.ok.localized, role: .cancel) {}
-        } message: {
-            Text(LocalizationKeys.Dashboard.HealthKit.caloriesInfoMessage.localized)
+            )
+            QuickStatCard(
+                icon: "heart.fill",
+                title: LocalizationKeys.Dashboard.Stats.bmi.localized,
+                value: String(format: "%.1f", currentUser.bmi),
+                subtitle: currentUser.bmiCategory,
+                color: .red
+            )
         }
     }
     
