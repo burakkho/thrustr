@@ -90,7 +90,7 @@ struct DashboardView: View {
                 // Profile Picture or Initials
                 ZStack {
                     Circle()
-                        .fill(theme.colors.accent.opacity(0.12))
+                        .fill(theme.colors.accent.opacity(0.10))
                         .frame(width: 50, height: 50)
                     
                     // ✅ LOCALIZED: User initials with fallback
@@ -489,10 +489,10 @@ private struct DashboardWelcomeCardStyle: ViewModifier {
         content
             .padding(theme.spacing.m)
             .background(backgroundColor)
-            .cornerRadius(14)
+            .cornerRadius(16)
             .shadow(color: Color.shadowLight, radius: shadowRadius, y: 1)
             .overlay(
-                RoundedRectangle(cornerRadius: 14)
+                RoundedRectangle(cornerRadius: 16)
                     .stroke(strokeColor, lineWidth: strokeWidth)
             )
     }

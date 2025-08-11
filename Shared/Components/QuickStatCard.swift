@@ -96,7 +96,7 @@ private struct QuickStatCardSurfaceModifier: ViewModifier {
             content
                 .padding(theme.spacing.m)
                 .background(theme.colors.cardBackground)
-                .cornerRadius(14)
+                .cornerRadius(16)
                 .shadow(color: Color.shadowLight, radius: 4, y: 1)
         } else {
             content

@@ -56,7 +56,7 @@ struct GuideSection: View {
                 // Icon
                 ZStack {
                     Circle()
-                        .fill(color.opacity(0.1))
+                        .fill(color.opacity(0.10))
                         .frame(width: 50, height: 50)
                     
                     Image(systemName: icon)
@@ -137,7 +137,7 @@ private struct GuideSectionSurfaceModifier: ViewModifier {
             content
                 .padding(theme.spacing.m)
                 .background(theme.colors.cardBackground)
-                .cornerRadius(14)
+                .cornerRadius(16)
                 .shadow(color: Color.shadowLight, radius: 4, y: 1)
         } else {
             content
