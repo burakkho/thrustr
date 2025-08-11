@@ -41,9 +41,22 @@ struct ExerciseSelectionView: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
+                // Header (aligned with Add Part sheet style)
+                VStack(spacing: 8) {
+                    Text(LocalizationKeys.Training.Exercise.title.localized)
+                        .font(.largeTitle)
+                        .fontWeight(.bold)
+                    Text(LocalizationKeys.Training.Exercise.emptySubtitle.localized)
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                        .multilineTextAlignment(.center)
+                }
+                .padding(.top)
+
                 // Search bar
                 SearchBar(text: $searchText)
-                    .padding()
+                    .padding(.horizontal)
+                    .padding(.top, 12)
                 
                 // Bölüm türü filtresi (sadece verisi olan türler)
                 PartTypeFilterView(selectedPartType: $selectedPartType, availablePartTypes: availablePartTypes)
@@ -60,13 +73,14 @@ struct ExerciseSelectionView: View {
                                 }
                             }
                         }
-                        .padding()
+                        .padding(.horizontal)
+                        .padding(.bottom)
                     }
                 }
                 
                 Spacer()
             }
-            .navigationTitle("Egzersiz Seç")
+            .navigationTitle("")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
@@ -197,29 +211,23 @@ struct ExerciseRow: View {
         Button(action: action) {
             HStack(spacing: 12) {
                 Image(systemName: category.icon)
-                    .font(.title3)
+                    .font(.title2)
                     .foregroundColor(category.color)
                     .frame(width: 30)
-                
-                VStack(alignment: .leading, spacing: 4) {
+
+                VStack(alignment: .leading, spacing: 2) {
                     Text(exercise.nameTR)
                         .font(.headline)
                         .foregroundColor(.primary)
-                    
-                    if !exercise.nameEN.isEmpty && exercise.nameEN != exercise.nameTR {
-                        Text(exercise.nameEN)
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                    }
-                    
+
                     if !exercise.equipment.isEmpty {
                         EquipmentTags(equipment: exercise.equipment)
                     }
                 }
-                
+
                 Spacer()
-                
-                VStack(alignment: .trailing, spacing: 2) {
+
+                VStack(alignment: .trailing, spacing: 4) {
                     if exercise.supportsWeight {
                         InputTypeIcon(icon: "scalemass", color: .blue)
                     }
@@ -232,13 +240,12 @@ struct ExerciseRow: View {
                 }
             }
             .padding()
-            .background(Color(.systemBackground))
+            .background(Color(.systemGray6))
             .overlay(
                 RoundedRectangle(cornerRadius: 12)
-                    .stroke(Color.borderPrimary, lineWidth: 1)
+                    .stroke(category.color.opacity(0.2), lineWidth: 2)
             )
             .cornerRadius(12)
-            .shadow(color: Color.shadowLight, radius: 3, y: 1)
         }
         .buttonStyle(PlainButtonStyle())
     }
