@@ -576,6 +576,7 @@ struct SetTrackingActionBar: View {
                 // Finish button
                 Button(LocalizationKeys.Training.Set.finishExercise.localized) {
                     onFinish()
+                    UIImpactFeedbackGenerator(style: .light).impactOccurred()
                 }
                 .font(.headline)
                 .foregroundColor(.white)

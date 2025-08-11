@@ -36,6 +36,15 @@ struct WorkoutDetailView: View {
                         } else {
                             ForEach(workout.parts.sorted(by: { $0.orderIndex < $1.orderIndex })) { part in
                                 WorkoutPartCard(part: part)
+                                    .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                                        Button(role: .destructive) {
+                                            modelContext.delete(part)
+                                            do { try modelContext.save() } catch { saveError = error.localizedDescription }
+                                        } label: {
+                                            Label(LocalizationKeys.Common.delete.localized, systemImage: "trash")
+                                        }
+                                        .accessibilityLabel(LocalizationKeys.Common.delete.localized)
+                                    }
                             }
                         }
 
@@ -136,6 +145,7 @@ struct WorkoutDetailView: View {
         workout.finishWorkout()
         do { try modelContext.save() } catch { saveError = error.localizedDescription }
         // Keep the view so user can share; do not dismiss immediately
+        UIImpactFeedbackGenerator(style: .medium).impactOccurred()
     }
 
     private func inferPartType(from exercise: Exercise) -> WorkoutPartType {

@@ -324,6 +324,7 @@ struct ActiveWorkoutCard: View {
                 Button(LocalizationKeys.Training.Active.finish.localized) {
                     workout.finishWorkout()
                     do { try modelContext.save() } catch { /* ignore */ }
+                    UIImpactFeedbackGenerator(style: .light).impactOccurred()
                 }
                 .font(.headline)
                 .foregroundColor(.blue)
