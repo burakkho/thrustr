@@ -1294,6 +1294,10 @@ enum LocalizationKeys {
         static let completed = "common.completed"
         static let category = "common.category"
         static let categoryStats = "common.category_stats"
+        // Added for confirmation prompts
+        static let confirmDiscard = "common.confirm_discard"
+        static let discard = "common.discard"
+        static let discardMessage = "common.discard_message"
     }
     
     // MARK: - Action Keys (Legacy compatibility)

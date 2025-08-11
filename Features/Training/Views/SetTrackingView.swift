@@ -110,13 +110,12 @@ struct SetTrackingView: View {
         // 3) Save with invalid data -> shows error alert.
         .alert(isPresented: $showExitConfirm) {
             Alert(
-                title: Text(LocalizationKeys.Common.confirm ?? "Confirm"),
-                message: Text(LocalizationKeys.Common.cancel ?? "Discard unsaved changes?"),
-                primaryButton: .destructive(Text(LocalizationKeys.Common.discard ?? "Discard")) { dismiss() },
+                title: Text(LocalizationKeys.Common.confirmDiscard.localized),
+                message: Text(LocalizationKeys.Common.discardMessage.localized),
+                primaryButton: .destructive(Text(LocalizationKeys.Common.discard.localized)) { dismiss() },
                 secondaryButton: .cancel(Text(LocalizationKeys.Common.cancel.localized))
             )
         }
-    }
         .alert(isPresented: $showSaveErrorAlert) {
             Alert(
                 title: Text(LocalizationKeys.Common.error.localized),
@@ -124,11 +123,12 @@ struct SetTrackingView: View {
                 dismissButton: .default(Text(LocalizationKeys.Common.ok.localized))
             )
         }
+    }
     
     private func setupInitialSets() {
         if sets.isEmpty {
             // Add 3 empty sets to start
-            for _ in 0..<WorkoutConstants.defaultSetCount {
+            for _ in 0..<3 {
                 sets.append(SetData())
             }
         }
@@ -285,6 +285,8 @@ struct ExerciseHeader: View {
             Divider()
         }
         .background(Color(.systemBackground))
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(exercise.nameTR) başlık")
     }
 }
 
@@ -416,7 +418,9 @@ struct SetRow: View {
                     .font(.title2)
                     .foregroundColor(setData.isCompleted ? .green : .gray)
             }
+            .accessibilityElement(children: .ignore)
             .accessibilityLabel(setData.isCompleted ? LocalizationKeys.Training.Set.completed.localized : LocalizationKeys.Training.Set.finishExercise.localized)
+            .accessibilityHint("Seti tamamla")
             .frame(width: 60)
             .disabled(setData.isCompleted || !setData.hasValidData)
         }
@@ -535,21 +539,23 @@ struct RPEPicker: View {
 // MARK: - Add Set Button
 struct AddSetButton: View {
     let action: () -> Void
+    @Environment(\.theme) private var theme
     
     var body: some View {
         Button(action: action) {
             HStack {
                 Image(systemName: "plus.circle.fill")
-                    .foregroundColor(.blue)
+                    .foregroundColor(theme.colors.accent)
                 Text(LocalizationKeys.Training.Set.addSet.localized)
                     .fontWeight(.medium)
                 Spacer()
             }
-            .padding()
-            .background(Color.blue.opacity(0.1))
+            .padding(theme.spacing.m)
+            .background(theme.colors.accent.opacity(0.1))
             .cornerRadius(8)
         }
-        .foregroundColor(.blue)
+        .foregroundColor(theme.colors.accent)
+        .buttonStyle(PressableStyle())
     }
 }
 
@@ -575,6 +581,7 @@ struct SetTrackingActionBar: View {
     let onRestTimer: () -> Void
     let onFinish: () -> Void
     let hasCompletedSets: Bool
+    @Environment(\.theme) private var theme
     
     var body: some View {
         VStack(spacing: 0) {
@@ -586,10 +593,10 @@ struct SetTrackingActionBar: View {
                     onRestTimer()
                 }
                 .font(.subheadline)
-                .foregroundColor(.orange)
-                .padding(.horizontal, 16)
-                .padding(.vertical, 8)
-                .background(Color.orange.opacity(0.1))
+                .foregroundColor(theme.colors.warning)
+                .padding(.horizontal, theme.spacing.l)
+                .padding(.vertical, theme.spacing.s)
+                .background(theme.colors.warning.opacity(0.1))
                 .cornerRadius(8)
                 
                 Spacer()
@@ -601,15 +608,16 @@ struct SetTrackingActionBar: View {
                 }
                 .font(.headline)
                 .foregroundColor(.white)
-                .padding(.horizontal, 20)
-                .padding(.vertical, 12)
-                .background(hasCompletedSets ? Color.green : Color.gray)
+                .padding(.horizontal, theme.spacing.l)
+                .padding(.vertical, theme.spacing.m)
+                .background(hasCompletedSets ? theme.colors.success : Color.gray)
                 .cornerRadius(8)
                 .disabled(!hasCompletedSets)
+                .buttonStyle(PressableStyle())
             }
-            .padding()
+            .padding(theme.spacing.m)
         }
-        .background(Color(.systemBackground))
+        .background(theme.colors.backgroundPrimary)
     }
 }
 

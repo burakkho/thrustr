@@ -1,3 +1,6 @@
+"common.confirm_discard" = "Değişiklikleri kaydetmeden çıkmak istiyor musun?";
+"common.discard" = "Vazgeç";
+"common.discard_message" = "Kaydedilmemiş değişiklikler kaybolacak.";
 /*
    Localizable.strings (Turkish)
    SporHocam - Turkish Localization

@@ -79,6 +79,7 @@ struct ExerciseSelectionView: View {
                 }
                 .pickerStyle(.segmented)
                 .padding(.horizontal)
+                .accessibilityLabel("Egzersiz filtreleri")
 
                 // Search bar
                  SearchBar(text: $searchText)
@@ -93,6 +94,12 @@ struct ExerciseSelectionView: View {
                     EmptyExerciseState(searchText: searchText)
                 } else {
                     ScrollView {
+                        if let part = workoutPart {
+                            InlineExerciseSuggestions(workoutPart: part, exercises: exercises) { exercise in
+                                selectExercise(exercise)
+                            }
+                            .padding(.top, 4)
+                        }
                         LazyVStack(spacing: 8) {
                             ForEach(filteredExercises) { exercise in
                                 ExerciseRow(exercise: exercise) {
@@ -144,6 +151,66 @@ struct ExerciseSelectionView: View {
         recentIds = Array(current).prefix(30).map { $0 }
         UserDefaults.standard.set(recentIds.map { $0.uuidString }, forKey: "training.recent.exerciseIds")
         dismiss()
+    }
+}
+
+// MARK: - Inline Exercise Suggestions (local to this file to avoid target membership issues)
+private struct InlineExerciseSuggestions: View {
+    @Environment(\.theme) private var theme
+    let workoutPart: WorkoutPart
+    let exercises: [Exercise]
+    let onSelect: (Exercise) -> Void
+
+    private var suggestedExercises: [Exercise] {
+        let allowed = Set(workoutPart.workoutPartType.suggestedExerciseCategories.map { $0.rawValue })
+        return exercises
+            .filter { $0.isActive && allowed.contains($0.category) }
+            .sorted { $0.isFavorite && !$1.isFavorite }
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: theme.spacing.m) {
+            Text("Önerilen Egzersizler")
+                .font(.headline)
+                .foregroundColor(theme.colors.textSecondary)
+
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: theme.spacing.m) {
+                    ForEach(suggestedExercises.prefix(8)) { exercise in
+                        InlineSuggestionChip(title: exercise.nameTR) {
+                            onSelect(exercise)
+                        }
+                    }
+                }
+                .padding(.vertical, theme.spacing.s)
+            }
+        }
+        .padding(.horizontal)
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel("Önerilen egzersizler listesi")
+    }
+}
+
+private struct InlineSuggestionChip: View {
+    @Environment(\.theme) private var theme
+    let title: String
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            Text(title)
+                .font(.caption)
+                .fontWeight(.medium)
+                .padding(.horizontal, theme.spacing.m)
+                .padding(.vertical, theme.spacing.s)
+                .background(theme.colors.accent.opacity(0.12))
+                .foregroundColor(theme.colors.accent)
+                .cornerRadius(16)
+        }
+        .buttonStyle(PressableStyle())
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(title)
+        .accessibilityHint("Seçmek için çift dokun")
     }
 }
 
@@ -218,6 +285,7 @@ struct CategoryChip: View {
     let icon: String
     let isSelected: Bool
     let action: () -> Void
+    @Environment(\.theme) private var theme
     
     var body: some View {
         Button(action: action) {
@@ -229,9 +297,9 @@ struct CategoryChip: View {
                     .font(.caption)
                     .fontWeight(.medium)
             }
-            .padding(.horizontal, 12)
-            .padding(.vertical, 6)
-            .background(isSelected ? Color.blue : Color(.systemGray6))
+            .padding(.horizontal, theme.spacing.m)
+            .padding(.vertical, theme.spacing.s)
+            .background(isSelected ? theme.colors.accent : theme.colors.backgroundSecondary)
             .foregroundColor(isSelected ? .white : .primary)
             .cornerRadius(16)
         }
@@ -244,6 +312,7 @@ struct ExerciseRow: View {
     let exercise: Exercise
     let action: () -> Void
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.theme) private var theme
     
     var category: ExerciseCategory {
         ExerciseCategory(rawValue: exercise.category) ?? .other
@@ -292,8 +361,8 @@ struct ExerciseRow: View {
                 }
                  .accessibilityLabel(exercise.isFavorite ? LocalizationKeys.Common.delete.localized : LocalizationKeys.Common.add.localized)
             }
-            .padding()
-            .background(Color(.systemGray6))
+            .padding(theme.spacing.m)
+            .background(theme.colors.cardBackground)
             .overlay(
                 RoundedRectangle(cornerRadius: 12)
                     .stroke(category.color.opacity(0.2), lineWidth: 2)

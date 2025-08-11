@@ -39,7 +39,7 @@ struct RestTimerView: View {
                     Circle()
                         .trim(from: 0, to: progress)
                         .stroke(
-                            timeRemaining <= 10 ? Color.red : Color.blue,
+                            timeRemaining <= 10 ? Color.orange : Color.blue,
                             style: StrokeStyle(lineWidth: 8, lineCap: .round)
                         )
                         .frame(width: 250, height: 250)
@@ -50,7 +50,7 @@ struct RestTimerView: View {
                     VStack(spacing: 8) {
                         Text(formatTime(timeRemaining))
                             .font(.system(size: 48, weight: .bold, design: .monospaced))
-                            .foregroundColor(timeRemaining <= 10 ? .red : .primary)
+                            .foregroundColor(timeRemaining <= 10 ? .orange : .primary)
                             .accessibilityLabel(LocalizationKeys.Training.Rest.remaining.localized)
                             .accessibilityValue(formatTime(timeRemaining))
                         
@@ -80,6 +80,7 @@ struct RestTimerView: View {
                     .background(Color.orange.opacity(0.1))
                     .cornerRadius(10)
                     .accessibilityLabel(LocalizationKeys.Training.Rest.reset.localized)
+                    .buttonStyle(PressableStyle())
                     
                     // Play/Pause button
                     Button(isActive ? LocalizationKeys.Training.Rest.pause.localized : LocalizationKeys.Training.Rest.start.localized) {
@@ -92,6 +93,7 @@ struct RestTimerView: View {
                     .background(isActive ? Color.orange : Color.blue)
                     .cornerRadius(10)
                     .accessibilityLabel(isActive ? LocalizationKeys.Training.Rest.pause.localized : LocalizationKeys.Training.Rest.start.localized)
+                    .buttonStyle(PressableStyle())
                     
                     // Skip button
                     Button(LocalizationKeys.Training.Rest.skip.localized) {
@@ -104,6 +106,7 @@ struct RestTimerView: View {
                     .background(Color.green.opacity(0.1))
                     .cornerRadius(10)
                     .accessibilityLabel(LocalizationKeys.Training.Rest.skip.localized)
+                    .buttonStyle(PressableStyle())
                 }
                 
                 Spacer()
@@ -229,16 +232,17 @@ struct RestTimerView: View {
 struct TimeAdjustButton: View {
     let title: String
     let action: () -> Void
+    @Environment(\.theme) private var theme
     
     var body: some View {
         Button(action: action) {
             Text(title)
                 .font(.subheadline)
                 .fontWeight(.medium)
-                .foregroundColor(.blue)
-                .padding(.horizontal, 12)
-                .padding(.vertical, 6)
-                .background(Color.blue.opacity(0.1))
+                .foregroundColor(theme.colors.accent)
+                .padding(.horizontal, theme.spacing.m)
+                .padding(.vertical, theme.spacing.s)
+                .background(theme.colors.accent.opacity(0.1))
                 .cornerRadius(8)
         }
     }

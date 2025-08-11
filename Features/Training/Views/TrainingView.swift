@@ -63,6 +63,7 @@ struct TrainingView: View {
 // MARK: - Workout History View
 struct WorkoutHistoryView: View {
     let workouts: [Workout]
+    @Environment(\.theme) private var theme
     
     var completedWorkouts: [Workout] {
         workouts.filter { $0.isCompleted }.sorted { $0.date > $1.date }
@@ -70,20 +71,20 @@ struct WorkoutHistoryView: View {
     
     var body: some View {
         ScrollView {
-            LazyVStack(spacing: 12) {
+            LazyVStack(spacing: theme.spacing.m) {
                 if completedWorkouts.isEmpty {
                     // Empty state
-                    VStack(spacing: 16) {
+                    VStack(spacing: theme.spacing.m) {
                         Image(systemName: "dumbbell")
                             .font(.system(size: 50))
-                            .foregroundColor(.gray)
+                            .foregroundColor(theme.colors.textSecondary)
                         
                         Text(LocalizationKeys.Training.History.emptyTitle.localized)
                             .font(.title2)
                             .fontWeight(.semibold)
                         
                         Text(LocalizationKeys.Training.History.emptySubtitle.localized)
-                            .foregroundColor(.secondary)
+                            .foregroundColor(theme.colors.textSecondary)
                             .multilineTextAlignment(.center)
                     }
                     .padding(.top, 100)
@@ -93,7 +94,7 @@ struct WorkoutHistoryView: View {
                     }
                 }
             }
-            .padding()
+            .padding(theme.spacing.m)
         }
     }
 }
@@ -101,6 +102,7 @@ struct WorkoutHistoryView: View {
 // MARK: - Workout History Card
 struct WorkoutHistoryCard: View {
     let workout: Workout
+    @Environment(\.theme) private var theme
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -155,8 +157,8 @@ struct WorkoutHistoryCard: View {
                 }
             }
         }
-        .padding()
-        .background(Color(.systemGray6))
+        .padding(theme.spacing.m)
+        .background(theme.colors.cardBackground)
         .cornerRadius(12)
     }
 }
@@ -164,6 +166,7 @@ struct WorkoutHistoryCard: View {
 // MARK: - Part Type Chip
 struct PartTypeChip: View {
     let partType: WorkoutPartType
+    @Environment(\.theme) private var theme
     
     var localizedDisplayName: String {
         switch partType {
@@ -191,8 +194,8 @@ struct PartTypeChip: View {
             Text(localizedDisplayName)
                 .font(.caption)
         }
-        .padding(.horizontal, 8)
-        .padding(.vertical, 4)
+        .padding(.horizontal, theme.spacing.s)
+        .padding(.vertical, theme.spacing.xs)
         .background(partColor.opacity(0.2))
         .foregroundColor(partColor)
         .cornerRadius(8)
@@ -214,6 +217,7 @@ struct PartTypeChip: View {
 // MARK: - Active Workout View
 struct ActiveWorkoutView: View {
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.theme) private var theme
     @Query(filter: #Predicate<Workout> { !$0.isCompleted }) private var activeWorkouts: [Workout]
     
     let onWorkoutTap: (Workout) -> Void
@@ -228,10 +232,10 @@ struct ActiveWorkoutView: View {
                     }
                 } else {
                     // No active workout
-                    VStack(spacing: 16) {
+                    VStack(spacing: theme.spacing.m) {
                         Image(systemName: "play.circle")
                             .font(.system(size: 50))
-                            .foregroundColor(.blue)
+                            .foregroundColor(theme.colors.accent)
                         
                         Text(LocalizationKeys.Training.Active.emptyTitle.localized)
                             .font(.title2)
@@ -246,15 +250,16 @@ struct ActiveWorkoutView: View {
                         }
                         .font(.headline)
                         .foregroundColor(.white)
-                        .padding()
-                        .background(Color.blue)
+                        .padding(theme.spacing.m)
+                        .background(theme.colors.accent)
                         .cornerRadius(12)
+                        .buttonStyle(PressableStyle())
                         .accessibilityLabel(LocalizationKeys.Training.Active.startButton.localized)
                     }
                     .padding(.top, 80)
                 }
             }
-            .padding()
+            .padding(theme.spacing.m)
         }
     }
     
@@ -270,9 +275,10 @@ struct ActiveWorkoutCard: View {
     let workout: Workout
     let onTap: () -> Void
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.theme) private var theme
     @State private var currentTime = Date()
     @State private var timerText: String = ""
-    @State private var timer = Timer.publish(every: WorkoutConstants.timerUpdateInterval, on: .main, in: .common).autoconnect()
+    @State private var timer = Timer.publish(every: 1.0, on: .main, in: .common).autoconnect()
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -297,7 +303,7 @@ struct ActiveWorkoutCard: View {
                     Text(timerText)
                         .font(.title2)
                         .fontWeight(.bold)
-                        .foregroundColor(.blue)
+                        .foregroundColor(theme.colors.accent)
                 }
             }
             
@@ -309,16 +315,17 @@ struct ActiveWorkoutCard: View {
             }
             
             // Actions
-            HStack(spacing: 12) {
+            HStack(spacing: theme.spacing.m) {
                 Button(LocalizationKeys.Training.Active.continueButton.localized) {
                     onTap()
                 }
                 .font(.headline)
                 .foregroundColor(.white)
                 .frame(maxWidth: .infinity)
-                .padding()
-                .background(Color.blue)
+                .padding(theme.spacing.m)
+                .background(theme.colors.accent)
                 .cornerRadius(12)
+                .buttonStyle(PressableStyle())
                 .accessibilityLabel(LocalizationKeys.Training.Active.continueButton.localized)
                 
                 Button(LocalizationKeys.Training.Active.finish.localized) {
@@ -327,19 +334,20 @@ struct ActiveWorkoutCard: View {
                     UIImpactFeedbackGenerator(style: .light).impactOccurred()
                 }
                 .font(.headline)
-                .foregroundColor(.blue)
+                .foregroundColor(theme.colors.accent)
                 .frame(maxWidth: .infinity)
-                .padding()
-                .background(Color.blue.opacity(0.1))
+                .padding(theme.spacing.m)
+                .background(theme.colors.accent.opacity(0.1))
                 .cornerRadius(12)
+                .buttonStyle(PressableStyle())
                 .accessibilityLabel(LocalizationKeys.Training.Active.finish.localized)
             }
         }
-        .padding()
-        .background(Color(.systemBackground))
+        .padding(theme.spacing.m)
+        .background(theme.colors.cardBackground)
         .overlay(
             RoundedRectangle(cornerRadius: 12)
-                .stroke(Color.blue, lineWidth: 2)
+                .stroke(theme.colors.accent, lineWidth: 2)
         )
         .cornerRadius(12)
         .onReceive(timer) { _ in
@@ -386,24 +394,25 @@ struct StatItem: View {
 
 // MARK: - Workout Templates View
 struct WorkoutTemplatesView: View {
+    @Environment(\.theme) private var theme
     var body: some View {
         ScrollView {
-            VStack(spacing: 16) {
+            VStack(spacing: theme.spacing.m) {
                 Image(systemName: "doc.text")
                     .font(.system(size: 50))
-                    .foregroundColor(.green)
+                    .foregroundColor(theme.colors.success)
                 
                 Text(LocalizationKeys.Training.Templates.title.localized)
                     .font(.title2)
                     .fontWeight(.semibold)
                 
                 Text(LocalizationKeys.Training.Templates.empty.localized)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(theme.colors.textSecondary)
                     .multilineTextAlignment(.center)
             }
             .padding(.top, 100)
         }
-        .padding()
+        .padding(theme.spacing.m)
     }
 }
 

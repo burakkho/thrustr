@@ -1,3 +1,6 @@
+"common.confirm_discard" = "Discard changes?";
+"common.discard" = "Discard";
+"common.discard_message" = "Unsaved changes will be lost.";
 /*
    Localizable.strings (English)
    SporHocam - English Localization

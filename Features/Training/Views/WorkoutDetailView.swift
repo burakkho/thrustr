@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 import SwiftData
 
 // MARK: - Workout Detail View
@@ -11,10 +12,13 @@ struct WorkoutDetailView: View {
     @State private var showingAddPart = false
     @State private var showingGlobalExerciseSelection = false
     @State private var currentTime = Date()
-    @State private var timer = Timer.publish(every: WorkoutConstants.timerUpdateInterval, on: .main, in: .common)
+    @State private var timer = Timer.publish(every: 1.0, on: .main, in: .common)
         .autoconnect()
     @State private var showingShare = false
     @State private var saveError: String? = nil
+    @State private var isSaving: Bool = false
+    @State private var showCompletion: Bool = false
+    @AppStorage("preferences.haptic_feedback_enabled") private var hapticsEnabled: Bool = true
 
     // removed; timer kept as @State
 
@@ -36,15 +40,6 @@ struct WorkoutDetailView: View {
                         } else {
                             ForEach(workout.parts.sorted(by: { $0.orderIndex < $1.orderIndex })) { part in
                                 WorkoutPartCard(part: part)
-                                    .swipeActions(edge: .trailing, allowsFullSwipe: true) {
-                                        Button(role: .destructive) {
-                                            modelContext.delete(part)
-                                            do { try modelContext.save() } catch { saveError = error.localizedDescription }
-                                        } label: {
-                                            Label(LocalizationKeys.Common.delete.localized, systemImage: "trash")
-                                        }
-                                        .accessibilityLabel(LocalizationKeys.Common.delete.localized)
-                                    }
                             }
                         }
 
@@ -53,7 +48,8 @@ struct WorkoutDetailView: View {
                             AddExercisesButton { showingGlobalExerciseSelection = true }
                         }
                     }
-                    .padding()
+                    .padding(.horizontal, theme.spacing.l)
+                    .padding(.vertical, theme.spacing.m)
                 }
 
                 if !workout.isCompleted {
@@ -72,15 +68,10 @@ struct WorkoutDetailView: View {
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
                     HStack(spacing: 12) {
-                        if workout.isCompleted {
-                            ShareLink(item: shareMessage) {
-                                Image(systemName: "square.and.arrow.up")
-                            }
-                            .accessibilityLabel("Share workout summary")
-                        }
                         if !workout.isCompleted {
                             Button(LocalizationKeys.Training.Detail.finish.localized) { finishWorkout() }
                                 .foregroundColor(theme.colors.error)
+                                .accessibilityHint(LocalizationKeys.Training.Detail.finishWorkout.localized)
                                 .accessibilityLabel(LocalizationKeys.Training.Detail.finish.localized)
                         }
                     }
@@ -127,6 +118,17 @@ struct WorkoutDetailView: View {
                 }
             }
         }
+        .overlay {
+            if isSaving {
+                ZStack {
+                    Color.black.opacity(0.3)
+                        .ignoresSafeArea()
+                    ProgressView()
+                        .progressViewStyle(CircularProgressViewStyle())
+                        .scaleEffect(1.5)
+                }
+            }
+        }
         .onReceive(timer) { _ in currentTime = Date() }
         .onDisappear {
             // Cancel timer to prevent leaks
@@ -137,6 +139,9 @@ struct WorkoutDetailView: View {
             set: { if !$0 { saveError = nil } }
         )) {
             Alert(title: Text(LocalizationKeys.Common.error.localized), message: Text(saveError ?? ""), dismissButton: .default(Text(LocalizationKeys.Common.ok.localized)))
+        }
+        .sheet(isPresented: $showCompletion) {
+            WorkoutCompletionView(workout: workout)
         }
     }
 
@@ -152,10 +157,19 @@ struct WorkoutDetailView: View {
     }
 
     private func finishWorkout() {
-        workout.finishWorkout()
-        do { try modelContext.save() } catch { saveError = error.localizedDescription }
-        // Keep the view so user can share; do not dismiss immediately
-        UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+        isSaving = true
+        Task {
+            workout.finishWorkout()
+            do {
+                try modelContext.save()
+                if hapticsEnabled { UINotificationFeedbackGenerator().notificationOccurred(.success) }
+                showCompletion = true
+            } catch {
+                if hapticsEnabled { UINotificationFeedbackGenerator().notificationOccurred(.error) }
+                saveError = error.localizedDescription
+            }
+            isSaving = false
+        }
     }
 
     private func inferPartType(from exercise: Exercise) -> WorkoutPartType {
@@ -202,6 +216,82 @@ struct WorkoutDetailView: View {
     }
 }
 
+// Local fallback for completion sheet to avoid target-membership issues
+private struct WorkoutCompletionView: View {
+    @Environment(\.theme) private var theme
+    let workout: Workout
+    @State private var animate = false
+
+    var body: some View {
+        VStack(spacing: theme.spacing.xl) {
+            Image(systemName: "checkmark.circle.fill")
+                .font(.system(size: 80))
+                .foregroundColor(theme.colors.success)
+                .symbolEffect(.bounce, value: animate)
+
+            Text("Tebrikler! 🎉")
+                .font(.largeTitle)
+                .fontWeight(.bold)
+
+            VStack(spacing: theme.spacing.m) {
+                StatRow(label: "Süre", value: formatDuration(workout.totalDuration))
+                StatRow(label: "Toplam Set", value: "\(workout.totalSets)")
+                StatRow(label: "Volume", value: "\(Int(workout.totalVolume)) kg")
+            }
+            .padding()
+            .background(theme.colors.cardBackground)
+            .cornerRadius(12)
+
+            ShareLink(item: shareMessage) {
+                Label("Paylaş", systemImage: "square.and.arrow.up")
+                    .font(.headline)
+                    .foregroundColor(.white)
+                    .padding()
+                    .background(theme.colors.accent)
+                    .cornerRadius(12)
+            }
+            .buttonStyle(PressableStyle())
+        }
+        .padding()
+        .onAppear {
+            animate = true
+            UINotificationFeedbackGenerator().notificationOccurred(.success)
+        }
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel("Antrenman tamamlandı, süre \(formatDuration(workout.totalDuration)), set \(workout.totalSets), volume \(Int(workout.totalVolume)) kilogram")
+    }
+
+    private var shareMessage: String {
+        "\n💪 Antrenmanımı tamamladım!\n\n⏱ Süre: \(formatDuration(workout.totalDuration))\n🏋️ Egzersizler: \(Set(workout.parts.flatMap { $0.exerciseSets.compactMap { $0.exercise?.id } }).count)\n📊 Toplam: \(Int(workout.totalVolume)) kg\n\nSpor Hocam 🚀"
+    }
+
+    private func formatDuration(_ seconds: Int) -> String {
+        let hours = seconds / 3600
+        let minutes = (seconds % 3600) / 60
+        let secs = seconds % 60
+        return hours > 0 ? String(format: "%d:%02d:%02d", hours, minutes, secs) : String(format: "%d:%02d", minutes, secs)
+    }
+}
+
+private struct StatRow: View {
+    @Environment(\.theme) private var theme
+    let label: String
+    let value: String
+
+    var body: some View {
+        HStack {
+            Text(label)
+                .font(.subheadline)
+                .foregroundColor(theme.colors.textSecondary)
+            Spacer()
+            Text(value)
+                .font(.headline)
+        }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(label): \(value)")
+    }
+}
+
 // MARK: - Header
 struct WorkoutHeaderView: View {
     let workoutName: String
@@ -214,8 +304,8 @@ struct WorkoutHeaderView: View {
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(workoutName).font(.title2).fontWeight(.bold)
-                    HStack(spacing: 4) {
-                        Circle().fill(isActive ? Color.green : Color.gray).frame(width: 8, height: 8)
+            HStack(spacing: 4) {
+                Circle().fill(isActive ? theme.colors.success : theme.colors.textSecondary).frame(width: 8, height: 8)
                         Text(isActive ? LocalizationKeys.Training.Active.statusActive.localized : LocalizationKeys.Training.Active.statusCompleted.localized)
                             .font(.caption)
                             .foregroundColor(theme.colors.textSecondary)
@@ -244,13 +334,32 @@ struct EmptyWorkoutState: View {
     let action: () -> Void
     @Environment(\.theme) private var theme
     var body: some View {
-        VStack(spacing: 20) {
-            Image(systemName: "plus.circle.dashed")
+        VStack(spacing: theme.spacing.xl) {
+            Image(systemName: "figure.strengthtraining.traditional")
                 .font(.system(size: 60))
-                .foregroundColor(theme.colors.textSecondary)
-            Text(LocalizationKeys.Training.Detail.emptyTitle.localized).font(.title2).fontWeight(.semibold)
-            Text(LocalizationKeys.Training.Detail.emptySubtitle.localized)
-                .foregroundColor(theme.colors.textSecondary).multilineTextAlignment(.center)
+                .foregroundColor(theme.colors.accent)
+                .symbolEffect(.pulse)
+
+            VStack(spacing: theme.spacing.m) {
+                Text(LocalizationKeys.Training.Detail.emptyTitle.localized)
+                    .font(.title2)
+                    .fontWeight(.semibold)
+
+                Text(LocalizationKeys.Training.Detail.emptySubtitle.localized)
+                    .foregroundColor(theme.colors.textSecondary)
+                    .multilineTextAlignment(.center)
+            }
+
+            Button(action: action) {
+                Label(LocalizationKeys.Training.Detail.addPart.localized, systemImage: "plus.circle.fill")
+                    .font(.headline)
+                    .foregroundColor(.white)
+                    .padding(.horizontal, theme.spacing.xl)
+                    .padding(.vertical, theme.spacing.m)
+                    .background(theme.colors.accent)
+                    .cornerRadius(12)
+            }
+            .buttonStyle(PressableStyle())
         }
         .padding(.top, 60)
     }
@@ -266,7 +375,7 @@ struct WorkoutPartCard: View {
     @State private var selectedExercise: Exercise?
     @State private var showingRename = false
     @State private var tempName: String = ""
-    @State private var selectionTimer = Timer.publish(every: WorkoutConstants.timerUpdateInterval, on: .main, in: .common).autoconnect()
+    @State private var selectionTimer = Timer.publish(every: 1.0, on: .main, in: .common).autoconnect()
     @State private var shouldOpenSetTracking = false
 
     var partType: WorkoutPartType {
@@ -309,6 +418,22 @@ struct WorkoutPartCard: View {
                 part.isCompleted.toggle(); do { try modelContext.save() } catch { /* ignore */ }
             }
             Button(role: .destructive) { deletePart() } label: { Text(LocalizationKeys.Training.Part.deletePart.localized) }
+        }
+        .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+            Button(role: .destructive) { deletePart() } label: {
+                Label(LocalizationKeys.Common.delete.localized, systemImage: "trash")
+            }
+        }
+        .swipeActions(edge: .leading) {
+            Button {
+                part.isCompleted.toggle(); try? modelContext.save()
+            } label: {
+                Label(
+                    part.isCompleted ? LocalizationKeys.Training.Part.markInProgressAction.localized : LocalizationKeys.Training.Part.markCompletedAction.localized,
+                    systemImage: part.isCompleted ? "xmark.circle" : "checkmark.circle"
+                )
+            }
+            .tint(part.isCompleted ? theme.colors.warning : theme.colors.success)
         }
         .sheet(isPresented: $showingExerciseSelection, onDismiss: {
             // If an exercise was picked, open set tracking after sheet fully dismisses
@@ -368,7 +493,7 @@ struct WorkoutPartCard: View {
         HStack(alignment: .center) {
             HStack(spacing: 10) {
                 Image(systemName: partType.icon)
-                    .foregroundColor(partColor)
+                    .foregroundColor(partThemeColor)
                     .font(.system(size: 28, weight: .semibold))
                     .accessibilityLabel(localizedPartName)
                 Text(part.name)
@@ -422,7 +547,7 @@ struct WorkoutPartCard: View {
     @ViewBuilder private var progressSection: some View {
         VStack(spacing: 4) {
             ProgressView(value: Double(part.completedSets), total: Double(part.totalSets))
-                .tint(partColor)
+                .tint(partThemeColor)
             HStack {
                 Text("\(part.completedSets)/\(part.totalSets) \(LocalizationKeys.Training.Stats.sets.localized)")
                     .font(.caption)
@@ -443,15 +568,15 @@ struct WorkoutPartCard: View {
         }.sorted { $0.exercise.nameTR < $1.exercise.nameTR }
     }
 
-    private var partColor: Color {
+    private var partThemeColor: Color {
         switch partType {
-        case .strength: return .blue
-        case .conditioning: return .red
-        case .accessory: return .green
-        case .warmup: return .orange
-        case .functional: return .purple
-        case .olympic: return .yellow
-        case .plyometric: return .pink
+        case .strength: return theme.colors.accent
+        case .conditioning: return theme.colors.warning
+        case .accessory: return theme.colors.success
+        case .warmup: return theme.colors.warning
+        case .functional: return theme.colors.accent
+        case .olympic: return theme.colors.accent
+        case .plyometric: return theme.colors.accent
         }
     }
 
@@ -504,6 +629,7 @@ struct ExerciseGroupView: View {
                 Button("+ \(LocalizationKeys.Training.Stats.sets.localized)") { onAddSet() }
                     .font(.caption)
                     .foregroundColor(theme.colors.accent)
+                    .buttonStyle(PressableStyle())
                     .accessibilityLabel(LocalizationKeys.Training.Exercise.addSet.localized)
             }
 
@@ -517,7 +643,7 @@ struct ExerciseGroupView: View {
                     Spacer()
                     if set.isCompleted {
                         Image(systemName: "checkmark.circle.fill")
-                            .font(.caption).foregroundColor(.green)
+                            .font(.caption).foregroundColor(theme.colors.success)
                     }
                 }
             }
@@ -528,8 +654,8 @@ struct ExerciseGroupView: View {
                     .foregroundColor(theme.colors.textSecondary)
             }
         }
-        .padding(.vertical, 4)
-        .padding(.horizontal, 8)
+        .padding(.vertical, theme.spacing.s)
+        .padding(.horizontal, theme.spacing.s)
         .background(theme.colors.cardBackground)
         .cornerRadius(6)
     }
@@ -579,27 +705,90 @@ struct AddExercisesButton: View {
 }
 
 struct WorkoutActionBar: View {
+    @Environment(\.theme) private var theme
     let workout: Workout
     let onFinish: () -> Void
-    @Environment(\.theme) private var theme
+    @State private var showingQuickActions = false
+
     var body: some View {
         VStack(spacing: 0) {
+            if showingQuickActions {
+                HStack(spacing: theme.spacing.m) {
+                    ActionChip(icon: "timer", title: "Rest", color: theme.colors.warning) {
+                        // handled in parent if needed
+                    }
+                    ActionChip(icon: "camera", title: "Foto", color: theme.colors.accent) {
+                        // Open progress photo
+                    }
+                    ActionChip(icon: "note.text", title: "Not", color: theme.colors.accent) {
+                        // Add note
+                    }
+                }
+                .padding(.horizontal)
+                .padding(.bottom, theme.spacing.s)
+                .transition(.move(edge: .bottom).combined(with: .opacity))
+            }
+
             Divider()
-            HStack(spacing: 12) {
-                HStack(spacing: 16) {
+
+            HStack {
+                Button(action: {
+                    withAnimation(.spring(response: 0.3)) { showingQuickActions.toggle() }
+                }) {
+                    Image(systemName: showingQuickActions ? "chevron.down" : "chevron.up")
+                        .foregroundColor(theme.colors.textSecondary)
+                }
+
+                Spacer()
+
+                HStack(spacing: theme.spacing.l) {
                     StatBadge(title: LocalizationKeys.Training.Stats.parts.localized, value: "\(workout.parts.count)")
                     StatBadge(title: LocalizationKeys.Training.Stats.sets.localized, value: "\(workout.totalSets)")
                     StatBadge(title: LocalizationKeys.Training.Stats.volume.localized, value: "\(Int(workout.totalVolume))kg")
                 }
+
                 Spacer()
-                Button(LocalizationKeys.Training.Detail.finishWorkout.localized, action: onFinish)
-                    .font(.headline).foregroundColor(.white)
-                    .padding(.horizontal, 20).padding(.vertical, 12)
-                    .background(theme.colors.success).cornerRadius(8)
+
+                Button(action: onFinish) {
+                    Text(LocalizationKeys.Training.Detail.finishWorkout.localized)
+                        .font(.headline)
+                        .foregroundColor(.white)
+                        .padding(.horizontal, theme.spacing.l)
+                        .padding(.vertical, theme.spacing.m)
+                        .background(theme.colors.success)
+                        .cornerRadius(8)
+                }
+                .buttonStyle(PressableStyle())
             }
-            .padding()
+            .padding(theme.spacing.m)
         }
-        .background(theme.colors.backgroundPrimary)
+        .background(.ultraThinMaterial)
+    }
+}
+
+private struct ActionChip: View {
+    @Environment(\.theme) private var theme
+    let icon: String
+    let title: String
+    let color: Color
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: theme.spacing.s) {
+                Image(systemName: icon)
+                    .font(.caption)
+                Text(title)
+                    .font(.caption)
+                    .fontWeight(.medium)
+            }
+            .padding(.horizontal, theme.spacing.m)
+            .padding(.vertical, theme.spacing.s)
+            .background(color.opacity(0.12))
+            .foregroundColor(color)
+            .cornerRadius(16)
+        }
+        .buttonStyle(PressableStyle())
     }
 }
 
@@ -796,13 +985,13 @@ struct PartTypeSelectionRow: View {
 
     private var partColor: Color {
         switch partType {
-        case .strength: return .blue
-        case .conditioning: return .red
-        case .accessory: return .green
-        case .warmup: return .orange
-        case .functional: return .purple
-        case .olympic: return .yellow
-        case .plyometric: return .pink
+        case .strength: return theme.colors.accent
+        case .conditioning: return theme.colors.warning
+        case .accessory: return theme.colors.success
+        case .warmup: return theme.colors.warning
+        case .functional: return theme.colors.accent
+        case .olympic: return theme.colors.accent
+        case .plyometric: return theme.colors.accent
         }
     }
 }
