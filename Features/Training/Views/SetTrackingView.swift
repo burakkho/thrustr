@@ -20,6 +20,7 @@ struct SetTrackingView: View {
     @State private var didSaveAnySet = false
     @State private var showSaveErrorAlert = false
     @State private var saveErrorMessage = ""
+    @State private var showExitConfirm = false
     
     var body: some View {
         NavigationStack {
@@ -72,7 +73,7 @@ struct SetTrackingView: View {
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button(LocalizationKeys.Training.Set.back.localized) {
-                        dismiss()
+                        handleBack()
                     }
                     .accessibilityLabel(LocalizationKeys.Training.Set.back.localized)
                 }
@@ -107,6 +108,14 @@ struct SetTrackingView: View {
         // 1) Same exercise multiple completed sets -> set numbers should continue from max existing.
         // 2) Dismiss without completing any set -> no placeholder in part after parent onDismiss.
         // 3) Save with invalid data -> shows error alert.
+        .alert(isPresented: $showExitConfirm) {
+            Alert(
+                title: Text(LocalizationKeys.Common.confirm ?? "Confirm"),
+                message: Text(LocalizationKeys.Common.cancel ?? "Discard unsaved changes?"),
+                primaryButton: .destructive(Text(LocalizationKeys.Common.discard ?? "Discard")) { dismiss() },
+                secondaryButton: .cancel(Text(LocalizationKeys.Common.cancel.localized))
+            )
+        }
     }
         .alert(isPresented: $showSaveErrorAlert) {
             Alert(
@@ -200,6 +209,18 @@ struct SetTrackingView: View {
             saveErrorMessage = error.localizedDescription
             showSaveErrorAlert = true
         }
+    }
+
+    private func handleBack() {
+        let hasCompleted = sets.contains { $0.isCompleted && $0.hasValidData }
+        if hasCompleted || !notes.isEmpty {
+            // There is data, ask confirmation if not yet saved
+            if !didSaveAnySet {
+                showExitConfirm = true
+                return
+            }
+        }
+        dismiss()
     }
 }
 

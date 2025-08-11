@@ -48,16 +48,20 @@ struct WorkoutDetailView: View {
                             }
                         }
 
-                        AddPartButton { showingAddPart = true }
-                        AddExercisesButton { showingGlobalExerciseSelection = true }
+                        if !workout.isCompleted {
+                            AddPartButton { showingAddPart = true }
+                            AddExercisesButton { showingGlobalExerciseSelection = true }
+                        }
                     }
                     .padding()
                 }
 
-                WorkoutActionBar(
-                    workout: workout,
-                    onFinish: { finishWorkout() }
-                )
+                if !workout.isCompleted {
+                    WorkoutActionBar(
+                        workout: workout,
+                        onFinish: { finishWorkout() }
+                    )
+                }
             }
             .navigationTitle("")
             .navigationBarTitleDisplayMode(.inline)
@@ -74,9 +78,11 @@ struct WorkoutDetailView: View {
                             }
                             .accessibilityLabel("Share workout summary")
                         }
-                        Button(LocalizationKeys.Training.Detail.finish.localized) { finishWorkout() }
-                            .foregroundColor(theme.colors.error)
-                            .accessibilityLabel(LocalizationKeys.Training.Detail.finish.localized)
+                        if !workout.isCompleted {
+                            Button(LocalizationKeys.Training.Detail.finish.localized) { finishWorkout() }
+                                .foregroundColor(theme.colors.error)
+                                .accessibilityLabel(LocalizationKeys.Training.Detail.finish.localized)
+                        }
                     }
                 }
             }
