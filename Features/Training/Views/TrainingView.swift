@@ -49,8 +49,7 @@ struct TrainingView: View {
                 }
             }
             .sheet(isPresented: $showingNewWorkout) {
-                NewWorkoutView { createdWorkout in
-                    // Callback when workout is created
+                NewWorkoutFlowView { createdWorkout in
                     workoutToShow = createdWorkout
                     showWorkoutDetail = true
                 }
@@ -569,4 +568,54 @@ struct QuickStartButton: View {
 #Preview {
     TrainingView()
         .modelContainer(for: [Workout.self, Exercise.self], inMemory: true)
+}
+
+// MARK: - New Workout Flow
+struct NewWorkoutFlowView: View {
+    @Environment(\.dismiss) private var dismiss
+    @Environment(\.modelContext) private var modelContext
+
+    let onComplete: (Workout) -> Void
+
+    @State private var createdWorkout: Workout? = nil
+    @State private var createdPart: WorkoutPart? = nil
+
+    private func inferPartType(from exercise: Exercise) -> WorkoutPartType {
+        let cat = ExerciseCategory(rawValue: exercise.category) ?? .other
+        switch cat {
+        case .cardio: return .conditioning
+        case .functional: return .functional
+        case .core, .isolation: return .accessory
+        case .warmup, .flexibility, .plyometric: return .warmup
+        default: return .strength
+        }
+    }
+
+    var body: some View {
+        NavigationStack {
+            ExerciseSelectionView(workoutPart: createdPart) { exercise in
+                if createdWorkout == nil {
+                    let workout = Workout()
+                    modelContext.insert(workout)
+                    createdWorkout = workout
+
+                    let type = inferPartType(from: exercise)
+                    let part = workout.addPart(name: type.displayName, type: type)
+                    createdPart = part
+                    try? modelContext.save()
+                }
+
+                if let workout = createdWorkout {
+                    onComplete(workout)
+                    dismiss()
+                }
+            }
+            .navigationTitle("Egzersiz Ekle")
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button("Kapat") { dismiss() }
+                }
+            }
+        }
+    }
 }

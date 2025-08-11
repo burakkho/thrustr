@@ -7,26 +7,34 @@ struct ExerciseSelectionView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var exercises: [Exercise]
     
-    let workoutPart: WorkoutPart
+    let workoutPart: WorkoutPart?
     let onExerciseSelected: (Exercise) -> Void
     
     @State private var searchText = ""
-    @State private var selectedCategory: ExerciseCategory? = nil
+    @State private var selectedPartType: WorkoutPartType? = nil
+
+    private var availablePartTypes: [WorkoutPartType] {
+        WorkoutPartType.allCases.filter { partType in
+            let allowed = Set(partType.suggestedExerciseCategories.map { $0.rawValue })
+            return exercises.contains { $0.isActive && allowed.contains($0.category) }
+        }
+    }
     
     var filteredExercises: [Exercise] {
         var result = exercises.filter { $0.isActive }
-        
+
+        if let partType = selectedPartType {
+            let allowed = Set(partType.suggestedExerciseCategories.map { $0.rawValue })
+            result = result.filter { allowed.contains($0.category) }
+        }
+
         if !searchText.isEmpty {
             result = result.filter { exercise in
                 exercise.nameTR.localizedCaseInsensitiveContains(searchText) ||
                 exercise.nameEN.localizedCaseInsensitiveContains(searchText)
             }
         }
-        
-        if let category = selectedCategory {
-            result = result.filter { $0.category == category.rawValue }
-        }
-        
+
         return result.sorted { $0.nameTR < $1.nameTR }
     }
     
@@ -37,8 +45,8 @@ struct ExerciseSelectionView: View {
                 SearchBar(text: $searchText)
                     .padding()
                 
-                // Category filter
-                CategoryFilterView(selectedCategory: $selectedCategory)
+                // Bölüm türü filtresi (sadece verisi olan türler)
+                PartTypeFilterView(selectedPartType: $selectedPartType, availablePartTypes: availablePartTypes)
                 
                 // Exercise list
                 if filteredExercises.isEmpty {
@@ -74,6 +82,10 @@ struct ExerciseSelectionView: View {
                     .font(.subheadline)
                 }
             }
+        }
+        .onAppear {
+            // Varsayılan olarak geçerli bölüm türünü seçili getir (varsa)
+            selectedPartType = workoutPart?.workoutPartType
         }
     }
     
@@ -114,9 +126,10 @@ struct SearchBar: View {
     }
 }
 
-// MARK: - Category Filter View
-struct CategoryFilterView: View {
-    @Binding var selectedCategory: ExerciseCategory?
+// MARK: - Part Type Filter View
+struct PartTypeFilterView: View {
+    @Binding var selectedPartType: WorkoutPartType?
+    let availablePartTypes: [WorkoutPartType]
     
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
@@ -124,18 +137,18 @@ struct CategoryFilterView: View {
                 CategoryChip(
                     title: "Tümü",
                     icon: "list.bullet",
-                    isSelected: selectedCategory == nil
+                    isSelected: selectedPartType == nil
                 ) {
-                    selectedCategory = nil
+                    selectedPartType = nil
                 }
                 
-                ForEach(ExerciseCategory.allCases, id: \.self) { category in
+                ForEach(availablePartTypes, id: \.self) { partType in
                     CategoryChip(
-                        title: category.displayName,
-                        icon: category.icon,
-                        isSelected: selectedCategory == category
+                        title: partType.displayName,
+                        icon: partType.icon,
+                        isSelected: selectedPartType == partType
                     ) {
-                        selectedCategory = selectedCategory == category ? nil : category
+                        selectedPartType = selectedPartType == partType ? nil : partType
                     }
                 }
             }
