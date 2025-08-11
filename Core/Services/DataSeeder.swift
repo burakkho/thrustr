@@ -45,14 +45,16 @@ class DataSeeder {
         let rows = csvData.components(separatedBy: .newlines)
         var successCount = 0
 
-        // Quotas for curated set (total 100)
+        // Quotas for curated set (total 120)
         let quotas: [ExerciseCategory: Int] = [
             .strength: 60,
             .core: 12,
             .functional: 10,
             .cardio: 8,
             .warmup: 6,
-            .flexibility: 4
+            .flexibility: 4,
+            .olympic: 12,
+            .plyometric: 8
         ]
         var used: [ExerciseCategory: Int] = [:]
         // Track best entry per exercise name to avoid dupes across equipment variants
@@ -157,7 +159,7 @@ class DataSeeder {
             keptByName[nameKey] = (exercise, newRank, category)
             markUsed(category)
 
-            if successCount >= 100 { break }
+            if successCount >= 120 { break }
         }
 
         do {

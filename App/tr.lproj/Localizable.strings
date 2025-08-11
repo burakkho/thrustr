@@ -343,12 +343,16 @@
 "training.part.accessory" = "Yardımcı";
 "training.part.warmup" = "Isınma";
 "training.part.functional" = "Fonksiyonel";
+"training.part.olympic" = "Olimpik";
+"training.part.plyometric" = "Plyometrik";
 
 "training.part.strength.desc" = "Ağırlık antrenmanı, set/rep tracking";
 "training.part.conditioning.desc" = "WOD, kardiyo, kondisyon antrenmanı";
 "training.part.accessory.desc" = "Yardımcı hareketler, izolasyon";
 "training.part.warmup.desc" = "Isınma hareketleri";
 "training.part.functional.desc" = "Fonksiyonel hareketler, crossfit";
+"training.part.olympic.desc" = "Olimpik halter kaldırışları";
+"training.part.plyometric.desc" = "Plyometrik/patlayıcı güç çalışmaları";
 
 "training.part.status.completed" = "Tamamlandı";
 "training.part.status.inProgress" = "Devam ediyor";

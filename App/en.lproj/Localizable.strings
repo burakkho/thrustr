@@ -343,12 +343,16 @@
 "training.part.accessory" = "Accessory";
 "training.part.warmup" = "Warmup";
 "training.part.functional" = "Functional";
+"training.part.olympic" = "Olympic";
+"training.part.plyometric" = "Plyometric";
 
 "training.part.strength.desc" = "Weight training, set/rep tracking";
 "training.part.conditioning.desc" = "WOD, cardio, conditioning training";
 "training.part.accessory.desc" = "Accessory movements, isolation";
 "training.part.warmup.desc" = "Warm-up movements";
 "training.part.functional.desc" = "Functional movements, crossfit";
+"training.part.olympic.desc" = "Olympic weightlifting movements";
+"training.part.plyometric.desc" = "Plyometric/explosive power training";
 
 "training.part.status.completed" = "Completed";
 "training.part.status.inProgress" = "In Progress";

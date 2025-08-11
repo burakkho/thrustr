@@ -213,6 +213,10 @@ struct WorkoutPartCard: View {
             return LocalizationKeys.Training.Part.warmup.localized
         case .functional:
             return LocalizationKeys.Training.Part.functional.localized
+        case .olympic:
+            return "Olimpik"
+        case .plyometric:
+            return "Plyometrik"
         }
     }
 
@@ -316,6 +320,8 @@ struct WorkoutPartCard: View {
         case .accessory: return .green
         case .warmup: return .orange
         case .functional: return .purple
+        case .olympic: return .yellow
+        case .plyometric: return .pink
         }
     }
 }
@@ -523,6 +529,10 @@ struct AddPartSheet: View {
             return LocalizationKeys.Training.Part.warmup.localized
         case .functional:
             return LocalizationKeys.Training.Part.functional.localized
+        case .olympic:
+            return "Olimpik"
+        case .plyometric:
+            return "Plyometrik"
         }
     }
 }
@@ -544,6 +554,10 @@ struct PartTypeSelectionRow: View {
             return LocalizationKeys.Training.Part.warmup.localized
         case .functional:
             return LocalizationKeys.Training.Part.functional.localized
+        case .olympic:
+            return "Olimpik"
+        case .plyometric:
+            return "Plyometrik"
         }
     }
     
@@ -559,6 +573,10 @@ struct PartTypeSelectionRow: View {
             return LocalizationKeys.Training.Part.warmupDesc.localized
         case .functional:
             return LocalizationKeys.Training.Part.functionalDesc.localized
+        case .olympic:
+            return "Olimpik halter kaldırışları"
+        case .plyometric:
+            return "Plyometrik/Patlayıcı güç çalışmaları"
         }
     }
 
@@ -595,6 +613,8 @@ struct PartTypeSelectionRow: View {
         case .accessory: return .green
         case .warmup: return .orange
         case .functional: return .purple
+        case .olympic: return .yellow
+        case .plyometric: return .pink
         }
     }
 }

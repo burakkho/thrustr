@@ -176,6 +176,10 @@ struct PartTypeChip: View {
             return LocalizationKeys.Training.Part.warmup.localized
         case .functional:
             return LocalizationKeys.Training.Part.functional.localized
+        case .olympic:
+            return "Olimpik"
+        case .plyometric:
+            return "Plyometrik"
         }
     }
     
@@ -200,6 +204,8 @@ struct PartTypeChip: View {
         case .accessory: return .green
         case .warmup: return .orange
         case .functional: return .purple
+        case .olympic: return .yellow
+        case .plyometric: return .pink
         }
     }
 }

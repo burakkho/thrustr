@@ -115,14 +115,19 @@ enum WorkoutPartType: String, CaseIterable, Codable {
     case accessory = "accessory"
     case warmup = "warmup"
     case functional = "functional"
+    case olympic = "olympic"
+    case plyometric = "plyometric"
 
     var displayName: String {
+        // Use localized titles where available; provide sensible defaults for new types
         switch self {
-        case .strength: return "Strength"
-        case .conditioning: return "Conditioning"
-        case .accessory: return "Accessory"
-        case .warmup: return "Warm-up"
-        case .functional: return "Functional"
+        case .strength: return LocalizationKeys.Training.Part.strength.localized
+        case .conditioning: return LocalizationKeys.Training.Part.conditioning.localized
+        case .accessory: return LocalizationKeys.Training.Part.accessory.localized
+        case .warmup: return LocalizationKeys.Training.Part.warmup.localized
+        case .functional: return LocalizationKeys.Training.Part.functional.localized
+        case .olympic: return "Olimpik"
+        case .plyometric: return "Plyometrik"
         }
     }
 
@@ -133,6 +138,8 @@ enum WorkoutPartType: String, CaseIterable, Codable {
         case .accessory: return "plus.circle"
         case .warmup: return "thermometer.sun"
         case .functional: return "figure.strengthtraining.functional"
+        case .olympic: return "trophy"
+        case .plyometric: return "figure.jumprope"
         }
     }
 
@@ -143,6 +150,8 @@ enum WorkoutPartType: String, CaseIterable, Codable {
         case .accessory: return .green
         case .warmup: return .orange
         case .functional: return .purple
+        case .olympic: return .yellow
+        case .plyometric: return .pink
         }
     }
 
@@ -153,16 +162,20 @@ enum WorkoutPartType: String, CaseIterable, Codable {
         case .accessory: return "Yardımcı hareketler, izolasyon"
         case .warmup: return "Isınma hareketleri"
         case .functional: return "Fonksiyonel hareketler, crossfit"
+        case .olympic: return "Olimpik halter kaldırışları"
+        case .plyometric: return "Plyometrik/Patlayıcı güç çalışmaları"
         }
     }
 
     var suggestedExerciseCategories: [ExerciseCategory] {
         switch self {
-        case .strength: return [.push, .pull, .legs, .olympic]
+        case .strength: return [.push, .pull, .legs, .olympic, .strength]
         case .conditioning: return [.cardio, .functional]
         case .accessory: return [.isolation, .core]
-        case .warmup: return [.functional, .cardio]
+        case .warmup: return [.warmup, .functional, .cardio]
         case .functional: return [.functional, .olympic, .cardio]
+        case .olympic: return [.olympic, .strength]
+        case .plyometric: return [.plyometric, .functional, .legs]
         }
     }
 }

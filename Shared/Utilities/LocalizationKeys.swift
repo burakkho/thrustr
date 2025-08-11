@@ -204,12 +204,16 @@ enum LocalizationKeys {
             static let accessory = "training.part.accessory"
             static let warmup = "training.part.warmup"
             static let functional = "training.part.functional"
+            static let olympic = "training.part.olympic"
+            static let plyometric = "training.part.plyometric"
             
             static let strengthDesc = "training.part.strength.desc"
             static let conditioningDesc = "training.part.conditioning.desc"
             static let accessoryDesc = "training.part.accessory.desc"
             static let warmupDesc = "training.part.warmup.desc"
             static let functionalDesc = "training.part.functional.desc"
+            static let olympicDesc = "training.part.olympic.desc"
+            static let plyometricDesc = "training.part.plyometric.desc"
             
             static let statusCompleted = "training.part.status.completed"
             static let statusInProgress = "training.part.status.inProgress"
@@ -230,6 +234,8 @@ enum LocalizationKeys {
                 static let accessory = "training.part.accessory.desc"
                 static let warmup = "training.part.warmup.desc"
                 static let functional = "training.part.functional.desc"
+                static let olympic = "training.part.olympic.desc"
+                static let plyometric = "training.part.plyometric.desc"
             }
         }
         
