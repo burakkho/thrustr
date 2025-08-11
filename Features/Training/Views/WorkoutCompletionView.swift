@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct WorkoutCompletionView: View {
+public struct WorkoutCompletionSheet: View {
     @Environment(\.theme) private var theme
     let workout: Workout
     @State private var animate = false

@@ -137,7 +137,7 @@ struct WorkoutDetailView: View {
             Alert(title: Text(LocalizationKeys.Common.error.localized), message: Text(saveError ?? ""), dismissButton: .default(Text(LocalizationKeys.Common.ok.localized)))
         }
         .sheet(isPresented: $showCompletion) {
-            WorkoutCompletionView(workout: workout)
+            WorkoutCompletionSheet(workout: workout)
         }
     }
 
