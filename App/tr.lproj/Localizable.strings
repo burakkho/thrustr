@@ -234,6 +234,7 @@
 "dashboard.stats.steps" = "adım";
 "dashboard.stats.calories" = "Kalori";
 "dashboard.stats.kcal" = "kcal";
+"dashboard.stats.consumed" = "Alınan";
 "dashboard.stats.weight" = "Kilo";
 "dashboard.stats.lastMeasurement" = "son ölçüm";
 "dashboard.stats.bmi" = "BMI";
@@ -270,6 +271,13 @@
 // Time Formats
 "dashboard.time.hours" = "sa";
 "dashboard.time.minutes" = "dk";
+
+// HealthKit Alerts & Permissions
+"dashboard.healthkit.infoTitle" = "HealthKit Bilgisi";
+"dashboard.healthkit.stepsInfoMessage" = "Adım hedefleri Sağlık uygulamasından alınır. Hedefi değiştirmek için Sağlık uygulamasını kullanın.";
+"dashboard.healthkit.caloriesInfoMessage" = "Aktif kalori hedefleri Sağlık uygulamasından alınır. Hedefi değiştirmek için Sağlık uygulamasını kullanın.";
+"dashboard.healthPermission.message" = "Sağlık verilerini göstermek için izin ver.";
+"dashboard.healthPermission.allow" = "İzin Ver";
 
 // MARK: - Training Module
 "training.title" = "Antrenman";

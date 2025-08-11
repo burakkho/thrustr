@@ -2,6 +2,7 @@ import SwiftUI
 import SwiftData
 
 struct DashboardView: View {
+    @Environment(\.theme) private var theme
     @Environment(\.modelContext) private var modelContext
     @EnvironmentObject private var tabRouter: TabRouter
     @Query private var users: [User]
@@ -45,7 +46,7 @@ struct DashboardView: View {
                 .padding()
             }
             .navigationTitle(LocalizationKeys.Dashboard.title.localized)
-            .background(Color(.systemGroupedBackground))
+            .background(theme.colors.backgroundSecondary)
             .refreshable {
                 await refreshHealthData()
             }
@@ -77,11 +78,11 @@ struct DashboardView: View {
                     // ✅ LOCALIZED: Welcome message with user name fallback
                     Text(LocalizationKeys.Dashboard.welcome.localized(with: currentUser.name.isEmpty ? LocalizationKeys.Common.user.localized : currentUser.name))
                         .font(.title2.bold())
-                        .foregroundColor(.primary)
+                        .foregroundColor(theme.colors.textPrimary)
                     
                     Text(LocalizationKeys.Dashboard.howFeeling.localized)
                         .font(.subheadline)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(theme.colors.textSecondary)
                 }
                 
                 Spacer()
@@ -89,31 +90,25 @@ struct DashboardView: View {
                 // Profile Picture or Initials
                 ZStack {
                     Circle()
-                        .fill(Color.blue.opacity(0.1))
+                        .fill(theme.colors.accent.opacity(0.12))
                         .frame(width: 50, height: 50)
                     
                     // ✅ LOCALIZED: User initials with fallback
                     Text(String((currentUser.name.isEmpty ? LocalizationKeys.Common.user.localized : currentUser.name).prefix(1)).uppercased())
                         .font(.title2.bold())
-                        .foregroundColor(.blue)
+                        .foregroundColor(theme.colors.accent)
                 }
             }
         }
         .padding()
-        .background(Color(.systemBackground))
-        .overlay(
-            RoundedRectangle(cornerRadius: 14)
-                .stroke(Color.borderPrimary, lineWidth: 1)
-        )
-        .cornerRadius(14)
-        .shadow(color: Color.shadowLight, radius: 3, y: 1)
+        .cardStyle()
     }
     
     // MARK: - Health Stat Strip (Single Row)
     private var healthStatStrip: some View {
         Group {
             if healthKitService.isAuthorized {
-                HStack(spacing: 8) {
+                HStack(spacing: theme.spacing.s) {
                     DashboardHealthStatStripItem(
                         icon: "figure.walk",
                         title: LocalizationKeys.Dashboard.Stats.steps.localized,
@@ -125,47 +120,44 @@ struct DashboardView: View {
                     DashboardHealthStatStripItem(
                         icon: "flame.fill",
                         title: LocalizationKeys.Dashboard.Stats.calories.localized,
-                        value: formatCalories(healthKitService.todayCalories) + " kcal",
+                        value: "\(formatCalories(healthKitService.todayCalories)) \(LocalizationKeys.Dashboard.Stats.kcal.localized)",
                         color: .orange
                     ) { showCaloriesInfo = true }
                     .frame(maxWidth: .infinity)
 
                     DashboardHealthStatStripItem(
                         icon: "fork.knife",
-                        title: "Alınan",
-                        value: String(format: "%.0f kcal", todayConsumedCalories()),
+                        title: LocalizationKeys.Dashboard.Stats.consumed.localized,
+                        value: String(format: "%.0f %@", todayConsumedCalories(), LocalizationKeys.Dashboard.Stats.kcal.localized),
                         color: .green
                     ) { tabRouter.selected = 2 }
                     .frame(maxWidth: .infinity)
 
                     DashboardHealthStatStripItem(
                         icon: "dumbbell.fill",
-                        title: "Bugün",
+                        title: LocalizationKeys.Dashboard.Stats.today.localized,
                         value: formatDuration(todayWorkoutDuration()),
                         color: .blue
                     ) { tabRouter.selected = 1 }
                     .frame(maxWidth: .infinity)
                 }
-                .padding(.horizontal, 2)
-                .alert("HealthKit Bilgisi", isPresented: $showStepsInfo) {
-                    Button("Tamam", role: .cancel) {}
+                .padding(.horizontal, theme.spacing.xs)
+                .alert(LocalizationKeys.Dashboard.HealthKit.infoTitle.localized, isPresented: $showStepsInfo) {
+                    Button(LocalizationKeys.Common.ok.localized, role: .cancel) {}
                 } message: {
-                    Text("Adım hedefleri Sağlık uygulamasından alınır. Hedef değiştirmek için Sağlık uygulamasını kullanın.")
+                    Text(LocalizationKeys.Dashboard.HealthKit.stepsInfoMessage.localized)
                 }
-                .alert("HealthKit Bilgisi", isPresented: $showCaloriesInfo) {
-                    Button("Tamam", role: .cancel) {}
+                .alert(LocalizationKeys.Dashboard.HealthKit.infoTitle.localized, isPresented: $showCaloriesInfo) {
+                    Button(LocalizationKeys.Common.ok.localized, role: .cancel) {}
                 } message: {
-                    Text("Aktif kalori hedefleri Sağlık uygulamasından alınır. Hedef değiştirmek için Sağlık uygulamasını kullanın.")
+                    Text(LocalizationKeys.Dashboard.HealthKit.caloriesInfoMessage.localized)
                 }
             } else {
                 DashboardHealthStatStripPlaceholder(
-                    message: "Sağlık verilerini göstermek için izin ver.",
-                    actionTitle: "İzin Ver"
+                    message: LocalizationKeys.Dashboard.HealthPermission.message.localized,
+                    actionTitle: ""
                 ) {
-                    Task {
-                        let _ = await healthKitService.requestPermissions()
-                        await healthKitService.readTodaysData()
-                    }
+                    // no-op
                 }
             }
         }
@@ -173,12 +165,12 @@ struct DashboardView: View {
     
     // MARK: - Quick Actions (Using Shared Components)
     private var quickActionsSection: some View {
-        VStack(alignment: .leading, spacing: 16) {
+        VStack(alignment: .leading, spacing: theme.spacing.m) {
             Text(LocalizationKeys.Dashboard.quickActions.localized)
                 .font(.headline)
                 .padding(.horizontal)
             
-            VStack(spacing: 12) {
+            VStack(spacing: theme.spacing.s) {
                 // Start Workout
                 GuideSection(
                     title: LocalizationKeys.Dashboard.Actions.startWorkout.localized,
@@ -215,7 +207,7 @@ struct DashboardView: View {
     
     // MARK: - Recent Workouts Section
     private var recentWorkoutsSection: some View {
-        VStack(alignment: .leading, spacing: 16) {
+        VStack(alignment: .leading, spacing: theme.spacing.m) {
             HStack {
                 Text(LocalizationKeys.Dashboard.recentWorkouts.localized)
                     .font(.headline)
@@ -233,28 +225,22 @@ struct DashboardView: View {
             .padding(.horizontal)
             
             if recentWorkouts.isEmpty {
-                VStack(spacing: 12) {
+                VStack(spacing: theme.spacing.s) {
                     Image(systemName: "dumbbell")
                         .font(.largeTitle)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(theme.colors.textSecondary)
                     
                     Text(LocalizationKeys.Dashboard.NoWorkouts.title.localized)
                         .font(.headline)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(theme.colors.textSecondary)
                     
                     Text(LocalizationKeys.Dashboard.NoWorkouts.subtitle.localized)
                         .font(.subheadline)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(theme.colors.textSecondary)
                         .multilineTextAlignment(.center)
                 }
                 .padding()
-                .background(Color(.systemBackground))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 14)
-                        .stroke(Color.borderPrimary, lineWidth: 1)
-                )
-                .cornerRadius(14)
-                .shadow(color: Color.shadowLight, radius: 3, y: 1)
+                .cardStyle()
                 .padding(.horizontal)
             } else {
                 ScrollView(.horizontal, showsIndicators: false) {
@@ -271,28 +257,28 @@ struct DashboardView: View {
     
     // MARK: - Weekly Progress Section
     private var weeklyProgressSection: some View {
-        VStack(alignment: .leading, spacing: 16) {
+        VStack(alignment: .leading, spacing: theme.spacing.m) {
             Text(LocalizationKeys.Dashboard.thisWeek.localized)
                 .font(.headline)
                 .padding(.horizontal)
             
-            VStack(spacing: 16) {
+            VStack(spacing: theme.spacing.m) {
                 // Workout Count
                 HStack {
                     VStack(alignment: .leading) {
                         Text(LocalizationKeys.Dashboard.Weekly.workoutCount.localized)
                             .font(.subheadline)
-                            .foregroundColor(.secondary)
+                            .foregroundColor(theme.colors.textSecondary)
                         
                         Text("\(workoutService.weeklyWorkoutCount)")
                             .font(.title.bold())
-                            .foregroundColor(.blue)
+                            .foregroundColor(theme.colors.accent)
                     }
                     
                     Spacer()
                     
                     Image(systemName: "dumbbell.fill")
-                        .foregroundColor(.blue)
+                        .foregroundColor(theme.colors.accent)
                         .font(.title2)
                 }
                 
@@ -303,17 +289,17 @@ struct DashboardView: View {
                     VStack(alignment: .leading) {
                         Text(LocalizationKeys.Dashboard.Weekly.totalVolume.localized)
                             .font(.subheadline)
-                            .foregroundColor(.secondary)
+                            .foregroundColor(theme.colors.textSecondary)
                         
                         Text("\(Int(workoutService.weeklyVolume)) kg")
                             .font(.title.bold())
-                            .foregroundColor(.green)
+                            .foregroundColor(theme.colors.success)
                     }
                     
                     Spacer()
                     
                     Image(systemName: "scalemass.fill")
-                        .foregroundColor(.green)
+                        .foregroundColor(theme.colors.success)
                         .font(.title2)
                 }
                 
@@ -324,28 +310,22 @@ struct DashboardView: View {
                     VStack(alignment: .leading) {
                         Text(LocalizationKeys.Dashboard.Weekly.totalTime.localized)
                             .font(.subheadline)
-                            .foregroundColor(.secondary)
+                            .foregroundColor(theme.colors.textSecondary)
                         
                         Text(formatDuration(workoutService.weeklyDuration))
                             .font(.title.bold())
-                            .foregroundColor(.orange)
+                            .foregroundColor(theme.colors.warning)
                     }
                     
                     Spacer()
                     
                     Image(systemName: "clock.fill")
-                        .foregroundColor(.orange)
+                        .foregroundColor(theme.colors.warning)
                         .font(.title2)
                 }
             }
             .padding()
-            .background(Color(.systemBackground))
-            .overlay(
-                RoundedRectangle(cornerRadius: 14)
-                    .stroke(Color.borderPrimary, lineWidth: 1)
-            )
-            .cornerRadius(14)
-            .shadow(color: Color.shadowLight, radius: 3, y: 1)
+            .cardStyle()
             .padding(.horizontal)
         }
     }
@@ -468,9 +448,7 @@ struct WorkoutCard: View {
             }
         }
         .padding()
-        .background(Color(.systemBackground))
-        .cornerRadius(12)
-        .shadow(color: .black.opacity(0.05), radius: 2, x: 0, y: 1)
+        .cardStyle()
         .frame(width: 200)
     }
     
@@ -562,24 +540,18 @@ struct DashboardHealthStatStripItem: View {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(value)
                         .font(.system(size: 18, weight: .semibold, design: .rounded))
-                        .foregroundColor(.primary)
+                        .foregroundColor(theme.colors.textPrimary)
                         .lineLimit(1)
                     Text(title)
                         .font(.caption)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(theme.colors.textSecondary)
                         .lineLimit(1)
                 }
                 Spacer(minLength: 0)
             }
             .padding(.vertical, 10)
             .padding(.horizontal, 12)
-            .background(Color(.systemBackground))
-            .overlay(
-                RoundedRectangle(cornerRadius: 12)
-                    .stroke(Color.borderPrimary, lineWidth: 1)
-            )
-            .cornerRadius(12)
-            .shadow(color: Color.shadowLight, radius: 3, y: 1)
+            .cardStyle()
         }
         .buttonStyle(.plain)
         .accessibilityElement(children: .combine)
@@ -595,23 +567,17 @@ struct DashboardHealthStatStripPlaceholder: View {
     var body: some View {
         HStack(spacing: 12) {
             Image(systemName: "heart.text.square")
-                .foregroundColor(.blue)
+                .foregroundColor(theme.colors.accent)
                 .font(.title2)
             Text(message)
                 .font(.subheadline)
-                .foregroundColor(.secondary)
+                .foregroundColor(theme.colors.textSecondary)
             Spacer()
             Button(actionTitle, action: action)
                 .buttonStyle(.borderedProminent)
         }
         .padding(12)
-        .background(Color(.systemBackground))
-        .overlay(
-            RoundedRectangle(cornerRadius: 12)
-                .stroke(Color.borderPrimary, lineWidth: 1)
-        )
-        .cornerRadius(12)
-        .shadow(color: Color.shadowLight, radius: 3, y: 1)
+        .cardStyle()
     }
 }
 

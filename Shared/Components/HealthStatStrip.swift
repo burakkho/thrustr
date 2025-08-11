@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct DashboardHealthStatStripItem: View {
+    @Environment(\.theme) private var theme
     let icon: String
     let title: String
     let value: String
@@ -9,31 +10,23 @@ struct DashboardHealthStatStripItem: View {
     
     var body: some View {
         Button(action: { action?() }) {
-            HStack(spacing: 8) {
+            HStack(spacing: theme.spacing.s) {
                 Image(systemName: icon)
                     .foregroundColor(color)
                     .font(.headline)
-                VStack(alignment: .leading, spacing: 2) {
+                VStack(alignment: .leading, spacing: theme.spacing.xs) {
                     Text(value)
                         .font(.system(size: 18, weight: .semibold, design: .rounded))
-                        .foregroundColor(.primary)
+                        .foregroundColor(theme.colors.textPrimary)
                         .lineLimit(1)
                     Text(title)
                         .font(.caption)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(theme.colors.textSecondary)
                         .lineLimit(1)
                 }
                 Spacer(minLength: 0)
             }
-            .padding(.vertical, 10)
-            .padding(.horizontal, 12)
-            .background(Color(.systemBackground))
-            .overlay(
-                RoundedRectangle(cornerRadius: 12)
-                    .stroke(Color.borderPrimary, lineWidth: 1)
-            )
-            .cornerRadius(12)
-            .shadow(color: Color.shadowLight, radius: 3, y: 1)
+            .cardStyle()
         }
         .buttonStyle(.plain)
         .accessibilityElement(children: .combine)
@@ -46,26 +39,23 @@ struct DashboardHealthStatStripPlaceholder: View {
     let actionTitle: String
     let action: () -> Void
     
+    @Environment(\.theme) private var theme
     var body: some View {
         HStack(spacing: 12) {
             Image(systemName: "heart.text.square")
-                .foregroundColor(.blue)
+                .foregroundColor(theme.colors.accent)
                 .font(.title2)
             Text(message)
                 .font(.subheadline)
-                .foregroundColor(.secondary)
+                .foregroundColor(theme.colors.textSecondary)
             Spacer()
-            Button(actionTitle, action: action)
-                .buttonStyle(.borderedProminent)
+            if !actionTitle.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                Button(actionTitle, action: action)
+                    .buttonStyle(.borderedProminent)
+            }
         }
         .padding(12)
-        .background(Color(.systemBackground))
-        .overlay(
-            RoundedRectangle(cornerRadius: 12)
-                .stroke(Color.borderPrimary, lineWidth: 1)
-        )
-        .cornerRadius(12)
-        .shadow(color: Color.shadowLight, radius: 3, y: 1)
+        .cardStyle()
     }
 }
 

@@ -33,6 +33,7 @@ enum LocalizationKeys {
             static let weight = "dashboard.stats.weight"
             static let lastMeasurement = "dashboard.stats.lastMeasurement"
             static let bmi = "dashboard.stats.bmi"
+            static let consumed = "dashboard.stats.consumed"
         }
         
         enum Actions {
@@ -85,6 +86,17 @@ enum LocalizationKeys {
         enum Time {
             static let hours = "dashboard.time.hours"
             static let minutes = "dashboard.time.minutes"
+        }
+
+        enum HealthKit {
+            static let infoTitle = "dashboard.healthkit.infoTitle"
+            static let stepsInfoMessage = "dashboard.healthkit.stepsInfoMessage"
+            static let caloriesInfoMessage = "dashboard.healthkit.caloriesInfoMessage"
+        }
+
+        enum HealthPermission {
+            static let message = "dashboard.healthPermission.message"
+            static let allow = "dashboard.healthPermission.allow"
         }
     }
     

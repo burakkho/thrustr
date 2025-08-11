@@ -234,6 +234,7 @@
 "dashboard.stats.steps" = "steps";
 "dashboard.stats.calories" = "Calories";
 "dashboard.stats.kcal" = "kcal";
+"dashboard.stats.consumed" = "Consumed";
 "dashboard.stats.weight" = "Weight";
 "dashboard.stats.lastMeasurement" = "last measurement";
 "dashboard.stats.bmi" = "BMI";
@@ -270,6 +271,13 @@
 // Time Formats
 "dashboard.time.hours" = "h";
 "dashboard.time.minutes" = "min";
+
+// HealthKit Alerts & Permissions
+"dashboard.healthkit.infoTitle" = "HealthKit Info";
+"dashboard.healthkit.stepsInfoMessage" = "Step goals are pulled from the Health app. To change the goal, use the Health app.";
+"dashboard.healthkit.caloriesInfoMessage" = "Active calorie goals are pulled from the Health app. To change the goal, use the Health app.";
+"dashboard.healthPermission.message" = "Allow access to display health data.";
+"dashboard.healthPermission.allow" = "Allow";
 
 // MARK: - Training Module
 "training.title" = "Training";
