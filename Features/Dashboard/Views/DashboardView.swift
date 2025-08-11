@@ -176,7 +176,6 @@ struct DashboardView: View {
                     tabRouter.selected = 2
                 }
             }
-            .padding(.horizontal)
         }
     }
     
