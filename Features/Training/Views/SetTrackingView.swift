@@ -102,6 +102,13 @@ struct SetTrackingView: View {
             onDismiss?(didSaveAnySet)
         }
     }
+        .alert(isPresented: $showSaveErrorAlert) {
+            Alert(
+                title: Text(LocalizationKeys.Common.error.localized),
+                message: Text(saveErrorMessage),
+                dismissButton: .default(Text(LocalizationKeys.Common.ok.localized))
+            )
+        }
     
     private func setupInitialSets() {
         if sets.isEmpty {
@@ -382,6 +389,7 @@ struct SetRow: View {
                     .font(.title2)
                     .foregroundColor(setData.isCompleted ? .green : .gray)
             }
+            .accessibilityLabel(setData.isCompleted ? LocalizationKeys.Training.Set.completed.localized : LocalizationKeys.Training.Set.finishExercise.localized)
             .frame(width: 60)
             .disabled(setData.isCompleted || !setData.hasValidData)
         }

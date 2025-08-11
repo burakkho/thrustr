@@ -110,18 +110,20 @@ struct ExerciseSelectionView: View {
             .navigationTitle("")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button("İptal") {
-                        dismiss()
-                    }
-                }
+                 ToolbarItem(placement: .navigationBarLeading) {
+                     Button("İptal") {
+                         dismiss()
+                     }
+                     .accessibilityLabel(LocalizationKeys.Training.Exercise.cancel.localized)
+                 }
                 
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Özel Ekle") {
-                        // TODO: Add custom exercise
-                    }
-                    .font(.subheadline)
-                }
+                 ToolbarItem(placement: .navigationBarTrailing) {
+                     Button("Özel Ekle") {
+                         // TODO: Add custom exercise
+                     }
+                     .font(.subheadline)
+                     .accessibilityLabel(LocalizationKeys.Training.Exercise.addCustom.localized)
+                 }
             }
         }
         .onAppear {
@@ -277,10 +279,10 @@ struct ExerciseRow: View {
                 }
 
                 // Favorite toggle
-                Button(action: {
-                    exercise.isFavorite.toggle()
-                    try? modelContext.save()
-                }) {
+                 Button(action: {
+                     exercise.isFavorite.toggle()
+                     do { try modelContext.save() } catch { /* ignore */ }
+                 }) {
                     Image(systemName: exercise.isFavorite ? "heart.fill" : "heart")
                         .foregroundColor(.red)
                 }

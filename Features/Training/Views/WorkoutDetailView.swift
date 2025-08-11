@@ -55,6 +55,7 @@ struct WorkoutDetailView: View {
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button(LocalizationKeys.Training.Detail.back.localized) { dismiss() }
+                        .accessibilityLabel(LocalizationKeys.Training.Detail.back.localized)
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
                     HStack(spacing: 12) {
@@ -62,10 +63,11 @@ struct WorkoutDetailView: View {
                             ShareLink(item: shareMessage) {
                                 Image(systemName: "square.and.arrow.up")
                             }
-                            .accessibilityLabel("Share workout summary")
+                            .accessibilityLabel(LocalizationKeys.Common.share ?? "Share")
                         }
                         Button(LocalizationKeys.Training.Detail.finish.localized) { finishWorkout() }
                             .foregroundColor(theme.colors.error)
+                            .accessibilityLabel(LocalizationKeys.Training.Detail.finish.localized)
                     }
                 }
             }
@@ -344,6 +346,7 @@ struct WorkoutPartCard: View {
                 Image(systemName: partType.icon)
                     .foregroundColor(partColor)
                     .font(.system(size: 28, weight: .semibold))
+                    .accessibilityLabel(localizedPartName)
                 Text(part.name)
                     .font(.title3)
                     .fontWeight(.bold)
@@ -467,6 +470,7 @@ struct ExerciseGroupView: View {
                 Button("+ \(LocalizationKeys.Training.Stats.sets.localized)") { onAddSet() }
                     .font(.caption)
                     .foregroundColor(theme.colors.accent)
+                    .accessibilityLabel(LocalizationKeys.Training.Exercise.addSet.localized)
             }
 
             ForEach(completedSets.prefix(3), id: \.id) { set in
@@ -505,6 +509,7 @@ struct AddPartButton: View {
         Button(action: action) {
             HStack {
                 Image(systemName: "plus.circle.fill").foregroundColor(theme.colors.accent)
+                    .accessibilityLabel(LocalizationKeys.Training.Detail.addPart.localized)
                 Text(LocalizationKeys.Training.Detail.addPart.localized).fontWeight(.medium)
                 Spacer()
             }
@@ -525,6 +530,7 @@ struct AddExercisesButton: View {
             HStack {
                 Image(systemName: "plus")
                     .foregroundColor(theme.colors.success)
+                    .accessibilityLabel(LocalizationKeys.Training.Part.addExercise.localized)
                 Text(LocalizationKeys.Training.Part.addExercise.localized)
                     .fontWeight(.medium)
                 Spacer()

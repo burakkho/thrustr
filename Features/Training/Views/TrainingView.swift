@@ -248,6 +248,7 @@ struct ActiveWorkoutView: View {
                         .padding()
                         .background(Color.blue)
                         .cornerRadius(12)
+                        .accessibilityLabel(LocalizationKeys.Training.Active.startButton.localized)
                     }
                     .padding(.top, 80)
                 }
@@ -317,10 +318,11 @@ struct ActiveWorkoutCard: View {
                 .padding()
                 .background(Color.blue)
                 .cornerRadius(12)
+                .accessibilityLabel(LocalizationKeys.Training.Active.continueButton.localized)
                 
                 Button(LocalizationKeys.Training.Active.finish.localized) {
                     workout.finishWorkout()
-                    try? modelContext.save()
+                    do { try modelContext.save() } catch { /* ignore */ }
                 }
                 .font(.headline)
                 .foregroundColor(.blue)
@@ -328,6 +330,7 @@ struct ActiveWorkoutCard: View {
                 .padding()
                 .background(Color.blue.opacity(0.1))
                 .cornerRadius(12)
+                .accessibilityLabel(LocalizationKeys.Training.Active.finish.localized)
             }
         }
         .padding()
@@ -491,7 +494,7 @@ struct NewWorkoutView: View {
     private func startEmptyWorkout() {
         let workout = Workout(name: workoutName.isEmpty ? LocalizationKeys.Training.History.defaultName.localized : workoutName)
         modelContext.insert(workout)
-        try? modelContext.save()
+        do { try modelContext.save() } catch { /* ignore */ }
         
         dismiss()
         
@@ -508,7 +511,7 @@ struct NewWorkoutView: View {
         let _ = workout.addPart(name: LocalizationKeys.Training.Part.functional.localized, type: .functional)
         
         modelContext.insert(workout)
-        try? modelContext.save()
+        do { try modelContext.save() } catch { /* ignore */ }
         
         dismiss()
         
@@ -525,7 +528,7 @@ struct NewWorkoutView: View {
         let _ = workout.addPart(name: LocalizationKeys.Training.Part.conditioning.localized, type: .conditioning)
         
         modelContext.insert(workout)
-        try? modelContext.save()
+        do { try modelContext.save() } catch { /* ignore */ }
         
         dismiss()
         
@@ -612,7 +615,7 @@ struct NewWorkoutFlowView: View {
                     let type = inferPartType(from: exercise)
                     let part = workout.addPart(name: type.displayName, type: type)
                     createdPart = part
-                    try? modelContext.save()
+                    do { try modelContext.save() } catch { /* ignore */ }
                 }
 
                 if let workout = createdWorkout {
