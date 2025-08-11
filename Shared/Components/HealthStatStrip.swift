@@ -34,29 +34,6 @@ struct DashboardHealthStatStripItem: View {
     }
 }
 
-struct DashboardHealthStatStripPlaceholder: View {
-    let message: String
-    let actionTitle: String
-    let action: () -> Void
-    
-    @Environment(\.theme) private var theme
-    var body: some View {
-        HStack(spacing: 12) {
-            Image(systemName: "heart.text.square")
-                .foregroundColor(theme.colors.accent)
-                .font(.title2)
-            Text(message)
-                .font(.subheadline)
-                .foregroundColor(theme.colors.textSecondary)
-            Spacer()
-            if !actionTitle.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                Button(actionTitle, action: action)
-                    .buttonStyle(.borderedProminent)
-            }
-        }
-        .padding(12)
-        .cardStyle()
-    }
-}
+// Placeholder kaldırıldı: HealthKit izni yoksa 0 değerler gösterilecek.
 
 

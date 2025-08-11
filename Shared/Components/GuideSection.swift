@@ -7,6 +7,21 @@
 
 import SwiftUI
 
+// Local button style to avoid project file updates
+struct PressableStyle: ButtonStyle {
+    let pressedScale: CGFloat
+    let duration: Double
+    init(pressedScale: CGFloat = 0.98, duration: Double = 0.12) {
+        self.pressedScale = pressedScale
+        self.duration = duration
+    }
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .scaleEffect(configuration.isPressed ? pressedScale : 1.0)
+            .animation(.easeOut(duration: duration), value: configuration.isPressed)
+    }
+}
+
 struct GuideSection: View {
     @Environment(\.theme) private var theme
     let title: String
@@ -16,7 +31,10 @@ struct GuideSection: View {
     let action: () -> Void
     
     var body: some View {
-        Button(action: action) {
+        Button(action: {
+            UIImpactFeedbackGenerator(style: .light).impactOccurred()
+            action()
+        }) {
             HStack(spacing: theme.spacing.m) {
                 // Icon
                 ZStack {
@@ -50,7 +68,7 @@ struct GuideSection: View {
             }
             .cardStyle()
         }
-        .buttonStyle(PlainButtonStyle())
+        .buttonStyle(PressableStyle())
         .accessibilityElement(children: .combine)
         .accessibilityLabel(Text(title))
         .accessibilityHint(Text(description))

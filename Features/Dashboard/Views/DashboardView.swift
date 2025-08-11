@@ -227,6 +227,16 @@ struct DashboardView: View {
                         .font(.subheadline)
                         .foregroundColor(theme.colors.textSecondary)
                         .multilineTextAlignment(.center)
+
+                    Button(action: {
+                        UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                        tabRouter.selected = 1
+                    }) {
+                        Text(LocalizationKeys.Dashboard.Actions.startWorkout.localized)
+                            .font(.headline)
+                            .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.borderedProminent)
                 }
                 .padding()
                 .cardStyle()
@@ -393,6 +403,11 @@ struct DashboardView: View {
 // MARK: - Workout Card Component
 struct WorkoutCard: View {
     let workout: Workout
+    private static let dateFormatter: DateFormatter = {
+        let f = DateFormatter()
+        f.setLocalizedDateFormatFromTemplate("d MMM")
+        return f
+    }()
     
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -442,11 +457,7 @@ struct WorkoutCard: View {
     }
     
     private func formatWorkoutDate(_ date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "d MMM"
-        // ✅ LOCALIZED: Use current locale instead of hardcoded Turkish
-        formatter.locale = Locale.current
-        return formatter.string(from: date)
+        WorkoutCard.dateFormatter.string(from: date)
     }
     
     private func formatWorkoutDuration(_ duration: TimeInterval) -> String {
@@ -514,6 +525,7 @@ struct WeightEntryView: View {
 
 // MARK: - Inline Health Stat Strip Components (to avoid project file edits)
 struct DashboardHealthStatStripItem: View {
+    @Environment(\.theme) private var theme
     let icon: String
     let title: String
     let value: String
@@ -549,6 +561,7 @@ struct DashboardHealthStatStripItem: View {
 }
 
 struct DashboardHealthStatStripPlaceholder: View {
+    @Environment(\.theme) private var theme
     let message: String
     let actionTitle: String
     let action: () -> Void
