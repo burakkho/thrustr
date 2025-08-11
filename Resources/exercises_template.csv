@@ -20,3 +20,13 @@ Leg Press,Leg Press,strength,machine,true,true,false,false,Hareketi kontrollü y
 Leg Curl,Leg Curl,strength,machine,true,true,false,false,Hareketi kontrollü yap.
 Leg Extension,Leg Extension,strength,machine,true,true,false,false,Hareketi kontrollü yap.
 Calf Raise,Calf Raise,strength,machine,true,true,false,false,Hareketi kontrollü yap.
+Thrusters,Thrusters,functional,barbell,true,true,false,false,Hareketi kontrollü yap.
+Burpees,Burpees,functional,bodyweight,false,true,false,false,Hareketi kontrollü yap.
+Wall Ball,Wall Ball,functional,ball,true,true,false,false,Hareketi kontrollü yap.
+Kettlebell Swing,Kettlebell Swing,functional,kettlebell,true,true,false,false,Hareketi kontrollü yap.
+Sandbag Clean,Sandbag Clean,functional,other,true,true,false,false,Hareketi kontrollü yap.
+Farmer's Carry,Farmer's Carry,functional,dumbbell,true,false,false,true,Hareketi kontrollü yap.
+Turkish Get-Up,Turkish Get-Up,functional,kettlebell,true,true,false,false,Hareketi kontrollü yap.
+Box Step-Up,Box Step-Up,functional,box,true,true,false,false,Hareketi kontrollü yap.
+Sled Push,Sled Push,functional,sled,true,false,true,true,Hareketi kontrollü yap.
+Battle Rope,Battle Rope,functional,rope,false,true,true,false,Hareketi kontrollü yap.
