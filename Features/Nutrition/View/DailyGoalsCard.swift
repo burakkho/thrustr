@@ -86,7 +86,7 @@ struct DailyGoalsCard: View {
                 }
             }
             .padding(.vertical, 16)
-            .background(Color(.systemGray6))
+            .background(Color(.systemBackground))
             .cornerRadius(12)
             .padding(.horizontal)
         }

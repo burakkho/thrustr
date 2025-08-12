@@ -99,61 +99,42 @@ struct NutritionView: View {
                             NutritionAnalyticsView(nutritionEntries: weekEntries)
                         }
                         
-                        // Boşluk floating button için
-                        Spacer()
-                            .frame(height: 80)
+                        // Alt boşluk (gerekirse)
+                        Spacer(minLength: 0)
                     }
                     .padding(.top)
-                }
-                
-                // Floating Action Button
-                VStack {
-                    Spacer()
-                    HStack(spacing: 16) {
-                        // Scan shortcut
-                        Button {
-                            forceStartWithScanner = true
-                            showingFoodSelection = true
-                        } label: {
-                            Image(systemName: "barcode.viewfinder")
-                                .font(.title3)
-                                .foregroundColor(.white)
-                                .frame(width: 48, height: 48)
-                                .background(Color.orange)
-                                .clipShape(Circle())
-                                .shadow(color: .black.opacity(0.2), radius: 8, x: 0, y: 4)
-                        }
-                        .padding(.bottom, 100)
-
-                        Spacer()
-
-                        // Add button
-                        Button {
-                            forceStartWithScanner = false
-                            showingFoodSelection = true
-                        } label: {
-                            Image(systemName: "plus")
-                                .font(.title2)
-                                .fontWeight(.semibold)
-                                .foregroundColor(.white)
-                                .frame(width: 56, height: 56)
-                                .background(Color.blue)
-                                .clipShape(Circle())
-                                .shadow(color: .black.opacity(0.2), radius: 8, x: 0, y: 4)
-                        }
-                        .padding(.trailing, 20)
-                        .padding(.bottom, 100)
-                    }
                 }
             }
             .navigationTitle(LocalizationKeys.Nutrition.title.localized)
             .toolbar {
-                #if DEBUG
-                if !foods.isEmpty {
-                    Button(LocalizationKeys.Nutrition.Test.clear.localized) {
-                        clearAllFoods()
+                ToolbarItemGroup(placement: .navigationBarTrailing) {
+                    Button(action: {
+                        forceStartWithScanner = true
+                        showingFoodSelection = true
+                    }) {
+                        Image(systemName: "barcode.viewfinder")
+                            .font(.headline)
+                            .accessibilityLabel(LocalizationKeys.Nutrition.scanBarcode.localized)
                     }
-                    .foregroundColor(.red)
+
+                    Button(action: {
+                        forceStartWithScanner = false
+                        showingFoodSelection = true
+                    }) {
+                        Image(systemName: "plus")
+                            .font(.headline)
+                            .accessibilityLabel(LocalizationKeys.Common.add.localized)
+                    }
+                }
+
+                #if DEBUG
+                ToolbarItem(placement: .navigationBarLeading) {
+                    if !foods.isEmpty {
+                        Button(LocalizationKeys.Nutrition.Test.clear.localized) {
+                            clearAllFoods()
+                        }
+                        .foregroundColor(.red)
+                    }
                 }
                 #endif
             }

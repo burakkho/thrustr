@@ -28,6 +28,7 @@
 "nutrition.title" = "Beslenme";
 "nutrition.addFood" = "Yemek Ekle";
 "nutrition.calories" = "Kalori";
+"nutrition.scanBarcode" = "Barkod Tara";
 
 // Empty States - Nutrition
 "nutrition.empty.first.title" = "Beslenme takibine başla";

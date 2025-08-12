@@ -361,6 +361,7 @@ enum LocalizationKeys {
         static let title = "nutrition.title"
         static let addFood = "nutrition.addFood"
         static let calories = "nutrition.calories"
+        static let scanBarcode = "nutrition.scanBarcode"
         
         enum Empty {
             static let firstTitle = "nutrition.empty.first.title"

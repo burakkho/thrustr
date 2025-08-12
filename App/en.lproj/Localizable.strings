@@ -28,6 +28,7 @@
 "nutrition.title" = "Nutrition";
 "nutrition.addFood" = "Add Food";
 "nutrition.calories" = "Calories";
+"nutrition.scanBarcode" = "Scan barcode";
 
 // Empty States - Nutrition
 "nutrition.empty.first.title" = "Start tracking nutrition";
