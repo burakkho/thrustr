@@ -58,6 +58,20 @@ struct NutritionView: View {
                             .padding()
                         }
                         
+                        // Boş durumlar
+                        if foods.isEmpty && todayEntries.isEmpty && weekEntries.isEmpty {
+                            EmptyStateView(
+                                systemImage: "fork.knife.circle.fill",
+                                title: "Beslenme takibine başla",
+                                message: "Öğünlerini ekleyerek günlük kalorini ve makrolarını takip et.",
+                                primaryTitle: "Yemek ekle",
+                                primaryAction: { showingFoodSelection = true },
+                                secondaryTitle: "Özel yiyecek oluştur",
+                                secondaryAction: { showingFoodSelection = true; /* açılan sayfadan ekleyebilir */ }
+                            )
+                            .padding(.top, 40)
+                        }
+
                         // Günlük özet
                         DailyNutritionSummary(nutritionEntries: todayEntries)
                         
