@@ -140,9 +140,16 @@ struct GoalProgressRing: View {
                     .font(.caption)
                     .fontWeight(.medium)
                 
-                Text("/ \(Int(goal)) \(unit)")
-                    .font(.caption2)
-                    .foregroundColor(.secondary)
+                if goal > 0 {
+                    Text("/ \(Int(goal)) \(unit)")
+                        .font(.caption2)
+                        .foregroundColor(.secondary)
+                } else {
+                    Text(LocalizedStringKey(""))
+                        .font(.caption2)
+                        .foregroundColor(.secondary)
+                        .hidden()
+                }
             }
         }
     }
@@ -169,9 +176,15 @@ struct GoalProgressBar: View {
                 
                 Spacer()
                 
-                Text("\(Int(current))/\(Int(goal))\(unit)")
-                    .font(.caption2)
-                    .foregroundColor(.secondary)
+                if goal > 0 {
+                    Text("\(Int(current))/\(Int(goal))\(unit)")
+                        .font(.caption2)
+                        .foregroundColor(.secondary)
+                } else {
+                    Text("\(Int(current))\(unit)")
+                        .font(.caption2)
+                        .foregroundColor(.secondary)
+                }
             }
             
             ZStack(alignment: .leading) {

@@ -8,7 +8,7 @@ extension FoodCategory {
         case .dairy: return "cup.and.saucer.fill"
         case .grains: return "leaf.fill"
         case .vegetables: return "carrot.fill"
-        case .fruits: return "apple.logo"
+        case .fruits: return "applelogo"
         case .nuts: return "oval.fill"
         case .beverages: return "drop.fill"
         case .snacks: return "popcorn.fill"

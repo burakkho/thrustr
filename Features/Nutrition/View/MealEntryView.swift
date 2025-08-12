@@ -33,6 +33,7 @@ struct MealEntryView: View {
                         // Favori butonu
                         Button {
                             food.toggleFavorite()
+                            try? food.modelContext?.save()
                             HapticManager.shared.impact(.light)
                         } label: {
                             Image(systemName: food.isFavorite ? "heart.fill" : "heart")
@@ -119,6 +120,7 @@ struct MealEntryView: View {
         
         // Usage tracking
         food.recordUsage()
+        try? modelContext.save()
         HapticManager.shared.notification(.success)
         
         onDismiss()

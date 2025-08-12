@@ -193,6 +193,7 @@ struct NutritionEntryEditSheet: View {
     
     private func applyChanges() {
         guard grams > 0 else { return }
+        let oldGrams = entry.gramsConsumed
         entry.gramsConsumed = grams
         entry.mealType = meal
         // Recalculate cached nutrition
@@ -202,6 +203,12 @@ struct NutritionEntryEditSheet: View {
             entry.protein = n.protein
             entry.carbs = n.carbs
             entry.fat = n.fat
+        } else if oldGrams > 0 {
+            let factor = grams / oldGrams
+            entry.calories *= factor
+            entry.protein *= factor
+            entry.carbs *= factor
+            entry.fat *= factor
         }
         entry.updatedAt = Date()
         try? modelContext.save()

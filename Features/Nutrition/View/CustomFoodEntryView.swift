@@ -14,7 +14,6 @@ struct CustomFoodEntryView: View {
     @State private var carbs: Double = 0
     @State private var fat: Double = 0
     @State private var selectedCategory: FoodCategory = .other
-    @State private var portionSize: Double = 100
     @State private var showingAlert = false
     @State private var alertMessage = ""
     
@@ -70,7 +69,7 @@ struct CustomFoodEntryView: View {
                             
                             Picker(LocalizationKeys.Nutrition.CustomFood.category.localized, selection: $selectedCategory) {
                                 ForEach(FoodCategory.allCases, id: \.self) { category in
-                                    Label(category.displayName, systemImage: category.icon)
+                                    Label(category.displayName, systemImage: category.systemIcon)
                                         .tag(category)
                                 }
                             }
@@ -209,6 +208,7 @@ struct CustomFoodEntryView: View {
         newFood.isVerified = false
         
         modelContext.insert(newFood)
+        try? modelContext.save()
         onFoodCreated(newFood)
         dismiss()
     }

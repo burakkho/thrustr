@@ -151,6 +151,7 @@ struct NutritionView: View {
         for food in testFoods {
             modelContext.insert(food)
         }
+        try? modelContext.save()
     }
     
     private func clearAllFoods() {
@@ -160,6 +161,7 @@ struct NutritionView: View {
         for entry in todayEntries {
             modelContext.delete(entry)
         }
+        try? modelContext.save()
     }
 }
 
