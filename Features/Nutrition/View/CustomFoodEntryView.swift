@@ -162,7 +162,11 @@ struct CustomFoodEntryView: View {
                     .disabled(!isValid)
                     .frame(maxWidth: .infinity)
                      .onTapGesture {
-                         if isValid { HapticManager.shared.notification(.success) }
+                         if isValid {
+                             #if canImport(UIKit)
+                             UINotificationFeedbackGenerator().notificationOccurred(.success)
+                             #endif
+                         }
                      }
                     
                     Spacer()

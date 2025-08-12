@@ -61,7 +61,9 @@ struct DailyNutritionSummary: View {
                                 if let context = entry.modelContext {
                                     context.delete(entry)
                                     try? context.save()
-                                    HapticManager.shared.notification(.success)
+                                    #if canImport(UIKit)
+                                    UINotificationFeedbackGenerator().notificationOccurred(.success)
+                                    #endif
                                 }
                             }
                         } label: {
@@ -87,7 +89,9 @@ struct DailyNutritionSummary: View {
                                 )
                                 context.insert(cloned)
                                 try? context.save()
-                                HapticManager.shared.notification(.success)
+                                #if canImport(UIKit)
+                                UINotificationFeedbackGenerator().notificationOccurred(.success)
+                                #endif
                             }
                         } label: {
                             Label("Duplicate", systemImage: "doc.on.doc")

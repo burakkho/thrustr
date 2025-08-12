@@ -34,7 +34,9 @@ struct MealEntryView: View {
                         Button {
                             food.toggleFavorite()
                             try? food.modelContext?.save()
-                            HapticManager.shared.impact(.light)
+                            #if canImport(UIKit)
+                            UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                            #endif
                         } label: {
                             Image(systemName: food.isFavorite ? "heart.fill" : "heart")
                                 .foregroundColor(food.isFavorite ? .red : .gray)
@@ -121,7 +123,9 @@ struct MealEntryView: View {
         // Usage tracking
         food.recordUsage()
         try? modelContext.save()
-        HapticManager.shared.notification(.success)
+        #if canImport(UIKit)
+        UINotificationFeedbackGenerator().notificationOccurred(.success)
+        #endif
         
         onDismiss()
     }
@@ -162,7 +166,9 @@ struct PortionQuickSelect: View {
                     ForEach(quickAmounts, id: \.self) { amount in
                         Button {
                             quantity = Double(amount)
-                            HapticManager.shared.impact(.light)
+                            #if canImport(UIKit)
+                            UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                            #endif
                         } label: {
                             VStack(spacing: 4) {
                                 Text("\(amount)")
@@ -211,7 +217,9 @@ struct PortionQuickSelect: View {
                                     Button("Set") {
                                         if let value = Double(customText), value > 0 {
                                             quantity = value
-                                            HapticManager.shared.impact(.light)
+                                            #if canImport(UIKit)
+                                            UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                                            #endif
                                             showingCustomInput = false
                                         }
                                     }
