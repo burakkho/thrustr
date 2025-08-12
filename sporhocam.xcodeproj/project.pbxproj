@@ -62,13 +62,14 @@
 		41E63DA42E489CE8006A2117 /* OnboardingDesignSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41E63DA32E489CE0006A2117 /* OnboardingDesignSystem.swift */; };
 		41E63DA72E48B131006A2117 /* exercises.csv in Resources */ = {isa = PBXBuildFile; fileRef = 41E63DA62E48B131006A2117 /* exercises.csv */; };
 		41E63DA92E48B152006A2117 /* DataSeeder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41E63DA82E48B14D006A2117 /* DataSeeder.swift */; };
-		41E63DAB2E48B1C2006A2117 /* foods.csv in Resources */ = {isa = PBXBuildFile; fileRef = 41E63DAA2E48B1C2006A2117 /* foods.csv */; };
 		41E63DAD2E48B53B006A2117 /* FoodCategory+UI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41E63DAC2E48B53A006A2117 /* FoodCategory+UI.swift */; };
-        41E7D0012E50010100A2AAAA /* Tokens.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41E7D0002E50010100A2AAAA /* Tokens.swift */; };
-        41E7D0032E50010100A2AAAA /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41E7D0022E50010100A2AAAA /* Theme.swift */; };
-        41E7D0052E50010100A2AAAA /* CardStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41E7D0042E50010100A2AAAA /* CardStyle.swift */; };
-        41E7D0072E50010100A2AAAA /* DefaultLightTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41E7D0062E50010100A2AAAA /* DefaultLightTheme.swift */; };
-        41E7D0092E50010100A2AAAA /* DefaultDarkTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41E7D0082E50010100A2AAAA /* DefaultDarkTheme.swift */; };
+		7F1000012E60010000AAAAAA /* OpenFoodFactsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F1000002E60010000AAAAAA /* OpenFoodFactsService.swift */; };
+		7F1000032E60010000AAAAAA /* BarcodeCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F1000022E60010000AAAAAA /* BarcodeCache.swift */; };
+		7F1000052E60010000AAAAAA /* BarcodeScanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F1000042E60010000AAAAAA /* BarcodeScanView.swift */; };
+		7F1000072E60010000AAAAAA /* ToastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F1000062E60010000AAAAAA /* ToastView.swift */; };
+		7F1000092E60010000AAAAAA /* BarcodeValidator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F1000082E60010000AAAAAA /* BarcodeValidator.swift */; };
+		7F10000B2E60010000AAAAAA /* EmptyStateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F10000A2E60010000AAAAAA /* EmptyStateView.swift */; };
+        7F10000D2E60010000AAAAAA /* foods.csv in Resources */ = {isa = PBXBuildFile; fileRef = 41E63DAA2E48B1C2006A2117 /* foods.csv */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -150,11 +151,17 @@
 		41E63DA82E48B14D006A2117 /* DataSeeder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataSeeder.swift; sourceTree = "<group>"; };
 		41E63DAA2E48B1C2006A2117 /* foods.csv */ = {isa = PBXFileReference; lastKnownFileType = text; path = foods.csv; sourceTree = "<group>"; };
 		41E63DAC2E48B53A006A2117 /* FoodCategory+UI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FoodCategory+UI.swift"; sourceTree = "<group>"; };
-        41E7D0002E50010100A2AAAA /* Tokens.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tokens.swift; sourceTree = "<group>"; };
-        41E7D0022E50010100A2AAAA /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
-        41E7D0042E50010100A2AAAA /* CardStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardStyle.swift; sourceTree = "<group>"; };
-        41E7D0062E50010100A2AAAA /* DefaultLightTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultLightTheme.swift; sourceTree = "<group>"; };
-        41E7D0082E50010100A2AAAA /* DefaultDarkTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultDarkTheme.swift; sourceTree = "<group>"; };
+		41E7D0002E50010100A2AAAA /* Tokens.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tokens.swift; sourceTree = "<group>"; };
+		41E7D0022E50010100A2AAAA /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
+		41E7D0042E50010100A2AAAA /* CardStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardStyle.swift; sourceTree = "<group>"; };
+		41E7D0062E50010100A2AAAA /* DefaultLightTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultLightTheme.swift; sourceTree = "<group>"; };
+		41E7D0082E50010100A2AAAA /* DefaultDarkTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultDarkTheme.swift; sourceTree = "<group>"; };
+		7F1000002E60010000AAAAAA /* OpenFoodFactsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenFoodFactsService.swift; sourceTree = "<group>"; };
+		7F1000022E60010000AAAAAA /* BarcodeCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BarcodeCache.swift; sourceTree = "<group>"; };
+		7F1000042E60010000AAAAAA /* BarcodeScanView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BarcodeScanView.swift; sourceTree = "<group>"; };
+		7F1000062E60010000AAAAAA /* ToastView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastView.swift; sourceTree = "<group>"; };
+		7F1000082E60010000AAAAAA /* BarcodeValidator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BarcodeValidator.swift; sourceTree = "<group>"; };
+		7F10000A2E60010000AAAAAA /* EmptyStateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyStateView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -233,7 +240,6 @@
 			children = (
 				41E316642E46773600A27990 /* Services */,
 				41E316632E46772F00A27990 /* Models */,
-				41E316652E46774100A27990 /* Extensions */,
 			);
 			path = Core;
 			sourceTree = "<group>";
@@ -259,34 +265,6 @@
 			path = Shared;
 			sourceTree = "<group>";
 		};
-        41E7D0102E50010100A2AAAA /* DesignSystem */ = {
-            isa = PBXGroup;
-            children = (
-                41E7D0022E50010100A2AAAA /* Theme.swift */,
-                41E7D0002E50010100A2AAAA /* Tokens.swift */,
-                41E7D0112E50010100A2AAAA /* Modifiers */,
-                41E7D0122E50010100A2AAAA /* Themes */,
-            );
-            path = DesignSystem;
-            sourceTree = "<group>";
-        };
-        41E7D0112E50010100A2AAAA /* Modifiers */ = {
-            isa = PBXGroup;
-            children = (
-                41E7D0042E50010100A2AAAA /* CardStyle.swift */,
-            );
-            path = Modifiers;
-            sourceTree = "<group>";
-        };
-        41E7D0122E50010100A2AAAA /* Themes */ = {
-            isa = PBXGroup;
-            children = (
-                41E7D0062E50010100A2AAAA /* DefaultLightTheme.swift */,
-                41E7D0082E50010100A2AAAA /* DefaultDarkTheme.swift */,
-            );
-            path = Themes;
-            sourceTree = "<group>";
-        };
 		41E316632E46772F00A27990 /* Models */ = {
 			isa = PBXGroup;
 			children = (
@@ -315,15 +293,10 @@
 				41E63D312E482863006A2117 /* UserService.swift */,
 				41E63D152E480A69006A2117 /* WorkoutService.swift */,
 				41E3168E2E46C3D900A27990 /* HealthKitService.swift */,
+				7F1000002E60010000AAAAAA /* OpenFoodFactsService.swift */,
+				7F1000022E60010000AAAAAA /* BarcodeCache.swift */,
 			);
 			path = Services;
-			sourceTree = "<group>";
-		};
-		41E316652E46774100A27990 /* Extensions */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Extensions;
 			sourceTree = "<group>";
 		};
 		41E316662E46775000A27990 /* Dashboard */ = {
@@ -364,6 +337,8 @@
 			children = (
 				41E63D0F2E48024C006A2117 /* GuideSection.swift */,
 				41E63D0E2E48023F006A2117 /* QuickStatCard.swift */,
+				7F10000A2E60010000AAAAAA /* EmptyStateView.swift */,
+				7F1000062E60010000AAAAAA /* ToastView.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -373,6 +348,7 @@
 			children = (
 				41E63D682E487A06006A2117 /* LocalizationKeys.swift */,
 				41E63D462E482BEA006A2117 /* Extensions */,
+				7F1000082E60010000AAAAAA /* BarcodeValidator.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -400,6 +376,7 @@
 				41E316A02E476E2800A27990 /* DailyNutritionSummary.swift */,
 				41E3169E2E47695E00A27990 /* MealEntryView.swift */,
 				41E3169A2E47660500A27990 /* NutritionView.swift */,
+				7F1000042E60010000AAAAAA /* BarcodeScanView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -466,6 +443,34 @@
 				41E63DA62E48B131006A2117 /* exercises.csv */,
 			);
 			path = Resources;
+			sourceTree = "<group>";
+		};
+		41E7D0102E50010100A2AAAA /* DesignSystem */ = {
+			isa = PBXGroup;
+			children = (
+				41E7D0022E50010100A2AAAA /* Theme.swift */,
+				41E7D0002E50010100A2AAAA /* Tokens.swift */,
+				41E7D0112E50010100A2AAAA /* Modifiers */,
+				41E7D0122E50010100A2AAAA /* Themes */,
+			);
+			path = DesignSystem;
+			sourceTree = "<group>";
+		};
+		41E7D0112E50010100A2AAAA /* Modifiers */ = {
+			isa = PBXGroup;
+			children = (
+				41E7D0042E50010100A2AAAA /* CardStyle.swift */,
+			);
+			path = Modifiers;
+			sourceTree = "<group>";
+		};
+		41E7D0122E50010100A2AAAA /* Themes */ = {
+			isa = PBXGroup;
+			children = (
+				41E7D0062E50010100A2AAAA /* DefaultLightTheme.swift */,
+				41E7D0082E50010100A2AAAA /* DefaultDarkTheme.swift */,
+			);
+			path = Themes;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -584,9 +589,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				41E63DAB2E48B1C2006A2117 /* foods.csv in Resources */,
 				41E63DA72E48B131006A2117 /* exercises.csv in Resources */,
 				41E63D552E4836AE006A2117 /* Localizable.strings in Resources */,
+                7F10000D2E60010000AAAAAA /* foods.csv in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -611,6 +616,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7F1000072E60010000AAAAAA /* ToastView.swift in Sources */,
+				7F10000B2E60010000AAAAAA /* EmptyStateView.swift in Sources */,
 				41E3168F2E46C3E400A27990 /* HealthKitService.swift in Sources */,
 				41E316842E4696EA00A27990 /* RestTimerView.swift in Sources */,
 				41E63D4A2E482C7B006A2117 /* Double+Extensions.swift in Sources */,
@@ -664,6 +671,10 @@
 				41E63D4E2E482D48006A2117 /* Color+Extensions.swift in Sources */,
 				41E3166D2E467D5A00A27990 /* Exercise.swift in Sources */,
 				41E316A52E47738E00A27990 /* NutritionAnalyticsView.swift in Sources */,
+				7F1000092E60010000AAAAAA /* BarcodeValidator.swift in Sources */,
+				7F1000052E60010000AAAAAA /* BarcodeScanView.swift in Sources */,
+				7F1000012E60010000AAAAAA /* OpenFoodFactsService.swift in Sources */,
+				7F1000032E60010000AAAAAA /* BarcodeCache.swift in Sources */,
 				41E316772E46815400A27990 /* OnboardingView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

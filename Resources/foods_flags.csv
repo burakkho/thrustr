@@ -1,0 +1,32 @@
+nameEN,nameTR,brand,calories,protein,carbs,fat,category,flag_reason
+Orman meyveli yoğurt,Orman meyveli yoğurt,Danone,0.0,2.8,15.0,2.2,dairy,calories_outlier
+Sürülebilir lor peyniri,Sürülebilir lor peyniri,,166.0,12.0,2.5,12.0,other,duplicate_nameTR_brand
+Lor Peyniri,Lor Peyniri,Tahsildaroğlu,122.99,18.97,3.34,3.75,other,duplicate_nameTR_brand
+Kéfir,Kéfir,Reina,75.0,3.90000009536743,5.5,4.19999980926514,dairy,duplicate_nameTR_brand
+Mercimek,Mercimek,,340.0,24.7,22.0,1.1,beverages,duplicate_nameTR_brand
+Mercimek corbasi,Mercimek corbasi,,33.0,1.2,5.2,0.4,other,duplicate_nameTR_brand
+Suyu süzülmüş kullanıma hazır yeşil mercimek,Suyu süzülmüş kullanıma hazır yeşil mercimek,Yayla,167.0,9.39999961853027,18.7999992370605,2.90000009536743,other,duplicate_nameTR_brand
+Kuru fasulye,Kuru fasulye,,337.0,20.8,62.0,1.5,other,duplicate_nameTR_brand
+Osmancık Pirinç,Osmancık Pirinç,Ovadan,341.0,7.2,75.1,0.5,other,duplicate_nameTR_brand
+Basmati Pirinç,Basmati Pirinç,Lezzet-i Efsane,365.0,7.0,80.0,0.7,other,duplicate_nameTR_brand
+Jasmine Pirinç,Jasmine Pirinç,Migros,356.0,6.8,78.0,1.7,other,duplicate_nameTR_brand
+Tam buğday ekmeği,Tam buğday ekmeği,,223.0,11.8,29.2,0.3,other,duplicate_nameTR_brand
+Kremalı Mantarlı Çabuk Makarna,Kremalı Mantarlı Çabuk Makarna,Knorr,0.0,11.7,62.1,12.4,grains,calories_outlier
+grandine,grandine,KUSKUS MAKARNA,0.0,12.0,71.0,1.2,beverages,calories_outlier
+Noodlex Noodle,Noodlex Noodle,Noodlex,9702.91,2.0,11.5,4.6e-06,beverages,calories_outlier
+Mélange d'Épices pour Plova,Mélange d'Épices pour Plova,Avokádo,0.0,5.7,33.0,4.8,condiments,calories_outlier
+Badem Su,Badem Su,,0.0,0.0,0.0,9.2,other,calories_outlier
+Fındık ezmesi,Fındık ezmesi,,591.0,10.5,38.3,42.5,other,duplicate_nameTR_brand
+Fandangos sabor presunto,Fandangos sabor presunto,Elma Chips,0.0,6.8,72.0,14.8,snacks,calories_outlier
+Çamlica Portakal,Çamlica Portakal,Ülker,0.0,0.0,6.6,0.0,beverages,calories_outlier
+C krem supa brokoli,C krem supa brokoli,Nestle,0.0,1.24,4.48,0.56,other,calories_outlier
+Tomato Paste Domates Salcasi,Tomato Paste Domates Salcasi,Sera,0.0,0.0,1.0,0.0,beverages,calories_outlier
+Domates salçasi,Domates salçasi,,84.0,5.2,14.4,0.0,other,duplicate_nameTR_brand
+Domates,Domates,,229.0,5.0,23.0,13.0,other,duplicate_nameTR_brand
+Domates,Domates,,578.0,6.8000001907349,29.299999237061,46.0,other,duplicate_nameTR_brand
+Ton Balığı,Ton Balığı,SuperFresh,169.0,23.0,0.0,8.7,other,duplicate_nameTR_brand
+Ton balığı,Ton balığı,,170.0,20.2,0.0,9.9,other,duplicate_nameTR_brand
+Ton balığı,Ton balığı,,170.0,20.0,0.0,10.0,other,duplicate_nameTR_brand
+Ton balığı,Ton balığı,,191.0,22.5,1.6,10.5,other,duplicate_nameTR_brand
+Light Ton Balığı,Light Ton Balığı,Fide,95.0,21.7,0.8,0.4,other,duplicate_nameTR_brand
+File somon afumat și feliat,File somon afumat și feliat,365,0.0,17.29,2.09,14.23,seafood,calories_outlier

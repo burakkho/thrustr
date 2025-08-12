@@ -495,6 +495,14 @@
 "nutrition.foodSelection.noResultsForSearch" = "'%@' için sonuç yok";
 "nutrition.foodSelection.tryDifferentTerms" = "Farklı arama terimlerini deneyin";
 
+// Scan toasts
+"nutrition.scan.scanned" = "Ürün bulundu";
+"nutrition.scan.cached" = "Önbellekten yüklendi";
+"nutrition.scan.existing" = "Zaten yiyeceklerinizde var";
+"nutrition.scan.notFound" = "Bulunamadı. Manuel ekleyebilirsiniz";
+"nutrition.scan.networkError" = "Ağ hatası. Lütfen tekrar deneyin";
+"nutrition.scan.rateLimited" = "Çok fazla istek. Lütfen bekleyin";
+
 // MARK: - Meal Entry
 "nutrition.mealEntry.title" = "Öğün Ekle";
 "nutrition.mealEntry.addToMeal" = "Öğüne Ekle";

@@ -393,6 +393,16 @@ enum LocalizationKeys {
             static let noResults = "nutrition.foodSelection.noResults"
             static let noResultsForSearch = "nutrition.foodSelection.noResultsForSearch"
             static let tryDifferentTerms = "nutrition.foodSelection.tryDifferentTerms"
+            static let localResults = "nutrition.foodSelection.localResults"
+        }
+
+        enum Scan {
+            static let scanned = "nutrition.scan.scanned"
+            static let cached = "nutrition.scan.cached"
+            static let existing = "nutrition.scan.existing"
+            static let notFound = "nutrition.scan.notFound"
+            static let networkError = "nutrition.scan.networkError"
+            static let rateLimited = "nutrition.scan.rateLimited"
         }
         
         enum MealEntry {

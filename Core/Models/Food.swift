@@ -7,6 +7,13 @@ final class Food {
     var nameEN: String
     var nameTR: String
     var brand: String?
+    // Tracking source & barcode for OFF/manual/csv (defaults ensure migration safety)
+    var sourceRaw: String = FoodSource.manual.rawValue
+    var barcode: String? = nil
+    // Remote image and metadata
+    var imageUrlString: String? = nil
+    var lastModified: Date? = nil
+    var qualityScore: Int = 0
     
     // Besin değerleri (100g başına)
     var calories: Double    // kalori
@@ -40,6 +47,7 @@ final class Food {
         self.usageCount = 0
         self.lastUsed = nil
         self.isFavorite = false
+        // Defaults are provided at declaration for safe migration
         self.createdAt = Date()
         self.updatedAt = Date()
     }
@@ -47,6 +55,14 @@ final class Food {
 
 // MARK: - Computed Properties
 extension Food {
+    var source: FoodSource {
+        get { FoodSource(rawValue: sourceRaw) ?? .manual }
+        set { sourceRaw = newValue.rawValue }
+    }
+    var imageURL: URL? {
+        guard let imageUrlString, let url = URL(string: imageUrlString) else { return nil }
+        return url
+    }
     var categoryEnum: FoodCategory {
         FoodCategory(rawValue: category) ?? .other
     }

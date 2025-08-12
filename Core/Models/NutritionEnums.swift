@@ -63,3 +63,10 @@ enum FoodCategory: String, CaseIterable {
         }
     }
 }
+
+// Food data source tracking for migration to OpenFoodFacts
+enum FoodSource: String, CaseIterable {
+    case manual = "manual"
+    case openFoodFacts = "openFoodFacts"
+    case csv = "csv"
+}

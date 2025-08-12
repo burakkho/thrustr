@@ -495,6 +495,14 @@
 "nutrition.foodSelection.noResultsForSearch" = "No results for '%@'";
 "nutrition.foodSelection.tryDifferentTerms" = "Try different search terms";
 
+// Scan toasts
+"nutrition.scan.scanned" = "Product found";
+"nutrition.scan.cached" = "Loaded from cache";
+"nutrition.scan.existing" = "Already in your foods";
+"nutrition.scan.notFound" = "Not found. You can add it manually";
+"nutrition.scan.networkError" = "Network error. Please try again";
+"nutrition.scan.rateLimited" = "Too many requests. Please wait";
+
 // MARK: - Meal Entry
 "nutrition.mealEntry.title" = "Add to Meal";
 "nutrition.mealEntry.addToMeal" = "Add to Meal";

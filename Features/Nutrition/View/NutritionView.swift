@@ -40,6 +40,7 @@ struct NutritionView: View {
     @State private var showingMealEntry = false
     @State private var showingFoodSelection = false
     @State private var showingCustomFoodEntry = false
+    @State private var forceStartWithScanner = false
 
     init() {}
     
@@ -66,7 +67,10 @@ struct NutritionView: View {
                                 title: LocalizationKeys.Nutrition.Empty.firstTitle.localized,
                                 message: LocalizationKeys.Nutrition.Empty.firstMessage.localized,
                                 primaryTitle: LocalizationKeys.Nutrition.Empty.addMeal.localized,
-                                primaryAction: { showingFoodSelection = true },
+                                primaryAction: { 
+                                    forceStartWithScanner = false
+                                    showingFoodSelection = true 
+                                },
                                 secondaryTitle: LocalizationKeys.Nutrition.Empty.addCustomFood.localized,
                                 secondaryAction: { showingCustomFoodEntry = true }
                             )
@@ -104,9 +108,27 @@ struct NutritionView: View {
                 // Floating Action Button
                 VStack {
                     Spacer()
-                    HStack {
-                        Spacer()
+                    HStack(spacing: 16) {
+                        // Scan shortcut
                         Button {
+                            forceStartWithScanner = true
+                            showingFoodSelection = true
+                        } label: {
+                            Image(systemName: "barcode.viewfinder")
+                                .font(.title3)
+                                .foregroundColor(.white)
+                                .frame(width: 48, height: 48)
+                                .background(Color.orange)
+                                .clipShape(Circle())
+                                .shadow(color: .black.opacity(0.2), radius: 8, x: 0, y: 4)
+                        }
+                        .padding(.bottom, 100)
+
+                        Spacer()
+
+                        // Add button
+                        Button {
+                            forceStartWithScanner = false
                             showingFoodSelection = true
                         } label: {
                             Image(systemName: "plus")
@@ -136,11 +158,11 @@ struct NutritionView: View {
             }
         }
         .sheet(isPresented: $showingFoodSelection) {
-            FoodSelectionView(foods: foods) { food in
+            FoodSelectionView(foods: foods, onFoodSelected: { food in
                 selectedFood = food
                 showingFoodSelection = false
                 showingMealEntry = true
-            }
+            }, startWithScanner: forceStartWithScanner)
             .presentationDetents([.medium, .large])
             .presentationDragIndicator(.visible)
         }

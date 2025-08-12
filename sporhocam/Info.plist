@@ -7,7 +7,7 @@
     <key>NSHealthUpdateUsageDescription</key>
     <string>Spor Hocam, kilo güncellemelerinizi HealthKit'e kaydetmek için izin gerektirir.</string>
     <key>NSCameraUsageDescription</key>
-    <string>Spor Hocam ilerleme fotoğraflarınızı çekmek için kamera erişimine ihtiyaç duyar.</string>
+    <string>Barkod tarayarak ürünleri hızlıca beslenme günlüğünüze ekleyebilirsiniz.</string>
     <key>NSPhotoLibraryUsageDescription</key>
     <string>Spor Hocam ilerleme fotoğraflarınızı görüntülemek için fotoğraf kütüphanesi erişimine ihtiyaç duyar.</string>
     <key>NSPhotoLibraryAddUsageDescription</key>

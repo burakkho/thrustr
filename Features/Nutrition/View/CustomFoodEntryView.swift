@@ -3,6 +3,9 @@ import SwiftData
 
 struct CustomFoodEntryView: View {
     let onFoodCreated: (Food) -> Void
+    var prefillBarcode: String? = nil
+    var prefillName: String? = nil
+    var prefillBrand: String? = nil
     
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
@@ -188,6 +191,10 @@ struct CustomFoodEntryView: View {
         } message: {
             Text(alertMessage)
         }
+        .onAppear {
+            if let prefillName, foodName.isEmpty { foodName = prefillName }
+            if let prefillBrand, brand.isEmpty { brand = prefillBrand }
+        }
     }
     
     private func createCustomFood() {
@@ -210,6 +217,9 @@ struct CustomFoodEntryView: View {
         
         // Mark as user-created
         newFood.isVerified = false
+        if let prefillBarcode {
+            newFood.barcode = prefillBarcode
+        }
         
         modelContext.insert(newFood)
         try? modelContext.save()

@@ -8,9 +8,7 @@ class DataSeeder {
     static func seedDatabaseIfNeeded(modelContext: ModelContext) {
         // Check counts independently to avoid duplicate seeding
         let exerciseDescriptor = FetchDescriptor<Exercise>()
-        let foodDescriptor = FetchDescriptor<Food>()
         let exerciseCount = (try? modelContext.fetchCount(exerciseDescriptor)) ?? 0
-        let foodCount = (try? modelContext.fetchCount(foodDescriptor)) ?? 0
 
         var didSeed = false
         if exerciseCount == 0 {
@@ -21,6 +19,9 @@ class DataSeeder {
             print("✅ Exercises already present: \(exerciseCount)")
         }
 
+        // Foods
+        let foodDescriptor = FetchDescriptor<Food>()
+        let foodCount = (try? modelContext.fetchCount(foodDescriptor)) ?? 0
         if foodCount == 0 {
             print("🌱 Seeding foods…")
             seedFoods(modelContext: modelContext)
@@ -32,9 +33,15 @@ class DataSeeder {
         // Always run a normalization step to ensure critical categories are correct
         fixOlympicExerciseCategories(modelContext: modelContext)
 
+        // Normalize food data (categories, missing TR names)
+        normalizeFoodData(modelContext: modelContext)
+
         if didSeed {
             print("✅ Database seeding completed!")
         }
+
+        // Always seed aliases for common foods (idempotent)
+        seedFoodAliasesIfNeeded(modelContext: modelContext)
     }
     
     // MARK: - Seed Exercises
@@ -329,5 +336,126 @@ extension FoodCategory {
         case "desserts": return .desserts
         default: return .other
         }
+    }
+}
+
+// MARK: - Food Aliases Seed
+extension DataSeeder {
+    @MainActor
+    static func seedFoodAliasesIfNeeded(modelContext: ModelContext) {
+        // Prevent over-seeding by checking any existing alias
+        let aliasDescriptor = FetchDescriptor<FoodAlias>()
+        let aliasCount = (try? modelContext.fetchCount(aliasDescriptor)) ?? 0
+        if aliasCount > 0 { return }
+
+        // Minimal alias map: term (TR) -> English canonical search key
+        let aliasMap: [String: [String]] = [
+            "tavuk göğsü": ["chicken breast"],
+            "tavuk": ["chicken"],
+            "pirinç": ["rice"],
+            "esmer pirinç": ["brown rice"],
+            "bulgur": ["bulgur"],
+            "yulaf": ["oat", "oats"],
+            "ekmek": ["bread"],
+            "makarna": ["pasta", "spaghetti"],
+            "ton balığı": ["tuna"],
+            "somon": ["salmon"],
+            "yoğurt": ["yogurt", "yoghurt"],
+            "süt": ["milk"],
+            "peynir": ["cheese"],
+            "badem": ["almond"],
+            "fındık": ["hazelnut"],
+            "ceviz": ["walnut"],
+            "muz": ["banana"],
+            "çilek": ["strawberry"],
+            "domates": ["tomato"],
+            "elma": ["apple"],
+        ]
+
+        // Build index of foods by normalized EN name for fast linking
+        let foodDescriptor = FetchDescriptor<Food>()
+        guard let foods = try? modelContext.fetch(foodDescriptor) else { return }
+        let idx: [String: [Food]] = Dictionary(grouping: foods, by: { $0.nameEN.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() })
+
+        var created = 0
+        for (trTerm, enKeys) in aliasMap {
+            for key in enKeys {
+                let enKey = key.lowercased()
+                guard let targets = idx[enKey] else { continue }
+                for food in targets.prefix(10) { // limit excessive linking
+                    let alias = FoodAlias(term: trTerm, language: "tr", food: food)
+                    modelContext.insert(alias)
+                    created += 1
+                }
+            }
+        }
+
+        try? modelContext.save()
+        print("✅ Seeded Food Aliases: created=\(created)")
+    }
+}
+
+// MARK: - Food Normalization
+extension DataSeeder {
+    @MainActor
+    static func normalizeFoodData(modelContext: ModelContext) {
+        let descriptor = FetchDescriptor<Food>()
+        guard let foods = try? modelContext.fetch(descriptor) else { return }
+
+        var updated = 0
+        for food in foods {
+            // Ensure nameTR present
+            if food.nameTR.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                food.nameTR = food.nameEN
+                updated += 1
+            }
+
+            // Category normalization: only adjust when clearly miscategorized
+            if let better = classifyCategory(for: food) {
+                let current = food.categoryEnum
+                if current == .other || current == .beverages || current == .desserts || current == .condiments {
+                    if better != current {
+                        food.category = better.rawValue
+                        updated += 1
+                    }
+                }
+            }
+        }
+
+        if updated > 0 {
+            try? modelContext.save()
+            print("🔧 Normalized food data: updated=\(updated)")
+        } else {
+            print("ℹ️ Food normalization: no changes needed.")
+        }
+    }
+
+    private static func classifyCategory(for food: Food) -> FoodCategory? {
+        let text = (food.nameTR + " " + food.nameEN + " " + (food.brand ?? "")).lowercased()
+        func matches(_ pattern: String) -> Bool {
+            return text.range(of: pattern, options: [.regularExpression, .caseInsensitive]) != nil
+        }
+
+        // Dairy
+        if matches("yo[gğ]urt|s[uü]t|kefir|peynir|quark|labne|kaymak|cream|yogurt|milk|cheese") { return .dairy }
+        // Grains & bakery
+        if matches("pirin[cç]|bulgur|yulaf|spag|makarna|şehriye|vermicelli|pasta|noodle|ekmek|lavaş|bazlama|simit|pilav|granola") { return .grains }
+        // Legumes / vegetables mapping
+        if matches("nohut|mercime[kg]|fasulye|barbunya|bezelye") { return .vegetables }
+        // Meat
+        if matches("tavuk|hindi|dana|s[ıi][ğg][ıi]r|k[öo]fte|et |kıyma|kebap|sucuk|past[ıi]rma|salam|sosis|jambon|beef|chicken|turkey") { return .meat }
+        // Seafood
+        if matches("ton bal[ıi][gğ][ıi]|somon|levrek|hamsi|uskumru|bal[ıi]k|tuna|salmon|sardalya|anchovy") { return .seafood }
+        // Nuts
+        if matches("badem|f[ıi]nd[ıi]k|ceviz|f[ıi]st[ıi]k|antep|fıstığı|peanut|almond|hazelnut|walnut|pistachio") { return .nuts }
+        // Fruits
+        if matches("muz|[çc]ile[kg]|portakal|elma|armut|[üu]z[üu]m|nar|k[ıi]raz|kay[ıi]s[ıi]|[şs]eftali|mandalina|limon|avokado|ananas|kavun|karpuz|incir|erik|greyfurt|berry|banana|apple|orange|strawberry") { return .fruits }
+        // Snacks
+        if matches("cips|kraker|bisk[iı]vi|[çc]ikolata|gofret|[çc]erez|lokum|wafer|cookie|cracker|chips|snack|bar") { return .snacks }
+        // Beverages
+        if matches("su[yıi]|gazoz|soda|ayran|kahve|kola|[çc]ay|meyve suyu|smoothie|nektar|i[cç]ecek|icecek|kakao|milkshake|cola|tea|coffee|soda|water|juice") { return .beverages }
+        // Condiments
+        if matches("zeytinya[gğ][ıi]|ya[gğ][ıi]|ket[çc]ap|mayonez|sal[cç]a|sirke|sos|hardal|vinegar|olive oil|oil") { return .condiments }
+        return nil
     }
 }

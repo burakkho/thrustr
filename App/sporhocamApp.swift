@@ -12,21 +12,18 @@ struct SporHocamApp: App {
     @StateObject private var tabRouter = TabRouter()
     
     init() {
-        do {
-            container = try ModelContainer(for:
-                User.self,
-                Exercise.self,
-                Food.self,
-                Workout.self,
-                WorkoutPart.self,
-                ExerciseSet.self,
-                NutritionEntry.self,
-                BodyMeasurement.self,
-                Goal.self
-            )
-        } catch {
-            fatalError("Failed to create ModelContainer: \(error)")
-        }
+        container = ModelContainer(for:
+            User.self,
+            Exercise.self,
+            Food.self,
+            FoodAlias.self,
+            Workout.self,
+            WorkoutPart.self,
+            ExerciseSet.self,
+            NutritionEntry.self,
+            BodyMeasurement.self,
+            Goal.self
+        )
     }
     
     var body: some Scene {
