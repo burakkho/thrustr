@@ -44,31 +44,32 @@ struct DailyNutritionSummary: View {
                 ForEach(mealOrderKeys, id: \.self) { mealKey in
                     let entriesForMeal = todaysEntries.filter { $0.mealType == mealKey }
                     if !entriesForMeal.isEmpty {
-                        // Başlık
-                        Text(mealHeaderTitle(for: mealKey))
-                            .font(.headline)
-                            .padding(.horizontal)
-                            .padding(.top, 4)
-                        
-                        // Öğün içeriği
-                        ForEach(entriesForMeal) { entry in
-                            HStack {
-                                VStack(alignment: .leading, spacing: 2) {
-                                    Text(entry.foodName)
-                                        .font(.headline)
-                                    Text("\(Int(entry.gramsConsumed))\(LocalizationKeys.Nutrition.Units.g.localized)")
-                                        .font(.caption)
-                                        .foregroundColor(.secondary)
+                        VStack(alignment: .leading, spacing: 8) {
+                            // Başlık
+                            Text(mealHeaderTitle(for: mealKey))
+                                .font(.headline)
+                                .underline()
+                                .padding(.top, 4)
+
+                            // Öğün içeriği
+                            ForEach(entriesForMeal) { entry in
+                                HStack {
+                                    VStack(alignment: .leading, spacing: 2) {
+                                        Text(entry.foodName)
+                                            .font(.headline)
+                                        Text("\(Int(entry.gramsConsumed))\(LocalizationKeys.Nutrition.Units.g.localized)")
+                                            .font(.caption)
+                                            .foregroundColor(.secondary)
+                                    }
+
+                                    Spacer()
+
+                                    Text("\(Int(entry.calories)) \(LocalizationKeys.Nutrition.Units.kcal.localized)")
+                                        .font(.subheadline)
+                                        .fontWeight(.medium)
                                 }
-                                
-                                Spacer()
-                                
-                                Text("\(Int(entry.calories)) \(LocalizationKeys.Nutrition.Units.kcal.localized)")
-                                    .font(.subheadline)
-                                    .fontWeight(.medium)
-                            }
-                            .padding(.horizontal)
-                            .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                                .padding(.vertical, 8)
+                                .swipeActions(edge: .trailing, allowsFullSwipe: true) {
                                 Button(role: .destructive) {
                                     withAnimation {
                                         if let context = entry.modelContext {
@@ -90,8 +91,8 @@ struct DailyNutritionSummary: View {
                                     Label("Edit", systemImage: "pencil")
                                 }
                                 .tint(.orange)
-                            }
-                            .swipeActions(edge: .leading) {
+                                }
+                                .swipeActions(edge: .leading) {
                                 Button {
                                     if let context = entry.modelContext {
                                         let cloned = NutritionEntry(
@@ -110,8 +111,36 @@ struct DailyNutritionSummary: View {
                                     Label("Duplicate", systemImage: "doc.on.doc")
                                 }
                                 .tint(.green)
+                                }
+                                .contextMenu {
+                                    Button {
+                                        editingEntry = entry
+                                        showingEditSheet = true
+                                    } label: {
+                                        Label(LocalizationKeys.Common.edit.localized, systemImage: "pencil")
+                                    }
+                                    Button(role: .destructive) {
+                                        withAnimation {
+                                            if let context = entry.modelContext {
+                                                context.delete(entry)
+                                                try? context.save()
+                                                #if canImport(UIKit)
+                                                UINotificationFeedbackGenerator().notificationOccurred(.success)
+                                                #endif
+                                            }
+                                        }
+                                    } label: {
+                                        Label(LocalizationKeys.Common.delete.localized, systemImage: "trash")
+                                    }
+                                }
                             }
                         }
+                        .padding(12)
+                        .background(Color(.systemBackground))
+                        .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                        .shadow(color: Color.black.opacity(0.06), radius: 8, x: 0, y: 3)
+                        .padding(.horizontal)
+                        .padding(.top, 4)
                     }
                 }
                 .sheet(isPresented: $showingEditSheet) {
