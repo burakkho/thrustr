@@ -1,13 +1,46 @@
 import SwiftUI
 import SwiftData
 
+// File-scope constants for #Predicate usage
+fileprivate let NV_TODAY_START: Date = Calendar.current.startOfDay(for: Date())
+fileprivate let NV_TODAY_END: Date = Calendar.current.date(byAdding: .day, value: 1, to: NV_TODAY_START) ?? NV_TODAY_START
+fileprivate let NV_7D_START: Date = {
+    let date = Calendar.current.date(byAdding: .day, value: -6, to: Date()) ?? Date()
+    return Calendar.current.startOfDay(for: date)
+}()
+
 struct NutritionView: View {
     @Environment(\.modelContext) private var modelContext
-    @Query private var foods: [Food]
-    @Query private var nutritionEntries: [NutritionEntry]
+    // Foods - usageCount desc, then nameTR
+    // Precomputed dates moved to file scope (see top of file)
+    @Query(
+        sort: [
+            SortDescriptor(\Food.usageCount, order: .reverse),
+            SortDescriptor(\Food.nameTR)
+        ]
+    ) private var foods: [Food]
+    
+    // Today entries only
+    @Query(
+        filter: #Predicate<NutritionEntry> { entry in
+            entry.date >= NV_TODAY_START && entry.date < NV_TODAY_END
+        },
+        sort: \NutritionEntry.date
+    ) private var todayEntries: [NutritionEntry]
+    
+    // Last 7 days entries
+    @Query(
+        filter: #Predicate<NutritionEntry> { entry in
+            entry.date >= NV_7D_START
+        },
+        sort: \NutritionEntry.date,
+        order: .reverse
+    ) private var weekEntries: [NutritionEntry]
     @State private var selectedFood: Food?
     @State private var showingMealEntry = false
     @State private var showingFoodSelection = false
+
+    init() {}
     
     var body: some View {
         NavigationStack {
@@ -26,11 +59,11 @@ struct NutritionView: View {
                         }
                         
                         // Günlük özet
-                        DailyNutritionSummary(nutritionEntries: nutritionEntries)
+                        DailyNutritionSummary(nutritionEntries: todayEntries)
                         
                         // Daily Goals (sadece veri varsa göster)
-                        if !nutritionEntries.isEmpty {
-                            DailyGoalsCard(nutritionEntries: nutritionEntries)
+                        if !todayEntries.isEmpty {
+                            DailyGoalsCard(nutritionEntries: todayEntries)
                         }
                         
                         // Favorites & Recent Foods (sadece food varsa göster)
@@ -42,8 +75,8 @@ struct NutritionView: View {
                         }
                         
                         // Haftalık analytics (sadece veri varsa göster)
-                        if !nutritionEntries.isEmpty {
-                            NutritionAnalyticsView(nutritionEntries: nutritionEntries)
+                        if !weekEntries.isEmpty {
+                            NutritionAnalyticsView(nutritionEntries: weekEntries)
                         }
                         
                         // Boşluk floating button için
@@ -77,12 +110,14 @@ struct NutritionView: View {
             }
             .navigationTitle(LocalizationKeys.Nutrition.title.localized)
             .toolbar {
+                #if DEBUG
                 if !foods.isEmpty {
                     Button(LocalizationKeys.Nutrition.Test.clear.localized) {
                         clearAllFoods()
                     }
                     .foregroundColor(.red)
                 }
+                #endif
             }
         }
         .sheet(isPresented: $showingFoodSelection) {
@@ -91,6 +126,8 @@ struct NutritionView: View {
                 showingFoodSelection = false
                 showingMealEntry = true
             }
+            .presentationDetents([.medium, .large])
+            .presentationDragIndicator(.visible)
         }
         .sheet(isPresented: $showingMealEntry) {
             if let food = selectedFood {
@@ -98,6 +135,8 @@ struct NutritionView: View {
                     selectedFood = nil
                     showingMealEntry = false
                 }
+                .presentationDetents([.medium, .large])
+                .presentationDragIndicator(.visible)
             }
         }
     }
@@ -118,7 +157,7 @@ struct NutritionView: View {
         for food in foods {
             modelContext.delete(food)
         }
-        for entry in nutritionEntries {
+        for entry in todayEntries {
             modelContext.delete(entry)
         }
     }

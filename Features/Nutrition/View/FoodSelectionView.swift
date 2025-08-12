@@ -86,6 +86,7 @@ struct FoodSelectionView: View {
                     List(filteredFoods) { food in
                         FoodRowView(food: food) {
                             onFoodSelected(food)
+                            HapticManager.shared.impact(.light)
                         }
                     }
                     .listStyle(.plain)
@@ -170,9 +171,9 @@ struct FoodRowView: View {
     var body: some View {
         Button(action: action) {
             HStack(spacing: 12) {
-                // Kategori ikonu
-                Image(systemName: food.categoryEnum.icon)
-                    .foregroundColor(food.categoryEnum.color)
+                // Kategori ikonu (SF Symbol)
+                Image(systemName: food.categoryEnum.systemIcon)
+                    .foregroundColor(food.categoryEnum.categoryColor)
                     .font(.title3)
                     .frame(width: 24)
                 

@@ -3,6 +3,8 @@ import SwiftData
 
 struct DailyNutritionSummary: View {
     let nutritionEntries: [NutritionEntry]
+    @State private var editingEntry: NutritionEntry?
+    @State private var showingEditSheet: Bool = false
     
     private var todaysEntries: [NutritionEntry] {
         let today = Calendar.current.startOfDay(for: Date())
@@ -53,6 +55,50 @@ struct DailyNutritionSummary: View {
                             .fontWeight(.medium)
                     }
                     .padding(.horizontal)
+                    .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                        Button(role: .destructive) {
+                            withAnimation {
+                                if let context = entry.modelContext {
+                                    context.delete(entry)
+                                    try? context.save()
+                                    HapticManager.shared.notification(.success)
+                                }
+                            }
+                        } label: {
+                            Label("Delete", systemImage: "trash")
+                        }
+                        
+                    Button {
+                            editingEntry = entry
+                            showingEditSheet = true
+                        } label: {
+                            Label("Edit", systemImage: "pencil")
+                        }
+                        .tint(.orange)
+                    }
+                    .swipeActions(edge: .leading) {
+                        Button {
+                            if let context = entry.modelContext {
+                                let cloned = NutritionEntry(
+                                    food: entry.food ?? Food(nameEN: entry.foodName, nameTR: entry.foodName, calories: entry.calories / (entry.gramsConsumed / 100.0), protein: entry.protein / (entry.gramsConsumed / 100.0), carbs: entry.carbs / (entry.gramsConsumed / 100.0), fat: entry.fat / (entry.gramsConsumed / 100.0), category: .other),
+                                    gramsConsumed: entry.gramsConsumed,
+                                    mealType: entry.mealType,
+                                    date: Date()
+                                )
+                                context.insert(cloned)
+                                try? context.save()
+                                HapticManager.shared.notification(.success)
+                            }
+                        } label: {
+                            Label("Duplicate", systemImage: "doc.on.doc")
+                        }
+                        .tint(.green)
+                    }
+                }
+                .sheet(isPresented: $showingEditSheet) {
+                    if let entry = editingEntry {
+                        NutritionEntryEditSheet(entry: entry)
+                    }
                 }
                 
                 // Toplam özet
@@ -95,6 +141,72 @@ struct DailyNutritionSummary: View {
             .cornerRadius(12)
             .padding(.horizontal)
         }
+    }
+}
+
+// MARK: - Edit Sheet
+struct NutritionEntryEditSheet: View {
+    @Environment(\.dismiss) private var dismiss
+    @Environment(\.modelContext) private var modelContext
+    @State private var grams: Double
+    @State private var meal: String
+    let entry: NutritionEntry
+    
+    init(entry: NutritionEntry) {
+        self.entry = entry
+        _grams = State(initialValue: entry.gramsConsumed)
+        _meal = State(initialValue: entry.mealType)
+    }
+    
+    var body: some View {
+        NavigationStack {
+            Form {
+                Section(header: Text(LocalizationKeys.Nutrition.MealEntry.portion.localized)) {
+                    TextField(LocalizationKeys.Nutrition.MealEntry.portionGrams.localized, value: $grams, format: .number)
+                        .keyboardType(.decimalPad)
+                }
+                Section(header: Text(LocalizationKeys.Nutrition.MealEntry.meal.localized)) {
+                    Picker("", selection: $meal) {
+                        Text(LocalizationKeys.Nutrition.MealEntry.MealTypes.breakfast.localized).tag("breakfast")
+                        Text(LocalizationKeys.Nutrition.MealEntry.MealTypes.lunch.localized).tag("lunch")
+                        Text(LocalizationKeys.Nutrition.MealEntry.MealTypes.dinner.localized).tag("dinner")
+                        Text(LocalizationKeys.Nutrition.MealEntry.MealTypes.snack.localized).tag("snack")
+                    }
+                    .pickerStyle(.segmented)
+                }
+            }
+            .navigationTitle(LocalizationKeys.Common.edit.localized)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button(LocalizationKeys.Common.cancel.localized) { dismiss() }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button(LocalizationKeys.Common.save.localized) {
+                        applyChanges()
+                    }
+                    .disabled(grams <= 0)
+                }
+            }
+        }
+        .presentationDetents([.medium])
+    }
+    
+    private func applyChanges() {
+        guard grams > 0 else { return }
+        entry.gramsConsumed = grams
+        entry.mealType = meal
+        // Recalculate cached nutrition
+        if let food = entry.food {
+            let n = food.calculateNutrition(for: grams)
+            entry.calories = n.calories
+            entry.protein = n.protein
+            entry.carbs = n.carbs
+            entry.fat = n.fat
+        }
+        entry.updatedAt = Date()
+        try? modelContext.save()
+        HapticManager.shared.notification(.success)
+        dismiss()
     }
 }
 

@@ -101,7 +101,8 @@ struct GoalProgressRing: View {
     let color: Color
     
     private var progress: Double {
-        min(current / goal, 1.0)
+        guard goal > 0 else { return 0 }
+        return min(current / goal, 1.0)
     }
     
     private var percentage: Int {
@@ -155,7 +156,8 @@ struct GoalProgressBar: View {
     let color: Color
     
     private var progress: Double {
-        min(current / goal, 1.0)
+        guard goal > 0 else { return 0 }
+        return min(current / goal, 1.0)
     }
     
     var body: some View {

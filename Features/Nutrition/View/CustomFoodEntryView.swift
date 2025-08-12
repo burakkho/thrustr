@@ -162,6 +162,9 @@ struct CustomFoodEntryView: View {
                     .buttonStyle(.borderedProminent)
                     .disabled(!isValid)
                     .frame(maxWidth: .infinity)
+                     .onTapGesture {
+                         if isValid { HapticManager.shared.notification(.success) }
+                     }
                     
                     Spacer()
                 }

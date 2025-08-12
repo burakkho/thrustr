@@ -1,8 +1,31 @@
 import SwiftUI
 
 extension FoodCategory {
-    // icon VAR BUNU SİL, systemIcon kalsın
-    
+    // MARK: - SF Symbol for category (standardized iconography)
+    var systemIcon: String {
+        switch self {
+        case .meat: return "fish.fill"
+        case .dairy: return "cup.and.saucer.fill"
+        case .grains: return "leaf.fill"
+        case .vegetables: return "carrot.fill"
+        case .fruits: return "apple.logo"
+        case .nuts: return "oval.fill"
+        case .beverages: return "drop.fill"
+        case .snacks: return "popcorn.fill"
+        case .turkish: return "fork.knife.circle.fill"
+        case .fastfood: return "takeoutbag.and.cup.and.straw.fill"
+        case .supplements: return "pills.fill"
+        case .condiments: return "frying.pan.fill"
+        case .bakery: return "birthday.cake"
+        case .seafood: return "fish.fill"
+        case .desserts: return "birthday.cake.fill"
+        case .other: return "questionmark.circle.fill"
+        }
+    }
+
+    // Backwards-compatible alias for design tokens
+    var categoryColor: Color { color }
+
     // MARK: - Color (SADECE BU KALSIN)
     var color: Color {
         switch self {
