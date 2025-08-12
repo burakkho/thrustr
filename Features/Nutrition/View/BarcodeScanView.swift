@@ -150,7 +150,13 @@ private struct DataScannerContainer: UIViewControllerRepresentable {
 
     func updateUIViewController(_ uiViewController: DataScannerViewController, context: Context) {
         guard uiViewController.isScanning == false else { return }
-        try? uiViewController.startScanning()
+        do {
+            try uiViewController.startScanning()
+        } catch {
+            // Surface the error via an overlay alert by bridging through NotificationCenter
+            // or simply print and rely on parent alert binding if needed later
+            print("DataScanner startScanning error: \(error)")
+        }
     }
 
     func makeCoordinator() -> Coordinator { Coordinator(onCode: onCode) }

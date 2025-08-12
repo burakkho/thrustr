@@ -482,9 +482,14 @@ fileprivate enum LanguageSearchMap {
             "domates": ["tomato", "tomatoes"],
             "elma": ["apple", "apples"],
         ]
-        return dict.map { key, vals in
-            let pattern = try! NSRegularExpression(pattern: "(^|\\s)" + NSRegularExpression.escapedPattern(for: key) + "(\\s|$)", options: [.caseInsensitive])
-            return (pattern, vals)
+        return dict.compactMap { key, vals in
+            if let pattern = try? NSRegularExpression(
+                pattern: "(^|\\s)" + NSRegularExpression.escapedPattern(for: key) + "(\\s|$)",
+                options: [.caseInsensitive]
+            ) {
+                return (pattern, vals)
+            }
+            return nil
         }
     }()
     

@@ -115,7 +115,7 @@ struct DashboardView: View {
             QuickStatCard(
                 icon: "figure.walk",
                 title: LocalizationKeys.Dashboard.Stats.today.localized,
-                value: formatSteps(healthKitService.todaySteps),
+                value: formatSteps(currentUser.healthKitSteps),
                 subtitle: LocalizationKeys.Dashboard.Stats.steps.localized,
                 color: .blue,
                 borderlessLight: true
@@ -123,7 +123,7 @@ struct DashboardView: View {
             QuickStatCard(
                 icon: "flame.fill",
                 title: LocalizationKeys.Dashboard.Stats.calories.localized,
-                value: formatCalories(healthKitService.todayCalories),
+                value: formatCalories(currentUser.healthKitCalories),
                 subtitle: LocalizationKeys.Dashboard.Stats.kcal.localized,
                 color: .orange,
                 borderlessLight: true
@@ -364,6 +364,7 @@ struct DashboardView: View {
     private func createDefaultUser() -> User {
         let user = User()
         modelContext.insert(user)
+        try? modelContext.save()
         return user
     }
     
@@ -513,6 +514,7 @@ private extension View {
 // MARK: - Weight Entry View
 struct WeightEntryView: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.modelContext) private var modelContext
     let user: User
     
     @State private var newWeight: String = ""
@@ -538,6 +540,7 @@ struct WeightEntryView: View {
                     if let weight = Double(newWeight.replacingOccurrences(of: ",", with: ".")), weight > 0 {
                         user.currentWeight = weight
                         user.calculateMetrics()
+                        try? modelContext.save()
                         dismiss()
                     }
                 }

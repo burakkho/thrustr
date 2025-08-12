@@ -126,6 +126,16 @@ struct MealEntryView: View {
                 }
             }
         }
+        .alert(isPresented: Binding<Bool>(
+            get: { saveErrorMessage != nil },
+            set: { if !$0 { saveErrorMessage = nil } }
+        )) {
+            Alert(
+                title: Text(LocalizationKeys.Common.error.localized),
+                message: Text(saveErrorMessage ?? ""),
+                dismissButton: .default(Text(LocalizationKeys.Common.ok.localized))
+            )
+        }
     }
     
     private func addMealEntry() {
@@ -206,16 +216,6 @@ struct PortionQuickSelect: View {
                             )
                         }
                     }
-    .alert(isPresented: Binding<Bool>(
-        get: { saveErrorMessage != nil },
-        set: { if !$0 { saveErrorMessage = nil } }
-    )) {
-        Alert(
-            title: Text(LocalizationKeys.Common.error.localized),
-            message: Text(saveErrorMessage ?? ""),
-            dismissButton: .default(Text(LocalizationKeys.Common.ok.localized))
-        )
-    }
                     
                     Button {
                         showingCustomInput = true
