@@ -343,7 +343,7 @@ struct RecentEntriesSection: View {
                 }
                 
                 if measurements.isEmpty && weightEntries.isEmpty {
-                    EmptyStateView()
+                    MeasurementsEmptyStateView()
                 }
             }
         }
@@ -428,7 +428,7 @@ struct RecentWeightRow: View {
     }
 }
 
-struct EmptyStateView: View {
+struct MeasurementsEmptyStateView: View {
     var body: some View {
         VStack(spacing: 12) {
             Image(systemName: "ruler.circle")
