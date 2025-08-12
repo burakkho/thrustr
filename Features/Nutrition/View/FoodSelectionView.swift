@@ -220,7 +220,7 @@ struct FoodSelectionView: View {
                     // Map to transient Food objects (not yet in DB). Avoid simple duplicates by display name
                     let existingNames = Set(filteredFoods.map { $0.displayName.lowercased() })
                     let foods = results.map { $0.food }.map { f in
-                        var nf = f
+                        let nf = f
                         if nf.nameTR.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
                             nf.nameTR = nf.nameEN
                         }

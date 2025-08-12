@@ -7,7 +7,8 @@ struct MealEntryView: View {
     
     @Environment(\.modelContext) private var modelContext
     @State private var gramsConsumed: Double = 100
-    @State private var selectedMealType = "breakfast"
+    // Çoklu öğün seçimi desteği
+    @State private var selectedMealTypes: Set<String> = ["breakfast"]
     
     private var mealTypes: [(String, String)] {
         [
@@ -61,17 +62,32 @@ struct MealEntryView: View {
                         .keyboardType(.decimalPad)
                 }
                 
-                // Öğün seçimi
+                // Öğün seçimi (çoklu seçim)
                 VStack(alignment: .leading, spacing: 8) {
                     Text(LocalizationKeys.Nutrition.MealEntry.meal.localized)
                         .font(.headline)
                     
-                    Picker(LocalizationKeys.Nutrition.MealEntry.meal.localized, selection: $selectedMealType) {
+                    HStack(spacing: 8) {
                         ForEach(mealTypes, id: \.0) { type, name in
-                            Text(name).tag(type)
+                            let isOn = selectedMealTypes.contains(type)
+                            Button {
+                                if isOn {
+                                    selectedMealTypes.remove(type)
+                                } else {
+                                    selectedMealTypes.insert(type)
+                                }
+                            } label: {
+                                Text(name)
+                                    .font(.subheadline)
+                                    .padding(.vertical, 8)
+                                    .padding(.horizontal, 12)
+                                    .background(isOn ? Color.accentColor.opacity(0.2) : Color.gray.opacity(0.12))
+                                    .foregroundColor(isOn ? .accentColor : .primary)
+                                    .clipShape(Capsule())
+                            }
+                            .buttonStyle(.plain)
                         }
                     }
-                    .pickerStyle(.segmented)
                 }
                 
                 // Hesaplanan değerler
@@ -96,7 +112,7 @@ struct MealEntryView: View {
                     addMealEntry()
                 }
                 .buttonStyle(.borderedProminent)
-                .disabled(gramsConsumed <= 0)
+                .disabled(gramsConsumed <= 0 || selectedMealTypes.isEmpty)
             }
             .padding()
             .navigationTitle(LocalizationKeys.Nutrition.MealEntry.title.localized)
@@ -112,13 +128,15 @@ struct MealEntryView: View {
     }
     
     private func addMealEntry() {
-        let entry = NutritionEntry(
-            food: food,
-            gramsConsumed: gramsConsumed,
-            mealType: selectedMealType
-        )
-        
-        modelContext.insert(entry)
+        // Seçilen her öğün için ayrı giriş oluştur
+        for meal in selectedMealTypes {
+            let entry = NutritionEntry(
+                food: food,
+                gramsConsumed: gramsConsumed,
+                mealType: meal
+            )
+            modelContext.insert(entry)
+        }
         
         // Usage tracking
         food.recordUsage()
