@@ -222,9 +222,14 @@ struct CustomFoodEntryView: View {
         }
         
         modelContext.insert(newFood)
-        try? modelContext.save()
-        onFoodCreated(newFood)
-        dismiss()
+        do {
+            try modelContext.save()
+            onFoodCreated(newFood)
+            dismiss()
+        } catch {
+            alertMessage = error.localizedDescription
+            showingAlert = true
+        }
     }
 }
 

@@ -41,6 +41,7 @@ struct NutritionView: View {
     @State private var showingFoodSelection = false
     @State private var showingCustomFoodEntry = false
     @State private var forceStartWithScanner = false
+    @State private var saveErrorMessage: String? = nil
 
     init() {}
     
@@ -197,7 +198,7 @@ struct NutritionView: View {
         for food in testFoods {
             modelContext.insert(food)
         }
-        try? modelContext.save()
+        do { try modelContext.save() } catch { saveErrorMessage = error.localizedDescription }
     }
     
     private func clearAllFoods() {
@@ -207,7 +208,7 @@ struct NutritionView: View {
         for entry in todayEntries {
             modelContext.delete(entry)
         }
-        try? modelContext.save()
+        do { try modelContext.save() } catch { saveErrorMessage = error.localizedDescription }
     }
 }
 
@@ -215,3 +216,13 @@ struct NutritionView: View {
     NutritionView()
         .modelContainer(for: [Food.self, NutritionEntry.self], inMemory: true)
 }
+        .alert(isPresented: Binding<Bool>(
+            get: { saveErrorMessage != nil },
+            set: { if !$0 { saveErrorMessage = nil } }
+        )) {
+            Alert(
+                title: Text(LocalizationKeys.Common.error.localized),
+                message: Text(saveErrorMessage ?? ""),
+                dismissButton: .default(Text(LocalizationKeys.Common.ok.localized))
+            )
+        }

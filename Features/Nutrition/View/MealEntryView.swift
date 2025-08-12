@@ -9,6 +9,7 @@ struct MealEntryView: View {
     @State private var gramsConsumed: Double = 100
     // Çoklu öğün seçimi desteği
     @State private var selectedMealTypes: Set<String> = ["breakfast"]
+    @State private var saveErrorMessage: String? = nil
     
     private var mealTypes: [(String, String)] {
         [
@@ -34,7 +35,7 @@ struct MealEntryView: View {
                         // Favori butonu
                         Button {
                             food.toggleFavorite()
-                            try? food.modelContext?.save()
+                            do { try food.modelContext?.save() } catch { saveErrorMessage = error.localizedDescription }
                             #if canImport(UIKit)
                             UIImpactFeedbackGenerator(style: .light).impactOccurred()
                             #endif
@@ -140,12 +141,15 @@ struct MealEntryView: View {
         
         // Usage tracking
         food.recordUsage()
-        try? modelContext.save()
-        #if canImport(UIKit)
-        UINotificationFeedbackGenerator().notificationOccurred(.success)
-        #endif
-        
-        onDismiss()
+        do {
+            try modelContext.save()
+            #if canImport(UIKit)
+            UINotificationFeedbackGenerator().notificationOccurred(.success)
+            #endif
+            onDismiss()
+        } catch {
+            saveErrorMessage = error.localizedDescription
+        }
     }
 }
 
@@ -202,6 +206,16 @@ struct PortionQuickSelect: View {
                             )
                         }
                     }
+    .alert(isPresented: Binding<Bool>(
+        get: { saveErrorMessage != nil },
+        set: { if !$0 { saveErrorMessage = nil } }
+    )) {
+        Alert(
+            title: Text(LocalizationKeys.Common.error.localized),
+            message: Text(saveErrorMessage ?? ""),
+            dismissButton: .default(Text(LocalizationKeys.Common.ok.localized))
+        )
+    }
                     
                     Button {
                         showingCustomInput = true

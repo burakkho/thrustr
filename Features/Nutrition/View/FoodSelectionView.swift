@@ -312,7 +312,10 @@ extension FoodSelectionView {
             if let cached = await BarcodeCache.shared.get(barcode: normalized) {
                 let food = cached.toFood()
                 modelContext.insert(food)
-                try? modelContext.save()
+                do { try modelContext.save() } catch {
+                    offErrorMessage = error.localizedDescription
+                    return
+                }
                 #if canImport(UIKit)
                 UINotificationFeedbackGenerator().notificationOccurred(.success)
                 #endif
@@ -328,7 +331,10 @@ extension FoodSelectionView {
                 result.food.nameTR = result.food.nameEN
             }
             modelContext.insert(result.food)
-            try? modelContext.save()
+            do { try modelContext.save() } catch {
+                offErrorMessage = error.localizedDescription
+                return
+            }
 
             // Update cache
             let dto = CachedFoodDTO(barcode: normalized, from: result.food)
@@ -385,7 +391,10 @@ extension FoodSelectionView {
                                 food.nameTR = food.nameEN
                             }
                             modelContext.insert(food)
-                            try? modelContext.save()
+                            do { try modelContext.save() } catch {
+                                offErrorMessage = error.localizedDescription
+                                return
+                            }
                             #if canImport(UIKit)
                             UINotificationFeedbackGenerator().notificationOccurred(.success)
                             #endif

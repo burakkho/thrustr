@@ -5,6 +5,7 @@ struct DailyNutritionSummary: View {
     let nutritionEntries: [NutritionEntry]
     @State private var editingEntry: NutritionEntry?
     @State private var showingEditSheet: Bool = false
+    @State private var saveErrorMessage: String? = nil
     
     // İstenen sıralama: Kahvaltı → Öğle → Akşam → Ara Öğün
     private let mealOrderKeys: [String] = ["breakfast", "lunch", "dinner", "snack"]
@@ -74,7 +75,7 @@ struct DailyNutritionSummary: View {
                                     withAnimation {
                                         if let context = entry.modelContext {
                                             context.delete(entry)
-                                            try? context.save()
+                                            do { try context.save() } catch { saveErrorMessage = error.localizedDescription }
                                             #if canImport(UIKit)
                                             UINotificationFeedbackGenerator().notificationOccurred(.success)
                                             #endif
@@ -102,7 +103,7 @@ struct DailyNutritionSummary: View {
                                             date: Date()
                                         )
                                         context.insert(cloned)
-                                        try? context.save()
+                                        do { try context.save() } catch { saveErrorMessage = error.localizedDescription }
                                         #if canImport(UIKit)
                                         UINotificationFeedbackGenerator().notificationOccurred(.success)
                                         #endif
@@ -123,7 +124,7 @@ struct DailyNutritionSummary: View {
                                         withAnimation {
                                             if let context = entry.modelContext {
                                                 context.delete(entry)
-                                                try? context.save()
+                                                do { try context.save() } catch { saveErrorMessage = error.localizedDescription }
                                                 #if canImport(UIKit)
                                                 UINotificationFeedbackGenerator().notificationOccurred(.success)
                                                 #endif
@@ -189,6 +190,16 @@ struct DailyNutritionSummary: View {
             .cornerRadius(12)
             .padding(.horizontal)
         }
+        .alert(isPresented: Binding<Bool>(
+            get: { saveErrorMessage != nil },
+            set: { if !$0 { saveErrorMessage = nil } }
+        )) {
+            Alert(
+                title: Text(LocalizationKeys.Common.error.localized),
+                message: Text(saveErrorMessage ?? ""),
+                dismissButton: .default(Text(LocalizationKeys.Common.ok.localized))
+            )
+        }
     }
 }
 
@@ -214,6 +225,7 @@ struct NutritionEntryEditSheet: View {
     @Environment(\.modelContext) private var modelContext
     @State private var grams: Double
     @State private var meal: String
+    @State private var saveErrorMessage: String? = nil
     let entry: NutritionEntry
     
     init(entry: NutritionEntry) {
@@ -275,7 +287,7 @@ struct NutritionEntryEditSheet: View {
             entry.fat *= factor
         }
         entry.updatedAt = Date()
-        try? modelContext.save()
+        do { try modelContext.save() } catch { saveErrorMessage = error.localizedDescription }
         #if canImport(UIKit)
         UINotificationFeedbackGenerator().notificationOccurred(.success)
         #endif

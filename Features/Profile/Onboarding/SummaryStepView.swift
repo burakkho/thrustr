@@ -228,7 +228,9 @@ struct SummaryStepView: View {
     
     private func calculateMacros() -> (protein: Double, carbs: Double, fat: Double) {
         let cals = calculateCalorieGoal()
-        let protein = data.weight * 2.0
+        // Align protein with FitnessGoal.proteinMultiplier
+        let goal = FitnessGoal(rawValue: data.fitnessGoal) ?? .maintain
+        let protein = data.weight * goal.proteinMultiplier
         let fat = (cals * 0.25) / 9
         let carbs = (cals - protein * 4 - fat * 9) / 4
         return (protein, carbs, fat)

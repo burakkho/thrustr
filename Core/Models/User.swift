@@ -87,10 +87,10 @@ final class User {
     
     var bmiCategory: String {
         switch bmi {
-        case ..<18.5: return "bmi.underweight".localized
-        case 18.5..<25: return "bmi.normal".localized
-        case 25..<30: return "bmi.overweight".localized
-        default: return "bmi.obese".localized
+        case ..<18.5: return "bmi_underweight".localized
+        case 18.5..<25: return "bmi_normal".localized
+        case 25..<30: return "bmi_overweight".localized
+        default: return "bmi_obese".localized
         }
     }
     
@@ -187,8 +187,8 @@ final class User {
         // Base calories from TDEE and fitness goal
         dailyCalorieGoal = tdee * fitnessGoalEnum.calorieAdjustment
         
-        // Protein: 2g per kg body weight
-        dailyProteinGoal = currentWeight * 2.0
+        // Protein: goal-sensitive grams per kg body weight
+        dailyProteinGoal = currentWeight * fitnessGoalEnum.proteinMultiplier
         
         // Fat: 25% of total calories
         dailyFatGoal = (dailyCalorieGoal * 0.25) / 9 // 9 calories per gram of fat

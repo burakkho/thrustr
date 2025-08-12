@@ -20,6 +20,9 @@ struct WorkoutDetailView: View {
     @State private var showCompletion: Bool = false
     @AppStorage("preferences.haptic_feedback_enabled") private var hapticsEnabled: Bool = true
     @State private var didAddExerciseFromGlobalSelection: Bool = false
+    @State private var showingRestPreset: Bool = false
+    @State private var showingRestTimer: Bool = false
+    @State private var restDuration: Int = 60
 
     // removed; timer kept as @State
 
@@ -56,6 +59,7 @@ struct WorkoutDetailView: View {
                 if !workout.isCompleted {
                     WorkoutActionBar(
                         workout: workout,
+                        onRest: { showingRestPreset = true },
                         onFinish: { finishWorkout() }
                     )
                 }
@@ -126,6 +130,17 @@ struct WorkoutDetailView: View {
         .onDisappear {
             // Cancel timer to prevent leaks
             timer.upstream.connect().cancel()
+        }
+        .sheet(isPresented: $showingRestPreset) {
+            RestTimerPresetView { seconds in
+                let sec = max(0, seconds)
+                if sec > 0 { restDuration = sec }
+                showingRestPreset = false
+                if restDuration > 0 { showingRestTimer = true }
+            }
+        }
+        .sheet(isPresented: $showingRestTimer) {
+            RestTimerView(duration: restDuration)
         }
         .alert(isPresented: Binding<Bool>(
             get: { saveError != nil },
@@ -373,6 +388,9 @@ struct WorkoutPartCard: View {
     @State private var tempName: String = ""
     @State private var selectionTimer = Timer.publish(every: 1.0, on: .main, in: .common).autoconnect()
     @State private var shouldOpenSetTracking = false
+    @State private var saveError: String? = nil
+    @State private var showingWODResult: Bool = false
+    @State private var wodTemp: String = ""
 
     var partType: WorkoutPartType {
         WorkoutPartType(rawValue: part.type) ?? .strength
@@ -411,7 +429,7 @@ struct WorkoutPartCard: View {
             Button(LocalizationKeys.Training.Part.moveDown.localized) { movePart(direction: 1) }
             Divider()
             Button(part.isCompleted ? LocalizationKeys.Training.Part.markInProgressAction.localized : LocalizationKeys.Training.Part.markCompletedAction.localized) {
-                part.isCompleted.toggle(); do { try modelContext.save() } catch { /* ignore */ }
+                part.isCompleted.toggle(); do { try modelContext.save() } catch { saveError = error.localizedDescription }
             }
             Button(role: .destructive) { deletePart() } label: { Text(LocalizationKeys.Training.Part.deletePart.localized) }
         }
@@ -422,7 +440,7 @@ struct WorkoutPartCard: View {
         }
         .swipeActions(edge: .leading) {
             Button {
-                part.isCompleted.toggle(); try? modelContext.save()
+                part.isCompleted.toggle(); do { try modelContext.save() } catch { saveError = error.localizedDescription }
             } label: {
                 Label(
                     part.isCompleted ? LocalizationKeys.Training.Part.markInProgressAction.localized : LocalizationKeys.Training.Part.markCompletedAction.localized,
@@ -476,11 +494,51 @@ struct WorkoutPartCard: View {
                 }
             }
         }
+        .sheet(isPresented: $showingWODResult) {
+            NavigationView {
+                VStack(spacing: 16) {
+                    Text("WOD Sonucu")
+                        .font(.headline)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    TextField("Örn: 12:34, 5 RFT 10+8+6…", text: $wodTemp, axis: .vertical)
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                        .lineLimit(3...6)
+                    Spacer()
+                }
+                .padding()
+                .navigationTitle(LocalizedStringKey("WOD"))
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .cancellationAction) {
+                        Button(LocalizationKeys.Common.cancel.localized) { showingWODResult = false }
+                    }
+                    ToolbarItem(placement: .confirmationAction) {
+                        Button(LocalizationKeys.Common.save.localized) {
+                            part.wodResult = wodTemp.trimmingCharacters(in: .whitespacesAndNewlines)
+                            do { try modelContext.save() } catch { saveError = error.localizedDescription }
+                            showingWODResult = false
+                        }
+                        .disabled(wodTemp.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                    }
+                }
+            }
+            .presentationDetents([.medium])
+        }
         .sheet(isPresented: $showingRename) {
             RenamePartSheet(initialName: part.name) { newName in
                 part.name = newName
-                do { try modelContext.save() } catch { /* ignore */ }
+                do { try modelContext.save() } catch { saveError = error.localizedDescription }
             }
+        }
+        .alert(isPresented: Binding<Bool>(
+            get: { saveError != nil },
+            set: { if !$0 { saveError = nil } }
+        )) {
+            Alert(
+                title: Text(LocalizationKeys.Common.error.localized),
+                message: Text(saveError ?? ""),
+                dismissButton: .default(Text(LocalizationKeys.Common.ok.localized))
+            )
         }
     }
 
@@ -523,6 +581,19 @@ struct WorkoutPartCard: View {
                 Text(wodResult)
                     .fontWeight(.semibold)
                     .foregroundColor(theme.colors.success)
+                Spacer()
+                Button {
+                    wodTemp = wodResult
+                    showingWODResult = true
+                } label: {
+                    Image(systemName: "pencil")
+                }
+                Button(role: .destructive) {
+                    part.wodResult = nil
+                    do { try modelContext.save() } catch { saveError = error.localizedDescription }
+                } label: {
+                    Image(systemName: "trash")
+                }
             }
         } else {
             VStack(spacing: 10) {
@@ -535,6 +606,16 @@ struct WorkoutPartCard: View {
                             showingSetTracking = true
                         }
                     )
+                }
+                if partType == .conditioning {
+                    Button(action: {
+                        wodTemp = part.wodResult ?? ""
+                        showingWODResult = true
+                    }) {
+                        Label(part.wodResult == nil ? "WOD Sonucu Ekle" : "WOD Sonucunu Düzenle", systemImage: "note.text")
+                    }
+                    .buttonStyle(PressableStyle())
+                    .frame(maxWidth: .infinity, alignment: .leading)
                 }
             }
         }
@@ -703,6 +784,7 @@ struct AddExercisesButton: View {
 struct WorkoutActionBar: View {
     @Environment(\.theme) private var theme
     let workout: Workout
+    let onRest: () -> Void
     let onFinish: () -> Void
     @State private var showingQuickActions = false
 
@@ -711,7 +793,7 @@ struct WorkoutActionBar: View {
             if showingQuickActions {
                 HStack(spacing: theme.spacing.m) {
                     ActionChip(icon: "timer", title: "Rest", color: theme.colors.warning) {
-                        // handled in parent if needed
+                        onRest()
                     }
                     ActionChip(icon: "camera", title: "Foto", color: theme.colors.accent) {
                         // Open progress photo

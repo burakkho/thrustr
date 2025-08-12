@@ -9,6 +9,7 @@ struct DashboardView: View {
     @Query private var workouts: [Workout]
     @Query private var nutritionEntries: [NutritionEntry]
     @StateObject private var healthKitService = HealthKitService()
+    @StateObject private var userService = UserService()
     @StateObject private var workoutService = WorkoutService()
     
     @State private var showingWeightEntry = false
@@ -67,6 +68,10 @@ struct DashboardView: View {
             Task {
                 await loadInitialData()
             }
+        }
+        .onChange(of: workouts) { _, _ in
+            // Recompute weekly stats when workouts change (finish/delete/new)
+            workoutService.loadWorkoutStats(workouts: workouts)
         }
     }
     
@@ -322,8 +327,9 @@ struct DashboardView: View {
     private func loadInitialData() async {
         isLoading = true
         
-        // Request HealthKit permissions and load data
+        // Request HealthKit permissions and load data via service
         _ = await healthKitService.requestPermissions()
+        userService.setModelContext(modelContext)
         await refreshHealthData()
         
         // Load workout statistics
@@ -333,14 +339,8 @@ struct DashboardView: View {
     }
     
     private func refreshHealthData() async {
-        await healthKitService.readTodaysData()
-        
-        // Update user with HealthKit data
-        currentUser.updateHealthKitData(
-            steps: healthKitService.todaySteps,
-            calories: healthKitService.todayCalories,
-            weight: healthKitService.currentWeight
-        )
+        userService.setModelContext(modelContext)
+        await userService.syncWithHealthKit(user: currentUser)
     }
 
     private func todayConsumedCalories() -> Double {

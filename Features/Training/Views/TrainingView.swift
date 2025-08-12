@@ -225,12 +225,7 @@ struct ActiveWorkoutView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 20) {
-                if let activeWorkout = activeWorkouts.first {
-                    // Active workout exists
-                    ActiveWorkoutCard(workout: activeWorkout) {
-                        onWorkoutTap(activeWorkout)
-                    }
-                } else {
+                if activeWorkouts.isEmpty {
                     // No active workout
                     VStack(spacing: theme.spacing.m) {
                         Image(systemName: "play.circle")
@@ -257,6 +252,21 @@ struct ActiveWorkoutView: View {
                         .accessibilityLabel(LocalizationKeys.Training.Active.startButton.localized)
                     }
                     .padding(.top, 80)
+                } else if activeWorkouts.count == 1, let activeWorkout = activeWorkouts.first {
+                    // Single active workout → existing card
+                    ActiveWorkoutCard(workout: activeWorkout) { onWorkoutTap(activeWorkout) }
+                } else {
+                    // Multiple active workouts → list with actions
+                    VStack(alignment: .leading, spacing: theme.spacing.s) {
+                        Text(LocalizationKeys.Training.Active.multipleTitle.localized)
+                            .font(.headline)
+                            .padding(.horizontal, theme.spacing.s)
+                        ForEach(activeWorkouts.sorted(by: { $0.startTime > $1.startTime })) { workout in
+                            ActiveWorkoutRow(workout: workout, onContinue: {
+                                onWorkoutTap(workout)
+                            })
+                        }
+                    }
                 }
             }
             .padding(theme.spacing.m)
@@ -270,6 +280,59 @@ struct ActiveWorkoutView: View {
     }
 }
 
+// MARK: - Active Workout Row (for multiple active sessions)
+struct ActiveWorkoutRow: View {
+    let workout: Workout
+    let onContinue: () -> Void
+    @Environment(\.modelContext) private var modelContext
+    @Environment(\.theme) private var theme
+    @State private var showDeleteConfirm = false
+    
+    var body: some View {
+        HStack(spacing: 12) {
+            VStack(alignment: .leading, spacing: 4) {
+                Text(workout.name ?? LocalizationKeys.Training.History.defaultName.localized)
+                    .font(.headline)
+                Text(workout.startTime, style: .time)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+            Spacer()
+            Button(LocalizationKeys.Training.Active.continueButton.localized) { onContinue() }
+                .font(.caption)
+                .foregroundColor(.white)
+                .padding(.horizontal, theme.spacing.m)
+                .padding(.vertical, 8)
+                .background(theme.colors.success)
+                .cornerRadius(8)
+                .buttonStyle(PressableStyle())
+            
+            Button(LocalizationKeys.Training.Active.finish.localized) {
+                workout.finishWorkout()
+                do { try modelContext.save() } catch { /* optionally surface via parent */ }
+            }
+            .font(.caption)
+            .foregroundColor(theme.colors.success)
+            .padding(.horizontal, theme.spacing.s)
+            .padding(.vertical, 8)
+            .background(theme.colors.success.opacity(0.1))
+            .cornerRadius(8)
+            
+            Button(role: .destructive) { showDeleteConfirm = true } label: { Image(systemName: "trash") }
+                .confirmationDialog(LocalizationKeys.Common.confirmDelete.localized, isPresented: $showDeleteConfirm, titleVisibility: .visible) {
+                    Button(LocalizationKeys.Common.delete.localized, role: .destructive) {
+                        modelContext.delete(workout)
+                        do { try modelContext.save() } catch { /* ignore */ }
+                    }
+                    Button(LocalizationKeys.Common.cancel.localized, role: .cancel) { }
+                }
+        }
+        .padding()
+        .background(theme.colors.cardBackground)
+        .cornerRadius(12)
+    }
+}
+
 // MARK: - Active Workout Card
 struct ActiveWorkoutCard: View {
     let workout: Workout
@@ -279,6 +342,8 @@ struct ActiveWorkoutCard: View {
     @State private var currentTime = Date()
     @State private var timerText: String = ""
     @State private var timer = Timer.publish(every: 1.0, on: .main, in: .common).autoconnect()
+    @State private var showSaveErrorAlert = false
+    @State private var saveErrorMessage = ""
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -330,7 +395,10 @@ struct ActiveWorkoutCard: View {
                 
                 Button(LocalizationKeys.Training.Active.finish.localized) {
                     workout.finishWorkout()
-                    do { try modelContext.save() } catch { /* ignore */ }
+                    do { try modelContext.save() } catch {
+                        saveErrorMessage = error.localizedDescription
+                        showSaveErrorAlert = true
+                    }
                     UIImpactFeedbackGenerator(style: .light).impactOccurred()
                 }
                 .font(.headline)
@@ -359,6 +427,13 @@ struct ActiveWorkoutCard: View {
         }
         .onDisappear {
             timer.upstream.connect().cancel()
+        }
+        .alert(isPresented: $showSaveErrorAlert) {
+            Alert(
+                title: Text(LocalizationKeys.Common.error.localized),
+                message: Text(saveErrorMessage),
+                dismissButton: .default(Text(LocalizationKeys.Common.ok.localized))
+            )
         }
     }
     
