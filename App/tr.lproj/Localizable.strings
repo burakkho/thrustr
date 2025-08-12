@@ -29,6 +29,14 @@
 "nutrition.addFood" = "Yemek Ekle";
 "nutrition.calories" = "Kalori";
 
+// Empty States - Nutrition
+"nutrition.empty.first.title" = "Beslenme takibine başla";
+"nutrition.empty.first.message" = "Öğünlerini ekleyerek günlük kalorini ve makrolarını takip et.";
+"nutrition.empty.addMeal" = "Yemek ekle";
+"nutrition.empty.addCustomFood" = "Özel yiyecek oluştur";
+"nutrition.empty.today.title" = "Bugün henüz öğün eklenmedi";
+"nutrition.empty.today.message" = "Listeden seçerek veya özel yiyecek oluşturarak ekleyebilirsin.";
+
 // MARK: - Profile
 "profile.title" = "Profil";
 "profile.edit_profile" = "Profili Düzenle";

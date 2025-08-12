@@ -29,6 +29,14 @@
 "nutrition.addFood" = "Add Food";
 "nutrition.calories" = "Calories";
 
+// Empty States - Nutrition
+"nutrition.empty.first.title" = "Start tracking nutrition";
+"nutrition.empty.first.message" = "Add your meals to track daily calories and macros.";
+"nutrition.empty.addMeal" = "Add Meal";
+"nutrition.empty.addCustomFood" = "Create Custom Food";
+"nutrition.empty.today.title" = "No meals added today";
+"nutrition.empty.today.message" = "Pick from the list or create a custom food to add a meal.";
+
 // MARK: - Profile
 "profile.title" = "Profile";
 "profile.edit_profile" = "Edit Profile";

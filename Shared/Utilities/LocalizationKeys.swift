@@ -360,6 +360,15 @@ enum LocalizationKeys {
         static let addFood = "nutrition.addFood"
         static let calories = "nutrition.calories"
         
+        enum Empty {
+            static let firstTitle = "nutrition.empty.first.title"
+            static let firstMessage = "nutrition.empty.first.message"
+            static let addMeal = "nutrition.empty.addMeal"
+            static let addCustomFood = "nutrition.empty.addCustomFood"
+            static let todayTitle = "nutrition.empty.today.title"
+            static let todayMessage = "nutrition.empty.today.message"
+        }
+
         enum DailySummary {
             static let title = "nutrition.dailySummary.title"
             static let total = "nutrition.dailySummary.total"

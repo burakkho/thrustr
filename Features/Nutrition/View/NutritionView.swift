@@ -62,11 +62,11 @@ struct NutritionView: View {
                         if foods.isEmpty && todayEntries.isEmpty && weekEntries.isEmpty {
                             EmptyStateView(
                                 systemImage: "fork.knife.circle.fill",
-                                title: "Beslenme takibine başla",
-                                message: "Öğünlerini ekleyerek günlük kalorini ve makrolarını takip et.",
-                                primaryTitle: "Yemek ekle",
+                                title: LocalizationKeys.Nutrition.Empty.firstTitle.localized,
+                                message: LocalizationKeys.Nutrition.Empty.firstMessage.localized,
+                                primaryTitle: LocalizationKeys.Nutrition.Empty.addMeal.localized,
                                 primaryAction: { showingFoodSelection = true },
-                                secondaryTitle: "Özel yiyecek oluştur",
+                                secondaryTitle: LocalizationKeys.Nutrition.Empty.addCustomFood.localized,
                                 secondaryAction: { showingFoodSelection = true; /* açılan sayfadan ekleyebilir */ }
                             )
                             .padding(.top, 40)
