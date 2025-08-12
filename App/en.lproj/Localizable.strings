@@ -313,6 +313,7 @@
 "training.active.finish" = "Finish";
 "training.active.status.active" = "Active";
 "training.active.status.completed" = "Completed";
+"training.active.multiple.title" = "Active Workouts";
 
 // MARK: - Workout Stats
 "training.stats.parts" = "Parts";
@@ -1114,6 +1115,7 @@
 "common.loading" = "Loading";
 "common.retry" = "Retry";
 "common.user" = "User";
+"common.confirm_delete" = "Confirm Delete";
 
 // MARK: - Preferences (base titles)
 "preferences.title" = "Preferences";

@@ -129,6 +129,8 @@ enum LocalizationKeys {
             // Direct access properties for compatibility
             static let startButton = "training.active.empty.startButton"
             static let continueButton = "training.active.continue"
+            // Added keys for multi-active UI
+            static let multipleTitle = "training.active.multiple.title"
             
             // Legacy Status enum support
             enum Status {
@@ -1317,6 +1319,8 @@ enum LocalizationKeys {
         static let confirmDiscard = "common.confirm_discard"
         static let discard = "common.discard"
         static let discardMessage = "common.discard_message"
+        // Added for delete confirmations
+        static let confirmDelete = "common.confirm_delete"
     }
     
     // MARK: - Action Keys (Legacy compatibility)

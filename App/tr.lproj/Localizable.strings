@@ -313,6 +313,7 @@
 "training.active.finish" = "Bitir";
 "training.active.status.active" = "Aktif";
 "training.active.status.completed" = "Tamamlandı";
+"training.active.multiple.title" = "Aktif Antrenmanlar";
 
 // MARK: - Workout Stats
 "training.stats.parts" = "Bölüm";
@@ -1134,6 +1135,7 @@
 "common.loading" = "Yükleniyor";
 "common.retry" = "Tekrar Dene";
 "common.user" = "Kullanıcı";
+"common.confirm_delete" = "Silmeyi Onayla";
 
 // MARK: - Preferences (base titles)
 "preferences.title" = "Tercihler";

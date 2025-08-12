@@ -186,6 +186,16 @@ struct NutritionView: View {
             .presentationDetents([.medium, .large])
             .presentationDragIndicator(.visible)
         }
+        .alert(isPresented: Binding<Bool>(
+            get: { saveErrorMessage != nil },
+            set: { if !$0 { saveErrorMessage = nil } }
+        )) {
+            Alert(
+                title: Text(LocalizationKeys.Common.error.localized),
+                message: Text(saveErrorMessage ?? ""),
+                dismissButton: .default(Text(LocalizationKeys.Common.ok.localized))
+            )
+        }
     }
     
     private func addTestFoods() {
@@ -216,13 +226,3 @@ struct NutritionView: View {
     NutritionView()
         .modelContainer(for: [Food.self, NutritionEntry.self], inMemory: true)
 }
-        .alert(isPresented: Binding<Bool>(
-            get: { saveErrorMessage != nil },
-            set: { if !$0 { saveErrorMessage = nil } }
-        )) {
-            Alert(
-                title: Text(LocalizationKeys.Common.error.localized),
-                message: Text(saveErrorMessage ?? ""),
-                dismissButton: .default(Text(LocalizationKeys.Common.ok.localized))
-            )
-        }
