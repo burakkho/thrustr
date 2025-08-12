@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		417855CC2E4B6E73004CE50E /* FoodAlias.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417855CB2E4B6E73004CE50E /* FoodAlias.swift */; };
 		41E316312E46320900A27990 /* sporhocamApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41E316302E46320900A27990 /* sporhocamApp.swift */; };
 		41E316332E46320900A27990 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41E316322E46320900A27990 /* ContentView.swift */; };
 		41E3166D2E467D5A00A27990 /* Exercise.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41E3166C2E467BC600A27990 /* Exercise.swift */; };
@@ -69,7 +70,7 @@
 		7F1000072E60010000AAAAAA /* ToastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F1000062E60010000AAAAAA /* ToastView.swift */; };
 		7F1000092E60010000AAAAAA /* BarcodeValidator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F1000082E60010000AAAAAA /* BarcodeValidator.swift */; };
 		7F10000B2E60010000AAAAAA /* EmptyStateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F10000A2E60010000AAAAAA /* EmptyStateView.swift */; };
-        7F10000D2E60010000AAAAAA /* foods.csv in Resources */ = {isa = PBXBuildFile; fileRef = 41E63DAA2E48B1C2006A2117 /* foods.csv */; };
+		7F10000D2E60010000AAAAAA /* foods.csv in Resources */ = {isa = PBXBuildFile; fileRef = 41E63DAA2E48B1C2006A2117 /* foods.csv */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -90,6 +91,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		417855CB2E4B6E73004CE50E /* FoodAlias.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoodAlias.swift; sourceTree = "<group>"; };
 		41E3162D2E46320900A27990 /* sporhocam.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = sporhocam.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		41E316302E46320900A27990 /* sporhocamApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = sporhocamApp.swift; sourceTree = "<group>"; };
 		41E316322E46320900A27990 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -268,6 +270,7 @@
 		41E316632E46772F00A27990 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				417855CB2E4B6E73004CE50E /* FoodAlias.swift */,
 				41E63DAC2E48B53A006A2117 /* FoodCategory+UI.swift */,
 				41E316BD2E47A05E00A27990 /* BodyTrackingModels.swift */,
 				41E316B52E479D0700A27990 /* Gender.swift */,
@@ -591,7 +594,7 @@
 			files = (
 				41E63DA72E48B131006A2117 /* exercises.csv in Resources */,
 				41E63D552E4836AE006A2117 /* Localizable.strings in Resources */,
-                7F10000D2E60010000AAAAAA /* foods.csv in Resources */,
+				7F10000D2E60010000AAAAAA /* foods.csv in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -652,6 +655,7 @@
 				41E63DA92E48B152006A2117 /* DataSeeder.swift in Sources */,
 				41E316AB2E4777CB00A27990 /* CustomFoodEntryView.swift in Sources */,
 				41E3169D2E4767FF00A27990 /* NutritionEntry.swift in Sources */,
+				417855CC2E4B6E73004CE50E /* FoodAlias.swift in Sources */,
 				41E316732E467F0F00A27990 /* Workout.swift in Sources */,
 				41E63D162E480A6F006A2117 /* WorkoutService.swift in Sources */,
 				41E3169B2E47660B00A27990 /* NutritionView.swift in Sources */,

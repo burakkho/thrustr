@@ -6,6 +6,9 @@ struct DailyNutritionSummary: View {
     @State private var editingEntry: NutritionEntry?
     @State private var showingEditSheet: Bool = false
     
+    // İstenen sıralama: Kahvaltı → Öğle → Akşam → Ara Öğün
+    private let mealOrderKeys: [String] = ["breakfast", "lunch", "dinner", "snack"]
+    
     private var todaysEntries: [NutritionEntry] {
         let today = Calendar.current.startOfDay(for: Date())
         return nutritionEntries.filter {
@@ -37,66 +40,78 @@ struct DailyNutritionSummary: View {
                     .fontWeight(.semibold)
                     .padding(.horizontal)
                 
-                // Öğün listesi
-                ForEach(todaysEntries) { entry in
-                    HStack {
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(entry.foodName)
-                                .font(.headline)
-                            Text("\(entry.displayMealType) • \(Int(entry.gramsConsumed))\(LocalizationKeys.Nutrition.Units.g.localized)")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                        }
+                // Öğünlere göre gruplanmış liste
+                ForEach(mealOrderKeys, id: \.self) { mealKey in
+                    let entriesForMeal = todaysEntries.filter { $0.mealType == mealKey }
+                    if !entriesForMeal.isEmpty {
+                        // Başlık
+                        Text(mealHeaderTitle(for: mealKey))
+                            .font(.headline)
+                            .padding(.horizontal)
+                            .padding(.top, 4)
                         
-                        Spacer()
-                        
-                        Text("\(Int(entry.calories)) \(LocalizationKeys.Nutrition.Units.kcal.localized)")
-                            .font(.subheadline)
-                            .fontWeight(.medium)
-                    }
-                    .padding(.horizontal)
-                    .swipeActions(edge: .trailing, allowsFullSwipe: true) {
-                        Button(role: .destructive) {
-                            withAnimation {
-                                if let context = entry.modelContext {
-                                    context.delete(entry)
-                                    try? context.save()
-                                    #if canImport(UIKit)
-                                    UINotificationFeedbackGenerator().notificationOccurred(.success)
-                                    #endif
+                        // Öğün içeriği
+                        ForEach(entriesForMeal) { entry in
+                            HStack {
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text(entry.foodName)
+                                        .font(.headline)
+                                    Text("\(Int(entry.gramsConsumed))\(LocalizationKeys.Nutrition.Units.g.localized)")
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
                                 }
+                                
+                                Spacer()
+                                
+                                Text("\(Int(entry.calories)) \(LocalizationKeys.Nutrition.Units.kcal.localized)")
+                                    .font(.subheadline)
+                                    .fontWeight(.medium)
                             }
-                        } label: {
-                            Label("Delete", systemImage: "trash")
-                        }
-                        
-                    Button {
-                            editingEntry = entry
-                            showingEditSheet = true
-                        } label: {
-                            Label("Edit", systemImage: "pencil")
-                        }
-                        .tint(.orange)
-                    }
-                    .swipeActions(edge: .leading) {
-                        Button {
-                            if let context = entry.modelContext {
-                                let cloned = NutritionEntry(
-                                    food: entry.food ?? Food(nameEN: entry.foodName, nameTR: entry.foodName, calories: entry.calories / (entry.gramsConsumed / 100.0), protein: entry.protein / (entry.gramsConsumed / 100.0), carbs: entry.carbs / (entry.gramsConsumed / 100.0), fat: entry.fat / (entry.gramsConsumed / 100.0), category: .other),
-                                    gramsConsumed: entry.gramsConsumed,
-                                    mealType: entry.mealType,
-                                    date: Date()
-                                )
-                                context.insert(cloned)
-                                try? context.save()
-                                #if canImport(UIKit)
-                                UINotificationFeedbackGenerator().notificationOccurred(.success)
-                                #endif
+                            .padding(.horizontal)
+                            .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                                Button(role: .destructive) {
+                                    withAnimation {
+                                        if let context = entry.modelContext {
+                                            context.delete(entry)
+                                            try? context.save()
+                                            #if canImport(UIKit)
+                                            UINotificationFeedbackGenerator().notificationOccurred(.success)
+                                            #endif
+                                        }
+                                    }
+                                } label: {
+                                    Label("Delete", systemImage: "trash")
+                                }
+                                
+                                Button {
+                                    editingEntry = entry
+                                    showingEditSheet = true
+                                } label: {
+                                    Label("Edit", systemImage: "pencil")
+                                }
+                                .tint(.orange)
                             }
-                        } label: {
-                            Label("Duplicate", systemImage: "doc.on.doc")
+                            .swipeActions(edge: .leading) {
+                                Button {
+                                    if let context = entry.modelContext {
+                                        let cloned = NutritionEntry(
+                                            food: entry.food ?? Food(nameEN: entry.foodName, nameTR: entry.foodName, calories: entry.calories / (entry.gramsConsumed / 100.0), protein: entry.protein / (entry.gramsConsumed / 100.0), carbs: entry.carbs / (entry.gramsConsumed / 100.0), fat: entry.fat / (entry.gramsConsumed / 100.0), category: .other),
+                                            gramsConsumed: entry.gramsConsumed,
+                                            mealType: entry.mealType,
+                                            date: Date()
+                                        )
+                                        context.insert(cloned)
+                                        try? context.save()
+                                        #if canImport(UIKit)
+                                        UINotificationFeedbackGenerator().notificationOccurred(.success)
+                                        #endif
+                                    }
+                                } label: {
+                                    Label("Duplicate", systemImage: "doc.on.doc")
+                                }
+                                .tint(.green)
+                            }
                         }
-                        .tint(.green)
                     }
                 }
                 .sheet(isPresented: $showingEditSheet) {
@@ -145,6 +160,22 @@ struct DailyNutritionSummary: View {
             .cornerRadius(12)
             .padding(.horizontal)
         }
+    }
+}
+
+// MARK: - Helpers
+private func mealHeaderTitle(for mealKey: String) -> String {
+    switch mealKey {
+    case "breakfast":
+        return LocalizationKeys.Nutrition.MealEntry.MealTypes.breakfast.localized
+    case "lunch":
+        return LocalizationKeys.Nutrition.MealEntry.MealTypes.lunch.localized
+    case "dinner":
+        return LocalizationKeys.Nutrition.MealEntry.MealTypes.dinner.localized
+    case "snack":
+        return LocalizationKeys.Nutrition.MealEntry.MealTypes.snack.localized
+    default:
+        return mealKey.capitalized
     }
 }
 
