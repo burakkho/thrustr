@@ -39,6 +39,7 @@ struct NutritionView: View {
     @State private var selectedFood: Food?
     @State private var showingMealEntry = false
     @State private var showingFoodSelection = false
+    @State private var showingCustomFoodEntry = false
 
     init() {}
     
@@ -67,7 +68,7 @@ struct NutritionView: View {
                                 primaryTitle: LocalizationKeys.Nutrition.Empty.addMeal.localized,
                                 primaryAction: { showingFoodSelection = true },
                                 secondaryTitle: LocalizationKeys.Nutrition.Empty.addCustomFood.localized,
-                                secondaryAction: { showingFoodSelection = true; /* açılan sayfadan ekleyebilir */ }
+                                secondaryAction: { showingCustomFoodEntry = true }
                             )
                             .padding(.top, 40)
                         }
@@ -152,6 +153,15 @@ struct NutritionView: View {
                 .presentationDetents([.medium, .large])
                 .presentationDragIndicator(.visible)
             }
+        }
+        .sheet(isPresented: $showingCustomFoodEntry) {
+            CustomFoodEntryView { newFood in
+                selectedFood = newFood
+                showingCustomFoodEntry = false
+                showingMealEntry = true
+            }
+            .presentationDetents([.medium, .large])
+            .presentationDragIndicator(.visible)
         }
     }
     

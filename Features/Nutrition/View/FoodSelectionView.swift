@@ -7,8 +7,11 @@ struct FoodSelectionView: View {
     
     @Environment(\.dismiss) private var dismiss
     @State private var searchText = ""
+    @State private var debouncedSearchText = ""
+    @State private var searchTask: Task<Void, Never>? = nil
     @State private var selectedCategory: FoodCategory? = nil
     @State private var showingCustomFoodEntry = false
+    @State private var recentSearches: [String] = []
     
     private var filteredFoods: [Food] {
         var filtered = foods
@@ -19,10 +22,10 @@ struct FoodSelectionView: View {
         }
         
         // Arama filtresi
-        if !searchText.isEmpty {
+        if !debouncedSearchText.isEmpty {
             filtered = filtered.filter { food in
-                food.displayName.localizedCaseInsensitiveContains(searchText) ||
-                food.nameEN.localizedCaseInsensitiveContains(searchText)
+                food.displayName.localizedCaseInsensitiveContains(debouncedSearchText) ||
+                food.nameEN.localizedCaseInsensitiveContains(debouncedSearchText)
             }
         }
         
@@ -36,7 +39,49 @@ struct FoodSelectionView: View {
                 FoodSearchBar(text: $searchText)
                     .padding(.horizontal)
                     .padding(.top, 8)
+                    .onSubmit {
+                        let trimmed = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
+                        guard !trimmed.isEmpty else { return }
+                        if let existingIndex = recentSearches.firstIndex(of: trimmed) {
+                            recentSearches.remove(at: existingIndex)
+                        }
+                        recentSearches.insert(trimmed, at: 0)
+                        if recentSearches.count > 5 { recentSearches.removeLast(recentSearches.count - 5) }
+                    }
+                    .onChange(of: searchText) { newValue in
+                        searchTask?.cancel()
+                        searchTask = Task { @MainActor in
+                            try? await Task.sleep(nanoseconds: 250_000_000)
+                            if Task.isCancelled { return }
+                            debouncedSearchText = newValue
+                        }
+                    }
                 
+                // Son aramalar çipleri
+                if !recentSearches.isEmpty {
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 8) {
+                            ForEach(recentSearches, id: \.self) { term in
+                                FoodCategoryChip(
+                                    title: term,
+                                    isSelected: searchText == term,
+                                    color: .gray
+                                ) {
+                                    searchText = term
+                                    debouncedSearchText = term
+                                }
+                            }
+                            Button(LocalizationKeys.Nutrition.FoodSelection.clear.localized) {
+                                recentSearches.removeAll()
+                            }
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                        }
+                        .padding(.horizontal)
+                    }
+                    .padding(.top, 8)
+                }
+
                 // Kategori filtreleri
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 12) {

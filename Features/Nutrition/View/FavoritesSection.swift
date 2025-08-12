@@ -5,6 +5,8 @@ struct FavoritesSection: View {
     let foods: [Food]
     let onFoodSelected: (Food) -> Void
     
+    @State private var selectedList: ListType = .favorites
+    
     private var favoriteFoods: [Food] {
         foods.filter { $0.isFavorite }
             .sorted { $0.displayName < $1.displayName }
@@ -29,8 +31,16 @@ struct FavoritesSection: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            // Favoriler
-            if !favoriteFoods.isEmpty {
+            // Segment kontrol
+            Picker("", selection: $selectedList) {
+                Text(LocalizationKeys.Nutrition.Favorites.favorites.localized).tag(ListType.favorites)
+                Text(LocalizationKeys.Nutrition.Favorites.recent.localized).tag(ListType.recent)
+            }
+            .pickerStyle(.segmented)
+            .padding(.horizontal)
+            
+            // İçerik: Favoriler veya Son Kullanılanlar
+            if selectedList == .favorites, !favoriteFoods.isEmpty {
                 VStack(alignment: .leading, spacing: 8) {
                     HStack {
                         Image(systemName: "heart.fill")
@@ -54,8 +64,7 @@ struct FavoritesSection: View {
                 }
             }
             
-            // Son kullanılanlar
-            if !recentFoods.isEmpty {
+            if selectedList == .recent, !recentFoods.isEmpty {
                 VStack(alignment: .leading, spacing: 8) {
                     HStack {
                         Image(systemName: "clock.fill")
@@ -105,6 +114,11 @@ struct FavoritesSection: View {
             }
         }
     }
+}
+
+private enum ListType: Hashable {
+    case favorites
+    case recent
 }
 
 struct QuickFoodCard: View {

@@ -109,6 +109,14 @@ struct GoalProgressRing: View {
         Int(progress * 100)
     }
     
+    private var deltaInfo: (text: String, color: Color)? {
+        guard goal > 0 else { return nil }
+        let delta = Int(goal - current)
+        let text = "(\(delta >= 0 ? "-" : "+")\(abs(delta)) \(unit))"
+        let color: Color = delta >= 0 ? .green : .red
+        return (text, color)
+    }
+    
     var body: some View {
         VStack(spacing: 8) {
             ZStack {
@@ -144,6 +152,11 @@ struct GoalProgressRing: View {
                     Text("/ \(Int(goal)) \(unit)")
                         .font(.caption2)
                         .foregroundColor(.secondary)
+                    if let delta = deltaInfo {
+                        Text(delta.text)
+                            .font(.caption2)
+                            .foregroundColor(delta.color)
+                    }
                 } else {
                     Text(LocalizedStringKey(""))
                         .font(.caption2)
@@ -167,6 +180,12 @@ struct GoalProgressBar: View {
         return min(current / goal, 1.0)
     }
     
+    private var deltaInfo: String? {
+        guard goal > 0 else { return nil }
+        let delta = Int(goal - current)
+        return "(\(delta >= 0 ? "-" : "+")\(abs(delta))\(unit))"
+    }
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             HStack {
@@ -177,7 +196,7 @@ struct GoalProgressBar: View {
                 Spacer()
                 
                 if goal > 0 {
-                    Text("\(Int(current))/\(Int(goal))\(unit)")
+                    Text("\(Int(current))/\(Int(goal))\(unit) \(deltaInfo ?? "")")
                         .font(.caption2)
                         .foregroundColor(.secondary)
                 } else {
