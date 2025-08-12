@@ -216,7 +216,9 @@ struct NutritionEntryEditSheet: View {
         }
         entry.updatedAt = Date()
         try? modelContext.save()
-        HapticManager.shared.notification(.success)
+        #if canImport(UIKit)
+        UINotificationFeedbackGenerator().notificationOccurred(.success)
+        #endif
         dismiss()
     }
 }

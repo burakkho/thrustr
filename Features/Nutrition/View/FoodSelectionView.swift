@@ -86,7 +86,9 @@ struct FoodSelectionView: View {
                     List(filteredFoods) { food in
                         FoodRowView(food: food) {
                             onFoodSelected(food)
-                            HapticManager.shared.impact(.light)
+                            #if canImport(UIKit)
+                            UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                            #endif
                         }
                     }
                     .listStyle(.plain)
