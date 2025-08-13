@@ -25,11 +25,11 @@ class LanguageManager: ObservableObject {
         var displayName: String {
             switch self {
             case .system:
-                return "Sistem Dili"
+                return "Sistem"
             case .turkish:
                 return "Türkçe"
             case .english:
-                return "English"
+                return "İngilizce"
             }
         }
         

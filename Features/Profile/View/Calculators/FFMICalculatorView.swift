@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct FFMICalculatorView: View {
+    @EnvironmentObject private var unitSettings: UnitSettings
     @State private var weight = ""
     @State private var height = ""
     @State private var bodyFat = ""
@@ -15,6 +16,7 @@ struct FFMICalculatorView: View {
                 
                 // Input Section
                 FFMIInputSection(
+                    unitSystem: unitSettings.unitSystem,
                     weight: $weight,
                     height: $height,
                     bodyFat: $bodyFat
@@ -65,12 +67,16 @@ struct FFMICalculatorView: View {
               let heightValue = Double(height.replacingOccurrences(of: ",", with: ".")),
               let bodyFatValue = Double(bodyFat.replacingOccurrences(of: ",", with: ".")) else { return }
         
+        // Normalize inputs to metric if needed
+        let weightKg = unitSettings.unitSystem == .imperial ? UnitsConverter.lbsToKg(weightValue) : weightValue
+        let heightCm = heightValue // keep cm input for now
+
         // Calculate lean mass
-        let fatMass = weightValue * (bodyFatValue / 100)
-        let leanMassValue = weightValue - fatMass
+        let fatMass = weightKg * (bodyFatValue / 100)
+        let leanMassValue = weightKg - fatMass
         
         // Calculate FFMI
-        let heightInMeters = heightValue / 100
+        let heightInMeters = heightCm / 100
         let ffmiValue = leanMassValue / (heightInMeters * heightInMeters)
         
         // Normalized FFMI (adjust for height)
@@ -109,6 +115,7 @@ struct FFMIHeaderSection: View {
 
 // MARK: - Input Section
 struct FFMIInputSection: View {
+    let unitSystem: UnitSystem
     @Binding var weight: String
     @Binding var height: String
     @Binding var bodyFat: String
@@ -125,11 +132,11 @@ struct FFMIInputSection: View {
                     HStack {
                         Image(systemName: "scalemass.fill")
                             .foregroundColor(.green)
-                        Text("Vücut Ağırlığı (kg)")
+                        Text(unitSystem == .metric ? "Vücut Ağırlığı (kg)" : "Vücut Ağırlığı (lb)")
                             .fontWeight(.medium)
                     }
                     
-                    TextField("75", text: $weight)
+                    TextField(unitSystem == .metric ? "75" : "165", text: $weight)
                         .keyboardType(.decimalPad)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                         .font(.title3)

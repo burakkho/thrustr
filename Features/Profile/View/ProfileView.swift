@@ -4,6 +4,7 @@ import SwiftData
 struct ProfileView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var users: [User]
+    @EnvironmentObject private var unitSettings: UnitSettings
     
     @State private var showingPersonalInfoSheet = false
     @State private var showingPreferencesSheet = false
@@ -109,7 +110,9 @@ struct UserHeaderCard: View {
                     .fontWeight(.semibold)
                 
                 if let user = user {
-                    Text("\(user.age) \("profile.age".localized) • \(Int(user.height)) cm • \(Int(user.currentWeight)) kg")
+                    let heightText = UnitsFormatter.formatHeight(cm: user.height, system: unitSettings.unitSystem)
+                    let weightText = UnitsFormatter.formatWeight(kg: user.currentWeight, system: unitSettings.unitSystem)
+                    Text("\(user.age) \("profile.age".localized) • \(heightText) • \(weightText)")
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                     

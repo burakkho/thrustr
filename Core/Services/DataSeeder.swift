@@ -32,6 +32,7 @@ class DataSeeder {
 
         // Always run a normalization step to ensure critical categories are correct
         fixOlympicExerciseCategories(modelContext: modelContext)
+        normalizeExerciseCategoriesToPartTypes(modelContext: modelContext)
 
         // Normalize food data (categories, missing TR names)
         normalizeFoodData(modelContext: modelContext)
@@ -312,6 +313,28 @@ extension DataSeeder {
         } else {
             print("ℹ️ Olympic category normalization: no changes needed.")
         }
+    }
+}
+
+// MARK: - Exercise Normalization to 4 Part Types
+extension DataSeeder {
+    @MainActor
+    static func normalizeExerciseCategoriesToPartTypes(modelContext: ModelContext) {
+        let descriptor = FetchDescriptor<Exercise>()
+        guard let exercises = try? modelContext.fetch(descriptor) else { return }
+
+        var updated = 0
+        for ex in exercises {
+            let original = ExerciseCategory(rawValue: ex.category) ?? .other
+            // If it's 'other', collapse to strength to better map to powerStrength flow
+            if original == .other {
+                ex.category = ExerciseCategory.strength.rawValue
+                updated += 1
+            }
+        }
+
+        if updated > 0 { try? modelContext.save(); print("🔧 Normalized exercise categories (other→strength): updated=\(updated)") }
+        else { print("ℹ️ Exercise category normalization: no changes needed.") }
     }
 }
 

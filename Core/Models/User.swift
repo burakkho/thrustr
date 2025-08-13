@@ -19,6 +19,11 @@ final class User {
     var onboardingCompleted: Bool
     var profilePictureData: Data?
     
+    // MARK: - Legal / Consent
+    var consentAccepted: Bool
+    var consentTimestamp: Date?
+    var marketingOptIn: Bool
+    
     // MARK: - Account Information
     var createdAt: Date // MISSING PROPERTY ADDED
     var lastActiveDate: Date
@@ -73,6 +78,7 @@ final class User {
     }
     
     var displayHeight: String {
+        // Deprecated: UI should use UnitsFormatter via environment
         String(format: "%.0f cm", height)
     }
     
@@ -103,7 +109,10 @@ final class User {
         currentWeight: Double = 70,
         fitnessGoal: FitnessGoal = .maintain,
         activityLevel: ActivityLevel = .moderate,
-        selectedLanguage: String = "tr"
+        selectedLanguage: String = "tr",
+        consentAccepted: Bool = false,
+        marketingOptIn: Bool = false,
+        consentTimestamp: Date? = nil
     ) {
         self.name = name
         self.age = age
@@ -114,6 +123,9 @@ final class User {
         self.activityLevel = activityLevel.rawValue
         self.selectedLanguage = selectedLanguage
         self.onboardingCompleted = false
+        self.consentAccepted = consentAccepted
+        self.marketingOptIn = marketingOptIn
+        self.consentTimestamp = consentTimestamp
         
         // Account info
         self.createdAt = Date()
@@ -166,38 +178,34 @@ final class User {
     
     // MARK: - BMR Calculation (Mifflin-St Jeor Equation)
     private func calculateBMR() {
-        let weightKg = currentWeight
-        let heightCm = height
-        let ageYears = Double(age)
-        
-        if genderEnum == .male {
-            bmr = (10 * weightKg) + (6.25 * heightCm) - (5 * ageYears) + 5
-        } else {
-            bmr = (10 * weightKg) + (6.25 * heightCm) - (5 * ageYears) - 161
-        }
+        bmr = HealthCalculator.calculateBMR(
+            gender: genderEnum,
+            age: age,
+            heightCm: height,
+            weightKg: currentWeight,
+            bodyFatPercentage: calculateBodyFatPercentage()
+        )
     }
     
     // MARK: - TDEE Calculation
     private func calculateTDEE() {
-        tdee = bmr * activityLevelEnum.multiplier
+        tdee = HealthCalculator.calculateTDEE(bmr: bmr, activityLevel: activityLevelEnum)
     }
     
     // MARK: - Daily Goals Calculation
     private func calculateDailyGoals() {
-        // Base calories from TDEE and fitness goal
-        dailyCalorieGoal = tdee * fitnessGoalEnum.calorieAdjustment
-        
-        // Protein: goal-sensitive grams per kg body weight
-        dailyProteinGoal = currentWeight * fitnessGoalEnum.proteinMultiplier
-        
-        // Fat: 25% of total calories
-        dailyFatGoal = (dailyCalorieGoal * 0.25) / 9 // 9 calories per gram of fat
-        
-        // Carbs: Remaining calories
-        let proteinCalories = dailyProteinGoal * 4 // 4 calories per gram
-        let fatCalories = dailyFatGoal * 9
-        let remainingCalories = dailyCalorieGoal - proteinCalories - fatCalories
-        dailyCarbGoal = max(0, remainingCalories / 4) // 4 calories per gram of carbs
+        dailyCalorieGoal = HealthCalculator.calculateDailyCalories(
+            tdee: tdee,
+            goal: fitnessGoalEnum
+        )
+        let macros = HealthCalculator.calculateMacros(
+            weightKg: currentWeight,
+            dailyCalories: dailyCalorieGoal,
+            goal: fitnessGoalEnum
+        )
+        dailyProteinGoal = macros.protein
+        dailyCarbGoal = macros.carbs
+        dailyFatGoal = macros.fat
     }
     
     // MARK: - HealthKit Integration

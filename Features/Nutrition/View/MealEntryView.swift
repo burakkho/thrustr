@@ -53,7 +53,7 @@ struct MealEntryView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 
                 // Porsiyon girişi
-                PortionQuickSelect(quantity: $gramsConsumed)
+                PortionQuickSelect(quantity: $gramsConsumed, suggested: suggestedQuickAmounts())
                 VStack(alignment: .leading, spacing: 8) {
                     Text(LocalizationKeys.Nutrition.MealEntry.portion.localized)
                         .font(.headline)
@@ -161,6 +161,23 @@ struct MealEntryView: View {
             saveErrorMessage = error.localizedDescription
         }
     }
+
+    private func suggestedQuickAmounts() -> [Int] {
+        // Basit heuristik: bazı yaygın ürünler için pratik gram önerileri
+        let name = food.displayName.lowercased()
+        if name.contains("muz") || name.contains("banana") {
+            return [80, 100, 120, 150, 200]
+        } else if name.contains("yoğurt") || name.contains("yoghurt") || name.contains("yogurt") {
+            return [100, 150, 200, 250]
+        } else if name.contains("süt") || name.contains("milk") {
+            return [200, 250, 300]
+        } else if name.contains("pirinç") || name.contains("rice") {
+            return [50, 100, 150, 200, 250]
+        } else if name.contains("tavuk") || name.contains("chicken") {
+            return [100, 120, 150, 180, 200]
+        }
+        return []
+    }
 }
 
 #Preview {
@@ -183,7 +200,8 @@ struct MealEntryView: View {
 // MARK: - Portion Quick Select
 struct PortionQuickSelect: View {
     @Binding var quantity: Double
-    private let quickAmounts: [Int] = [25, 50, 100, 150, 200, 250]
+    var suggested: [Int] = []
+    private let defaultQuickAmounts: [Int] = [25, 50, 100, 150, 200, 250]
     @State private var showingCustomInput = false
     @State private var customText = ""
     
@@ -195,7 +213,8 @@ struct PortionQuickSelect: View {
             
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 8) {
-                    ForEach(quickAmounts, id: \.self) { amount in
+                    let amounts = suggested.isEmpty ? defaultQuickAmounts : suggested
+                    ForEach(amounts, id: \.self) { amount in
                         Button {
                             quantity = Double(amount)
                             #if canImport(UIKit)

@@ -1,3 +1,52 @@
+// MARK: - Reorderable list for sets
+private struct ReorderSetsList: View {
+    let exercise: Exercise
+    @Binding var sets: [SetData]
+    @Environment(\.theme) private var theme
+
+    var body: some View {
+        List {
+            Section(header:
+                        HStack {
+                            Text(LocalizationKeys.Training.Set.Header.set.localized)
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                            Spacer()
+                            if exercise.supportsWeight { Text(LocalizationKeys.Training.Set.Header.weight.localized).font(.caption).foregroundColor(.secondary) }
+                            if exercise.supportsReps { Text(LocalizationKeys.Training.Set.Header.reps.localized).font(.caption).foregroundColor(.secondary) }
+                            if exercise.supportsTime { Text(LocalizationKeys.Training.Set.Header.time.localized).font(.caption).foregroundColor(.secondary) }
+                            if exercise.supportsDistance { Text(LocalizationKeys.Training.Set.Header.distance.localized).font(.caption).foregroundColor(.secondary) }
+                        }
+            ) {
+                ForEach(Array(sets.enumerated()), id: \.element.id) { (index, _) in
+                    HStack {
+                        Text("\(index + 1)").font(.subheadline)
+                        Spacer()
+                        if exercise.supportsWeight { Text(sets[index].weight > 0 ? "\(Int(sets[index].weight))kg" : "-").font(.caption) }
+                        if exercise.supportsReps { Text(sets[index].reps > 0 ? "\(sets[index].reps)" : "-").font(.caption) }
+                        if exercise.supportsTime { Text(sets[index].durationSeconds > 0 ? timeText(sets[index].durationSeconds) : "-").font(.caption) }
+                        if exercise.supportsDistance { Text(sets[index].distanceMeters > 0 ? distanceText(sets[index].distanceMeters) : "-").font(.caption) }
+                    }
+                }
+                .onMove { indices, newOffset in
+                    sets.move(fromOffsets: indices, toOffset: newOffset)
+                }
+            }
+        }
+        .listStyle(.insetGrouped)
+        .toolbar { EditButton() }
+    }
+
+    private func timeText(_ secs: Int) -> String {
+        let m = secs / 60, s = secs % 60
+        return String(format: "%d:%02d", m, s)
+    }
+
+    private func distanceText(_ meters: Double) -> String {
+        if meters >= 1000 { return String(format: "%.1fkm", meters / 1000) }
+        return "\(Int(meters))m"
+    }
+}
 import SwiftUI
 import SwiftData
 
@@ -12,15 +61,13 @@ struct SetTrackingView: View {
     var onDismiss: ((Bool) -> Void)? = nil
     
     @State private var sets: [SetData] = []
-    @State private var showingRestTimer = false
-    @State private var showingRestPreset = false
-    @AppStorage("setTracking.defaultRestSeconds") private var defaultRestSeconds: Int = 60
-    @State private var restDuration = 60 // seconds
     @State private var notes = ""
     @State private var didSaveAnySet = false
     @State private var showSaveErrorAlert = false
     @State private var saveErrorMessage = ""
     @State private var showExitConfirm = false
+    @State private var isReordering = false
+    @State private var oneRMFormula: OneRMFormula = .epley
     
     var body: some View {
         NavigationStack {
@@ -28,40 +75,47 @@ struct SetTrackingView: View {
                 // Exercise header
                 ExerciseHeader(exercise: exercise)
                 
-                // Sets table
-                ScrollView {
-                    VStack(spacing: 16) {
-                        // Table header
-                        SetTableHeader(exercise: exercise)
-                        
-                        // Sets list
-                        ForEach(sets.indices, id: \.self) { index in
-                            SetRow(
-                                setData: $sets[index],
-                                setNumber: index + 1,
-                                exercise: exercise,
-                                onComplete: {
-                                    completeSet(at: index)
-                                }
-                            )
+                if isReordering {
+                    ReorderSetsList(exercise: exercise, sets: $sets)
+                } else {
+                    // Sets table
+                    ScrollView {
+                        VStack(spacing: 16) {
+                            // Table header
+                            SetTableHeader(exercise: exercise)
+                            
+                            // Sets list with stable IDs to avoid diff glitches
+                            ForEach(Array(sets.enumerated()), id: \.element.id) { (index, _) in
+                                SetRow(
+                                    setData: $sets[index],
+                                    setNumber: index + 1,
+                                    exercise: exercise,
+                                    onComplete: {
+                                        completeSet(at: index)
+                                    },
+                                    oneRMFormula: oneRMFormula
+                                )
+                            }
+                            
+                            // Add set button
+                            AddSetButton {
+                                addNewSet()
+                            }
+                            
+                            // Bulk add control (user selectable 1..5)
+                            BulkAddControl(onAdd: { count in
+                                addMultipleSets(count)
+                            })
+                            
+                            // Notes section
+                            NotesSection(notes: $notes)
                         }
-                        
-                        // Add set button
-                        AddSetButton {
-                            addNewSet()
-                        }
-                        
-                        // Notes section
-                        NotesSection(notes: $notes)
+                        .padding()
                     }
-                    .padding()
                 }
                 
                 // Bottom action bar
                 SetTrackingActionBar(
-                    onRestTimer: {
-                        showingRestPreset = true
-                    },
                     onFinish: {
                         finishExercise()
                     },
@@ -79,31 +133,37 @@ struct SetTrackingView: View {
                 }
                 
                 ToolbarItem(placement: .navigationBarTrailing) {
+                    Button(isReordering ? LocalizationKeys.Common.done.localized : "Sırala") {
+                        withAnimation { isReordering.toggle() }
+                    }
+                    .accessibilityLabel(isReordering ? LocalizationKeys.Common.done.localized : "Sırala")
+                }
+                
+                ToolbarItem(placement: .navigationBarTrailing) {
                     Button(LocalizationKeys.Training.Set.save.localized) {
                         finishExercise()
                     }
                     .fontWeight(.semibold)
                     .accessibilityLabel(LocalizationKeys.Training.Set.save.localized)
                 }
-            }
-            .sheet(isPresented: $showingRestTimer) { RestTimerView(duration: restDuration) }
-            .sheet(isPresented: $showingRestPreset) {
-                RestTimerPresetView { seconds in
-                    let sec = max(0, seconds)
-                    if sec > 0 { restDuration = sec; defaultRestSeconds = sec }
-                    showingRestPreset = false
-                    if restDuration > 0 { showingRestTimer = true }
+
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Menu("1RM: \(oneRMFormula.displayName)") {
+                        ForEach(OneRMFormula.allCases, id: \.self) { formula in
+                            Button(formula.displayName) { selectFormula(formula) }
+                        }
+                    }
+                    .accessibilityLabel("1RM formülü")
                 }
             }
+            
         }
-        .onAppear {
-            setupInitialSets()
-            restDuration = defaultRestSeconds
-        }
+        // No auto-created sets on appear. User will add sets manually.
         .onDisappear {
             // Notify parent; if user dismissed without saving, inform false
             onDismiss?(didSaveAnySet)
         }
+        .onAppear { loadFormulaPreference() }
         // Test Cases (Manual):
         // 1) Same exercise multiple completed sets -> set numbers should continue from max existing.
         // 2) Dismiss without completing any set -> no placeholder in part after parent onDismiss.
@@ -123,13 +183,11 @@ struct SetTrackingView: View {
                 dismissButton: .default(Text(LocalizationKeys.Common.ok.localized))
             )
         }
-    }
-    
-    private func setupInitialSets() {
-        if sets.isEmpty {
-            // Add 3 empty sets to start
-            for _ in 0..<3 {
-                sets.append(SetData())
+        .toolbar {
+            ToolbarItemGroup(placement: .keyboard) {
+                Button("Hızlı Doldur") { quickFillFromPrevious() }
+                Spacer()
+                Button(LocalizationKeys.Common.close.localized) { dismissKeyboard() }
             }
         }
     }
@@ -141,17 +199,27 @@ struct SetTrackingView: View {
         if let lastSet = sets.last {
             newSet.weight = lastSet.weight
             newSet.reps = lastSet.reps
-            newSet.duration = lastSet.duration
-            newSet.distance = lastSet.distance
+            newSet.durationSeconds = lastSet.durationSeconds
+            newSet.distanceMeters = lastSet.distanceMeters
         }
         
         sets.append(newSet)
     }
+
+    private func addMultipleSets(_ count: Int) {
+        let safe = max(1, min(count, 5))
+        for _ in 0..<safe { addNewSet() }
+        HapticManager.shared.impact(.light)
+    }
     
     private func completeSet(at index: Int) {
-        sets[index].isCompleted = true
-        
-        // Auto-add new set if this was the last one
+        var txn = Transaction()
+        txn.disablesAnimations = true
+        withTransaction(txn) {
+            sets[index].isCompleted = true
+        }
+        HapticManager.shared.impact(.light)
+        // If user completes the last row, auto-append a new set prefilled
         if index == sets.count - 1 {
             addNewSet()
         }
@@ -178,9 +246,9 @@ struct SetTrackingView: View {
                 setNumber: Int16(nextNumber),
                 weight: setData.weight,
                 reps: setData.reps != 0 ? Int16(setData.reps) : nil,
-                duration: setData.duration != 0 ? Int32(setData.duration) : nil,
-                distance: setData.distance != 0 ? setData.distance : nil,
-                rpe: setData.rpe != 0 ? Int16(setData.rpe) : nil,
+                duration: setData.durationSeconds > 0 ? Int32(setData.durationSeconds) : nil,
+                distance: setData.distanceMeters > 0 ? setData.distanceMeters : nil,
+                rpe: nil,
                 isCompleted: true
             )
 
@@ -222,19 +290,47 @@ struct SetTrackingView: View {
         }
         dismiss()
     }
+
+    private func loadFormulaPreference() {
+        let raw = UserDefaults.standard.string(forKey: "training.onerm.formula")
+        if let raw, let f = OneRMFormula(rawValue: raw) { oneRMFormula = f }
+    }
+
+    private func selectFormula(_ f: OneRMFormula) {
+        oneRMFormula = f
+        UserDefaults.standard.set(f.rawValue, forKey: "training.onerm.formula")
+    }
+
+    private func quickFillFromPrevious() {
+        guard sets.count >= 2 else { return }
+        let src = sets[sets.count - 2]
+        let dstIndex = sets.count - 1
+        guard !sets[dstIndex].isCompleted else { return }
+        sets[dstIndex].weight = src.weight
+        sets[dstIndex].reps = src.reps
+        sets[dstIndex].durationSeconds = src.durationSeconds
+        sets[dstIndex].distanceMeters = src.distanceMeters
+        HapticManager.shared.impact(.light)
+    }
+
+    private func dismissKeyboard() {
+        #if canImport(UIKit)
+        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+        #endif
+    }
 }
 
 // MARK: - Set Data Model
-class SetData: ObservableObject {
+class SetData: ObservableObject, Identifiable {
+    let id = UUID()
     @Published var weight: Double = 0
     @Published var reps: Int = 0
-    @Published var duration: Int = 0 // seconds
-    @Published var distance: Double = 0 // meters
-    @Published var rpe: Int = 0 // 1-10 scale
+    @Published var durationSeconds: Int = 0
+    @Published var distanceMeters: Double = 0
     @Published var isCompleted: Bool = false
     
     var hasValidData: Bool {
-        weight > 0 || reps > 0 || duration > 0 || distance > 0
+        weight > 0 || reps > 0 || durationSeconds > 0 || distanceMeters > 0
     }
 }
 
@@ -318,7 +414,7 @@ struct SetTableHeader: View {
                     .foregroundColor(.secondary)
                     .frame(maxWidth: .infinity)
             }
-            
+
             if exercise.supportsTime {
                 Text(LocalizationKeys.Training.Set.Header.time.localized)
                     .font(.caption)
@@ -326,7 +422,7 @@ struct SetTableHeader: View {
                     .foregroundColor(.secondary)
                     .frame(maxWidth: .infinity)
             }
-            
+
             if exercise.supportsDistance {
                 Text(LocalizationKeys.Training.Set.Header.distance.localized)
                     .font(.caption)
@@ -334,13 +430,6 @@ struct SetTableHeader: View {
                     .foregroundColor(.secondary)
                     .frame(maxWidth: .infinity)
             }
-            
-            // RPE
-            Text(LocalizationKeys.Training.Set.Header.rpe.localized)
-                .font(.caption)
-                .fontWeight(.semibold)
-                .foregroundColor(.secondary)
-                .frame(width: 50)
             
             // Complete button space
             Text("")
@@ -359,9 +448,10 @@ struct SetRow: View {
     let setNumber: Int
     let exercise: Exercise
     let onComplete: () -> Void
+    let oneRMFormula: OneRMFormula
     
     var body: some View {
-        HStack(spacing: 0) {
+		HStack(spacing: 0) {
             // Set number
             Text("\(setNumber)")
                 .font(.headline)
@@ -390,29 +480,33 @@ struct SetRow: View {
                 )
                 .frame(maxWidth: .infinity)
             }
-            
+
             if exercise.supportsTime {
                 TimeInputField(
-                    seconds: $setData.duration,
+                    seconds: $setData.durationSeconds,
                     isEnabled: !setData.isCompleted
                 )
                 .frame(maxWidth: .infinity)
             }
-            
+
             if exercise.supportsDistance {
                 NumberInputField(
-                    value: $setData.distance,
+                    value: $setData.distanceMeters,
                     placeholder: LocalizationKeys.Training.Set.meters.localized,
-                    isEnabled: !setData.isCompleted
+                    isEnabled: !setData.isCompleted,
+                    allowDecimals: true
                 )
                 .frame(maxWidth: .infinity)
             }
+
+            if let estimate = estimatedOneRM() {
+                Text("~\(Int(estimate)) 1RM")
+                    .font(.caption2)
+                    .foregroundColor(.secondary)
+                    .frame(width: 70)
+            }
             
-            // RPE picker
-            RPEPicker(rpe: $setData.rpe, isEnabled: !setData.isCompleted)
-                .frame(width: 50)
-            
-            // Complete button
+			// Complete button
             Button(action: onComplete) {
                 Image(systemName: setData.isCompleted ? "checkmark.circle.fill" : "circle")
                     .font(.title2)
@@ -423,7 +517,19 @@ struct SetRow: View {
             .accessibilityHint("Seti tamamla")
             .frame(width: 60)
             .disabled(setData.isCompleted || !setData.hasValidData)
+            .contextMenu {
+                Button(setData.isCompleted ? LocalizationKeys.Common.completed.localized : LocalizationKeys.Training.Set.finishExercise.localized) {
+                    onComplete()
+                }
+                if setData.isCompleted {
+                    Button(LocalizationKeys.Common.cancel.localized) {
+                        setData.isCompleted = false
+                    }
+                }
+            }
         }
+		.accessibilityElement(children: .combine)
+		.accessibilityLabel(accessibleSummary())
         .padding(.horizontal)
         .padding(.vertical, 12)
         .background(setData.isCompleted ? Color.green.opacity(0.1) : Color(.systemBackground))
@@ -433,6 +539,28 @@ struct SetRow: View {
                 .stroke(setData.isCompleted ? Color.green : Color(.systemGray4), lineWidth: 1)
         )
     }
+
+    private func estimatedOneRM() -> Double? {
+        guard exercise.supportsWeight, exercise.supportsReps else { return nil }
+        let w = setData.weight
+        let r = setData.reps
+        guard w > 0, r > 0 else { return nil }
+        return oneRMFormula.estimate1RM(weight: w, reps: r)
+    }
+
+	private func accessibleSummary() -> String {
+		var pieces: [String] = ["Set \(setNumber)"]
+		if exercise.supportsWeight, setData.weight > 0 { pieces.append("\(Int(setData.weight)) kilogram") }
+		if exercise.supportsReps, setData.reps > 0 { pieces.append("\(setData.reps) tekrar") }
+		if exercise.supportsTime, setData.durationSeconds > 0 {
+			let m = setData.durationSeconds / 60
+			let s = setData.durationSeconds % 60
+			pieces.append("\(m) dakika \(s) saniye")
+		}
+		if exercise.supportsDistance, setData.distanceMeters > 0 { pieces.append("\(Int(setData.distanceMeters)) metre") }
+		pieces.append(setData.isCompleted ? "tamamlandı" : "tamamlanmadı")
+		return pieces.joined(separator: ", ")
+	}
 }
 
 // MARK: - Number Input Field
@@ -582,7 +710,6 @@ struct NotesSection: View {
 
 // MARK: - Set Tracking Action Bar
 struct SetTrackingActionBar: View {
-    let onRestTimer: () -> Void
     let onFinish: () -> Void
     let hasCompletedSets: Bool
     @Environment(\.theme) private var theme
@@ -592,23 +719,11 @@ struct SetTrackingActionBar: View {
             Divider()
             
             HStack(spacing: 12) {
-                // Rest timer button
-                Button(LocalizationKeys.Training.Set.rest.localized) {
-                    onRestTimer()
-                }
-                .font(.subheadline)
-                .foregroundColor(theme.colors.warning)
-                .padding(.horizontal, theme.spacing.l)
-                .padding(.vertical, theme.spacing.s)
-                .background(theme.colors.warning.opacity(0.1))
-                .cornerRadius(8)
-                
                 Spacer()
-                
                 // Finish button
                 Button(LocalizationKeys.Training.Set.finishExercise.localized) {
                     onFinish()
-                    UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                    HapticManager.shared.impact(.light)
                 }
                 .font(.headline)
                 .foregroundColor(.white)
@@ -625,18 +740,74 @@ struct SetTrackingActionBar: View {
     }
 }
 
+// MARK: - Bulk Add Control (1..5)
+struct BulkAddControl: View {
+    let onAdd: (Int) -> Void
+    @Environment(\.theme) private var theme
+    @State private var count: Int = 3
+
+    var body: some View {
+        HStack(spacing: theme.spacing.m) {
+            HStack(spacing: theme.spacing.s) {
+                Text("Toplu Ekle")
+                    .font(.subheadline)
+                    .foregroundColor(theme.colors.textSecondary)
+                Stepper("x\(count)", value: $count, in: 1...5)
+                    .labelsHidden()
+            }
+            Spacer()
+            Button(LocalizationKeys.Common.add.localized) {
+                onAdd(count)
+            }
+            .font(.subheadline)
+            .foregroundColor(.white)
+            .padding(.horizontal, theme.spacing.m)
+            .padding(.vertical, theme.spacing.s)
+            .background(theme.colors.accent)
+            .cornerRadius(8)
+            .buttonStyle(PressableStyle())
+            .accessibilityLabel("Toplu set ekle")
+        }
+    }
+}
+
 #Preview {
-    let exercise = Exercise(
-        nameEN: "Bench Press",
-        nameTR: "Göğüs Presi",
-        category: "push",
-        equipment: "barbell,bench"
-    )
+    let exercise = Exercise(nameEN: "Bench Press", nameTR: "Göğüs Presi", category: "push", equipment: "barbell,bench")
     exercise.supportsWeight = true
     exercise.supportsReps = true
-    
-    let workoutPart = WorkoutPart(name: "Strength", type: .strength, orderIndex: 1)
-    
+    let workoutPart = WorkoutPart(name: "Power & Strength", type: .powerStrength, orderIndex: 1)
     return SetTrackingView(exercise: exercise, workoutPart: workoutPart)
-        .modelContainer(for: [Exercise.self, ExerciseSet.self], inMemory: true)
+        .modelContainer(for: [Exercise.self, ExerciseSet.self, WorkoutPart.self], inMemory: true)
+}
+
+// MARK: - OneRM
+enum OneRMFormula: String, CaseIterable {
+    case epley
+    case brzycki
+    case lander
+
+    var displayName: String {
+        switch self {
+        case .epley: return "Epley"
+        case .brzycki: return "Brzycki"
+        case .lander: return "Lander"
+        }
+    }
+
+    func estimate1RM(weight: Double, reps: Int) -> Double {
+        guard reps > 0 else { return weight }
+        switch self {
+        case .epley:
+            // 1RM = w * (1 + r/30)
+            return weight * (1.0 + Double(reps) / 30.0)
+        case .brzycki:
+            // 1RM = w * 36 / (37 - r)
+            let denom = max(1.0, 37.0 - Double(reps))
+            return weight * 36.0 / denom
+        case .lander:
+            // 1RM = w * 100 / (101.3 - 2.67123r)
+            let denom = max(1.0, 101.3 - 2.67123 * Double(reps))
+            return weight * 100.0 / denom
+        }
+    }
 }

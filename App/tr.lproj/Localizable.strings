@@ -116,6 +116,8 @@
 
 // MARK: - Onboarding
 "onboarding.back" = "Geri";
+"onboarding.next" = "İleri";
+"onboarding.skip" = "Atla";
 
 // Welcome Step
 "onboarding.welcome.title" = "Spor Hocam'a\nHoş Geldin! 💪";
@@ -142,6 +144,17 @@
 "onboarding.personalInfo.height" = "Boy";
 "onboarding.personalInfo.weight" = "Kilo";
 "onboarding.continue" = "Devam Et";
+
+// Consent Step
+"onboarding.consent.title" = "Aydınlatma ve Onay";
+"onboarding.consent.subtitle" = "Devam etmek için belgeleri inceleyip onaylayın.";
+"onboarding.consent.terms.title" = "Kullanım Şartlarını Kabul Et";
+"onboarding.consent.terms.desc" = "Uygulamayı kullanmak için Kullanım Şartlarını kabul etmelisin.";
+"onboarding.consent.viewTerms" = "Kullanım Şartlarını Görüntüle";
+"onboarding.consent.privacy.title" = "Gizlilik Politikasını Kabul Et";
+"onboarding.consent.privacy.desc" = "Lütfen Gizlilik Politikamızı inceleyip onaylayın.";
+"onboarding.consent.viewPrivacy" = "Gizlilik Politikasını Görüntüle";
+"onboarding.consent.marketing" = "Ürün güncellemeleri ve ipuçlarını almak istiyorum";
 
 // Goals Step
 "onboarding.goals.title" = "Hedeflerin";
@@ -211,6 +224,11 @@
 "onboarding.summary.info.withNavy" = "Vücut yağ oranın Donanma Yöntemi ile hesaplandığı için daha doğru Katch-McArdle formülü kullanıldı. İstediğin zaman profil ayarlarından değiştirebilirsin.";
 "onboarding.summary.info.withoutNavy" = "Vücut ölçümleri olmadığı için Mifflin-St Jeor formülü kullanıldı. Daha doğru hesaplama için profil ayarlarından ölçümlerini ekleyebilirsin.";
 "onboarding.summary.startApp" = "Uygulamayı Başlat";
+
+// Preferences Step (Theme & Language)
+"onboarding.preferences.title" = "Tercihlerini Seç";
+"onboarding.preferences.language" = "Dil";
+"onboarding.preferences.theme" = "Tema";
 
 // Summary Labels
 "onboarding.summary.label.name" = "İsim";
@@ -303,6 +321,8 @@
 "training.history.defaultName" = "Antrenman";
 "training.history.noParts" = "Bölüm yok";
 "training.history.totalVolume" = "Toplam Hacim: %d kg";
+"training.history.seeMore" = "Daha Fazla";
+"training.history.repeat" = "Bu antrenmanı tekrarla";
 
 // MARK: - Active Workout
 "training.active.empty.title" = "Aktif Antrenman Yok";
@@ -339,6 +359,8 @@
 // MARK: - Templates
 "training.templates.title" = "Şablonlar";
 "training.templates.empty" = "Hazır antrenman şablonları yakında eklenecek!";
+"training.templates.saveAsTemplate" = "Şablon Olarak Kaydet";
+"training.templates.removeFromTemplates" = "Şablondan Çıkar";
 
 // MARK: - Workout Detail
 "training.detail.back" = "Geri";
@@ -351,27 +373,59 @@
 "training.detail.addPart" = "Bölüm Ekle";
 
 // MARK: - Workout Parts
-"training.part.strength" = "Kuvvet";
-"training.part.conditioning" = "Kondisyon";
-"training.part.accessory" = "Yardımcı";
-"training.part.warmup" = "Isınma";
-"training.part.functional" = "Fonksiyonel";
-"training.part.olympic" = "Olimpik";
-"training.part.plyometric" = "Plyometrik";
+"training.part.powerStrength" = "Güç & Kuvvet";
+"training.part.metcon" = "Metcon";
+"training.part.accessory" = "Aksesuar";
+"training.part.cardio" = "Kardiyo";
 
-"training.part.strength.desc" = "Ağırlık antrenmanı, set/rep tracking";
-"training.part.conditioning.desc" = "WOD, kardiyo, kondisyon antrenmanı";
-"training.part.accessory.desc" = "Yardımcı hareketler, izolasyon";
-"training.part.warmup.desc" = "Isınma hareketleri";
-"training.part.functional.desc" = "Fonksiyonel hareketler, crossfit";
-"training.part.olympic.desc" = "Olimpik halter kaldırışları";
-"training.part.plyometric.desc" = "Plyometrik/patlayıcı güç çalışmaları";
+"training.part.powerStrength.desc" = "Ağırlık ve olimpik kaldırışlar";
+"training.part.metcon.desc" = "WOD ve kondisyon çalışmaları";
+"training.part.accessory.desc" = "İzole ve yardımcı hareketler";
+"training.part.cardio.desc" = "Koşu, kürek ve bisiklet";
 
 "training.part.status.completed" = "Tamamlandı";
 "training.part.status.inProgress" = "Devam ediyor";
 "training.part.noExercise" = "Henüz egzersiz eklenmedi";
 "training.part.addExercise" = "Egzersiz Ekle";
 "training.part.result" = "Sonuç:";
+
+// MARK: - WOD / METCON
+"training.wod.title" = "WOD";
+"training.wod.result" = "WOD Sonucu";
+"training.wod.add" = "+ WOD";
+"training.wod.addResult" = "WOD Sonucu Ekle";
+"training.wod.editResult" = "WOD Sonucunu Düzenle";
+"training.wod.favorites" = "Favoriler";
+"training.wod.benchmarks" = "Benchmark";
+"training.wod.forTime" = "For Time";
+"training.wod.amrap" = "AMRAP";
+"training.wod.emom" = "EMOM";
+"training.wod.custom" = "Özel";
+"training.wod.customResult" = "Özel Sonuç";
+"training.wod.enterTime" = "Süre gir (DD:SS)";
+"training.wod.rounds" = "Round";
+"training.wod.reps" = "Tekrar";
+"training.wod.emomCompleted" = "Tamamlanan EMOM Round";
+"training.wod.total" = "Toplam";
+"training.wod.create" = "WOD Oluştur";
+"training.wod.builder.namePlaceholder" = "WOD Adı (opsiyonel)";
+"training.wod.builder.schemePlaceholderForTime" = "Tekrar düzeni (örn: 21-15-9)";
+"training.wod.builder.schemePlaceholderAmrap" = "Hareket başına tekrar (örn: 10)";
+"training.wod.builder.movementsPlaceholder" = "Hareketler, virgülle (örn: Thruster, Burpee)";
+"training.wod.builder.schemeHintForTime" = "Örn: 21-15-9 veya 10-10-10";
+"training.wod.builder.schemeHintAmrap" = "Örn: 10 (her hareket round başına 10 tekrar)";
+"training.wod.builder.movementsHint" = "Örn: Thruster, Burpee";
+"training.wod.builder.start" = "Başlat";
+"training.wod.runner.undo" = "Geri Al";
+"training.wod.runner.addRound" = "Round Ekle";
+"training.wod.runner.extraReps" = "Extra: %d tekrar";
+"training.wod.runner.scoreButton" = "Skor Gir";
+"training.wod.runner.finish" = "Bitir";
+"training.wod.runner.scoreTitle" = "Süre (DD:SS)";
+"training.wod.runner.roundsLabel" = "Round: %d";
+"training.wod.runner.stepsProgress" = "%d/%d";
+"training.wod.runner.tipTitle" = "Nasıl kullanılır";
+"training.wod.runner.tipBody" = "Adımları sağdaki ikonla tamamla. Bittiğinde Skor Gir'e dokun.";
 
 // MARK: - Add Part
 "training.addPart.title" = "Bölüm Ekle";
@@ -390,7 +444,7 @@
 "training.exercise.cancel" = "İptal";
 "training.exercise.addCustom" = "Özel Ekle";
 "training.exercise.empty.title" = "Egzersiz Bulunamadı";
-"training.exercise.empty.subtitle" = "Kategori seçerek filtreleyebilirsin";
+"training.exercise.empty.subtitle" = "Aramayı veya favorileri kullan";
 "training.exercise.empty.searchTitle" = "'%@' için sonuç yok";
 "training.exercise.empty.searchSubtitle" = "Farklı anahtar kelimeler dene";
 

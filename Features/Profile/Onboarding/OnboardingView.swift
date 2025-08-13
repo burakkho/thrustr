@@ -16,6 +16,25 @@ struct OnboardingView: View {
     @AppStorage("onboardingData") private var savedDataJSON: String = ""
     @State private var currentStep = 0
     @State private var onboardingData = OnboardingData()
+    @State private var toastMessage: String? = nil
+    
+    // Eşitlenebilir anlık görüntü: herhangi bir alan değiştiğinde değişir
+    private var dataSnapshot: DataSnapshot {
+        DataSnapshot(
+            name: onboardingData.name,
+            age: onboardingData.age,
+            gender: onboardingData.gender,
+            height: onboardingData.height,
+            weight: onboardingData.weight,
+            targetWeight: onboardingData.targetWeight,
+            fitnessGoal: onboardingData.fitnessGoal,
+            activityLevel: onboardingData.activityLevel,
+            unitSystem: onboardingData.unitSystem,
+            neckCircumference: onboardingData.neckCircumference,
+            waistCircumference: onboardingData.waistCircumference,
+            hipCircumference: onboardingData.hipCircumference
+        )
+    }
     
     var body: some View {
         ZStack {
@@ -23,18 +42,20 @@ struct OnboardingView: View {
             Color(.systemBackground)
                 .ignoresSafeArea()
             
+            ToastPresenter(message: $toastMessage, icon: "exclamationmark.triangle.fill") {
             VStack {
                 if currentStep > 0 {
-                    InteractiveProgressBar(currentStep: currentStep, totalSteps: 5, style: .compact)
+                    InteractiveProgressBar(currentStep: currentStep, totalSteps: 6, style: .compact)
                         .padding(.top, 8)
                 }
                 
                 switch currentStep {
                 case 0: WelcomeStepView(onNext: { currentStep = 1 })
-                case 1: PersonalInfoStepView(data: $onboardingData, onNext: { currentStep = 2 })
-                case 2: GoalsStepView(data: $onboardingData, onNext: { currentStep = 3 })
-                case 3: MeasurementsStepView(data: $onboardingData, onNext: { currentStep = 4 })
-                case 4: SummaryStepView(data: onboardingData, onComplete: completeOnboarding)
+                case 1: ConsentStepView(data: $onboardingData, onNext: { currentStep = 2 })
+                case 2: PersonalInfoStepView(data: $onboardingData, onNext: { currentStep = 3 })
+                case 3: GoalsStepView(data: $onboardingData, onNext: { currentStep = 4 })
+                case 4: MeasurementsStepView(data: $onboardingData, onNext: { currentStep = 5 })
+                case 5: SummaryStepView(data: onboardingData, onComplete: completeOnboarding)
                 default: EmptyView()
                 }
                 
@@ -51,8 +72,14 @@ struct OnboardingView: View {
                     .padding(.bottom)
                 }
             }
+            .scrollDismissesKeyboard(.interactively)
+            }
             .onAppear(perform: restoreProgressIfNeeded)
             .onChange(of: currentStep) { _, _ in
+                persistProgress()
+            }
+            // Form alanı değişiminde anında kaydet
+            .onChange(of: dataSnapshot) { _, _ in
                 persistProgress()
             }
         }
@@ -68,14 +95,24 @@ struct OnboardingView: View {
             age: onboardingData.age,
             gender: genderEnum,
             height: onboardingData.height,
-            currentWeight: onboardingData.weight
+            currentWeight: onboardingData.weight,
+            fitnessGoal: FitnessGoal(rawValue: onboardingData.fitnessGoal) ?? .maintain,
+            activityLevel: ActivityLevel(rawValue: onboardingData.activityLevel) ?? .moderate,
+            selectedLanguage: LanguageManager.shared.currentLanguage.rawValue,
+            consentAccepted: onboardingData.consentAccepted,
+            marketingOptIn: onboardingData.marketingOptIn,
+            consentTimestamp: onboardingData.consentTimestamp
         )
         
         print("✅ User oluşturuldu: \(newUser.name)")
         
-        newUser.fitnessGoal = onboardingData.fitnessGoal
-        newUser.activityLevel = onboardingData.activityLevel
         newUser.onboardingCompleted = true
+
+        // Navy ölçülerini kullanıcı modeline aktar ve metrikleri güncelle
+        newUser.neck = onboardingData.neckCircumference
+        newUser.waist = onboardingData.waistCircumference
+        newUser.hips = onboardingData.hipCircumference
+        newUser.calculateMetrics()
         
         print("✅ User properties set edildi")
         
@@ -92,17 +129,48 @@ struct OnboardingView: View {
                     print("✅ HealthKit authorized")
                 } else {
                     print("⚠️ HealthKit authorization reddedildi")
+                    await MainActor.run {
+                        toastMessage = "HealthKit izni reddedildi"
+                    }
                 }
             }
             
             onboardingCompleted = true
+            // Başlangıç ölçümleri (isteğe bağlı kayıtlar)
+            createInitialEntries(for: newUser)
             // Temizle
             savedStep = 0
             savedDataJSON = ""
             print("✅ Onboarding tamamlandı")
         } catch {
             print("❌ Save error: \(error)")
+            toastMessage = "Kayıt başarısız: \(error.localizedDescription)"
         }
+    }
+    
+    private func createInitialEntries(for user: User) {
+        // Başlangıç ağırlığı
+        let weightEntry = WeightEntry(weight: user.currentWeight, date: Date())
+        weightEntry.user = user
+        modelContext.insert(weightEntry)
+        
+        // Opsiyonel Navy ölçümlerini BodyMeasurement olarak kaydet
+        if let neck = onboardingData.neckCircumference {
+            let m = BodyMeasurement(type: MeasurementType.neck.rawValue, value: neck, date: Date())
+            m.user = user
+            modelContext.insert(m)
+        }
+        if let waist = onboardingData.waistCircumference {
+            let m = BodyMeasurement(type: MeasurementType.waist.rawValue, value: waist, date: Date())
+            m.user = user
+            modelContext.insert(m)
+        }
+        if let hip = onboardingData.hipCircumference {
+            let m = BodyMeasurement(type: MeasurementType.hips.rawValue, value: hip, date: Date())
+            m.user = user
+            modelContext.insert(m)
+        }
+        do { try modelContext.save() } catch { print("❌ Initial entries save error: \(error)") }
     }
 
     // MARK: - Persistence
@@ -135,12 +203,17 @@ class OnboardingData: Codable {
     var targetWeight: Double?
     var fitnessGoal: String
     var activityLevel: String
+    var unitSystem: String // "metric" | "imperial"
     var neckCircumference: Double?
     var waistCircumference: Double?
     var hipCircumference: Double?
+    // Consent
+    var consentAccepted: Bool
+    var marketingOptIn: Bool
+    var consentTimestamp: Date?
 
     enum CodingKeys: String, CodingKey {
-        case name, age, gender, height, weight, targetWeight, fitnessGoal, activityLevel, neckCircumference, waistCircumference, hipCircumference
+        case name, age, gender, height, weight, targetWeight, fitnessGoal, activityLevel, unitSystem, neckCircumference, waistCircumference, hipCircumference, consentAccepted, marketingOptIn, consentTimestamp
     }
 
     init(
@@ -152,9 +225,13 @@ class OnboardingData: Codable {
         targetWeight: Double? = nil,
         fitnessGoal: String = "maintain",
         activityLevel: String = "moderate",
+        unitSystem: String = "metric",
         neckCircumference: Double? = nil,
         waistCircumference: Double? = nil,
-        hipCircumference: Double? = nil
+        hipCircumference: Double? = nil,
+        consentAccepted: Bool = false,
+        marketingOptIn: Bool = false,
+        consentTimestamp: Date? = nil
     ) {
         self.name = name
         self.age = age
@@ -164,9 +241,13 @@ class OnboardingData: Codable {
         self.targetWeight = targetWeight
         self.fitnessGoal = fitnessGoal
         self.activityLevel = activityLevel
+        self.unitSystem = unitSystem
         self.neckCircumference = neckCircumference
         self.waistCircumference = waistCircumference
         self.hipCircumference = hipCircumference
+        self.consentAccepted = consentAccepted
+        self.marketingOptIn = marketingOptIn
+        self.consentTimestamp = consentTimestamp
     }
 
     required init(from decoder: Decoder) throws {
@@ -179,9 +260,13 @@ class OnboardingData: Codable {
         self.targetWeight = try container.decodeIfPresent(Double.self, forKey: .targetWeight)
         self.fitnessGoal = try container.decodeIfPresent(String.self, forKey: .fitnessGoal) ?? "maintain"
         self.activityLevel = try container.decodeIfPresent(String.self, forKey: .activityLevel) ?? "moderate"
+        self.unitSystem = try container.decodeIfPresent(String.self, forKey: .unitSystem) ?? "metric"
         self.neckCircumference = try container.decodeIfPresent(Double.self, forKey: .neckCircumference)
         self.waistCircumference = try container.decodeIfPresent(Double.self, forKey: .waistCircumference)
         self.hipCircumference = try container.decodeIfPresent(Double.self, forKey: .hipCircumference)
+        self.consentAccepted = try container.decodeIfPresent(Bool.self, forKey: .consentAccepted) ?? false
+        self.marketingOptIn = try container.decodeIfPresent(Bool.self, forKey: .marketingOptIn) ?? false
+        self.consentTimestamp = try container.decodeIfPresent(Date.self, forKey: .consentTimestamp)
     }
 
     func encode(to encoder: Encoder) throws {
@@ -194,10 +279,30 @@ class OnboardingData: Codable {
         try container.encodeIfPresent(targetWeight, forKey: .targetWeight)
         try container.encode(fitnessGoal, forKey: .fitnessGoal)
         try container.encode(activityLevel, forKey: .activityLevel)
+        try container.encode(unitSystem, forKey: .unitSystem)
         try container.encodeIfPresent(neckCircumference, forKey: .neckCircumference)
         try container.encodeIfPresent(waistCircumference, forKey: .waistCircumference)
         try container.encodeIfPresent(hipCircumference, forKey: .hipCircumference)
+        try container.encode(consentAccepted, forKey: .consentAccepted)
+        try container.encode(marketingOptIn, forKey: .marketingOptIn)
+        try container.encodeIfPresent(consentTimestamp, forKey: .consentTimestamp)
     }
+}
+
+// MARK: - Snapshot Model (Equatable)
+private struct DataSnapshot: Equatable {
+    let name: String
+    let age: Int
+    let gender: String
+    let height: Double
+    let weight: Double
+    let targetWeight: Double?
+    let fitnessGoal: String
+    let activityLevel: String
+    let unitSystem: String
+    let neckCircumference: Double?
+    let waistCircumference: Double?
+    let hipCircumference: Double?
 }
 
 // (Legacy OnboardingProgressView replaced by InteractiveProgressBar)

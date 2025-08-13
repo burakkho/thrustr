@@ -113,6 +113,8 @@ enum LocalizationKeys {
             static let defaultName = "training.history.defaultName"
             static let noParts = "training.history.noParts"
             static let totalVolume = "training.history.totalVolume"
+            static let seeMore = "training.history.seeMore"
+            static let `repeat` = "training.history.repeat"
         }
         
         enum Active {
@@ -180,6 +182,8 @@ enum LocalizationKeys {
         enum Templates {
             static let title = "training.templates.title"
             static let empty = "training.templates.empty"
+            static let saveAsTemplate = "training.templates.saveAsTemplate"
+            static let removeFromTemplates = "training.templates.removeFromTemplates"
         }
         
         enum Detail {
@@ -201,21 +205,16 @@ enum LocalizationKeys {
         }
         
         enum Part {
-            static let strength = "training.part.strength"
-            static let conditioning = "training.part.conditioning"
+            // Revised part keys
+            static let powerStrength = "training.part.powerStrength"
+            static let metcon = "training.part.metcon"
             static let accessory = "training.part.accessory"
-            static let warmup = "training.part.warmup"
-            static let functional = "training.part.functional"
-            static let olympic = "training.part.olympic"
-            static let plyometric = "training.part.plyometric"
-            
-            static let strengthDesc = "training.part.strength.desc"
-            static let conditioningDesc = "training.part.conditioning.desc"
+            static let cardio = "training.part.cardio"
+
+            static let powerStrengthDesc = "training.part.powerStrength.desc"
+            static let metconDesc = "training.part.metcon.desc"
             static let accessoryDesc = "training.part.accessory.desc"
-            static let warmupDesc = "training.part.warmup.desc"
-            static let functionalDesc = "training.part.functional.desc"
-            static let olympicDesc = "training.part.olympic.desc"
-            static let plyometricDesc = "training.part.plyometric.desc"
+            static let cardioDesc = "training.part.cardio.desc"
             
             static let statusCompleted = "training.part.status.completed"
             static let statusInProgress = "training.part.status.inProgress"
@@ -236,15 +235,15 @@ enum LocalizationKeys {
                 static let inProgress = "training.part.status.inProgress"
             }
             
-            // Legacy Description enum support
+            // Legacy Description enum support (kept for compatibility)
             enum Description {
-                static let strength = "training.part.strength.desc"
-                static let conditioning = "training.part.conditioning.desc"
+                static let strength = "training.part.powerStrength.desc"
+                static let conditioning = "training.part.metcon.desc"
                 static let accessory = "training.part.accessory.desc"
-                static let warmup = "training.part.warmup.desc"
-                static let functional = "training.part.functional.desc"
-                static let olympic = "training.part.olympic.desc"
-                static let plyometric = "training.part.plyometric.desc"
+                static let warmup = "training.part.accessory.desc"
+                static let functional = "training.part.metcon.desc"
+                static let olympic = "training.part.powerStrength.desc"
+                static let plyometric = "training.part.accessory.desc"
             }
         }
         
@@ -274,6 +273,53 @@ enum LocalizationKeys {
             static let addSet = "training.exercise.addSet"
             static let setNumber = "training.exercise.setNumber"
             static let moreSets = "training.exercise.moreSets"
+            static let suggestions = "training.exercise.suggestions"
+        }
+
+        // MARK: - WOD / METCON
+        enum WOD {
+            static let title = "training.wod.title"
+            static let result = "training.wod.result"
+            static let add = "training.wod.add"
+            static let addResult = "training.wod.addResult"
+            static let editResult = "training.wod.editResult"
+            static let create = "training.wod.create"
+            static let favorites = "training.wod.favorites"
+            static let benchmarks = "training.wod.benchmarks"
+            static let forTime = "training.wod.forTime"
+            static let amrap = "training.wod.amrap"
+            static let emom = "training.wod.emom"
+            static let custom = "training.wod.custom"
+            static let customResult = "training.wod.customResult"
+            static let enterTime = "training.wod.enterTime"
+            static let rounds = "training.wod.rounds"
+            static let reps = "training.wod.reps"
+            static let emomCompleted = "training.wod.emomCompleted"
+            static let total = "training.wod.total"
+
+            enum Builder {
+                static let namePlaceholder = "training.wod.builder.namePlaceholder"
+                static let schemePlaceholderForTime = "training.wod.builder.schemePlaceholderForTime"
+                static let schemePlaceholderAmrap = "training.wod.builder.schemePlaceholderAmrap"
+                static let movementsPlaceholder = "training.wod.builder.movementsPlaceholder"
+                static let schemeHintForTime = "training.wod.builder.schemeHintForTime"
+                static let schemeHintAmrap = "training.wod.builder.schemeHintAmrap"
+                static let movementsHint = "training.wod.builder.movementsHint"
+                static let start = "training.wod.builder.start"
+            }
+
+            enum Runner {
+                static let undo = "training.wod.runner.undo"
+                static let addRound = "training.wod.runner.addRound"
+                static let extraReps = "training.wod.runner.extraReps" // "%d reps"
+                static let scoreButton = "training.wod.runner.scoreButton"
+                static let finish = "training.wod.runner.finish"
+                static let scoreTitle = "training.wod.runner.scoreTitle" // "Time (MM:SS)"
+                static let roundsLabel = "training.wod.runner.roundsLabel" // "Rounds: %d"
+                static let stepsProgress = "training.wod.runner.stepsProgress" // "%d/%d"
+                static let tipTitle = "training.wod.runner.tipTitle"
+                static let tipBody = "training.wod.runner.tipBody"
+            }
         }
         
         enum Category {
@@ -777,6 +823,19 @@ enum LocalizationKeys {
                 static let carbs = "onboarding.summary.label.carbs"
                 static let fat = "onboarding.summary.label.fat"
             }
+        }
+
+        // MARK: - Consent
+        enum Consent {
+            static let title = "onboarding.consent.title"
+            static let subtitle = "onboarding.consent.subtitle"
+            static let termsTitle = "onboarding.consent.terms.title"
+            static let termsDesc = "onboarding.consent.terms.desc"
+            static let viewTerms = "onboarding.consent.viewTerms"
+            static let privacyTitle = "onboarding.consent.privacy.title"
+            static let privacyDesc = "onboarding.consent.privacy.desc"
+            static let viewPrivacy = "onboarding.consent.viewPrivacy"
+            static let marketing = "onboarding.consent.marketing"
         }
     }
     

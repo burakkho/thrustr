@@ -12,6 +12,7 @@ struct MeasurementsStepView: View {
     @Binding var data: OnboardingData
     let onNext: () -> Void
     @State private var validationMessage: String? = nil
+    @EnvironmentObject private var unitSettings: UnitSettings
     
     var body: some View {
         VStack(spacing: 24) {
@@ -47,9 +48,10 @@ struct MeasurementsStepView: View {
                         MeasurementInput(
                             title: LocalizationKeys.Onboarding.neckLabel.localized,
                             value: $data.neckCircumference,
-                            range: 25...50,
-                            unit: "cm",
-                            placeholder: LocalizationKeys.Onboarding.optional.localized
+                            range: data.unitSystem == "imperial" ? 10...20 : 25...50,
+                            unit: data.unitSystem == "imperial" ? "in" : "cm",
+                            placeholder: LocalizationKeys.Onboarding.optional.localized,
+                            unitSystem: data.unitSystem
                         )
                         
                         MeasurementInput(
@@ -57,18 +59,20 @@ struct MeasurementsStepView: View {
                                 LocalizationKeys.Onboarding.waistMaleLabel.localized :
                                 LocalizationKeys.Onboarding.waistFemaleLabel.localized,
                             value: $data.waistCircumference,
-                            range: 50...150,
-                            unit: "cm",
-                            placeholder: LocalizationKeys.Onboarding.optional.localized
+                            range: data.unitSystem == "imperial" ? 20...60 : 50...150,
+                            unit: data.unitSystem == "imperial" ? "in" : "cm",
+                            placeholder: LocalizationKeys.Onboarding.optional.localized,
+                            unitSystem: data.unitSystem
                         )
                         
                         if data.gender == "female" {
                             MeasurementInput(
                                 title: LocalizationKeys.Onboarding.hipLabel.localized,
                                 value: $data.hipCircumference,
-                                range: 70...150,
-                                unit: "cm",
-                                placeholder: LocalizationKeys.Onboarding.optional.localized
+                                range: data.unitSystem == "imperial" ? 25...60 : 70...150,
+                                unit: data.unitSystem == "imperial" ? "in" : "cm",
+                                placeholder: LocalizationKeys.Onboarding.optional.localized,
+                                unitSystem: data.unitSystem
                             )
                         }
                     }
@@ -177,9 +181,11 @@ struct MeasurementInput: View {
     let range: ClosedRange<Double>
     let unit: String
     let placeholder: String
+    let unitSystem: String
     
     @State private var textValue: String = ""
     @State private var errorText: String? = nil
+    @FocusState private var isFocused: Bool
     
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -188,25 +194,28 @@ struct MeasurementInput: View {
             HStack {
                 TextField(placeholder, text: $textValue)
                     .keyboardType(.decimalPad)
+                    .focused($isFocused)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                     .onChange(of: textValue) { _, newValue in
-                        if let v = Double(newValue) {
-                            if range.contains(v) {
-                                value = v
-                                errorText = nil
-                            } else {
-                                errorText = "\(Int(range.lowerBound)) - \(Int(range.upperBound)) \(unit)"
-                            }
-                        } else if newValue.isEmpty {
-                            value = nil
-                            errorText = nil
-                        } else {
-                            errorText = "Geçersiz değer"
-                        }
+                        parseAndValidate(newValue)
                     }
                     .onAppear {
                         if let v = value {
-                            textValue = String(format: "%.0f", v)
+                            if unitSystem == "imperial" {
+                                // convert cm -> inches for display
+                                let inches = v / 2.54
+                                textValue = String(format: "%.0f", inches)
+                            } else {
+                                textValue = String(format: "%.0f", v)
+                            }
+                        } else {
+                            textValue = ""
+                        }
+                    }
+                    .toolbar {
+                        ToolbarItemGroup(placement: .keyboard) {
+                            Spacer()
+                            Button("Done") { isFocused = false }
                         }
                     }
                 Text(unit)
@@ -231,6 +240,36 @@ private extension MeasurementsStepView {
     func validateInputs() -> String? {
         // All optional, but if provided must be within range (already enforced). No blocking needed.
         return nil
+    }
+}
+
+// MARK: - Localized number parsing for MeasurementInput
+private extension MeasurementInput {
+    func parseAndValidate(_ raw: String) {
+        let trimmed = raw.trimmingCharacters(in: .whitespacesAndNewlines)
+        if trimmed.isEmpty {
+            value = nil
+            errorText = nil
+            return
+        }
+        // Accept both comma and dot as decimal separator
+        let normalized = trimmed.replacingOccurrences(of: ",", with: ".")
+        if let v = Double(normalized) {
+            if range.contains(v) {
+                // Convert to metric if necessary before writing to binding
+                if unitSystem == "imperial" {
+                    let cm = v * 2.54
+                    value = cm
+                } else {
+                    value = v
+                }
+                errorText = nil
+            } else {
+                errorText = "\(Int(range.lowerBound)) - \(Int(range.upperBound)) \(unit)"
+            }
+        } else {
+            errorText = "Geçersiz değer"
+        }
     }
 }
 

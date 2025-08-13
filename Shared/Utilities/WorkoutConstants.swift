@@ -1,3 +1,5 @@
+import Foundation
+
 enum WorkoutConstants {
     static let defaultRestSeconds = 60
     static let defaultSetCount = 3

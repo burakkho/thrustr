@@ -4,6 +4,7 @@ import HealthKit
 @MainActor
 class HealthKitService: ObservableObject {
     private let healthStore = HKHealthStore()
+    private var observerQueries: [HKObserverQuery] = []
     
     // MARK: - Published Properties
     @Published var isAuthorized = false
@@ -46,6 +47,9 @@ class HealthKitService: ObservableObject {
             
             if isAuthorized {
                 await readTodaysData()
+                // Start background delivery and observers once authorized
+                enableBackgroundDelivery()
+                startObserverQueries()
             }
             
             return isAuthorized
@@ -199,6 +203,43 @@ class HealthKitService: ObservableObject {
                     print("Background delivery enabled for \(type)")
                 }
             }
+        }
+    }
+    
+    /// Start HealthKit observer queries to receive live updates for steps, calories and weight.
+    /// When an update is received, we refresh today's data and log for verification.
+    func startObserverQueries() {
+        let types: [HKQuantityType] = [stepCountType, activeEnergyType, bodyMassType]
+        
+        // Cancel previously running queries to avoid duplicates
+        for query in observerQueries {
+            healthStore.stop(query)
+        }
+        observerQueries.removeAll()
+        
+        for type in types {
+            let observerQuery = HKObserverQuery(sampleType: type, predicate: nil) { [weak self] _, completionHandler, error in
+                if let error = error {
+                    print("❌ HealthKit observer error for \(type.identifier): \(error)")
+                    completionHandler()
+                    return
+                }
+                
+                Task { [weak self] in
+                    guard let self else { completionHandler(); return }
+                    await self.readTodaysData()
+                    await MainActor.run {
+                        let steps = Int(self.todaySteps)
+                        let calories = Int(self.todayCalories)
+                        let weightString = self.currentWeight.map { String(format: "%.1f", $0) } ?? "-"
+                        print("✅ HealthKit update received for \(type.identifier) at \(Date()) | steps=\(steps) kcal=\(calories) weight=\(weightString)")
+                    }
+                    completionHandler()
+                }
+            }
+            healthStore.execute(observerQuery)
+            observerQueries.append(observerQuery)
+            print("Observer query started for: \(type.identifier)")
         }
     }
     

@@ -153,6 +153,12 @@ struct FoodSelectionView: View {
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                         }
+
+                        // Manual add shortcut when nothing found or OFF unavailable
+                        Button(LocalizationKeys.Nutrition.FoodSelection.addNew.localized) {
+                            showingCustomFoodEntry = true
+                        }
+                        .buttonStyle(.bordered)
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                 } else {
@@ -217,19 +223,40 @@ struct FoodSelectionView: View {
                 let service = OpenFoodFactsService()
                 do {
                     let results = try await service.searchProducts(query: query, lc: "tr", limit: 20)
-                    // Map to transient Food objects (not yet in DB). Avoid simple duplicates by display name
+                    // Map to transient Food objects (not yet in DB). Avoid simple duplicates by display/name/brand/barcode
                     let existingNames = Set(filteredFoods.map { $0.displayName.lowercased() })
-                    let foods = results.map { $0.food }.map { f in
+                    let mapped: [Food] = results.map { $0.food }.map { f in
                         let nf = f
                         if nf.nameTR.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
                             nf.nameTR = nf.nameEN
                         }
                         return nf
                     }.filter { !existingNames.contains($0.displayName.lowercased()) }
-                    offResults = foods
+
+                    var seen: Set<String> = []
+                    let unique = mapped.filter { food in
+                        let key = "\(food.barcode?.lowercased() ?? "")|\(normalizeForSearch(food.nameEN))|\(normalizeForSearch(food.brand ?? ""))"
+                        if seen.contains(key) { return false }
+                        seen.insert(key)
+                        return true
+                    }
+                    offResults = unique
                 } catch {
                     offResults = []
-                    offErrorMessage = error.localizedDescription
+                    if let offError = error as? OpenFoodFactsError {
+                        switch offError {
+                        case .rateLimited:
+                            offErrorMessage = LocalizationKeys.Nutrition.Scan.rateLimited.localized
+                        case .networkUnavailable:
+                            offErrorMessage = LocalizationKeys.Nutrition.Scan.networkError.localized
+                        case .productNotFound:
+                            offErrorMessage = OpenFoodFactsError.productNotFound.localizedDescription
+                        default:
+                            offErrorMessage = offError.localizedDescription
+                        }
+                    } else {
+                        offErrorMessage = error.localizedDescription
+                    }
                 }
             }
 
@@ -387,6 +414,22 @@ extension FoodSelectionView {
                 Section(header: Text("OpenFoodFacts")) {
                     ForEach(offResults) { food in
                         FoodRowView(food: food) {
+                            // Prevent duplicates by barcode if exists
+                            if let code = food.barcode {
+                                do {
+                                    if let existing = try fetchFood(byBarcode: code) {
+                                        #if canImport(UIKit)
+                                        UINotificationFeedbackGenerator().notificationOccurred(.success)
+                                        #endif
+                                        toastMessage = LocalizationKeys.Nutrition.Scan.existing.localized
+                                        onFoodSelected(existing)
+                                        return
+                                    }
+                                } catch {
+                                    offErrorMessage = error.localizedDescription
+                                }
+                            }
+
                             if food.nameTR.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
                                 food.nameTR = food.nameEN
                             }
@@ -544,11 +587,35 @@ struct FoodRowView: View {
     var body: some View {
         Button(action: action) {
             HStack(spacing: 12) {
-                // Kategori ikonu (SF Symbol)
-                Image(systemName: food.categoryEnum.systemIcon)
-                    .foregroundColor(food.categoryEnum.categoryColor)
-                    .font(.title3)
-                    .frame(width: 24)
+                // Görsel öncelik: URL varsa küçük görsel, yoksa kategori ikonu
+                if let url = food.imageURL {
+                    AsyncImage(url: url) { phase in
+                        switch phase {
+                        case .empty:
+                            ProgressView().frame(width: 40, height: 40)
+                        case .success(let image):
+                            image
+                                .resizable()
+                                .scaledToFill()
+                                .frame(width: 40, height: 40)
+                                .clipped()
+                                .cornerRadius(6)
+                        case .failure:
+                            Image(systemName: food.categoryEnum.systemIcon)
+                                .foregroundColor(food.categoryEnum.categoryColor)
+                                .font(.title3)
+                                .frame(width: 24)
+                        @unknown default:
+                            EmptyView().frame(width: 40, height: 40)
+                        }
+                    }
+                    .frame(width: 40, height: 40)
+                } else {
+                    Image(systemName: food.categoryEnum.systemIcon)
+                        .foregroundColor(food.categoryEnum.categoryColor)
+                        .font(.title3)
+                        .frame(width: 24)
+                }
                 
                 VStack(alignment: .leading, spacing: 2) {
                     Text(food.displayName)
@@ -564,6 +631,18 @@ struct FoodRowView: View {
                             .font(.caption2)
                             .foregroundColor(.secondary)
                             .italic()
+                    }
+                    
+                    if food.source == .openFoodFacts {
+                        HStack(spacing: 6) {
+                            Text("OFF")
+                                .font(.system(size: 9, weight: .bold))
+                                .padding(.horizontal, 6)
+                                .padding(.vertical, 2)
+                                .background(Color.blue.opacity(0.15))
+                                .foregroundColor(.blue)
+                                .clipShape(Capsule())
+                        }
                     }
                 }
                 

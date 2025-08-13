@@ -4,25 +4,17 @@ extension Double {
     
     // MARK: - Weight & Measurements
     
-    /// Kilo formatı: "75.5 kg"
-    var weightString: String {
-        return String(format: "%.1f kg", self)
-    }
+    /// Kilo formatı: "75.5 kg" (Deprecated in favor of UnitsFormatter)
+    var weightString: String { String(format: "%.1f kg", self) }
     
-    /// Kilo formatı (tam sayı): "75 kg"
-    var weightStringRounded: String {
-        return String(format: "%.0f kg", self)
-    }
+    /// Kilo formatı (tam sayı): "75 kg" (Deprecated)
+    var weightStringRounded: String { String(format: "%.0f kg", self) }
     
-    /// Boy formatı: "175 cm"
-    var heightString: String {
-        return String(format: "%.0f cm", self)
-    }
+    /// Boy formatı: "175 cm" (Deprecated)
+    var heightString: String { String(format: "%.0f cm", self) }
     
-    /// Vücut ölçüsü formatı: "85.5 cm"
-    var measurementString: String {
-        return String(format: "%.1f cm", self)
-    }
+    /// Vücut ölçüsü formatı: "85.5 cm" (Deprecated)
+    var measurementString: String { String(format: "%.1f cm", self) }
     
     // MARK: - Nutrition & Calories
     

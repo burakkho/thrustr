@@ -116,19 +116,40 @@ struct GoalsStepView: View {
                             .cornerRadius(12)
                             
                             if data.targetWeight != nil {
-                                HStack {
-                                    Text("\(Int(data.targetWeight ?? data.weight)) kg")
-                                        .font(.title2)
-                                        .fontWeight(.semibold)
-                                        .frame(width: 80, alignment: .leading)
-                                    Slider(value: Binding(
-                                        get: { data.targetWeight ?? data.weight },
-                                        set: { data.targetWeight = $0 }
-                                    ), in: 40...150, step: 0.5)
+                                Group {
+                                    if data.unitSystem == "imperial" {
+                                        // Imperial: value in lb (internally stored as kg)
+                                        let lbsBinding = Binding<Double>(
+                                            get: { UnitsConverter.kgToLbs(data.targetWeight ?? data.weight) },
+                                            set: { data.targetWeight = UnitsConverter.lbsToKg($0) }
+                                        )
+                                        HStack {
+                                            Text("\(Int(lbsBinding.wrappedValue)) lb")
+                                                .font(.title2)
+                                                .fontWeight(.semibold)
+                                                .frame(width: 80, alignment: .leading)
+                                            Slider(value: lbsBinding, in: 90...330, step: 1)
+                                        }
+                                        .padding()
+                                        .background(Color(.systemGray6))
+                                        .cornerRadius(12)
+                                    } else {
+                                        // Metric: value in kg
+                                        HStack {
+                                            Text("\(Int(data.targetWeight ?? data.weight)) kg")
+                                                .font(.title2)
+                                                .fontWeight(.semibold)
+                                                .frame(width: 80, alignment: .leading)
+                                            Slider(value: Binding(
+                                                get: { data.targetWeight ?? data.weight },
+                                                set: { data.targetWeight = $0 }
+                                            ), in: 40...150, step: 0.5)
+                                        }
+                                        .padding()
+                                        .background(Color(.systemGray6))
+                                        .cornerRadius(12)
+                                    }
                                 }
-                                .padding()
-                                .background(Color(.systemGray6))
-                                .cornerRadius(12)
                             }
                         }
                     }

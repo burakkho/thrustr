@@ -13,6 +13,12 @@ struct PersonalInfoStepView: View {
     let onNext: () -> Void
     @FocusState private var focusedField: Field?
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @AppStorage("preferredUnitSystem") private var preferredUnitSystem: String = "metric" // persists globally
+    @EnvironmentObject private var unitSettings: UnitSettings
+    
+    // Service-based validation
+    @State private var validationErrors: [UserService.ValidationError] = []
+    private let userService = UserService()
     
     private enum Field { case name }
     
@@ -34,10 +40,19 @@ struct PersonalInfoStepView: View {
                             .font(.headline)
                         TextField(LocalizationKeys.Onboarding.PersonalInfo.namePlaceholder.localized, text: $data.name)
                             .textFieldStyle(RoundedBorderTextFieldStyle())
+                            .textInputAutocapitalization(.words)
+                            .textContentType(.name)
+                            .disableAutocorrection(true)
                             .focused($focusedField, equals: .name)
                             .submitLabel(.next)
                             .accessibilityLabel(Text(LocalizationKeys.Onboarding.PersonalInfo.name.localized))
                             .accessibilityHint(Text("İsminizi girin"))
+                            .onChange(of: data.name) { _, _ in validateAndUpdateErrors() }
+                        if let nameError = nameError {
+                            Text(nameError)
+                                .font(.caption)
+                                .foregroundColor(.red)
+                        }
                     }
                     
                     VStack(alignment: .leading, spacing: 8) {
@@ -52,6 +67,50 @@ struct PersonalInfoStepView: View {
                         .cornerRadius(12)
                         .accessibilityLabel(Text(LocalizationKeys.Onboarding.PersonalInfo.age.localized))
                         .accessibilityValue(Text("\(data.age)"))
+                        .onChange(of: data.age) { _, _ in validateAndUpdateErrors() }
+                        if let ageError = ageError {
+                            Text(ageError)
+                                .font(.caption)
+                                .foregroundColor(.red)
+                        }
+                    }
+
+                    // Unit System Selection (after Age, before Gender)
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Birim Sistemi")
+                            .font(.headline)
+                        Picker("Birim Sistemi", selection: Binding(
+                            get: { data.unitSystem },
+                            set: { newValue in
+                                withAnimation(.easeInOut(duration: 0.25)) {
+                                    handleUnitSystemChange(newValue)
+                                }
+                            }
+                        )) {
+                            Text("Metric").tag("metric")
+                            Text("Imperial").tag("imperial")
+                        }
+                        .pickerStyle(SegmentedPickerStyle())
+                        .padding(8)
+                        .background(Color(.systemGray6))
+                        .cornerRadius(12)
+                        
+                        Text(data.unitSystem == "metric" ? "cm, kg formatı" : "ft, lbs formatı")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                    .onAppear {
+                        // Sync from global preference on first appear
+                        let global = unitSettings.unitSystem.rawValue
+                        if data.unitSystem != global { data.unitSystem = global }
+                        syncImperialStatesFromMetric()
+                    }
+                    .onChange(of: preferredUnitSystem) { _, newValue in
+                        if data.unitSystem != newValue {
+                            withAnimation(.easeInOut(duration: 0.25)) {
+                                handleUnitSystemChange(newValue)
+                            }
+                        }
                     }
                     
                     VStack(alignment: .leading, spacing: 8) {
@@ -76,54 +135,245 @@ struct PersonalInfoStepView: View {
                         .accessibilityElement(children: .contain)
                     }
                     
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text(LocalizationKeys.Onboarding.PersonalInfo.height.localized)
-                            .font(.headline)
-                        HStack {
-                            Text("\(Int(data.height)) cm")
-                                .font(.system(size: 20, weight: .semibold, design: .rounded))
-                                .frame(width: 80, alignment: .leading)
-                            Slider(value: $data.height, in: 140...220, step: 1)
-                                .accessibilityLabel(Text(LocalizationKeys.Onboarding.PersonalInfo.height.localized))
-                                .accessibilityValue(Text("\(Int(data.height)) cm"))
+                    // Height Input - Metric or Imperial
+                    Group {
+                        if data.unitSystem == "metric" {
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text(LocalizationKeys.Onboarding.PersonalInfo.height.localized)
+                                    .font(.headline)
+                                HStack {
+                                    Text("\(Int(data.height)) cm")
+                                        .font(.system(size: 20, weight: .semibold, design: .rounded))
+                                        .frame(width: 80, alignment: .leading)
+                                    Slider(value: $data.height, in: 140...220, step: 1)
+                                        .accessibilityLabel(Text(LocalizationKeys.Onboarding.PersonalInfo.height.localized))
+                                        .accessibilityValue(Text("\(Int(data.height)) cm"))
+                                        .onChange(of: data.height) { _, _ in validateAndUpdateErrors() }
+                                }
+                                .padding()
+                                .background(Color(.systemGray6))
+                                .cornerRadius(12)
+                                if let heightError = heightError {
+                                    Text(heightError)
+                                        .font(.caption)
+                                        .foregroundColor(.red)
+                                }
+                            }
+                            .transition(.opacity)
+                        } else {
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text(LocalizationKeys.Onboarding.PersonalInfo.height.localized)
+                                    .font(.headline)
+                                HStack(spacing: 12) {
+                                    VStack(alignment: .leading, spacing: 4) {
+                                        Text("Feet")
+                                            .font(.caption)
+                                            .foregroundColor(.secondary)
+                                        Stepper(value: $heightFeet, in: 4...7) {
+                                            Text("\(heightFeet) ft")
+                                                .font(.system(size: 20, weight: .semibold, design: .rounded))
+                                        }
+                                        .onChange(of: heightFeet) { _, _ in updateMetricHeightFromImperial() }
+                                    }
+                                    VStack(alignment: .leading, spacing: 4) {
+                                        Text("Inches")
+                                            .font(.caption)
+                                            .foregroundColor(.secondary)
+                                        Stepper(value: $heightInches, in: 0...11) {
+                                            Text("\(heightInches) in")
+                                                .font(.system(size: 20, weight: .semibold, design: .rounded))
+                                        }
+                                        .onChange(of: heightInches) { _, _ in updateMetricHeightFromImperial() }
+                                    }
+                                    Spacer()
+                                }
+                                .padding()
+                                .background(Color(.systemGray6))
+                                .cornerRadius(12)
+                                Text("\(Int(data.height)) cm")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+                            .transition(.opacity)
                         }
-                        .padding()
-                        .background(Color(.systemGray6))
-                        .cornerRadius(12)
                     }
                     
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text(LocalizationKeys.Onboarding.PersonalInfo.weight.localized)
-                            .font(.headline)
-                        HStack {
-                            Text("\(Int(data.weight)) kg")
-                                .font(.system(size: 20, weight: .semibold, design: .rounded))
-                                .frame(width: 80, alignment: .leading)
-                            Slider(value: $data.weight, in: 40...150, step: 0.5)
-                                .accessibilityLabel(Text(LocalizationKeys.Onboarding.PersonalInfo.weight.localized))
-                                .accessibilityValue(Text("\(Int(data.weight)) kg"))
+                    // Weight Input - Metric or Imperial
+                    Group {
+                        if data.unitSystem == "metric" {
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text(LocalizationKeys.Onboarding.PersonalInfo.weight.localized)
+                                    .font(.headline)
+                                HStack {
+                                    Text("\(Int(data.weight)) kg")
+                                        .font(.system(size: 20, weight: .semibold, design: .rounded))
+                                        .frame(width: 80, alignment: .leading)
+                                    Slider(value: $data.weight, in: 40...150, step: 0.5)
+                                        .accessibilityLabel(Text(LocalizationKeys.Onboarding.PersonalInfo.weight.localized))
+                                        .accessibilityValue(Text("\(Int(data.weight)) kg"))
+                                        .onChange(of: data.weight) { _, _ in validateAndUpdateErrors() }
+                                }
+                                .padding()
+                                .background(Color(.systemGray6))
+                                .cornerRadius(12)
+                                if let weightError = weightError {
+                                    Text(weightError)
+                                        .font(.caption)
+                                        .foregroundColor(.red)
+                                }
+                            }
+                            .transition(.opacity)
+                        } else {
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text(LocalizationKeys.Onboarding.PersonalInfo.weight.localized)
+                                    .font(.headline)
+                                HStack {
+                                    TextField("lbs", text: $weightLbsText)
+                                        .keyboardType(.decimalPad)
+                                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                                        .onChange(of: weightLbsText) { _, newValue in
+                                            updateMetricWeightFromLbsText(newValue)
+                                        }
+                                    Text("lbs")
+                                        .foregroundColor(.secondary)
+                                }
+                                .padding(8)
+                                .background(Color(.systemGray6))
+                                .cornerRadius(12)
+                                Text("\(String(format: "%.1f", data.weight)) kg")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+                            .transition(.opacity)
                         }
-                        .padding()
-                        .background(Color(.systemGray6))
-                        .cornerRadius(12)
                     }
                 }
                 .padding(.horizontal)
             }
             
-            PrimaryButton(title: LocalizationKeys.Onboarding.continueAction.localized, icon: "arrow.right", isEnabled: !data.name.isEmpty) {
-                if !data.name.isEmpty { onNext() }
+            PrimaryButton(title: LocalizationKeys.Onboarding.continueAction.localized, icon: "arrow.right", isEnabled: isFormValid) {
+                validateAndUpdateErrors()
+                if validationErrors.isEmpty { onNext() }
             }
-            .disabled(data.name.isEmpty)
+            .disabled(!isFormValid)
             .padding(.horizontal)
             .padding(.bottom)
         }
         .onSubmit {
             if focusedField == .name {
                 focusedField = nil
+                validateAndUpdateErrors()
+                if validationErrors.isEmpty { onNext() }
             }
         }
+        .onAppear { validateAndUpdateErrors() }
     }
+
+    // MARK: - Validation Helpers
+    private var nameError: String? {
+        validationErrors.compactMap { error in
+            if case let .invalidName(message) = error { return message }
+            return nil
+        }.first
+    }
+    
+    private var ageError: String? {
+        validationErrors.compactMap { error in
+            if case let .invalidAge(message) = error { return message }
+            return nil
+        }.first
+    }
+    
+    private var heightError: String? {
+        validationErrors.compactMap { error in
+            if case let .invalidHeight(message) = error { return message }
+            return nil
+        }.first
+    }
+    
+    private var weightError: String? {
+        validationErrors.compactMap { error in
+            if case let .invalidWeight(message) = error { return message }
+            return nil
+        }.first
+    }
+    
+    private var isFormValid: Bool {
+        validationErrors.isEmpty
+    }
+    
+    private func validateAndUpdateErrors() {
+        // Call centralized rules; collect errors from service
+        do {
+            try userService.validateUserInput(
+                name: data.name,
+                age: data.age,
+                height: data.height,
+                weight: data.weight
+            )
+            validationErrors = []
+        } catch {
+            validationErrors = userService.validationErrors
+        }
+    }
+
+    // MARK: - Unit Handling & Conversions
+    @State private var heightFeet: Int = 5
+    @State private var heightInches: Int = 9
+    @State private var weightLbsText: String = ""
+
+    private func handleUnitSystemChange(_ newValue: String) {
+        data.unitSystem = newValue
+        preferredUnitSystem = newValue // persist globally
+        unitSettings.unitSystem = UnitSystem(rawValue: newValue) ?? .metric
+        if newValue == "imperial" {
+            // derive imperial states from current metric values
+            syncImperialStatesFromMetric()
+        } else {
+            // when switching back to metric, ensure metric stays authoritative
+            // convert from current imperial inputs to metric and write
+            updateMetricHeightFromImperial()
+            updateMetricWeightFromLbsText(weightLbsText)
+        }
+    }
+
+    private func syncImperialStatesFromMetric() {
+        let (ft, inch) = cmToFeetInches(data.height)
+        heightFeet = ft
+        heightInches = inch
+        let lbs = kgToLbs(data.weight)
+        weightLbsText = String(format: "%.0f", lbs)
+    }
+
+    private func updateMetricHeightFromImperial() {
+        let cm = feetInchesToCm(feet: heightFeet, inches: heightInches)
+        data.height = min(max(cm, 140), 220) // keep within former slider bounds
+        validateAndUpdateErrors()
+    }
+
+    private func updateMetricWeightFromLbsText(_ raw: String) {
+        let normalized = raw.replacingOccurrences(of: ",", with: ".").trimmingCharacters(in: .whitespaces)
+        if let lbs = Double(normalized) {
+            let kg = lbsToKg(lbs)
+            data.weight = min(max(kg, 40), 150) // keep within former slider bounds
+        }
+        validateAndUpdateErrors()
+    }
+
+    private func cmToFeetInches(_ cm: Double) -> (Int, Int) {
+        let totalInches = cm / 2.54
+        let feet = Int(totalInches / 12.0)
+        let inches = Int((totalInches - Double(feet) * 12.0).rounded())
+        return (feet, min(max(inches, 0), 11))
+    }
+
+    private func feetInchesToCm(feet: Int, inches: Int) -> Double {
+        let totalInches = Double(feet) * 12.0 + Double(inches)
+        return totalInches * 2.54
+    }
+
+    private func kgToLbs(_ kg: Double) -> Double { kg * 2.20462262 }
+    private func lbsToKg(_ lbs: Double) -> Double { lbs * 0.45359237 }
 }
 
 // MARK: - Gender Button Component

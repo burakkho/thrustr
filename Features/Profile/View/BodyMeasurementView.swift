@@ -4,6 +4,7 @@ import SwiftData
 struct BodyMeasurementsView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
+    @EnvironmentObject private var unitSettings: UnitSettings
     
     let user: User?
     
@@ -185,6 +186,7 @@ struct CurrentMeasurementsSection: View {
 struct MeasurementCard: View {
     let type: MeasurementType
     let measurement: BodyMeasurement?
+    @EnvironmentObject private var unitSettings: UnitSettings
     
     var body: some View {
         VStack(spacing: 8) {
@@ -198,7 +200,8 @@ struct MeasurementCard: View {
                 .multilineTextAlignment(.center)
             
             if let measurement = measurement {
-                Text("\(String(format: "%.1f", measurement.value)) cm")
+                let formatted = UnitsFormatter.formatHeight(cm: measurement.value, system: unitSettings.unitSystem)
+                Text(formatted)
                     .font(.headline)
                     .fontWeight(.bold)
                     .foregroundColor(type.color)
@@ -207,7 +210,8 @@ struct MeasurementCard: View {
                     .font(.caption2)
                     .foregroundColor(.secondary)
             } else {
-                Text("-- cm")
+                let unit = unitSettings.unitSystem == .metric ? "cm" : "in"
+                Text("-- \(unit)")
                     .font(.headline)
                     .foregroundColor(.secondary)
                 
@@ -356,6 +360,7 @@ struct RecentEntriesSection: View {
 
 struct RecentMeasurementRow: View {
     let measurement: BodyMeasurement
+    @EnvironmentObject private var unitSettings: UnitSettings
     
     var body: some View {
         HStack {
@@ -376,7 +381,8 @@ struct RecentMeasurementRow: View {
             
             Spacer()
             
-            Text("\(String(format: "%.1f", measurement.value)) cm")
+            let formatted = UnitsFormatter.formatHeight(cm: measurement.value, system: unitSettings.unitSystem)
+            Text(formatted)
                 .font(.subheadline)
                 .fontWeight(.semibold)
                 .foregroundColor(measurement.typeEnum.color)

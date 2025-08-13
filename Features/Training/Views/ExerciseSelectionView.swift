@@ -11,13 +11,21 @@ struct ExerciseSelectionView: View {
     let onExerciseSelected: (Exercise) -> Void
     
     @State private var searchText = ""
+    @State private var debouncedSearchText = ""
+    @State private var searchDebounceWork: DispatchWorkItem? = nil
     @State private var selectedPartType: WorkoutPartType? = nil
     @State private var selectedSegment: ExercisePickerSegment = .all
     @State private var recentIds: [UUID] = []
 
     enum ExercisePickerSegment: Int, CaseIterable {
         case all = 0, favorites = 1, recent = 2
-        var title: String { switch self { case .all: return LocalizationKeys.Training.Exercise.all.localized; case .favorites: return "Favoriler"; case .recent: return "Son" } }
+        var title: String {
+            switch self {
+            case .all: return LocalizationKeys.Training.Exercise.all.localized
+            case .favorites: return LocalizationKeys.Nutrition.Favorites.favorites.localized
+            case .recent: return LocalizationKeys.Nutrition.Favorites.recent.localized
+            }
+        }
     }
 
     private var availablePartTypes: [WorkoutPartType] {
@@ -46,14 +54,26 @@ struct ExerciseSelectionView: View {
             result = result.filter { allowed.contains($0.category) }
         }
 
-        if !searchText.isEmpty {
+        if !debouncedSearchText.isEmpty {
             result = result.filter { exercise in
-                exercise.nameTR.localizedCaseInsensitiveContains(searchText) ||
-                exercise.nameEN.localizedCaseInsensitiveContains(searchText)
+                exercise.nameTR.localizedCaseInsensitiveContains(debouncedSearchText) ||
+                exercise.nameEN.localizedCaseInsensitiveContains(debouncedSearchText)
             }
         }
 
         return result.sorted { $0.nameTR < $1.nameTR }
+    }
+
+    private var recentExercises: [Exercise] {
+        let setIds = Set(recentIds)
+        return exercises.filter { setIds.contains($0.id) && $0.isActive }
+            .sorted { $0.nameTR < $1.nameTR }
+    }
+
+    private var mainExercisesExcludingRecent: [Exercise] {
+        guard !recentIds.isEmpty else { return filteredExercises }
+        let recentIdSet = Set(recentIds)
+        return filteredExercises.filter { !recentIdSet.contains($0.id) }
     }
     
     var body: some View {
@@ -82,34 +102,36 @@ struct ExerciseSelectionView: View {
                 .accessibilityLabel("Egzersiz filtreleri")
 
                 // Search bar
-                 SearchBar(text: $searchText)
+                 SearchBar(text: $searchText, onSubmit: { debouncedSearchText = searchText })
                     .padding(.horizontal)
                     .padding(.top, 12)
                 
-                // Bölüm türü filtresi (sadece verisi olan türler)
-                PartTypeFilterView(selectedPartType: $selectedPartType, availablePartTypes: availablePartTypes)
+                // Removed category/part filters for simplicity
                 
                 // Exercise list
-                if filteredExercises.isEmpty {
-                    EmptyExerciseState(searchText: searchText)
-                } else {
-                    ScrollView {
-                        if let part = workoutPart {
-                            InlineExerciseSuggestions(workoutPart: part, exercises: exercises) { exercise in
-                                selectExercise(exercise)
-                            }
-                            .padding(.top, 4)
-                        }
-                        LazyVStack(spacing: 8) {
-                            ForEach(filteredExercises) { exercise in
-                                ExerciseRow(exercise: exercise) {
-                                    selectExercise(exercise)
+                ScrollView {
+                    LazyVStack(spacing: 8) {
+                        // Recent section on top
+                        if !recentIds.isEmpty {
+                            Section {
+                                ForEach(recentExercises.prefix(8)) { exercise in
+                                    ExerciseRow(exercise: exercise) { selectExercise(exercise) }
                                 }
+                            } header: {
+                                Text(LocalizationKeys.Nutrition.Favorites.recent.localized)
+                                    .font(.headline)
+                                    .padding(.horizontal)
+                                    .padding(.top, 8)
                             }
                         }
-                        .padding(.horizontal)
-                        .padding(.bottom)
+
+                        // All filtered list
+                        ForEach(mainExercisesExcludingRecent) { exercise in
+                            ExerciseRow(exercise: exercise) { selectExercise(exercise) }
+                        }
                     }
+                    .padding(.horizontal)
+                    .padding(.bottom)
                 }
                 
                 Spacer()
@@ -118,7 +140,7 @@ struct ExerciseSelectionView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                  ToolbarItem(placement: .navigationBarLeading) {
-                     Button("İptal") {
+                     Button(LocalizationKeys.Training.Exercise.cancel.localized) {
                          dismiss()
                      }
                      .accessibilityLabel(LocalizationKeys.Training.Exercise.cancel.localized)
@@ -130,86 +152,36 @@ struct ExerciseSelectionView: View {
             // Varsayılan olarak geçerli bölüm türünü seçili getir (varsa)
             selectedPartType = workoutPart?.workoutPartType
             // Load recent from UserDefaults
-            if let data = UserDefaults.standard.array(forKey: "training.recent.exerciseIds") as? [String] {
+            if let data = UserDefaults.standard.array(forKey: "training.recent.exercises") as? [String] {
                 recentIds = data.compactMap { UUID(uuidString: $0) }
             }
+            debouncedSearchText = searchText
+        }
+        .onChange(of: searchText) { _, newValue in
+            // debounce 300ms
+            searchDebounceWork?.cancel()
+            let task = DispatchWorkItem { debouncedSearchText = newValue }
+            searchDebounceWork = task
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3, execute: task)
         }
     }
     
     private func selectExercise(_ exercise: Exercise) {
         onExerciseSelected(exercise)
-        // Track recent
-        var current = Set(recentIds)
-        current.insert(exercise.id)
-        recentIds = Array(current).prefix(30).map { $0 }
-        UserDefaults.standard.set(recentIds.map { $0.uuidString }, forKey: "training.recent.exerciseIds")
+        // Track recent (cap 20)
+        var current = recentIds
+        current.removeAll { $0 == exercise.id }
+        current.insert(exercise.id, at: 0)
+        recentIds = Array(current.prefix(20))
+        UserDefaults.standard.set(recentIds.map { $0.uuidString }, forKey: "training.recent.exercises")
         dismiss()
     }
-}
-
-// MARK: - Inline Exercise Suggestions (local to this file to avoid target membership issues)
-private struct InlineExerciseSuggestions: View {
-    @Environment(\.theme) private var theme
-    let workoutPart: WorkoutPart
-    let exercises: [Exercise]
-    let onSelect: (Exercise) -> Void
-
-    private var suggestedExercises: [Exercise] {
-        let allowed = Set(workoutPart.workoutPartType.suggestedExerciseCategories.map { $0.rawValue })
-        return exercises
-            .filter { $0.isActive && allowed.contains($0.category) }
-            .sorted { $0.isFavorite && !$1.isFavorite }
-    }
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: theme.spacing.m) {
-            Text("Önerilen Egzersizler")
-                .font(.headline)
-                .foregroundColor(theme.colors.textSecondary)
-
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: theme.spacing.m) {
-                    ForEach(suggestedExercises.prefix(8)) { exercise in
-                        InlineSuggestionChip(title: exercise.nameTR) {
-                            onSelect(exercise)
-                        }
-                    }
-                }
-                .padding(.vertical, theme.spacing.s)
             }
-        }
-        .padding(.horizontal)
-        .accessibilityElement(children: .contain)
-        .accessibilityLabel("Önerilen egzersizler listesi")
-    }
-}
-
-private struct InlineSuggestionChip: View {
-    @Environment(\.theme) private var theme
-    let title: String
-    let action: () -> Void
-
-    var body: some View {
-        Button(action: action) {
-            Text(title)
-                .font(.caption)
-                .fontWeight(.medium)
-                .padding(.horizontal, theme.spacing.m)
-                .padding(.vertical, theme.spacing.s)
-                .background(theme.colors.accent.opacity(0.12))
-                .foregroundColor(theme.colors.accent)
-                .cornerRadius(16)
-        }
-        .buttonStyle(PressableStyle())
-        .accessibilityElement(children: .ignore)
-        .accessibilityLabel(title)
-        .accessibilityHint("Seçmek için çift dokun")
-    }
-}
 
 // MARK: - Search Bar
 struct SearchBar: View {
     @Binding var text: String
+    var onSubmit: (() -> Void)? = nil
     
     var body: some View {
         HStack {
@@ -218,11 +190,16 @@ struct SearchBar: View {
             
             TextField(LocalizationKeys.Training.Exercise.searchPlaceholder.localized, text: $text)
                 .textFieldStyle(PlainTextFieldStyle())
+                .textInputAutocapitalization(.never)
+                .autocorrectionDisabled(true)
+                .submitLabel(.search)
+                .onSubmit { onSubmit?() }
                 .accessibilityLabel(LocalizationKeys.Training.Exercise.searchPlaceholder.localized)
             
             if !text.isEmpty {
                 Button(LocalizationKeys.Training.Exercise.clear.localized) {
                     text = ""
+                    onSubmit?()
                 }
                 .foregroundColor(.gray)
                 .font(.caption)
@@ -307,15 +284,15 @@ struct ExerciseRow: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.theme) private var theme
     
-    var category: ExerciseCategory {
-        ExerciseCategory(rawValue: exercise.category) ?? .other
+    var partType: WorkoutPartType {
+        WorkoutPartType.from(rawOrLegacy: exercise.category)
     }
     
     var body: some View {
         HStack(spacing: 12) {
-            Image(systemName: category.icon)
+            Image(systemName: partType.icon)
                 .font(.title2)
-                .foregroundColor(category.color)
+                .foregroundColor(partType.color)
                 .frame(width: 30)
                 .accessibilityHidden(true)
 
@@ -355,9 +332,9 @@ struct ExerciseRow: View {
         }
         .padding(theme.spacing.m)
         .background(theme.colors.cardBackground)
-        .overlay(
+            .overlay(
             RoundedRectangle(cornerRadius: 12)
-                .stroke(category.color.opacity(0.2), lineWidth: 2)
+                .stroke(partType.color.opacity(0.2), lineWidth: 2)
         )
         .cornerRadius(12)
         .contentShape(Rectangle())
@@ -416,18 +393,18 @@ struct EmptyExerciseState: View {
                 .foregroundColor(.gray)
             
             if searchText.isEmpty {
-                Text("Egzersiz Bulunamadı")
+                Text(LocalizationKeys.Training.Exercise.emptyTitle.localized)
                     .font(.title2)
                     .fontWeight(.semibold)
                 
-                Text("Kategori seçerek filtreleyebilirsin")
+                Text(LocalizationKeys.Training.Exercise.emptySubtitle.localized)
                     .foregroundColor(.secondary)
             } else {
-                Text("'\(searchText)' için sonuç yok")
+                Text(String(format: LocalizationKeys.Training.Exercise.emptySearchTitle.localized, searchText))
                     .font(.title2)
                     .fontWeight(.semibold)
                 
-                Text("Farklı anahtar kelimeler dene")
+                Text(LocalizationKeys.Training.Exercise.emptySearchSubtitle.localized)
                     .foregroundColor(.secondary)
             }
         }
@@ -436,27 +413,10 @@ struct EmptyExerciseState: View {
 }
 
 #Preview {
-    let config = ModelConfiguration(isStoredInMemoryOnly: true)
-    let container = try! ModelContainer(
-        for: Exercise.self, Workout.self, WorkoutPart.self, ExerciseSet.self,
-        configurations: config
-    )
-
-    let context = container.mainContext
-    let exercise = Exercise(
-        nameEN: "Bench Press",
-        nameTR: "Göğüs Presi",
-        category: "push",
-        equipment: "barbell,bench"
-    )
-    context.insert(exercise)
-
-    let workoutPart = WorkoutPart(name: "Strength", type: .strength, orderIndex: 1)
-
-    return ExerciseSelectionView(
-        workoutPart: workoutPart,
+    ExerciseSelectionView(
+        workoutPart: nil,
         onExerciseSelected: { _ in }
     )
-    .modelContainer(container)
+    .modelContainer(for: [Exercise.self, Workout.self, WorkoutPart.self, ExerciseSet.self], inMemory: true)
 }
 

@@ -3,6 +3,7 @@ import SwiftData
 
 struct NutritionAnalyticsView: View {
     let nutritionEntries: [NutritionEntry]
+    @Environment(\.colorScheme) private var colorScheme
     
     private var weeklyData: [DayData] {
         let calendar = Calendar.current
@@ -157,7 +158,7 @@ struct NutritionAnalyticsView: View {
             }
         }
         .padding(.vertical, 12)
-        .background(Color(.systemGray6))
+        .background(colorScheme == .dark ? Color.black : Color.white)
         .cornerRadius(12)
         .padding(.horizontal)
     }

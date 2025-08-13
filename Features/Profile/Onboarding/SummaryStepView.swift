@@ -12,6 +12,7 @@ struct SummaryStepView: View {
     let data: OnboardingData
     let onComplete: () -> Void
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @EnvironmentObject private var unitSettings: UnitSettings
     
     var body: some View {
         VStack(spacing: 24) {
@@ -51,16 +52,16 @@ struct SummaryStepView: View {
                             )
                             SummaryRow(
                                 label: LocalizationKeys.Onboarding.Summary.Label.height.localized,
-                                value: "\(Int(data.height)) cm"
+                                value: UnitsFormatter.formatHeight(cm: data.height, system: unitSettings.unitSystem)
                             )
                             SummaryRow(
                                 label: LocalizationKeys.Onboarding.Summary.Label.weight.localized,
-                                value: "\(Int(data.weight)) kg"
+                                value: UnitsFormatter.formatWeight(kg: data.weight, system: unitSettings.unitSystem)
                             )
                             if let targetWeight = data.targetWeight {
                                 SummaryRow(
                                     label: LocalizationKeys.Onboarding.Summary.Label.targetWeight.localized,
-                                    value: "\(Int(targetWeight)) kg"
+                                    value: UnitsFormatter.formatWeight(kg: targetWeight, system: unitSettings.unitSystem)
                                 )
                             }
                         }
@@ -192,48 +193,33 @@ struct SummaryStepView: View {
     
     // MARK: - Calculations
     private func calculateBMR() -> Double {
-        if canCalculateNavyMethod() {
-            let bf = calculateNavyMethod() / 100.0
-            let lbm = data.weight * (1 - bf)
-            return 370 + 21.6 * lbm
-        } else {
-            let w = 10 * data.weight
-            let h = 6.25 * data.height
-            let a = 5 * Double(data.age)
-            return data.gender == "male" ? (w + h - a + 5) : (w + h - a - 161)
-        }
+        let gender = Gender(rawValue: data.gender) ?? .male
+        let bodyFat = canCalculateNavyMethod() ? calculateNavyMethod() : nil
+        return HealthCalculator.calculateBMR(
+            gender: gender,
+            age: data.age,
+            heightCm: data.height,
+            weightKg: data.weight,
+            bodyFatPercentage: bodyFat
+        )
     }
     
     private func calculateTDEE() -> Double {
         let bmr = calculateBMR()
-        switch data.activityLevel {
-        case "sedentary": return bmr * 1.2
-        case "light": return bmr * 1.375
-        case "moderate": return bmr * 1.55
-        case "active": return bmr * 1.725
-        case "very_active": return bmr * 1.9
-        default: return bmr * 1.55
-        }
+        let activity = ActivityLevel(rawValue: data.activityLevel) ?? .moderate
+        return HealthCalculator.calculateTDEE(bmr: bmr, activityLevel: activity)
     }
     
     private func calculateCalorieGoal() -> Double {
         let t = calculateTDEE()
-        switch data.fitnessGoal {
-        case "cut": return t * 0.8
-        case "bulk": return t * 1.1
-        case "maintain": return t
-        default: return t
-        }
+        let goal = FitnessGoal(rawValue: data.fitnessGoal) ?? .maintain
+        return HealthCalculator.calculateDailyCalories(tdee: t, goal: goal)
     }
     
     private func calculateMacros() -> (protein: Double, carbs: Double, fat: Double) {
         let cals = calculateCalorieGoal()
-        // Align protein with FitnessGoal.proteinMultiplier
         let goal = FitnessGoal(rawValue: data.fitnessGoal) ?? .maintain
-        let protein = data.weight * goal.proteinMultiplier
-        let fat = (cals * 0.25) / 9
-        let carbs = (cals - protein * 4 - fat * 9) / 4
-        return (protein, carbs, fat)
+        return HealthCalculator.calculateMacros(weightKg: data.weight, dailyCalories: cals, goal: goal)
     }
     
     private func canCalculateNavyMethod() -> Bool {
@@ -245,16 +231,15 @@ struct SummaryStepView: View {
     }
     
     private func calculateNavyMethod() -> Double {
-        guard let neck = data.neckCircumference, let waist = data.waistCircumference else { return 0 }
-        let h = data.height
-        if data.gender == "male" {
-            let d = 1.0324 - 0.19077 * log10(waist - neck) + 0.15456 * log10(h)
-            return max(0, min(50, 495 / d - 450))
-        } else {
-            guard let hip = data.hipCircumference else { return 0 }
-            let d = 1.29579 - 0.35004 * log10(waist + hip - neck) + 0.22100 * log10(h)
-            return max(0, min(50, 495 / d - 450))
-        }
+        let gender = Gender(rawValue: data.gender) ?? .male
+        let bf = HealthCalculator.calculateBodyFatNavy(
+            gender: gender,
+            heightCm: data.height,
+            neckCm: data.neckCircumference,
+            waistCm: data.waistCircumference,
+            hipCm: data.hipCircumference
+        )
+        return bf ?? 0
     }
     
     private func goalDisplayName(_ g: String) -> String {

@@ -1,12 +1,13 @@
 import SwiftUI
 
 struct NavyMethodCalculatorView: View {
+    @EnvironmentObject private var unitSettings: UnitSettings
     @State private var gender: NavyGender = .male
     @State private var age = ""
-    @State private var height = ""
-    @State private var waist = ""
-    @State private var neck = ""
-    @State private var hips = ""
+    @State private var height = ""   // expects cm
+    @State private var waist = ""    // expects cm
+    @State private var neck = ""     // expects cm
+    @State private var hips = ""     // expects cm (female only)
     @State private var calculatedBodyFat: Double?
     
     var body: some View {
@@ -20,6 +21,7 @@ struct NavyMethodCalculatorView: View {
                 
                 // Input Section
                 NavyInputSection(
+                    unitSystem: unitSettings.unitSystem,
                     gender: gender,
                     age: $age,
                     height: $height,
@@ -80,9 +82,14 @@ struct NavyMethodCalculatorView: View {
     
     private func calculateBodyFat() {
         guard let _ = Int(age),
-              let heightValue = Double(height.replacingOccurrences(of: ",", with: ".")),
-              let waistValue = Double(waist.replacingOccurrences(of: ",", with: ".")),
-              let neckValue = Double(neck.replacingOccurrences(of: ",", with: ".")) else { return }
+              let heightRaw = Double(height.replacingOccurrences(of: ",", with: ".")),
+              let waistRaw = Double(waist.replacingOccurrences(of: ",", with: ".")),
+              let neckRaw = Double(neck.replacingOccurrences(of: ",", with: ".")) else { return }
+
+        // Normalize to cm
+        let heightValue = heightRaw
+        let waistValue = waistRaw
+        let neckValue = neckRaw
         
         if gender == .male {
             // Male formula: 495 / (1.0324 - 0.19077 * log10(waist - neck) + 0.15456 * log10(height)) - 450
@@ -92,7 +99,8 @@ struct NavyMethodCalculatorView: View {
             calculatedBodyFat = max(0, bodyFatPercentage)
         } else {
             // Female formula: 495 / (1.29579 - 0.35004 * log10(waist + hip - neck) + 0.22100 * log10(height)) - 450
-            guard let hipsValue = Double(hips.replacingOccurrences(of: ",", with: ".")) else { return }
+            guard let hipsRaw = Double(hips.replacingOccurrences(of: ",", with: ".")) else { return }
+            let hipsValue = hipsRaw
             let logWaistHipNeck = log10(waistValue + hipsValue - neckValue)
             let logHeight = log10(heightValue)
             let bodyFatPercentage = 495 / (1.29579 - 0.35004 * logWaistHipNeck + 0.22100 * logHeight) - 450
@@ -169,6 +177,7 @@ struct NavyGenderSection: View {
 
 // MARK: - Input Section
 struct NavyInputSection: View {
+    let unitSystem: UnitSystem
     let gender: NavyGender
     @Binding var age: String
     @Binding var height: String
@@ -218,11 +227,11 @@ struct NavyInputSection: View {
                     HStack {
                         Image(systemName: "oval.fill")
                             .foregroundColor(.orange)
-                        Text("Bel Çevresi (cm)")
+                        Text(unitSystem == .metric ? "Bel Çevresi (cm)" : "Bel Çevresi (in)")
                             .fontWeight(.medium)
                     }
                     
-                    TextField("85", text: $waist)
+                    TextField(unitSystem == .metric ? "85" : "33", text: $waist)
                         .keyboardType(.decimalPad)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                         .font(.title3)
@@ -233,11 +242,11 @@ struct NavyInputSection: View {
                     HStack {
                         Image(systemName: "person.crop.circle")
                             .foregroundColor(.purple)
-                        Text("Boyun Çevresi (cm)")
+                        Text(unitSystem == .metric ? "Boyun Çevresi (cm)" : "Boyun Çevresi (in)")
                             .fontWeight(.medium)
                     }
                     
-                    TextField("38", text: $neck)
+                    TextField(unitSystem == .metric ? "38" : "15", text: $neck)
                         .keyboardType(.decimalPad)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                         .font(.title3)
@@ -249,11 +258,11 @@ struct NavyInputSection: View {
                         HStack {
                             Image(systemName: "circle.fill")
                                 .foregroundColor(.pink)
-                            Text("Kalça Çevresi (cm)")
+                            Text(unitSystem == .metric ? "Kalça Çevresi (cm)" : "Kalça Çevresi (in)")
                                 .fontWeight(.medium)
                         }
                         
-                        TextField("95", text: $hips)
+                        TextField(unitSystem == .metric ? "95" : "37", text: $hips)
                             .keyboardType(.decimalPad)
                             .textFieldStyle(RoundedBorderTextFieldStyle())
                             .font(.title3)

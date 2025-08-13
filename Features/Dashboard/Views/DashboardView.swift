@@ -356,7 +356,7 @@ struct DashboardView: View {
         let todays = workouts.filter { $0.startTime >= startOfDay && $0.startTime < endOfDay }
         let total = todays.reduce(0.0) { partial, workout in
             if let end = workout.endTime { return partial + end.timeIntervalSince(workout.startTime) }
-            return partial + TimeInterval(workout.totalDuration)
+            return partial
         }
         return total
     }
@@ -420,21 +420,15 @@ struct WorkoutCard: View {
                     Text(LocalizationKeys.Dashboard.Workout.duration.localized)
                         .font(.caption)
                         .foregroundColor(.secondary)
-                    
-                    // ✅ FIXED: workout.totalDuration is Int (seconds), convert to TimeInterval
-                    Text(formatWorkoutDuration(TimeInterval(workout.totalDuration)))
+                    Text(timeRangeText(for: workout))
                         .font(.subheadline.bold())
                         .foregroundColor(.blue)
                 }
-                
                 Spacer()
-                
                 VStack(alignment: .trailing, spacing: 4) {
                     Text(LocalizationKeys.Dashboard.Workout.volume.localized)
                         .font(.caption)
                         .foregroundColor(.secondary)
-                    
-                    // ✅ OK: workout.totalVolume is computed property (Double)
                     Text("\(Int(workout.totalVolume)) kg")
                         .font(.subheadline.bold())
                         .foregroundColor(.green)
@@ -450,15 +444,12 @@ struct WorkoutCard: View {
         WorkoutCard.dateFormatter.string(from: date)
     }
     
-    private func formatWorkoutDuration(_ duration: TimeInterval) -> String {
-        let minutes = Int(duration) / 60
-        if minutes >= 60 {
-            let hours = minutes / 60
-            let remainingMinutes = minutes % 60
-            return "\(hours)\(LocalizationKeys.Dashboard.Time.hours.localized) \(remainingMinutes)\(LocalizationKeys.Dashboard.Time.minutes.localized)"
-        } else {
-            return "\(minutes)\(LocalizationKeys.Dashboard.Time.minutes.localized)"
-        }
+    private func timeRangeText(for workout: Workout) -> String {
+        let f = DateFormatter()
+        f.timeStyle = .short
+        let start = f.string(from: workout.startTime)
+        if let end = workout.endTime { return "\(start) - \(f.string(from: end))" }
+        return start
     }
 }
 
@@ -564,42 +555,7 @@ struct WeightEntryView: View {
     }
 }
 
-// MARK: - Inline Health Stat Strip Components (to avoid project file edits)
-struct DashboardHealthStatStripItem: View {
-    @Environment(\.theme) private var theme
-    let icon: String
-    let title: String
-    let value: String
-    let color: Color
-    let action: (() -> Void)?
-
-    var body: some View {
-        Button(action: { action?() }) {
-            HStack(spacing: 8) {
-                Image(systemName: icon)
-                    .foregroundColor(color)
-                    .font(.headline)
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(value)
-                        .font(.system(size: 18, weight: .semibold, design: .rounded))
-                        .foregroundColor(theme.colors.textPrimary)
-                        .lineLimit(1)
-                    Text(title)
-                        .font(.caption)
-                        .foregroundColor(theme.colors.textSecondary)
-                        .lineLimit(1)
-                }
-                Spacer(minLength: 0)
-            }
-            .padding(.vertical, 10)
-            .padding(.horizontal, 12)
-            .cardStyle()
-        }
-        .buttonStyle(.plain)
-        .accessibilityElement(children: .combine)
-        .accessibilityLabel(Text("\(title) \(value)"))
-    }
-}
+// MARK: - Inline Health Stat Strip Components (placeholder only)
 
 struct DashboardHealthStatStripPlaceholder: View {
     @Environment(\.theme) private var theme

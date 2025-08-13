@@ -4,7 +4,7 @@ struct AppPreferencesView: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject var themeManager: ThemeManager
     @StateObject private var languageManager = LanguageManager.shared
-    @AppStorage("unitSystem") private var unitSystem = "metric"
+    @EnvironmentObject var unitSettings: UnitSettings
     @AppStorage("notificationsEnabled") private var notificationsEnabled = true
     @AppStorage("workoutReminders") private var workoutReminders = true
     @AppStorage("nutritionReminders") private var nutritionReminders = true
@@ -24,7 +24,10 @@ struct AppPreferencesView: View {
                 
                 // Units Section
                 Section {
-                    UnitSystemSelector(unitSystem: $unitSystem)
+                    UnitSystemSelector(unitSystem: Binding(
+                        get: { unitSettings.unitSystem.rawValue },
+                        set: { unitSettings.unitSystem = UnitSystem(rawValue: $0) ?? .metric }
+                    ))
                 } header: {
                     SectionHeaderView(title: "settings.units".localized, icon: "ruler")
                 }

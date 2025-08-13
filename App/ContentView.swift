@@ -3,6 +3,7 @@ import SwiftData
 
 struct ContentView: View {
     @AppStorage("onboardingCompleted") private var onboardingCompleted = false
+    @Query private var existingUsers: [User]
 
     var body: some View {
         LocalizationView {
@@ -10,6 +11,12 @@ struct ContentView: View {
                 MainTabView()
             } else {
                 OnboardingView()
+            }
+        }
+        .onAppear {
+            // Gating: Eğer veritabanında kullanıcı varsa onboarding'i atla
+            if !onboardingCompleted && !existingUsers.isEmpty {
+                onboardingCompleted = true
             }
         }
     }

@@ -47,7 +47,7 @@ extension WorkoutPart {
     }
 
     var workoutPartType: WorkoutPartType {
-        WorkoutPartType(rawValue: type) ?? .strength
+        WorkoutPartType.from(rawOrLegacy: type)
     }
 }
 

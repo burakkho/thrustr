@@ -108,74 +108,93 @@ enum ExerciseCategory: String, CaseIterable, Codable {
     }
 }
 
-// MARK: - Workout Part Type Enum
-enum WorkoutPartType: String, CaseIterable, Codable {
-    case strength = "strength"
-    case conditioning = "conditioning"
-    case accessory = "accessory"
-    case warmup = "warmup"
-    case functional = "functional"
-    case olympic = "olympic"
-    case plyometric = "plyometric"
-
-    var displayName: String {
-        // Use localized titles where available; provide sensible defaults for new types
+// MARK: - Mapping from fine-grained categories -> 4 canonical part types
+extension ExerciseCategory {
+    func toWorkoutPartType() -> WorkoutPartType {
         switch self {
-        case .strength: return LocalizationKeys.Training.Part.strength.localized
-        case .conditioning: return LocalizationKeys.Training.Part.conditioning.localized
+        case .cardio:
+            return .cardio
+        case .functional:
+            return .metcon
+        case .core, .isolation, .warmup, .flexibility, .plyometric:
+            return .accessory
+        case .push, .pull, .legs, .olympic, .strength:
+            return .powerStrength
+        case .other:
+            return .powerStrength
+        }
+    }
+}
+
+// MARK: - Workout Part Type Enum (Revised)
+enum WorkoutPartType: String, CaseIterable, Codable {
+    case powerStrength = "powerStrength"
+    case metcon = "metcon"
+    case accessory = "accessory"
+    case cardio = "cardio"
+
+    // Localized display name
+    var displayName: String {
+        switch self {
+        case .powerStrength: return LocalizationKeys.Training.Part.powerStrength.localized
+        case .metcon: return LocalizationKeys.Training.Part.metcon.localized
         case .accessory: return LocalizationKeys.Training.Part.accessory.localized
-        case .warmup: return LocalizationKeys.Training.Part.warmup.localized
-        case .functional: return LocalizationKeys.Training.Part.functional.localized
-        case .olympic: return "Olimpik"
-        case .plyometric: return "Plyometrik"
+        case .cardio: return LocalizationKeys.Training.Part.cardio.localized
         }
     }
 
+    // SF Symbols
     var icon: String {
         switch self {
-        case .strength: return "dumbbell"
-        case .conditioning: return "flame"
+        case .powerStrength: return "dumbbell.fill"
+        case .metcon: return "flame.fill"
         case .accessory: return "plus.circle"
-        case .warmup: return "thermometer.sun"
-        case .functional: return "figure.strengthtraining.functional"
-        case .olympic: return "trophy"
-        case .plyometric: return "figure.jumprope"
+        case .cardio: return "figure.run"
         }
     }
 
+    // Color scheme
     var color: Color {
         switch self {
-        case .strength: return .blue
-        case .conditioning: return .red
+        case .powerStrength: return .blue
+        case .metcon: return .red
         case .accessory: return .green
-        case .warmup: return .orange
-        case .functional: return .purple
-        case .olympic: return .yellow
-        case .plyometric: return .pink
+        case .cardio: return .orange
         }
     }
 
+    // Localized description
     var description: String {
         switch self {
-        case .strength: return "Ağırlık antrenmanı, set/rep tracking"
-        case .conditioning: return "WOD, kardiyo, kondisyon antrenmanı"
-        case .accessory: return "Yardımcı hareketler, izolasyon"
-        case .warmup: return "Isınma hareketleri"
-        case .functional: return "Fonksiyonel hareketler, crossfit"
-        case .olympic: return "Olimpik halter kaldırışları"
-        case .plyometric: return "Plyometrik/Patlayıcı güç çalışmaları"
+        case .powerStrength: return LocalizationKeys.Training.Part.powerStrengthDesc.localized
+        case .metcon: return LocalizationKeys.Training.Part.metconDesc.localized
+        case .accessory: return LocalizationKeys.Training.Part.accessoryDesc.localized
+        case .cardio: return LocalizationKeys.Training.Part.cardioDesc.localized
         }
     }
 
+    // Suggested exercise categories used by selection hints
     var suggestedExerciseCategories: [ExerciseCategory] {
         switch self {
-        case .strength: return [.push, .pull, .legs, .olympic, .strength]
-        case .conditioning: return [.cardio, .functional]
+        case .powerStrength: return [.push, .pull, .legs, .olympic, .strength]
+        case .metcon: return [.cardio, .functional]
         case .accessory: return [.isolation, .core]
-        case .warmup: return [.warmup, .functional, .cardio]
-        case .functional: return [.functional, .olympic, .cardio]
-        case .olympic: return [.olympic, .strength]
-        case .plyometric: return [.plyometric, .functional, .legs]
+        case .cardio: return [.cardio]
+        }
+    }
+
+    // Legacy -> New mapping for persisted/raw values
+    static func from(rawOrLegacy value: String) -> WorkoutPartType {
+        switch value {
+        case WorkoutPartType.powerStrength.rawValue: return .powerStrength
+        case WorkoutPartType.metcon.rawValue: return .metcon
+        case WorkoutPartType.accessory.rawValue: return .accessory
+        case WorkoutPartType.cardio.rawValue: return .cardio
+        case "strength", "olympic": return .powerStrength
+        case "conditioning", "functional": return .metcon
+        case "warmup", "plyometric": return .accessory
+        case "cardio": return .cardio
+        default: return .accessory
         }
     }
 }

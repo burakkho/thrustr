@@ -116,6 +116,8 @@
 
 // MARK: - Onboarding
 "onboarding.back" = "Back";
+"onboarding.next" = "Next";
+"onboarding.skip" = "Skip";
 
 // Welcome Step
 "onboarding.welcome.title" = "Welcome to\nSpor Hocam! 💪";
@@ -142,6 +144,17 @@
 "onboarding.personalInfo.height" = "Height";
 "onboarding.personalInfo.weight" = "Weight";
 "onboarding.continue" = "Continue";
+
+// Consent Step
+"onboarding.consent.title" = "Consent";
+"onboarding.consent.subtitle" = "Please review and accept the documents to continue.";
+"onboarding.consent.terms.title" = "Accept Terms of Service";
+"onboarding.consent.terms.desc" = "You need to accept the Terms of Service to use the app.";
+"onboarding.consent.viewTerms" = "View Terms of Service";
+"onboarding.consent.privacy.title" = "Accept Privacy Policy";
+"onboarding.consent.privacy.desc" = "Please review and accept our Privacy Policy.";
+"onboarding.consent.viewPrivacy" = "View Privacy Policy";
+"onboarding.consent.marketing" = "I want to receive product updates and tips";
 
 // Goals Step
 "onboarding.goals.title" = "Your Goals";
@@ -211,6 +224,11 @@
 "onboarding.summary.info.withNavy" = "Since your body fat percentage was calculated using the Navy Method, the more accurate Katch-McArdle formula was used. You can change this anytime from profile settings.";
 "onboarding.summary.info.withoutNavy" = "Since body measurements weren't provided, the Mifflin-St Jeor formula was used. For more accurate calculations, you can add your measurements from profile settings.";
 "onboarding.summary.startApp" = "Start App";
+
+// Preferences Step (Theme & Language)
+"onboarding.preferences.title" = "Choose Your Preferences";
+"onboarding.preferences.language" = "Language";
+"onboarding.preferences.theme" = "Theme";
 
 // Summary Labels
 "onboarding.summary.label.name" = "Name";
@@ -303,6 +321,8 @@
 "training.history.defaultName" = "Workout";
 "training.history.noParts" = "No parts";
 "training.history.totalVolume" = "Total Volume: %d kg";
+"training.history.seeMore" = "See More";
+"training.history.repeat" = "Repeat this workout";
 
 // MARK: - Active Workout
 "training.active.empty.title" = "No Active Workout";
@@ -339,6 +359,8 @@
 // MARK: - Templates
 "training.templates.title" = "Templates";
 "training.templates.empty" = "Ready-made workout templates coming soon!";
+"training.templates.saveAsTemplate" = "Save as Template";
+"training.templates.removeFromTemplates" = "Remove from Templates";
 
 // MARK: - Workout Detail
 "training.detail.back" = "Back";
@@ -351,27 +373,59 @@
 "training.detail.addPart" = "Add Part";
 
 // MARK: - Workout Parts
-"training.part.strength" = "Strength";
-"training.part.conditioning" = "Conditioning";
+"training.part.powerStrength" = "Power & Strength";
+"training.part.metcon" = "Metcon";
 "training.part.accessory" = "Accessory";
-"training.part.warmup" = "Warmup";
-"training.part.functional" = "Functional";
-"training.part.olympic" = "Olympic";
-"training.part.plyometric" = "Plyometric";
+"training.part.cardio" = "Cardio";
 
-"training.part.strength.desc" = "Weight training, set/rep tracking";
-"training.part.conditioning.desc" = "WOD, cardio, conditioning training";
-"training.part.accessory.desc" = "Accessory movements, isolation";
-"training.part.warmup.desc" = "Warm-up movements";
-"training.part.functional.desc" = "Functional movements, crossfit";
-"training.part.olympic.desc" = "Olympic weightlifting movements";
-"training.part.plyometric.desc" = "Plyometric/explosive power training";
+"training.part.powerStrength.desc" = "Weight and Olympic lifts";
+"training.part.metcon.desc" = "WODs and conditioning";
+"training.part.accessory.desc" = "Isolation and assistance movements";
+"training.part.cardio.desc" = "Running, rowing and cycling";
 
 "training.part.status.completed" = "Completed";
 "training.part.status.inProgress" = "In Progress";
 "training.part.noExercise" = "No exercises added yet";
 "training.part.addExercise" = "Add Exercise";
 "training.part.result" = "Result:";
+
+// MARK: - WOD / METCON
+"training.wod.title" = "WOD";
+"training.wod.result" = "WOD Result";
+"training.wod.add" = "+ WOD";
+"training.wod.addResult" = "Add WOD Result";
+"training.wod.editResult" = "Edit WOD Result";
+"training.wod.favorites" = "Favorites";
+"training.wod.benchmarks" = "Benchmarks";
+"training.wod.forTime" = "For Time";
+"training.wod.amrap" = "AMRAP";
+"training.wod.emom" = "EMOM";
+"training.wod.custom" = "Custom";
+"training.wod.customResult" = "Custom Result";
+"training.wod.enterTime" = "Enter time (MM:SS)";
+"training.wod.rounds" = "Rounds";
+"training.wod.reps" = "Reps";
+"training.wod.emomCompleted" = "EMOM Rounds Completed";
+"training.wod.total" = "Total";
+"training.wod.create" = "Create WOD";
+"training.wod.builder.namePlaceholder" = "WOD Name (optional)";
+"training.wod.builder.schemePlaceholderForTime" = "Rep scheme (e.g., 21-15-9)";
+"training.wod.builder.schemePlaceholderAmrap" = "Reps per movement (e.g., 10)";
+"training.wod.builder.movementsPlaceholder" = "Movements, comma separated (e.g., Thruster, Burpee)";
+"training.wod.builder.schemeHintForTime" = "e.g., 21-15-9 or 10-10-10";
+"training.wod.builder.schemeHintAmrap" = "e.g., 10 (each movement 10 reps per round)";
+"training.wod.builder.movementsHint" = "e.g., Thruster, Burpee";
+"training.wod.builder.start" = "Start";
+"training.wod.runner.undo" = "Undo";
+"training.wod.runner.addRound" = "Add Round";
+"training.wod.runner.extraReps" = "Extra: %d reps";
+"training.wod.runner.scoreButton" = "Enter Score";
+"training.wod.runner.finish" = "Finish";
+"training.wod.runner.scoreTitle" = "Time (MM:SS)";
+"training.wod.runner.roundsLabel" = "Rounds: %d";
+"training.wod.runner.stepsProgress" = "%d/%d";
+"training.wod.runner.tipTitle" = "How it works";
+"training.wod.runner.tipBody" = "Tap the check icon on the right to complete steps. When finished, tap Enter Score.";
 
 // MARK: - Add Part
 "training.addPart.title" = "Add Part";
@@ -390,7 +444,7 @@
 "training.exercise.cancel" = "Cancel";
 "training.exercise.addCustom" = "Add Custom";
 "training.exercise.empty.title" = "No Exercises Found";
-"training.exercise.empty.subtitle" = "Try filtering by category";
+"training.exercise.empty.subtitle" = "Use search or favorites";
 "training.exercise.empty.searchTitle" = "No results for '%@'";
 "training.exercise.empty.searchSubtitle" = "Try different keywords";
 

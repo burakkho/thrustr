@@ -12,6 +12,10 @@ struct TrainingView: View {
     @State private var workoutToShow: Workout?
     @State private var showWorkoutDetail = false
     
+    private var hasActiveWorkout: Bool {
+        workouts.contains { $0.isActive }
+    }
+
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
@@ -34,7 +38,47 @@ struct TrainingView: View {
                         showWorkoutDetail = true
                     })
                 case 2:
-                    WorkoutTemplatesView()
+                    WorkoutTemplatesView(onSelectWOD: { template in
+                        // Create workout with Metcon part prefilled with selected WOD
+                        let workout = Workout(name: template.name)
+                        let part = workout.addPart(name: LocalizationKeys.Training.Part.metcon.localized, type: .metcon)
+                        part.wodTemplateId = template.id
+                        modelContext.insert(workout)
+                        do { try modelContext.save() } catch { /* ignore for now */ }
+                        workoutToShow = workout
+                        selectedTab = 1
+                    }, onSelectWODManual: { template in
+                        // Create workout and open detail for manual builder
+                        let workout = Workout(name: template.name)
+                        _ = workout.addPart(name: LocalizationKeys.Training.Part.metcon.localized, type: .metcon)
+                        modelContext.insert(workout)
+                        do { try modelContext.save() } catch { /* ignore for now */ }
+                        workoutToShow = workout
+                        selectedTab = 1
+                    }, onSelectProgram: { template in
+                        // Duplicate template workout structure to a new active workout
+                        let newWorkout = Workout(name: template.name ?? LocalizationKeys.Training.History.defaultName.localized)
+                        for (idx, part) in template.parts.sorted(by: { $0.orderIndex < $1.orderIndex }).enumerated() {
+                            let newPart = WorkoutPart(name: part.name, type: WorkoutPartType.from(rawOrLegacy: part.type), orderIndex: idx)
+                            newPart.workout = newWorkout
+                            // Copy structure: for each exercise, create one placeholder set mirroring last completed values (if any)
+                            let grouped: [UUID?: [ExerciseSet]] = Dictionary(grouping: part.exerciseSets, by: { $0.exercise?.id })
+                            for (_, sets) in grouped {
+                                guard let exercise = sets.first?.exercise else { continue }
+                                let completed = sets.compactMap { $0.isCompleted ? $0 : nil }
+                                if let last = completed.last {
+                                    let copy = ExerciseSet(setNumber: 1, weight: last.weight, reps: last.reps, isCompleted: false)
+                                    copy.exercise = exercise
+                                    copy.workoutPart = newPart
+                                }
+                            }
+                            newWorkout.parts.append(newPart)
+                        }
+                        modelContext.insert(newWorkout)
+                        do { try modelContext.save() } catch { /* ignore */ }
+                        workoutToShow = newWorkout
+                        selectedTab = 1
+                    })
                 default:
                     EmptyView()
                 }
@@ -43,9 +87,15 @@ struct TrainingView: View {
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(action: {
-                        let newWorkout = Workout(name: LocalizationKeys.Training.History.defaultName.localized)
-                        modelContext.insert(newWorkout)
-                        workoutToShow = newWorkout
+                        if let existing = workouts.first(where: { $0.isActive }) {
+                            workoutToShow = existing
+                        } else {
+                            let newWorkout = Workout(name: LocalizationKeys.Training.History.defaultName.localized)
+                            modelContext.insert(newWorkout)
+                            workoutToShow = newWorkout
+                        }
+                        // Switch to Active tab when a workout starts
+                        selectedTab = 1
                     }) {
                         Image(systemName: "plus")
                             .font(.headline)
@@ -56,6 +106,9 @@ struct TrainingView: View {
             .fullScreenCover(item: $workoutToShow) { workout in
                 WorkoutDetailView(workout: workout)
             }
+            .onAppear {
+                if hasActiveWorkout { selectedTab = 1 }
+            }
         }
     }
 }
@@ -64,6 +117,12 @@ struct TrainingView: View {
 struct WorkoutHistoryView: View {
     let workouts: [Workout]
     @Environment(\.theme) private var theme
+    @Environment(\.modelContext) private var modelContext
+    @State private var showAll: Bool = false
+    
+    private var displayedWorkouts: [Workout] {
+        showAll ? completedWorkouts : Array(completedWorkouts.prefix(7))
+    }
     
     var completedWorkouts: [Workout] {
         workouts.filter { $0.isCompleted }.sorted { $0.date > $1.date }
@@ -89,13 +148,46 @@ struct WorkoutHistoryView: View {
                     }
                     .padding(.top, 100)
                 } else {
-                    ForEach(completedWorkouts) { workout in
+                    ForEach(displayedWorkouts) { workout in
                         WorkoutHistoryCard(workout: workout)
+                            .contextMenu {
+                                Button(LocalizationKeys.Training.History.repeat.localized) {
+                                    repeatWorkout(workout)
+                                }
+                            }
+                    }
+                    if !showAll && completedWorkouts.count > 7 {
+                        Button(LocalizationKeys.Training.History.seeMore.localized) { showAll = true }
+                            .font(.subheadline)
+                            .foregroundColor(theme.colors.accent)
                     }
                 }
             }
             .padding(theme.spacing.m)
         }
+    }
+
+    private func repeatWorkout(_ template: Workout) {
+        let newWorkout = Workout(name: template.name)
+        // Copy parts and exercises
+        for (idx, part) in template.parts.sorted(by: { $0.orderIndex < $1.orderIndex }).enumerated() {
+            let newPart = WorkoutPart(name: part.name, type: WorkoutPartType.from(rawOrLegacy: part.type), orderIndex: idx)
+            newPart.workout = newWorkout
+            // copy only completed sets structure (exercise and last values), not results
+            let grouped: [UUID?: [ExerciseSet]] = Dictionary(grouping: part.exerciseSets, by: { $0.exercise?.id })
+            for (_, sets) in grouped {
+                guard let exercise = sets.first?.exercise else { continue }
+                let completed = sets.compactMap { $0.isCompleted ? $0 : nil }
+                if let last = completed.last {
+                    let copy = ExerciseSet(setNumber: 1, weight: last.weight, reps: last.reps, isCompleted: false)
+                    copy.exercise = exercise
+                    copy.workoutPart = newPart
+                }
+            }
+            newWorkout.parts.append(newPart)
+        }
+        modelContext.insert(newWorkout)
+        do { try modelContext.save() } catch { /* ignore */ }
     }
 }
 
@@ -121,10 +213,6 @@ struct WorkoutHistoryCard: View {
                 Spacer()
                 
                 VStack(alignment: .trailing, spacing: 4) {
-                    Text("\(workout.durationInMinutes) \(LocalizationKeys.Training.Time.minutes.localized)")
-                        .font(.subheadline)
-                        .fontWeight(.medium)
-                    
                     Text("\(workout.totalSets) \(LocalizationKeys.Training.Stats.sets.localized.lowercased())")
                         .font(.caption)
                         .foregroundColor(.secondary)
@@ -134,7 +222,7 @@ struct WorkoutHistoryCard: View {
             // Parts summary
             HStack(spacing: 8) {
                 ForEach(workout.parts.sorted(by: { $0.orderIndex < $1.orderIndex }), id: \.id) { part in
-                    PartTypeChip(partType: WorkoutPartType(rawValue: part.type) ?? .strength)
+                    PartTypeChip(partType: WorkoutPartType.from(rawOrLegacy: part.type))
                 }
                 
                 if workout.parts.isEmpty {
@@ -144,22 +232,37 @@ struct WorkoutHistoryCard: View {
                 }
             }
             
-            // Volume info
-            if workout.totalVolume > 0 {
-                HStack {
-                    Image(systemName: "scalemass")
-                        .foregroundColor(.blue)
-                        .font(.caption)
-                    
-                    Text(LocalizationKeys.Training.History.totalVolume.localized(with: Int(workout.totalVolume)))
-                        .font(.caption)
-                        .foregroundColor(.secondary)
+            // Prominent stats: Volume + Duration
+            HStack(spacing: 16) {
+                HStack(spacing: 6) {
+                    Image(systemName: "scalemass").foregroundColor(.blue)
+                    Text("\(Int(workout.totalVolume)) kg").font(.subheadline).fontWeight(.semibold)
                 }
+                HStack(spacing: 6) {
+                    Image(systemName: "clock").foregroundColor(.orange)
+                    Text(durationText).font(.subheadline).fontWeight(.semibold)
+                }
+                Spacer()
             }
         }
         .padding(theme.spacing.m)
         .background(theme.colors.cardBackground)
         .cornerRadius(12)
+    }
+
+    private func formattedTime(_ date: Date) -> String {
+        let f = DateFormatter()
+        f.timeStyle = .short
+        return f.string(from: date)
+    }
+
+    private var durationText: String {
+        guard let end = workout.endTime else { return "-" }
+        let interval = end.timeIntervalSince(workout.startTime)
+        let minutes = max(0, Int(interval) / 60)
+        let hours = minutes / 60
+        let mins = minutes % 60
+        return hours > 0 ? "\(hours)sa \(mins)dk" : "\(mins)dk"
     }
 }
 
@@ -170,20 +273,14 @@ struct PartTypeChip: View {
     
     var localizedDisplayName: String {
         switch partType {
-        case .strength:
-            return LocalizationKeys.Training.Part.strength.localized
-        case .conditioning:
-            return LocalizationKeys.Training.Part.conditioning.localized
+        case .powerStrength:
+            return LocalizationKeys.Training.Part.powerStrength.localized
+        case .metcon:
+            return LocalizationKeys.Training.Part.metcon.localized
         case .accessory:
             return LocalizationKeys.Training.Part.accessory.localized
-        case .warmup:
-            return LocalizationKeys.Training.Part.warmup.localized
-        case .functional:
-            return LocalizationKeys.Training.Part.functional.localized
-        case .olympic:
-            return LocalizationKeys.Training.Part.olympic.localized
-        case .plyometric:
-            return LocalizationKeys.Training.Part.plyometric.localized
+        case .cardio:
+            return LocalizationKeys.Training.Part.cardio.localized
         }
     }
     
@@ -203,13 +300,10 @@ struct PartTypeChip: View {
     
     private var partColor: Color {
         switch partType {
-        case .strength: return .blue
-        case .conditioning: return .red
+        case .powerStrength: return .blue
+        case .metcon: return .red
         case .accessory: return .green
-        case .warmup: return .orange
-        case .functional: return .purple
-        case .olympic: return .yellow
-        case .plyometric: return .pink
+        case .cardio: return .orange
         }
     }
 }
@@ -340,14 +434,12 @@ struct ActiveWorkoutCard: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.theme) private var theme
     @State private var currentTime = Date()
-    @State private var timerText: String = ""
-    @State private var timer = Timer.publish(every: 1.0, on: .main, in: .common).autoconnect()
     @State private var showSaveErrorAlert = false
     @State private var saveErrorMessage = ""
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            // Header with timer
+            // Header with time info
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(LocalizationKeys.Training.Active.title.localized)
@@ -362,13 +454,10 @@ struct ActiveWorkoutCard: View {
                 Spacer()
                 
                 VStack(alignment: .trailing, spacing: 4) {
-                    Text(LocalizationKeys.Training.Active.duration.localized)
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                    Text(timerText)
-                        .font(.title2)
-                        .fontWeight(.bold)
-                        .foregroundColor(theme.colors.accent)
+                    Text(timeRangeText)
+                        .font(.headline)
+                        .fontWeight(.semibold)
+                        .foregroundColor(theme.colors.textSecondary)
                 }
             }
             
@@ -383,6 +472,7 @@ struct ActiveWorkoutCard: View {
             HStack(spacing: theme.spacing.m) {
                 Button(LocalizationKeys.Training.Active.continueButton.localized) {
                     onTap()
+                    HapticManager.shared.impact(.light)
                 }
                 .font(.headline)
                 .foregroundColor(.white)
@@ -399,7 +489,7 @@ struct ActiveWorkoutCard: View {
                         saveErrorMessage = error.localizedDescription
                         showSaveErrorAlert = true
                     }
-                    UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                    HapticManager.shared.impact(.light)
                 }
                 .font(.headline)
                 .foregroundColor(theme.colors.success)
@@ -418,16 +508,7 @@ struct ActiveWorkoutCard: View {
                 .stroke(theme.colors.accent, lineWidth: 2)
         )
         .cornerRadius(12)
-        .onReceive(timer) { _ in
-            currentTime = Date()
-            timerText = formatDuration(Int(currentTime.timeIntervalSince(workout.startTime)))
-        }
-        .onAppear {
-            timerText = formatDuration(Int(Date().timeIntervalSince(workout.startTime)))
-        }
-        .onDisappear {
-            timer.upstream.connect().cancel()
-        }
+        .onAppear { currentTime = Date() }
         .alert(isPresented: $showSaveErrorAlert) {
             Alert(
                 title: Text(LocalizationKeys.Common.error.localized),
@@ -437,16 +518,12 @@ struct ActiveWorkoutCard: View {
         }
     }
     
-    private func formatDuration(_ seconds: Int) -> String {
-        let hours = seconds / 3600
-        let minutes = (seconds % 3600) / 60
-        let secs = seconds % 60
-        
-        if hours > 0 {
-            return String(format: "%d:%02d:%02d", hours, minutes, secs)
-        } else {
-            return String(format: "%d:%02d", minutes, secs)
-        }
+    private var timeRangeText: String {
+        let formatter = DateFormatter()
+        formatter.timeStyle = .short
+        let start = formatter.string(from: workout.startTime)
+        if let end = workout.endTime { return "\(start) - \(formatter.string(from: end))" }
+        return start
     }
 }
 
@@ -470,24 +547,153 @@ struct StatItem: View {
 // MARK: - Workout Templates View
 struct WorkoutTemplatesView: View {
     @Environment(\.theme) private var theme
+    @Environment(\.modelContext) private var modelContext
+    let onSelectWOD: (WODTemplate) -> Void
+    let onSelectWODManual: (WODTemplate) -> Void
+    let onSelectProgram: (Workout) -> Void
+    @State private var favoriteIds: Set<String> = []
+    @Query private var allWorkouts: [Workout]
+    @State private var previewWOD: WODTemplate? = nil
+    
+    private var favorites: [WODTemplate] {
+        WODLookup.benchmark.filter { favoriteIds.contains($0.id.uuidString) }
+    }
+    
     var body: some View {
-        ScrollView {
-            VStack(spacing: theme.spacing.m) {
-                Image(systemName: "doc.text")
-                    .font(.system(size: 50))
-                    .foregroundColor(theme.colors.success)
-                
-                Text(LocalizationKeys.Training.Templates.title.localized)
-                    .font(.title2)
-                    .fontWeight(.semibold)
-                
-                Text(LocalizationKeys.Training.Templates.empty.localized)
-                    .foregroundColor(theme.colors.textSecondary)
-                    .multilineTextAlignment(.center)
+        NavigationStack {
+            List {
+                // Programs section (templates)
+                Section(header: Text("Programlar")) {
+                    ForEach(programTemplates, id: \.id) { pgm in
+                        HStack(spacing: 12) {
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text(pgm.name ?? LocalizationKeys.Training.History.defaultName.localized).font(.headline)
+                                Text("\(pgm.parts.count) \(LocalizationKeys.Training.Stats.parts.localized)")
+                                    .font(.caption).foregroundColor(.secondary)
+                            }
+                            Spacer()
+                            Button(action: { onSelectProgram(pgm) }) {
+                                Image(systemName: "chevron.right").foregroundColor(.secondary)
+                            }
+                        }
+                    }
+                    if programTemplates.isEmpty {
+                        Text("Henüz program şablonu yok").font(.caption).foregroundColor(.secondary)
+                    }
+                }
+                if !favorites.isEmpty {
+                    Section(header: Text(LocalizationKeys.Training.WOD.favorites.localized)) {
+                        ForEach(favorites) { wod in
+                            wodRow(wod)
+                        }
+                    }
+                }
+                Section(header: Text(LocalizationKeys.Training.WOD.benchmarks.localized)) {
+                    ForEach(WODLookup.benchmark) { wod in
+                        wodRow(wod)
+                    }
+                }
             }
-            .padding(.top, 100)
+            .listStyle(.insetGrouped)
+            .navigationTitle(LocalizationKeys.Training.Templates.title.localized)
+            .onAppear { loadFavorites() }
+            .sheet(item: $previewWOD) { wod in
+                WODTemplatePreview(wod: wod, onStart: { onSelectWOD(wod) }, onManual: { onSelectWODManual(wod) })
+            }
         }
-        .padding(theme.spacing.m)
+    }
+    
+    @ViewBuilder
+    private func wodRow(_ wod: WODTemplate) -> some View {
+        HStack(spacing: 12) {
+            VStack(alignment: .leading, spacing: 4) {
+                Text(wod.name).font(.headline)
+                Text(wod.description).font(.caption).foregroundColor(.secondary)
+            }
+            Spacer()
+            Button(action: { toggleFavorite(wod) }) {
+                Image(systemName: favoriteIds.contains(wod.id.uuidString) ? "heart.fill" : "heart")
+                    .foregroundColor(.red)
+            }
+            Button(action: { previewWOD = wod }) {
+                Image(systemName: "chevron.right").foregroundColor(.secondary)
+            }
+        }
+    }
+    
+    private func loadFavorites() {
+        favoriteIds = Set(UserDefaults.standard.array(forKey: "training.favorite.wods") as? [String] ?? [])
+    }
+    
+    private func toggleFavorite(_ wod: WODTemplate) {
+        if favoriteIds.contains(wod.id.uuidString) {
+            favoriteIds.remove(wod.id.uuidString)
+        } else {
+            favoriteIds.insert(wod.id.uuidString)
+        }
+        UserDefaults.standard.set(Array(favoriteIds), forKey: "training.favorite.wods")
+    }
+}
+
+// MARK: - WOD Template Preview
+private struct WODTemplatePreview: View {
+    let wod: WODTemplate
+    let onStart: () -> Void
+    let onManual: () -> Void
+    @Environment(\.dismiss) private var dismiss
+    var body: some View {
+        NavigationView {
+            VStack(alignment: .leading, spacing: 12) {
+                Text(wod.name).font(.title2).fontWeight(.bold)
+                Text(wod.description).font(.subheadline)
+                if !wod.movements.isEmpty {
+                    Text("Hareketler").font(.headline)
+                    ForEach(wod.movements, id: \.self) { mv in
+                        HStack(spacing: 8) {
+                            Image(systemName: "circle.fill").font(.system(size: 6)).foregroundColor(.secondary)
+                            Text(mv).font(.caption)
+                        }
+                    }
+                }
+                Spacer()
+                HStack(spacing: 12) {
+                    Button(action: {
+                        dismiss()
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { onManual() }
+                    }) {
+                        Text("Manuel Oluştur")
+                            .font(.headline)
+                            .foregroundColor(.blue)
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(Color.blue.opacity(0.12))
+                            .cornerRadius(10)
+                    }
+                    Button(action: {
+                        dismiss()
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { onStart() }
+                    }) {
+                        Text("Başlat")
+                            .font(.headline)
+                            .foregroundColor(.white)
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(Color.blue)
+                            .cornerRadius(10)
+                    }
+                }
+            }
+            .padding()
+            .navigationTitle("WOD")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar { ToolbarItem(placement: .cancellationAction) { Button(LocalizationKeys.Common.close.localized) { dismiss() } } }
+        }
+    }
+}
+
+private extension WorkoutTemplatesView {
+    var programTemplates: [Workout] {
+        allWorkouts.filter { $0.isTemplate }.sorted { ($0.name ?? "") < ($1.name ?? "") }
     }
 }
 
@@ -542,20 +748,13 @@ struct NewWorkoutView: View {
                             startEmptyWorkout()
                         }
                         
-                        QuickStartButton(
-                            title: LocalizationKeys.Training.New.Functional.title.localized,
-                            subtitle: LocalizationKeys.Training.New.Functional.subtitle.localized,
-                            icon: "figure.strengthtraining.functional",
-                            color: .green
-                        ) {
-                            startFunctionalWorkout()
-                        }
+                        // Functional quick start removed in new part system
                         
                         QuickStartButton(
-                            title: LocalizationKeys.Training.New.Cardio.title.localized,
-                            subtitle: LocalizationKeys.Training.New.Cardio.subtitle.localized,
-                            icon: "heart.fill",
-                            color: .red
+                            title: LocalizationKeys.Training.Part.cardio.localized,
+                            subtitle: LocalizationKeys.Training.Part.cardioDesc.localized,
+                            icon: "figure.run",
+                            color: .orange
                         ) {
                             startCardioWorkout()
                         }
@@ -590,28 +789,13 @@ struct NewWorkoutView: View {
         }
     }
     
-    private func startFunctionalWorkout() {
-        let workout = Workout(name: workoutName.isEmpty ? LocalizationKeys.Training.New.Functional.title.localized : workoutName)
-        
-        // Add functional training part
-        let _ = workout.addPart(name: LocalizationKeys.Training.Part.functional.localized, type: .functional)
-        
-        modelContext.insert(workout)
-        do { try modelContext.save() } catch { /* ignore */ }
-        
-        dismiss()
-        
-        // Call the callback to show workout detail
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-            onWorkoutCreated(workout)
-        }
-    }
+    // startFunctionalWorkout removed in new part system
     
     private func startCardioWorkout() {
-        let workout = Workout(name: workoutName.isEmpty ? LocalizationKeys.Training.New.Cardio.title.localized : workoutName)
+        let workout = Workout(name: workoutName.isEmpty ? LocalizationKeys.Training.Part.cardio.localized : workoutName)
         
         // Add cardio part
-        let _ = workout.addPart(name: LocalizationKeys.Training.Part.conditioning.localized, type: .conditioning)
+        let _ = workout.addPart(name: LocalizationKeys.Training.Part.cardio.localized, type: .cardio)
         
         modelContext.insert(workout)
         do { try modelContext.save() } catch { /* ignore */ }
@@ -680,16 +864,7 @@ struct NewWorkoutFlowView: View {
     @State private var createdPart: WorkoutPart? = nil
 
     private func inferPartType(from exercise: Exercise) -> WorkoutPartType {
-        let cat = ExerciseCategory(rawValue: exercise.category) ?? .other
-        switch cat {
-        case .cardio: return .conditioning
-        case .functional: return .functional
-        case .core, .isolation: return .accessory
-        case .warmup, .flexibility: return .warmup
-        case .plyometric: return .plyometric
-        case .olympic: return .olympic
-        default: return .strength
-        }
+        ExerciseCategory(rawValue: exercise.category)?.toWorkoutPartType() ?? .powerStrength
     }
 
     var body: some View {

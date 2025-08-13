@@ -8,7 +8,6 @@ final class Workout {
     var date: Date
     var startTime: Date
     var endTime: Date?
-    var totalDuration: Int // seconds
     var notes: String?
     var isCompleted: Bool
     var isTemplate: Bool
@@ -22,7 +21,6 @@ final class Workout {
         self.date = Date()
         self.startTime = Date()
         self.endTime = nil
-        self.totalDuration = 0
         self.notes = nil
         self.isCompleted = false
         self.isTemplate = isTemplate
@@ -30,7 +28,10 @@ final class Workout {
     }
 
     // Computed
-    var durationInMinutes: Int { totalDuration / 60 }
+    var durationInMinutes: Int {
+        guard let endTime else { return 0 }
+        return max(0, Int(endTime.timeIntervalSince(startTime)) / 60)
+    }
 
     var totalVolume: Double {
         parts.reduce(0) { $0 + $1.totalVolume }
@@ -48,7 +49,6 @@ final class Workout {
     func finishWorkout() {
         endTime = Date()
         isCompleted = true
-        totalDuration = Int(endTime!.timeIntervalSince(startTime))
     }
 
     func addPart(name: String, type: WorkoutPartType) -> WorkoutPart {
