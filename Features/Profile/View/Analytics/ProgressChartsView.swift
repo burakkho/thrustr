@@ -5,26 +5,37 @@ import Charts
 struct ProgressChartsView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var users: [User]
-    @Query private var workouts: [Workout]
-    @Query private var weightEntries: [WeightEntry]
-    @Query private var bodyMeasurements: [BodyMeasurement]
     
     @State private var selectedTimeRange: TimeRange = .month3
     @State private var selectedChartType: ChartType = .weight
+    
+    // PERFORMANCE: Lazy loaded queries based on selected time range
+    private var cutoffDate: Date {
+        selectedTimeRange.cutoffDate
+    }
+    
+    // PERFORMANCE: Dynamic queries with date filtering
+    @Query private var allWeightEntries: [WeightEntry]
+    @Query private var allWorkouts: [Workout]
+    @Query private var allBodyMeasurements: [BodyMeasurement]
+    
+    private var weightEntries: [WeightEntry] {
+        allWeightEntries.filter { $0.date >= cutoffDate }
+    }
+    
+    private var workouts: [Workout] {
+        allWorkouts.filter { $0.date >= cutoffDate }
+    }
+    
+    private var bodyMeasurements: [BodyMeasurement] {
+        allBodyMeasurements.filter { $0.date >= cutoffDate }
+    }
     
     private var currentUser: User? {
         users.first
     }
     
-    private var filteredWeightEntries: [WeightEntry] {
-        let cutoffDate = selectedTimeRange.cutoffDate
-        return weightEntries.filter { $0.date >= cutoffDate }
-    }
-    
-    private var filteredWorkouts: [Workout] {
-        let cutoffDate = selectedTimeRange.cutoffDate
-        return workouts.filter { $0.date >= cutoffDate }
-    }
+    // PERFORMANCE: Removed redundant filtering - now handled by computed properties
     
     var body: some View {
         ScrollView {
@@ -38,12 +49,12 @@ struct ProgressChartsView: View {
                 // Chart Type Selector
                 ChartTypeSelector(selectedType: $selectedChartType)
                 
-                // Main Chart Section
+                // Main Chart Section - PERFORMANCE: Use computed filtered data
                 MainChartSection(
                     chartType: selectedChartType,
                     timeRange: selectedTimeRange,
-                    weightEntries: filteredWeightEntries,
-                    workouts: filteredWorkouts,
+                    weightEntries: weightEntries,
+                    workouts: workouts,
                     bodyMeasurements: bodyMeasurements,
                     user: currentUser
                 )
@@ -51,15 +62,15 @@ struct ProgressChartsView: View {
                 // Summary Statistics
                 SummaryStatisticsSection(
                     chartType: selectedChartType,
-                    weightEntries: filteredWeightEntries,
-                    workouts: filteredWorkouts,
+                    weightEntries: weightEntries,
+                    workouts: workouts,
                     timeRange: selectedTimeRange
                 )
                 
                 // Insights Section
                 InsightsSection(
-                    weightEntries: filteredWeightEntries,
-                    workouts: filteredWorkouts,
+                    weightEntries: weightEntries,
+                    workouts: workouts,
                     timeRange: selectedTimeRange
                 )
             }

@@ -6,6 +6,13 @@ class HealthKitService: ObservableObject {
     private let healthStore = HKHealthStore()
     private var observerQueries: [HKObserverQuery] = []
     
+    // OPTIMIZED: Add caching for better performance
+    private var cachedSteps: Double = 0
+    private var cachedCalories: Double = 0
+    private var cachedWeight: Double? = nil
+    private var lastCacheUpdate: Date = Date.distantPast
+    private let cacheValidityDuration: TimeInterval = 300 // 5 minutes
+    
     // MARK: - Published Properties
     @Published var isAuthorized = false
     @Published var todaySteps: Double = 0
@@ -18,6 +25,9 @@ class HealthKitService: ObservableObject {
     private let stepCountType = HKQuantityType.quantityType(forIdentifier: .stepCount)!
     private let activeEnergyType = HKQuantityType.quantityType(forIdentifier: .activeEnergyBurned)!
     private let bodyMassType = HKQuantityType.quantityType(forIdentifier: .bodyMass)!
+    
+    // OPTIMIZED: Add performance monitoring
+    private var queryPerformanceMetrics: [String: TimeInterval] = [:]
     
     // MARK: - Permission Requests
     func requestPermissions() async -> Bool {
@@ -60,20 +70,61 @@ class HealthKitService: ObservableObject {
         }
     }
     
-    // MARK: - Data Reading
+    // OPTIMIZED: Add caching logic with timeout
     func readTodaysData() async {
+        // Check if cache is still valid
+        if Date().timeIntervalSince(lastCacheUpdate) < cacheValidityDuration {
+            todaySteps = cachedSteps
+            todayCalories = cachedCalories
+            currentWeight = cachedWeight
+            return
+        }
+        
         isLoading = true
         defer { isLoading = false }
         
-        async let steps = readStepsData()
-        async let calories = readCaloriesData()
-        async let weight = readWeightData()
+        let startTime = Date()
         
-        let results = await (steps, calories, weight)
+        do {
+            // Use timeout for concurrent HealthKit operations
+            let results = try await AsyncTimeout.execute(timeout: AsyncTimeout.Duration.medium) {
+                async let steps = self.readStepsData()
+                async let calories = self.readCaloriesData()
+                async let weight = self.readWeightData()
+                
+                return await (steps, calories, weight)
+            }
+            
+            await updateCacheAndUI(with: results, startTime: startTime)
+        } catch let caughtError {
+            Task { @MainActor in
+                ErrorHandlingService.shared.handle(
+                    caughtError,
+                    severity: .medium,
+                    source: "HealthKitService.readTodaysData",
+                    userAction: "Reading health data"
+                )
+            }
+        }
+    }
+    
+    private func updateCacheAndUI(with results: (Double?, Double?, Double?), startTime: Date) async {
         
-        todaySteps = results.0 ?? 0
-        todayCalories = results.1 ?? 0
-        currentWeight = results.2
+        // Update cache
+        cachedSteps = results.0 ?? 0
+        cachedCalories = results.1 ?? 0
+        cachedWeight = results.2
+        lastCacheUpdate = Date()
+        
+        // Update published properties
+        todaySteps = cachedSteps
+        todayCalories = cachedCalories
+        currentWeight = cachedWeight
+        
+        // Record performance metrics
+        let duration = Date().timeIntervalSince(startTime)
+        queryPerformanceMetrics["readTodaysData"] = duration
+        print("HealthKit data fetch completed in \(String(format: "%.2f", duration))s")
     }
     
     func readStepsData() async -> Double? {
@@ -240,6 +291,38 @@ class HealthKitService: ObservableObject {
             healthStore.execute(observerQuery)
             observerQueries.append(observerQuery)
             print("Observer query started for: \(type.identifier)")
+        }
+    }
+    
+    // MARK: - Cleanup
+    deinit {
+        // Stop observer queries synchronously
+        for query in observerQueries {
+            healthStore.stop(query)
+        }
+        observerQueries.removeAll()
+        print("🧹 HealthKitService deinitialized")
+    }
+    
+    @MainActor
+    func stopObserverQueries() {
+        for query in observerQueries {
+            healthStore.stop(query)
+        }
+        observerQueries.removeAll()
+        print("🛑 All HealthKit observer queries stopped")
+    }
+    
+    func disableBackgroundDelivery() {
+        let types: [HKQuantityType] = [stepCountType, activeEnergyType, bodyMassType]
+        for type in types {
+            healthStore.disableBackgroundDelivery(for: type) { success, error in
+                if let error = error {
+                    print("❌ Error disabling background delivery for \(type.identifier): \(error)")
+                } else {
+                    print("✅ Background delivery disabled for \(type.identifier)")
+                }
+            }
         }
     }
     

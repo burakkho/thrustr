@@ -13,6 +13,10 @@ struct ContentView: View {
                 OnboardingView()
             }
         }
+        .overlay {
+            // Global error handling overlay
+            ErrorAlertView()
+        }
         .onAppear {
             // Gating: Eğer veritabanında kullanıcı varsa onboarding'i atla
             if !onboardingCompleted && !existingUsers.isEmpty {

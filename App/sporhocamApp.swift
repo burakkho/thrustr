@@ -26,11 +26,53 @@ struct SporHocamApp: App {
                 WorkoutPart.self,
                 ExerciseSet.self,
                 NutritionEntry.self,
+                WeightEntry.self,
                 BodyMeasurement.self,
-                Goal.self
+                ProgressPhoto.self,
+                Goal.self,
+                WOD.self,
+                WODMovement.self,
+                WODResult.self
             )
         } catch {
-            fatalError("Failed to create ModelContainer: \(error)")
+            // Graceful fallback: Try creating a temporary in-memory container
+            print("⚠️ Failed to create persistent ModelContainer: \(error)")
+            print("🔄 Falling back to temporary in-memory storage...")
+            
+            do {
+                // Create in-memory container as fallback
+                let config = ModelConfiguration(isStoredInMemoryOnly: true)
+                container = try ModelContainer(for:
+                    User.self,
+                    Exercise.self,
+                    Food.self,
+                    FoodAlias.self,
+                    Workout.self,
+                    WorkoutPart.self,
+                    ExerciseSet.self,
+                    NutritionEntry.self,
+                    WeightEntry.self,
+                    BodyMeasurement.self,
+                    ProgressPhoto.self,
+                    Goal.self,
+                    WOD.self,
+                    WODMovement.self,
+                    WODResult.self,
+                    configurations: config
+                )
+            } catch {
+                // Last resort: Create minimal container for basic functionality
+                print("❌ Critical: Cannot create any ModelContainer: \(error)")
+                print("🆘 Creating minimal fallback container...")
+                
+                let config = ModelConfiguration(isStoredInMemoryOnly: true)
+                do {
+                    container = try ModelContainer(for: User.self, configurations: config)
+                } catch {
+                    // If we can't even create a minimal container, the app has deeper issues
+                    fatalError("💥 Critical failure: Cannot initialize any data storage: \(error)")
+                }
+            }
         }
     }
     
@@ -41,6 +83,7 @@ struct SporHocamApp: App {
                 .environmentObject(languageManager)
                 .environmentObject(tabRouter)
                 .environmentObject(unitSettings)
+                .environmentObject(healthKitService)
                 .environment(\.theme, themeManager.designTheme)
                 .tint(themeManager.designTheme.colors.accent)
                 .onAppear {
@@ -68,7 +111,8 @@ struct SporHocamApp: App {
                     )
                 }
                 .onChange(of: scenePhase) { _, newPhase in
-                    if newPhase == .active {
+                    switch newPhase {
+                    case .active:
                         Task { @MainActor in
                             if HKHealthStore.isHealthDataAvailable() {
                                 let status = healthKitService.getAuthorizationStatus()
@@ -79,6 +123,14 @@ struct SporHocamApp: App {
                                 }
                             }
                         }
+                    case .background:
+                        // App going to background - keep observers but log the state
+                        print("📱 App entering background - HealthKit observers remain active")
+                    case .inactive:
+                        // App becoming inactive - prepare for potential cleanup
+                        print("📱 App becoming inactive")
+                    @unknown default:
+                        break
                     }
                 }
         }

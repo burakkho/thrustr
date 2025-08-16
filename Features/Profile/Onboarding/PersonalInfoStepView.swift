@@ -15,6 +15,7 @@ struct PersonalInfoStepView: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @AppStorage("preferredUnitSystem") private var preferredUnitSystem: String = "metric" // persists globally
     @EnvironmentObject private var unitSettings: UnitSettings
+		@State private var nameDebounceWork: DispatchWorkItem? = nil
     
     // Service-based validation
     @State private var validationErrors: [UserService.ValidationError] = []
@@ -47,7 +48,13 @@ struct PersonalInfoStepView: View {
                             .submitLabel(.next)
                             .accessibilityLabel(Text(LocalizationKeys.Onboarding.PersonalInfo.name.localized))
                             .accessibilityHint(Text("İsminizi girin"))
-                            .onChange(of: data.name) { _, _ in validateAndUpdateErrors() }
+								.onChange(of: data.name) { _, _ in
+									// Debounce validation to avoid stutter while typing
+									nameDebounceWork?.cancel()
+									let task = DispatchWorkItem { validateAndUpdateErrors() }
+									nameDebounceWork = task
+									DispatchQueue.main.asyncAfter(deadline: .now() + 0.25, execute: task)
+								}
                         if let nameError = nameError {
                             Text(nameError)
                                 .font(.caption)
@@ -248,8 +255,9 @@ struct PersonalInfoStepView: View {
                         }
                     }
                 }
-                .padding(.horizontal)
+				.padding(.horizontal)
             }
+			.scrollDismissesKeyboard(.interactively)
             
             PrimaryButton(title: LocalizationKeys.Onboarding.continueAction.localized, icon: "arrow.right", isEnabled: isFormValid) {
                 validateAndUpdateErrors()
@@ -259,13 +267,12 @@ struct PersonalInfoStepView: View {
             .padding(.horizontal)
             .padding(.bottom)
         }
-        .onSubmit {
-            if focusedField == .name {
-                focusedField = nil
-                validateAndUpdateErrors()
-                if validationErrors.isEmpty { onNext() }
-            }
-        }
+			.onSubmit {
+				if focusedField == .name {
+					focusedField = nil
+					validateAndUpdateErrors()
+				}
+			}
         .onAppear { validateAndUpdateErrors() }
     }
 

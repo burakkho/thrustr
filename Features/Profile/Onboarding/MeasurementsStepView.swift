@@ -13,6 +13,9 @@ struct MeasurementsStepView: View {
     let onNext: () -> Void
     @State private var validationMessage: String? = nil
     @EnvironmentObject private var unitSettings: UnitSettings
+    @FocusState private var neckFocused: Bool
+    @FocusState private var waistFocused: Bool
+    @FocusState private var hipFocused: Bool
     
     var body: some View {
         VStack(spacing: 24) {
@@ -51,7 +54,8 @@ struct MeasurementsStepView: View {
                             range: data.unitSystem == "imperial" ? 10...20 : 25...50,
                             unit: data.unitSystem == "imperial" ? "in" : "cm",
                             placeholder: LocalizationKeys.Onboarding.optional.localized,
-                            unitSystem: data.unitSystem
+                            unitSystem: data.unitSystem,
+                            focus: $neckFocused
                         )
                         
                         MeasurementInput(
@@ -62,7 +66,8 @@ struct MeasurementsStepView: View {
                             range: data.unitSystem == "imperial" ? 20...60 : 50...150,
                             unit: data.unitSystem == "imperial" ? "in" : "cm",
                             placeholder: LocalizationKeys.Onboarding.optional.localized,
-                            unitSystem: data.unitSystem
+                            unitSystem: data.unitSystem,
+                            focus: $waistFocused
                         )
                         
                         if data.gender == "female" {
@@ -72,7 +77,8 @@ struct MeasurementsStepView: View {
                                 range: data.unitSystem == "imperial" ? 25...60 : 70...150,
                                 unit: data.unitSystem == "imperial" ? "in" : "cm",
                                 placeholder: LocalizationKeys.Onboarding.optional.localized,
-                                unitSystem: data.unitSystem
+                                unitSystem: data.unitSystem,
+                                focus: $hipFocused
                             )
                         }
                     }
@@ -182,10 +188,10 @@ struct MeasurementInput: View {
     let unit: String
     let placeholder: String
     let unitSystem: String
+    let focus: FocusState<Bool>.Binding
     
     @State private var textValue: String = ""
     @State private var errorText: String? = nil
-    @FocusState private var isFocused: Bool
     
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -194,7 +200,7 @@ struct MeasurementInput: View {
             HStack {
                 TextField(placeholder, text: $textValue)
                     .keyboardType(.decimalPad)
-                    .focused($isFocused)
+                    .focused(focus)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                     .onChange(of: textValue) { _, newValue in
                         parseAndValidate(newValue)
@@ -210,12 +216,6 @@ struct MeasurementInput: View {
                             }
                         } else {
                             textValue = ""
-                        }
-                    }
-                    .toolbar {
-                        ToolbarItemGroup(placement: .keyboard) {
-                            Spacer()
-                            Button("Done") { isFocused = false }
                         }
                     }
                 Text(unit)

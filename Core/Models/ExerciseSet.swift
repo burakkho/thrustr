@@ -50,7 +50,14 @@ extension ExerciseSet {
         var components: [String] = []
 
         if let weight, weight > 0 {
-            components.append("\(Int(weight))kg")
+            // Display in user's preferred unit (weight only; sets store kg)
+            let system = UnitSettings().unitSystem
+            if system == .imperial {
+                let lbs = UnitsConverter.kgToLbs(weight)
+                components.append("\(Int(lbs))lb")
+            } else {
+                components.append("\(Int(weight))kg")
+            }
         }
         if let reps, reps > 0 {
             components.append("\(reps) reps")

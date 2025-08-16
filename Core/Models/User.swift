@@ -87,8 +87,16 @@ final class User {
     }
     
     var bmi: Double {
+        // FIXED: BMI calculation with validation
+        guard height > 50 && height < 300,      // 50cm - 3m reasonable height range
+              currentWeight > 10 && currentWeight < 500  // 10kg - 500kg reasonable weight range
+        else { return 25.0 }  // Return normal BMI for invalid inputs
+        
         let heightInMeters = height / 100
-        return currentWeight / (heightInMeters * heightInMeters)
+        guard heightInMeters > 0 else { return 25.0 }  // Prevent division by zero
+        
+        let calculatedBMI = currentWeight / (heightInMeters * heightInMeters)
+        return max(10.0, min(80.0, calculatedBMI))  // Clamp to reasonable BMI range
     }
     
     var bmiCategory: String {
@@ -212,11 +220,11 @@ final class User {
     func updateHealthKitData(steps: Double?, calories: Double?, weight: Double?) {
         if let steps = steps { healthKitSteps = steps }
         if let calories = calories { healthKitCalories = calories }
-        if let weight = weight {
+        if let weight = weight, weight > 10 && weight < 500 {  // FIXED: Validate weight range
             healthKitWeight = weight
             // Update current weight if HealthKit has newer data
             currentWeight = weight
-            calculateMetrics()
+            calculateMetrics()  // Recalculate with new weight
         }
         lastHealthKitSync = Date()
         lastActiveDate = Date()
@@ -253,18 +261,14 @@ final class User {
     
     // MARK: - Body Fat Calculation (Navy Method)
     func calculateBodyFatPercentage() -> Double? {
-        guard let waist = waist, let neck = neck else { return nil }
-        
-        let heightInches = height / 2.54 // Convert cm to inches
-        let waistInches = waist / 2.54
-        let neckInches = neck / 2.54
-        
-        if genderEnum == .male {
-            return 495 / (1.0324 - 0.19077 * log10(waistInches - neckInches) + 0.15456 * log10(heightInches)) - 450
-        } else {
-            guard let hips = hips else { return nil }
-            let hipsInches = hips / 2.54
-            return 495 / (1.29579 - 0.35004 * log10(waistInches + hipsInches - neckInches) + 0.22100 * log10(heightInches)) - 450
-        }
+        // FIXED: Use HealthCalculator for consistent Navy Method calculation
+        // All measurements are in CM (no unit conversion needed)
+        return HealthCalculator.calculateBodyFatNavy(
+            gender: genderEnum,
+            heightCm: height,
+            neckCm: neck,
+            waistCm: waist,
+            hipCm: hips
+        )
     }
 }

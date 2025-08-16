@@ -1,0 +1,50 @@
+nameEN,nameTR,category,equipment,supportsWeight,supportsReps,supportsTime,supportsDistance
+Pull-ups,Pull-up,Gymnastics,Pull-up Bar,false,true,false,false
+Push-ups,Push-up,Bodyweight,None,false,true,false,false
+Air Squats,Air Squat,Bodyweight,None,false,true,false,false
+Burpees,Burpee,Bodyweight,None,false,true,false,false
+Box Jumps,Box Jump,Plyometric,Box,false,true,false,false
+Wall Balls,Wall Ball,Functional,Medicine Ball,true,true,false,false
+Kettlebell Swings,Kettlebell Swing,Functional,Kettlebell,true,true,false,false
+Double-unders,Double Under,Cardio,Jump Rope,false,true,false,false
+Toes-to-bar,Toes to Bar,Gymnastics,Pull-up Bar,false,true,false,false
+Muscle-ups,Muscle-up,Gymnastics,Rings,false,true,false,false
+Thrusters,Thruster,Weightlifting,Barbell,true,true,false,false
+Clean and Jerk,Clean and Jerk,Olympic,Barbell,true,true,false,false
+Snatch,Snatch,Olympic,Barbell,true,true,false,false
+Deadlifts,Deadlift,Powerlifting,Barbell,true,true,false,false
+Front Squats,Front Squat,Powerlifting,Barbell,true,true,false,false
+Back Squats,Back Squat,Powerlifting,Barbell,true,true,false,false
+Overhead Squats,Overhead Squat,Olympic,Barbell,true,true,false,false
+Handstand Push-ups,Handstand Push-up,Gymnastics,Wall,false,true,false,false
+Ring Dips,Ring Dip,Gymnastics,Rings,false,true,false,false
+Rope Climbs,Rope Climb,Gymnastics,Rope,false,true,false,false
+Running,Koşu,Cardio,None,false,false,true,true
+Rowing,Kürek,Cardio,Concept2 Rower,false,false,true,true
+Assault Bike,Assault Bike,Cardio,Assault Bike,false,false,true,true
+Power Clean,Power Clean,Olympic,Barbell,true,true,false,false
+Power Snatch,Power Snatch,Olympic,Barbell,true,true,false,false
+Bench Press,Bench Press,Powerlifting,Barbell,true,true,false,false
+Strict Press,Strict Press,Weightlifting,Barbell,true,true,false,false
+Push Press,Push Press,Weightlifting,Barbell,true,true,false,false
+Push Jerk,Push Jerk,Olympic,Barbell,true,true,false,false
+Split Jerk,Split Jerk,Olympic,Barbell,true,true,false,false
+Pistol Squats,Pistol Squat,Gymnastics,None,false,true,false,false
+Turkish Get-ups,Turkish Get-up,Functional,Kettlebell,true,true,false,false
+Farmers Carry,Farmers Carry,Strongman,Dumbbells,true,false,true,true
+Sled Push,Sled Push,Strongman,Sled,true,false,true,true
+GHD Sit-ups,GHD Sit-up,Core,GHD Machine,false,true,false,false
+AbMat Sit-ups,AbMat Sit-up,Core,AbMat,false,true,false,false
+V-ups,V-up,Core,None,false,true,false,false
+Plank,Plank,Core,None,false,false,true,false
+Lunges,Lunge,Bodyweight,None,false,true,false,false
+Walking Lunges,Walking Lunge,Bodyweight,None,false,true,false,true
+Dumbbell Snatches,Dumbbell Snatch,Weightlifting,Dumbbell,true,true,false,false
+Man Makers,Man Maker,Functional,Dumbbells,true,true,false,false
+Devils Press,Devils Press,Functional,Dumbbells,true,true,false,false
+Chest to Bar Pull-ups,Chest to Bar Pull-up,Gymnastics,Pull-up Bar,false,true,false,false
+Butterfly Pull-ups,Butterfly Pull-up,Gymnastics,Pull-up Bar,false,true,false,false
+Kipping Pull-ups,Kipping Pull-up,Gymnastics,Pull-up Bar,false,true,false,false
+Strict Pull-ups,Strict Pull-up,Gymnastics,Pull-up Bar,false,true,false,false
+Bar Muscle-ups,Bar Muscle-up,Gymnastics,Pull-up Bar,false,true,false,false
+Ring Rows,Ring Row,Gymnastics,Rings,false,true,false,false

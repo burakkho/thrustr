@@ -184,6 +184,8 @@ enum LocalizationKeys {
             static let empty = "training.templates.empty"
             static let saveAsTemplate = "training.templates.saveAsTemplate"
             static let removeFromTemplates = "training.templates.removeFromTemplates"
+            static let programsHeader = "training.templates.programsHeader"
+            static let emptyPrograms = "training.templates.emptyPrograms"
         }
         
         enum Detail {
@@ -228,6 +230,8 @@ enum LocalizationKeys {
             static let markCompletedAction = "training.part.markCompleted"
             static let markInProgressAction = "training.part.markInProgress"
             static let deletePart = "training.part.deletePart"
+            static let copyPart = "training.part.copyPart"
+            static let copyToNewWorkout = "training.part.copyToNewWorkout"
             
             // Legacy Status enum support
             enum Status {
@@ -274,6 +278,9 @@ enum LocalizationKeys {
             static let setNumber = "training.exercise.setNumber"
             static let moreSets = "training.exercise.moreSets"
             static let suggestions = "training.exercise.suggestions"
+            static let pr = "training.exercise.pr"
+            static let noSets = "training.exercise.noSets"
+            static let sets = "training.exercise.sets"
         }
 
         // MARK: - WOD / METCON
@@ -297,6 +304,12 @@ enum LocalizationKeys {
             static let emomCompleted = "training.wod.emomCompleted"
             static let total = "training.wod.total"
 
+            static let movements = "training.wod.movements"
+            static let manualCreate = "training.wod.manualCreate"
+            static let startAction = "training.wod.start"
+            static let scoreTitleCompact = "training.wod.scoreTitle"
+            static let round = "training.wod.round"
+
             enum Builder {
                 static let namePlaceholder = "training.wod.builder.namePlaceholder"
                 static let schemePlaceholderForTime = "training.wod.builder.schemePlaceholderForTime"
@@ -306,6 +319,11 @@ enum LocalizationKeys {
                 static let schemeHintAmrap = "training.wod.builder.schemeHintAmrap"
                 static let movementsHint = "training.wod.builder.movementsHint"
                 static let start = "training.wod.builder.start"
+                static let title = "training.wod.builder.title"
+                // Examples for placeholders
+                static let exampleName = "training.wod.builder.exampleName"
+                static let exampleType = "training.wod.builder.exampleType"
+                static let exampleMovements = "training.wod.builder.exampleMovements"
             }
 
             enum Runner {
@@ -319,6 +337,11 @@ enum LocalizationKeys {
                 static let stepsProgress = "training.wod.runner.stepsProgress" // "%d/%d"
                 static let tipTitle = "training.wod.runner.tipTitle"
                 static let tipBody = "training.wod.runner.tipBody"
+            }
+
+            enum TimePlaceholder {
+                static let mm = "training.wod.time.mm"
+                static let ss = "training.wod.time.ss"
             }
         }
         
@@ -338,6 +361,12 @@ enum LocalizationKeys {
             static let back = "training.set.back"
             static let save = "training.set.save"
             static let equipment = "training.set.equipment"
+            static let reorder = "training.set.reorder"
+            static let quickFill = "training.set.quickFill"
+            static let bulkAdd = "training.set.bulkAdd"
+            static let noDataToSave = "training.set.noDataToSave"
+            static let advancedEdit = "training.set.advancedEdit"
+            static let advancedEditDescription = "training.set.advancedEditDescription"
             
             enum Header {
                 static let set = "training.set.header.set"
@@ -355,6 +384,7 @@ enum LocalizationKeys {
             static let finishExercise = "training.set.finishExercise"
             
             static let kg = "training.set.kg"
+            static let lb = "training.set.lb"
             static let reps = "training.set.reps"
             static let meters = "training.set.meters"
             static let completed = "training.set.completed"
@@ -399,6 +429,14 @@ enum LocalizationKeys {
             static let hours = "training.time.hours"
             static let minutes = "training.time.minutes"
             static let seconds = "training.time.seconds"
+        }
+
+        // Active workout conflict dialog
+        enum ActiveConflict {
+            static let title = "training.activeConflict.title"
+            static let message = "training.activeConflict.message"
+            static let `continue` = "training.activeConflict.continue"
+            static let finishAndStart = "training.activeConflict.finishAndStart"
         }
     }
     

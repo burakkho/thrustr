@@ -44,7 +44,7 @@ final class OpenFoodFactsServiceTests: XCTestCase {
         MockURLProtocol.response = (200, json)
         let service = OpenFoodFactsService(session: makeSession())
 
-        let container = try! ModelContainer(for: Food.self, NutritionEntry.self)
+        let container = try XCTUnwrap(try? ModelContainer(for: Food.self, NutritionEntry.self))
         let result = try await service.fetchProduct(barcode: "1234567890123", modelContext: container.mainContext, preferTurkish: false)
 
         XCTAssertEqual(result.food.nameEN, "Test Bar")
@@ -58,7 +58,7 @@ final class OpenFoodFactsServiceTests: XCTestCase {
         let json = "{\"status\":0}".data(using: .utf8)!
         MockURLProtocol.response = (404, json)
         let service = OpenFoodFactsService(session: makeSession())
-        let container = try! ModelContainer(for: Food.self)
+        let container = try XCTUnwrap(try? ModelContainer(for: Food.self))
         do {
             _ = try await service.fetchProduct(barcode: "0000000000000", modelContext: container.mainContext)
             XCTFail("Expected not found")
@@ -76,7 +76,7 @@ final class OpenFoodFactsServiceTests: XCTestCase {
         """.data(using: .utf8)!
         MockURLProtocol.responsesQueue = [ (429, Data()), (200, successJSON) ]
         let service = OpenFoodFactsService(session: makeSession())
-        let container = try! ModelContainer(for: Food.self)
+        let container = try XCTUnwrap(try? ModelContainer(for: Food.self))
         let result = try await service.fetchProduct(barcode: "1234567890123", modelContext: container.mainContext)
         XCTAssertEqual(result.food.nameEN, "Retry Bar")
         XCTAssertEqual(Int(result.food.calories), 50)
@@ -89,7 +89,7 @@ final class OpenFoodFactsServiceTests: XCTestCase {
         """.data(using: .utf8)!
         MockURLProtocol.responsesQueue = [ (404, Data()), (200, enJSON) ]
         let service = OpenFoodFactsService(session: makeSession())
-        let container = try! ModelContainer(for: Food.self)
+        let container = try XCTUnwrap(try? ModelContainer(for: Food.self))
         let result = try await service.fetchProduct(barcode: "3213213213213", modelContext: container.mainContext, preferTurkish: true)
         XCTAssertEqual(result.locale, "en")
         XCTAssertEqual(result.food.nameEN, "English Name")

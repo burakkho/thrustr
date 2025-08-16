@@ -24,8 +24,8 @@ struct ProfileView: View {
                     // User Header Card
                     UserHeaderCard(user: currentUser)
                     
-                    // Quick Stats Section
-                    QuickStatsSection(user: currentUser)
+                    // Composition Stats Section (replaces daily calories block)
+                    CompositionStatsSection(user: currentUser)
                     
                     // Settings Sections
                     VStack(spacing: 16) {
@@ -69,7 +69,7 @@ struct ProfileView: View {
         }
         .sheet(isPresented: $showingWeightEntry) {
             if let user = currentUser {
-                WeightEntryView(user: user)
+                WeightEntrySheet(user: user)
             }
         }
         .sheet(isPresented: $showingMeasurementsEntry) {
@@ -86,6 +86,7 @@ struct ProfileView: View {
 // MARK: - User Header Card
 struct UserHeaderCard: View {
     let user: User?
+    @EnvironmentObject private var unitSettings: UnitSettings
     
     var body: some View {
         HStack(spacing: 16) {
@@ -135,50 +136,104 @@ struct UserHeaderCard: View {
     }
 }
 
-// MARK: - Quick Stats Section
-struct QuickStatsSection: View {
+// MARK: - Composition Stats Section (FFMI, Body Fat, Fitness Level)
+struct CompositionStatsSection: View {
     let user: User?
+    
+    private var gender: Gender {
+        user?.genderEnum ?? .male
+    }
+    
+    private var bodyFatPercent: Double? {
+        user?.calculateBodyFatPercentage()
+    }
+    
+    private var ffmiValue: Double? {
+        guard let user = user else { return nil }
+        return FitnessLevelCalculator.calculateNormalizedFFMI(
+            weightKg: user.currentWeight,
+            heightCm: user.height,
+            bodyFatPercent: bodyFatPercent
+        )
+    }
+    
+    private var fitnessScore: (score: Int, stage: FitnessLevelCalculator.FitnessStage)? {
+        FitnessLevelCalculator.fitnessScore(
+            ffmi: ffmiValue,
+            bodyFat: bodyFatPercent,
+            gender: gender
+        )
+    }
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("analytics.daily_calories".localized)
+            Text("Vücut Kompozisyonu")
                 .font(.headline)
                 .fontWeight(.semibold)
             
-            LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 2), spacing: 12) {
-                QuickStatCard(
-                    icon: "flame.fill",
-                    title: "analytics.daily_calories".localized,
-                    value: "\(Int(user?.dailyCalorieGoal ?? 0))",
-                    subtitle: "kcal",
-                    color: .orange
-                )
+            HStack(spacing: 12) {
+                // FFMI Card → Calculator
+                NavigationLink(destination: FFMICalculatorView()) {
+                    CompositionMiniCard(
+                        icon: "figure.strengthtraining.traditional",
+                        title: "FFMI",
+                        value: ffmiValue.map { String(format: "%.1f", $0) } ?? "—",
+                        subtitle: ffmiValue.map { FitnessLevelCalculator.ffmiCategory(for: $0) } ?? "Ölçüm gerekli",
+                        color: .green
+                    )
+                }
                 
-                QuickStatCard(
-                    icon: "fish.fill",
-                    title: "nutrition.dailySummary.protein".localized,
-                    value: "\(Int(user?.dailyProteinGoal ?? 0))",
-                    subtitle: "g",
-                    color: .red
-                )
+                // Body Fat Card → Navy Method Calculator
+                NavigationLink(destination: NavyMethodCalculatorView()) {
+                    CompositionMiniCard(
+                        icon: "percent",
+                        title: "Yağ Oranı",
+                        value: bodyFatPercent.map { String(format: "%.1f%%", $0) } ?? "—",
+                        subtitle: bodyFatPercent.map { FitnessLevelCalculator.bodyFatCategory(for: $0, gender: gender) } ?? "Ölçüm gerekli",
+                        color: .orange
+                    )
+                }
                 
-                QuickStatCard(
-                    icon: "heart.fill",
-                    title: "calculators.bmr".localized,
-                    value: "\(Int(user?.bmr ?? 0))",
-                    subtitle: "kcal",
-                    color: .green
-                )
-                
-                QuickStatCard(
-                    icon: "bolt.fill",
-                    title: "calculators.tdee".localized,
-                    value: "\(Int(user?.tdee ?? 0))",
-                    subtitle: "kcal",
+                // Fitness Level Card
+                CompositionMiniCard(
+                    icon: "bolt.heart",
+                    title: "Fitness Seviyesi",
+                    value: fitnessScore.map { "\($0.score)" } ?? "—",
+                    subtitle: fitnessScore.map { $0.stage.rawValue } ?? "Yetersiz veri",
                     color: .blue
                 )
             }
         }
+    }
+}
+
+// Small card used inside composition section
+private struct CompositionMiniCard: View {
+    let icon: String
+    let title: String
+    let value: String
+    let subtitle: String
+    let color: Color
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                Image(systemName: icon)
+                    .foregroundColor(color)
+                Spacer()
+            }
+            
+            Text(value)
+                .font(.system(size: 22, weight: .bold, design: .rounded))
+            Text(subtitle)
+                .font(.caption)
+                .foregroundColor(.secondary)
+            
+        }
+        .padding()
+        .background(Color(.systemBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .shadow(color: .black.opacity(0.05), radius: 5, x: 0, y: 2)
     }
 }
 

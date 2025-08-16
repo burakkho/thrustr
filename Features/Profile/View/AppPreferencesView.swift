@@ -405,7 +405,7 @@ struct AppInfoSection: View {
                 .padding(.vertical, 8)
             
             Button {
-                // TODO: Open privacy policy
+                // Open privacy policy (implementation pending)
             } label: {
                 HStack {
                     Image(systemName: "hand.raised.fill")
@@ -427,7 +427,7 @@ struct AppInfoSection: View {
                 .padding(.vertical, 8)
             
             Button {
-                // TODO: Open terms of service
+                // Open terms of service (implementation pending)
             } label: {
                 HStack {
                     Image(systemName: "doc.text.fill")

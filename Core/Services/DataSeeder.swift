@@ -43,6 +43,9 @@ class DataSeeder {
 
         // Always seed aliases for common foods (idempotent)
         seedFoodAliasesIfNeeded(modelContext: modelContext)
+        
+        // Seed CrossFit movements if needed
+        seedCrossFitMovementsIfNeeded(modelContext: modelContext)
     }
     
     // MARK: - Seed Exercises
@@ -56,7 +59,47 @@ class DataSeeder {
         let rows = csvData.components(separatedBy: .newlines)
         var successCount = 0
 
-        // Quotas for curated set (total 120)
+        // If you want a full import (no quotas, no curation)
+        // Debug'da varsayılan: true, Release'de: false. İsterseniz UserDefaults ile override edin → key: "seed.importAll"
+        let importAll: Bool = {
+            #if DEBUG
+            return UserDefaults.standard.object(forKey: "seed.importAll") as? Bool ?? true
+            #else
+            return UserDefaults.standard.object(forKey: "seed.importAll") as? Bool ?? false
+            #endif
+        }()
+
+        if importAll {
+            for (index, row) in rows.enumerated() {
+                if index == 0 || row.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty { continue }
+                let columns = parseCSVRow(row)
+                if columns.count < 9 { continue }
+
+                let nameEN = columns[0].trimmingCharacters(in: .whitespaces)
+                let nameTR = columns[1].trimmingCharacters(in: .whitespaces)
+                let category = ExerciseCategory.fromString(columns[2])
+                let equipment = columns[3].trimmingCharacters(in: .whitespaces)
+
+                let exercise = Exercise(
+                    nameEN: nameEN,
+                    nameTR: nameTR.isEmpty ? nameEN : nameTR,
+                    category: category.rawValue,
+                    equipment: equipment
+                )
+                exercise.supportsWeight = columns[4].lowercased() == "true"
+                exercise.supportsReps = columns[5].lowercased() == "true"
+                exercise.supportsTime = columns[6].lowercased() == "true"
+                exercise.supportsDistance = columns[7].lowercased() == "true"
+                exercise.instructions = columns[8].isEmpty ? nil : columns[8]
+
+                modelContext.insert(exercise)
+                successCount += 1
+            }
+
+            do { try modelContext.save(); print("✅ Seeded ALL exercises: total=\(successCount)") } catch { print("❌ Error saving exercises: \(error)") }
+        } else {
+
+        // Quotas for curated set (total ~120). We map fine-grained categories to these buckets.
         let quotas: [ExerciseCategory: Int] = [
             .strength: 60,
             .core: 12,
@@ -117,7 +160,17 @@ class DataSeeder {
             used[category] = (used[category] ?? 0) + 1
         }
 
-        // Iterate and pick curated unique rows until quotas filled or 100 reached
+        // Map CSV fine-grained category to curated quota bucket
+        func quotaBucket(for category: ExerciseCategory) -> ExerciseCategory {
+            switch category {
+            case .push, .pull, .legs, .isolation:
+                return .strength
+            default:
+                return category
+            }
+        }
+
+        // Iterate and pick curated unique rows until quotas filled or limit reached
         for (index, row) in rows.enumerated() {
             if index == 0 || row.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty { continue }
             let columns = parseCSVRow(row)
@@ -126,17 +179,18 @@ class DataSeeder {
             let nameEN = columns[0].trimmingCharacters(in: .whitespaces)
             let nameTR = columns[1].trimmingCharacters(in: .whitespaces)
             let category = ExerciseCategory.fromString(columns[2])
+            let bucket = quotaBucket(for: category)
             let equipment = normalizeEquipment(columns[3])
 
-            // Skip categories we don't curate for initial set
-            if quotas[category] == nil { continue }
+            // Skip categories we don't curate for initial set (after bucketing)
+            if quotas[bucket] == nil { continue }
 
             // Prefer a single canonical entry per exercise name within the curated category quotas
             let nameKey = nameEN.lowercased()
             let newRank = equipmentRank(equipment)
             if let kept = keptByName[nameKey] {
                 // Only consider replacement if same curated category and new equipment is preferred
-                if kept.category == category && newRank < kept.rank {
+                if kept.category == bucket && newRank < kept.rank {
                     // Update existing kept exercise with better equipment/flags/instructions
                     let existing = kept.exercise
                     existing.equipment = equipment
@@ -145,12 +199,12 @@ class DataSeeder {
                     existing.supportsTime = columns[6].lowercased() == "true"
                     existing.supportsDistance = columns[7].lowercased() == "true"
                     existing.instructions = columns[8].isEmpty ? nil : columns[8]
-                    keptByName[nameKey] = (existing, newRank, category)
+                    keptByName[nameKey] = (existing, newRank, bucket)
                 }
                 continue
             }
 
-            if !canUse(category: category) { continue }
+            if !canUse(category: bucket) { continue }
 
             let exercise = Exercise(
                 nameEN: nameEN,
@@ -167,8 +221,8 @@ class DataSeeder {
 
             modelContext.insert(exercise)
             successCount += 1
-            keptByName[nameKey] = (exercise, newRank, category)
-            markUsed(category)
+            keptByName[nameKey] = (exercise, newRank, bucket)
+            markUsed(bucket)
 
             if successCount >= 120 { break }
         }
@@ -179,15 +233,22 @@ class DataSeeder {
         } catch {
             print("❌ Error saving exercises: \(error)")
         }
+        }
     }
     
     // MARK: - Seed Foods
     private static func seedFoods(modelContext: ModelContext) {
-        guard let url = Bundle.main.url(forResource: "foods", withExtension: "csv"),
-              let csvData = try? String(contentsOf: url, encoding: .utf8) else {
-            print("❌ foods.csv not found")
-            return
+        // Try foods.csv; fallback to foods_flags.csv for legacy datasets
+        var csvData: String? = nil
+        if let url = Bundle.main.url(forResource: "foods", withExtension: "csv"),
+           let data = try? String(contentsOf: url, encoding: .utf8) {
+            csvData = data
+        } else if let url = Bundle.main.url(forResource: "foods_flags", withExtension: "csv"),
+                  let data = try? String(contentsOf: url, encoding: .utf8) {
+            csvData = data
+            print("ℹ️ Using foods_flags.csv as fallback for foods seeding")
         }
+        guard let csvData else { print("❌ foods.csv not found"); return }
         
         let rows = csvData.components(separatedBy: .newlines)
         var successCount = 0
@@ -220,6 +281,15 @@ class DataSeeder {
                 // Set brand if not empty
                 if !columns[2].isEmpty {
                     food.brand = columns[2]
+                }
+                // Optional serving columns: index 8 -> servingSizeGrams, index 9 -> servingName
+                if columns.count >= 9 {
+                    let s = columns[8].trimmingCharacters(in: .whitespaces)
+                    if let g = Double(s), g > 0 { food.servingSizeGrams = g }
+                }
+                if columns.count >= 10 {
+                    let label = columns[9].trimmingCharacters(in: .whitespaces)
+                    if !label.isEmpty { food.servingName = label }
                 }
                 
                 modelContext.insert(food)
@@ -415,6 +485,62 @@ extension DataSeeder {
 
         try? modelContext.save()
         print("✅ Seeded Food Aliases: created=\(created)")
+    }
+    
+    // MARK: - Seed CrossFit Movements
+    private static func seedCrossFitMovementsIfNeeded(modelContext: ModelContext) {
+        // Check if CrossFit movements already exist
+        var descriptor = FetchDescriptor<Exercise>()
+        descriptor.predicate = #Predicate<Exercise> { exercise in
+            exercise.category == "CrossFit"
+        }
+        
+        guard let existingMovements = try? modelContext.fetch(descriptor),
+              existingMovements.isEmpty else {
+            print("ℹ️ CrossFit movements already seeded")
+            return
+        }
+        
+        guard let url = Bundle.main.url(forResource: "crossfit_movements", withExtension: "csv"),
+              let csvData = try? String(contentsOf: url, encoding: .utf8) else {
+            print("❌ crossfit_movements.csv not found")
+            return
+        }
+        
+        let rows = csvData.components(separatedBy: .newlines)
+        var successCount = 0
+        
+        for (index, row) in rows.enumerated() {
+            if index == 0 || row.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty { continue }
+            let columns = parseCSVRow(row)
+            if columns.count < 8 { continue }
+            
+            let nameEN = columns[0].trimmingCharacters(in: .whitespaces)
+            let nameTR = columns[1].trimmingCharacters(in: .whitespaces)
+            _ = columns[2].trimmingCharacters(in: .whitespaces) // Category from CSV not used, defaulting to CrossFit
+            let equipment = columns[3].trimmingCharacters(in: .whitespaces)
+            
+            let exercise = Exercise(
+                nameEN: nameEN,
+                nameTR: nameTR.isEmpty ? nameEN : nameTR,
+                category: "CrossFit",
+                equipment: equipment
+            )
+            exercise.supportsWeight = columns[4].lowercased() == "true"
+            exercise.supportsReps = columns[5].lowercased() == "true"
+            exercise.supportsTime = columns[6].lowercased() == "true"
+            exercise.supportsDistance = columns[7].lowercased() == "true"
+            
+            modelContext.insert(exercise)
+            successCount += 1
+        }
+        
+        do {
+            try modelContext.save()
+            print("✅ Seeded CrossFit movements: total=\(successCount)")
+        } catch {
+            print("❌ Error saving CrossFit movements: \(error)")
+        }
     }
 }
 

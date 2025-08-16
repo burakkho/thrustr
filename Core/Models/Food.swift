@@ -15,6 +15,12 @@ final class Food {
     var lastModified: Date? = nil
     var qualityScore: Int = 0
     
+    // Portion/Serving info (optional)
+    // If provided, represents grams per 1 serving of this food. When nil, UI may assume 100 g as 1 serving.
+    var servingSizeGrams: Double? = nil
+    // Human friendly label for serving, e.g., "kase", "ölçek", "adet" (optional)
+    var servingName: String? = nil
+    
     // Besin değerleri (100g başına)
     var calories: Double    // kalori
     var protein: Double     // protein (g)
@@ -71,6 +77,18 @@ extension Food {
         return nameTR.isEmpty ? nameEN : nameTR
     }
     
+    var servingSizeGramsOrDefault: Double {
+        servingSizeGrams ?? 100.0
+    }
+    
+    var servingDisplayText: String {
+        let grams = Int(servingSizeGramsOrDefault.rounded())
+        if let servingName, !servingName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            return "1 \(servingName) ≈ \(grams) g"
+        }
+        return "1 porsiyon ≈ \(grams) g"
+    }
+    
     var isRecentlyUsed: Bool {
         guard let lastUsed = lastUsed else { return false }
         return Date().timeIntervalSince(lastUsed) < 604800 // 1 hafta
@@ -89,6 +107,12 @@ extension Food {
             carbs: carbs * multiplier,
             fat: fat * multiplier
         )
+    }
+    
+    // Calculate nutrition for given number of servings using servingSizeGrams (falls back to 100 g when not set)
+    func calculateNutritionForServings(_ servings: Double) -> (calories: Double, protein: Double, carbs: Double, fat: Double) {
+        let grams = servingSizeGramsOrDefault * max(servings, 0)
+        return calculateNutrition(for: grams)
     }
 }
 

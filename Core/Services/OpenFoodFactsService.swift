@@ -43,6 +43,7 @@ struct OFFProduct: Decodable {
     let last_modified_t: Double?
     let lc: String?
     let nutriments: OFFNutriments?
+    let serving_size: String?
 }
 
 struct OFFNutriments: Decodable {
@@ -98,7 +99,10 @@ final class OpenFoodFactsService: ObservableObject {
     private let maxRetries = 3
     private let retryBaseDelay: TimeInterval = 0.5
     private let session: URLSession
-
+    
+    // PERFORMANCE: Network caching
+    private let cache = URLCache(memoryCapacity: 10_000_000, diskCapacity: 50_000_000) // 10MB memory, 50MB disk
+    
     // MARK: - Published state (aligning with app patterns)
     @Published var isLoading: Bool = false
     @Published var lastError: Error?
@@ -108,7 +112,10 @@ final class OpenFoodFactsService: ObservableObject {
         if let session {
             self.session = session
         } else {
-            let sessionConfig = URLSessionConfiguration.ephemeral
+            // PERFORMANCE: Use default config with caching instead of ephemeral
+            let sessionConfig = URLSessionConfiguration.default
+            sessionConfig.urlCache = cache
+            sessionConfig.requestCachePolicy = .returnCacheDataElseLoad
             sessionConfig.timeoutIntervalForRequest = timeout
             sessionConfig.timeoutIntervalForResource = timeout
             sessionConfig.httpAdditionalHeaders = [
@@ -199,6 +206,7 @@ final class OpenFoodFactsService: ObservableObject {
             food.barcode = product.code ?? ""
             if let img = product.image_small_url, !img.isEmpty { food.imageUrlString = img }
             if let ts = product.last_modified_t { food.lastModified = Date(timeIntervalSince1970: ts) }
+            if let s = product.serving_size, let grams = Self.parseServingSizeToGrams(s) { food.servingSizeGrams = grams }
 
             return OpenFoodFactsLookupResult(
                 food: food,
@@ -288,6 +296,7 @@ final class OpenFoodFactsService: ObservableObject {
                 food.barcode = product.code ?? barcode
                 if let img = product.image_small_url, !img.isEmpty { food.imageUrlString = img }
                 if let ts = product.last_modified_t { food.lastModified = Date(timeIntervalSince1970: ts) }
+                if let s = product.serving_size, let grams = Self.parseServingSizeToGrams(s) { food.servingSizeGrams = grams }
 
                 let imageURL = URL(string: product.image_small_url ?? "")
                 let lastModified: Date? = {
@@ -334,5 +343,43 @@ final class OpenFoodFactsService: ObservableObject {
         let jitter = TimeInterval.random(in: 0...0.2)
         let delay = pow(2.0, Double(attempt)) * base + jitter
         try await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
+    }
+
+    // MARK: - Serving size parsing
+    /// OFF "serving_size" may be like "30 g", "1 cup (125 g)", "200ml". We try to extract grams.
+    private static func parseServingSizeToGrams(_ raw: String) -> Double? {
+        let lower = raw.lowercased()
+        // Direct patterns: "NN g" or "NNg"
+        if let grams = matchFirstNumber(before: "g", in: lower) { return grams }
+        // Patterns within parentheses e.g., "1 cup (125 g)"
+        if let grams = matchFirstNumber(before: "g)", in: lower) { return grams }
+        // ml → approximate grams ~ ml for water-like densities; fallback
+        if let ml = matchFirstNumber(before: "ml", in: lower) { return ml }
+        // Volume units to grams heuristic (approx): tsp ~ 5g, tbsp ~ 15g, cup ~ 240g (water)
+        if let tsp = matchFirstNumber(before: "tsp", in: lower) { return tsp * 5 }
+        if let tbsp = matchFirstNumber(before: "tbsp", in: lower) { return tbsp * 15 }
+        if let cup = matchFirstNumber(before: "cup", in: lower) { return cup * 240 }
+        // Turkish units
+        if let cay = matchFirstNumber(before: "çay kaşığı", in: lower) { return cay * 5 }
+        if let yemek = matchFirstNumber(before: "yemek kaşığı", in: lower) { return yemek * 15 }
+        if let su = matchFirstNumber(before: "su bardağı", in: lower) { return su * 240 }
+        return nil
+    }
+
+    private static func matchFirstNumber(before unit: String, in text: String) -> Double? {
+        guard let range = text.range(of: unit) else { return nil }
+        let prefix = text[..<range.lowerBound]
+        // Extract last number in prefix
+        let pattern = "([0-9]+(?:\\.[0-9]+)?)\\s*$"
+        if let regex = try? NSRegularExpression(pattern: pattern, options: []) {
+            let nsrange = NSRange(prefix.startIndex..<prefix.endIndex, in: text)
+            if let match = regex.firstMatch(in: String(prefix), options: [], range: nsrange) {
+                if let r = Range(match.range(at: 1), in: String(prefix)) {
+                    let numStr = String(String(prefix)[r]).replacingOccurrences(of: ",", with: ".")
+                    return Double(numStr)
+                }
+            }
+        }
+        return nil
     }
 }

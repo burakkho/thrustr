@@ -35,10 +35,16 @@ struct Shadows {
 
 // MARK: - Typography
 struct Typography {
-    let title: Font = .system(size: 28, weight: .semibold, design: .rounded)
-    let subtitle: Font = .system(size: 14, weight: .regular, design: .rounded)
-    let value: Font = .system(size: 20, weight: .semibold, design: .rounded)
+    let title1: Font = .largeTitle
+    let title2: Font = .title
+    let title3: Font = .title2
+    let headline: Font = .headline
+    let body: Font = .body
+    let callout: Font = .callout
+    let subheadline: Font = .subheadline
+    let footnote: Font = .footnote
     let caption: Font = .caption
+    let caption2: Font = .caption2
 }
 
 
