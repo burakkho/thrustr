@@ -9,7 +9,7 @@ struct PortionQuickSelect: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Quick Portions")
+            Text("quick_portions.title".localized)
                 .font(.subheadline)
                 .foregroundColor(.secondary)
             
@@ -44,7 +44,7 @@ struct PortionQuickSelect: View {
                         VStack(spacing: 4) {
                             Image(systemName: "plus.circle")
                                 .font(.headline)
-                            Text("Custom")
+                            Text("quick_portions.custom".localized)
                                 .font(.caption2)
                         }
                         .foregroundColor(.blue)
@@ -57,7 +57,7 @@ struct PortionQuickSelect: View {
                     .sheet(isPresented: $showingCustomInput) {
                         NavigationStack {
                             VStack(spacing: 16) {
-                                Text("Custom Amount (g)")
+                                Text("quick_portions.custom_amount".localized)
                                     .font(.headline)
                                 TextField("0", text: $customText)
                                     .textFieldStyle(.roundedBorder)
@@ -67,7 +67,7 @@ struct PortionQuickSelect: View {
                             .padding()
                             .toolbar {
                                 ToolbarItem(placement: .confirmationAction) {
-                                    Button("Set") {
+                                    Button("quick_portions.set".localized) {
                                         if let value = Double(customText), value > 0 {
                                             quantity = value
                                             #if canImport(UIKit)

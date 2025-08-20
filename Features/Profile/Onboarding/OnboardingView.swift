@@ -68,11 +68,12 @@ struct OnboardingView: View {
                     }
                     .foregroundColor(.blue)
                     .accessibilityLabel(Text("onboarding.back".localized))
-                    .accessibilityHint(Text("Bir önceki adıma döner"))
+                    .accessibilityHint(Text("accessibility.back_step".localized))
                     .padding(.bottom)
                 }
             }
-            .scrollDismissesKeyboard(.interactively)
+            // ✅ Klavye constraint sorununu çözmek için bu satırı kaldırıyoruz
+            // .scrollDismissesKeyboard(.interactively)
             }
             .onAppear(perform: restoreProgressIfNeeded)
             .onChange(of: currentStep) { _, _ in
@@ -130,7 +131,7 @@ struct OnboardingView: View {
                 } else {
                     print("⚠️ HealthKit authorization reddedildi")
                     await MainActor.run {
-                        toastMessage = "HealthKit izni reddedildi"
+                        toastMessage = "healthkit.permission_denied".localized
                     }
                 }
             }

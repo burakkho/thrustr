@@ -212,8 +212,8 @@ struct WODDetailView: View {
                     Button("Close") { dismiss() }
                 }
             }
-            .sheet(isPresented: $showingTimer) {
-                WODTimerView(
+            .fullScreenCover(isPresented: $showingTimer) {
+                EnhancedWODTimerView(
                     wod: wod,
                     movements: wod.movements.map { movement in
                         let updatedMovement = movement

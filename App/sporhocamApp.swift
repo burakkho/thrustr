@@ -15,6 +15,8 @@ struct SporHocamApp: App {
     @StateObject private var unitSettings = UnitSettings()
     @Environment(\.scenePhase) private var scenePhase
     
+    @State private var isSeedingDatabase = false  // ← Loading state ekle
+
     init() {
         do {
             container = try ModelContainer(for:
@@ -22,17 +24,32 @@ struct SporHocamApp: App {
                 Exercise.self,
                 Food.self,
                 FoodAlias.self,
-                Workout.self,
-                WorkoutPart.self,
-                ExerciseSet.self,
+                // Nutrition
                 NutritionEntry.self,
                 WeightEntry.self,
                 BodyMeasurement.self,
                 ProgressPhoto.self,
                 Goal.self,
+                // Training programs
                 WOD.self,
                 WODMovement.self,
-                WODResult.self
+                WODResult.self,
+                CrossFitMovement.self,
+                // Lift models
+                Lift.self,
+                LiftProgram.self,
+                LiftWorkout.self,
+                LiftExercise.self,
+                LiftSession.self,
+                LiftExerciseResult.self,
+                LiftResult.self,
+                ProgramExecution.self,
+                CompletedWorkout.self,
+                // Cardio models
+                CardioWorkout.self,
+                CardioExercise.self,
+                CardioSession.self,
+                CardioResult.self
             )
         } catch {
             // Graceful fallback: Try creating a temporary in-memory container
@@ -47,17 +64,32 @@ struct SporHocamApp: App {
                     Exercise.self,
                     Food.self,
                     FoodAlias.self,
-                    Workout.self,
-                    WorkoutPart.self,
-                    ExerciseSet.self,
+                    // Nutrition
                     NutritionEntry.self,
                     WeightEntry.self,
                     BodyMeasurement.self,
                     ProgressPhoto.self,
                     Goal.self,
+                    // Training programs
                     WOD.self,
                     WODMovement.self,
                     WODResult.self,
+                    CrossFitMovement.self,
+                    // Lift models
+                    Lift.self,
+                    LiftProgram.self,
+                    LiftWorkout.self,
+                    LiftExercise.self,
+                    LiftSession.self,
+                    LiftExerciseResult.self,
+                    LiftResult.self,
+                    ProgramExecution.self,
+                    CompletedWorkout.self,
+                    // Cardio models
+                    CardioWorkout.self,
+                    CardioExercise.self,
+                    CardioSession.self,
+                    CardioResult.self,
                     configurations: config
                 )
             } catch {
@@ -78,62 +110,84 @@ struct SporHocamApp: App {
     
     var body: some Scene {
         WindowGroup {
-            ContentView()
-                .environmentObject(themeManager)
-                .environmentObject(languageManager)
-                .environmentObject(tabRouter)
-                .environmentObject(unitSettings)
-                .environmentObject(healthKitService)
-                .environment(\.theme, themeManager.designTheme)
-                .tint(themeManager.designTheme.colors.accent)
-                .onAppear {
-                    // Tek kanal tema uygulaması: UIWindow üzerinden override
-                    themeManager.refreshTheme()
-                    // HealthKit arkaplan güncellemeleri: app aktifken etkinleştir ve gözlem başlat
-                    Task { @MainActor in
-                        // Sadece HealthKit mevcut ve yetki verilmişse gözlemle
-                        if HKHealthStore.isHealthDataAvailable() {
-                            let status = healthKitService.getAuthorizationStatus()
-                            let anyAuthorized = [status.steps, status.calories, status.weight].contains(.sharingAuthorized)
-                            if anyAuthorized {
-                                healthKitService.enableBackgroundDelivery()
-                                healthKitService.startObserverQueries()
-                            } else {
-                                // Yetki henüz yoksa ilk açılışta izin istendiğinde devreye girecek
-                                print("HealthKit not authorized yet; background delivery will start after authorization.")
-                            }
-                        }
-                    }
-                }
-                .task {
-                    DataSeeder.seedDatabaseIfNeeded(
-                        modelContext: container.mainContext
-                    )
-                }
-                .onChange(of: scenePhase) { _, newPhase in
-                    switch newPhase {
-                    case .active:
-                        Task { @MainActor in
-                            if HKHealthStore.isHealthDataAvailable() {
-                                let status = healthKitService.getAuthorizationStatus()
-                                let anyAuthorized = [status.steps, status.calories, status.weight].contains(.sharingAuthorized)
-                                if anyAuthorized {
-                                    healthKitService.enableBackgroundDelivery()
-                                    healthKitService.startObserverQueries()
+            Group {
+                if isSeedingDatabase {
+                    LoadingView()  // ← Kullanıcıya loading göster
+                } else {
+                    ContentView()
+                        .environmentObject(themeManager)
+                        .environmentObject(languageManager)
+                        .environmentObject(tabRouter)
+                        .environmentObject(unitSettings)
+                        .environmentObject(healthKitService)
+                        .environment(\.theme, themeManager.designTheme)
+                        .tint(themeManager.designTheme.colors.accent)
+                        .onAppear {
+                            // Tek kanal tema uygulaması: UIWindow üzerinden override
+                            themeManager.refreshTheme()
+                            // HealthKit arkaplan güncellemeleri: app aktifken etkinleştir ve gözlem başlat
+                            Task { @MainActor in
+                                // Sadece HealthKit mevcut ve yetki verilmişse gözlemle
+                                if HKHealthStore.isHealthDataAvailable() {
+                                    let status = healthKitService.getAuthorizationStatus()
+                                    let anyAuthorized = [status.steps, status.calories, status.weight].contains(.sharingAuthorized)
+                                    if anyAuthorized {
+                                        healthKitService.enableBackgroundDelivery()
+                                        healthKitService.startObserverQueries()
+                                    } else {
+                                        // Yetki henüz yoksa ilk açılışta izin istendiğinde devreye girecek
+                                        print("HealthKit not authorized yet; background delivery will start after authorization.")
+                                    }
                                 }
                             }
                         }
-                    case .background:
-                        // App going to background - keep observers but log the state
-                        print("📱 App entering background - HealthKit observers remain active")
-                    case .inactive:
-                        // App becoming inactive - prepare for potential cleanup
-                        print("📱 App becoming inactive")
-                    @unknown default:
-                        break
-                    }
+                        .onChange(of: scenePhase) { _, newPhase in
+                            switch newPhase {
+                            case .active:
+                                Task { @MainActor in
+                                    if HKHealthStore.isHealthDataAvailable() {
+                                        let status = healthKitService.getAuthorizationStatus()
+                                        let anyAuthorized = [status.steps, status.calories, status.weight].contains(.sharingAuthorized)
+                                        if anyAuthorized {
+                                            healthKitService.enableBackgroundDelivery()
+                                            healthKitService.startObserverQueries()
+                                        }
+                                    }
+                                }
+                            case .background:
+                                // App going to background - keep observers but log the state
+                                print("📱 App entering background - HealthKit observers remain active")
+                            case .inactive:
+                                // App becoming inactive - prepare for potential cleanup
+                                print("📱 App becoming inactive")
+                            @unknown default:
+                                break
+                            }
+                        }
                 }
+            }
+            .task {
+                // Database seeding'i background'da yap
+                await seedDatabaseIfNeeded()
+            }
+            .modelContainer(container)
         }
-        .modelContainer(container)
+    }
+    
+    // MARK: - Database Seeding
+    private func seedDatabaseIfNeeded() async {
+        await MainActor.run {
+            isSeedingDatabase = true
+        }
+        
+        // DataSeeder @MainActor olduğu için main thread'de çalıştırmalıyız
+        // Ancak Task.yield() ile UI'ı responsive tutarız
+        await DataSeeder.seedDatabaseIfNeeded(
+            modelContext: container.mainContext
+        )
+        
+        await MainActor.run {
+            isSeedingDatabase = false
+        }
     }
 }

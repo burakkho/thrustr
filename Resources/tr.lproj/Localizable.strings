@@ -24,6 +24,184 @@
 "training.newWorkout" = "Yeni Antrenman";
 "training.history" = "Geçmiş";
 
+// MARK: - Lift Training
+"training.lift.title" = "Ağırlık Antrenmanı";
+"training.lift.tabs.workouts" = "Antrenmanlar";
+"training.lift.tabs.programs" = "Programlar";
+"training.lift.tabs.routines" = "Rutinler";
+"training.lift.tabs.history" = "Geçmiş";
+
+// MARK: - Lift Quick Start
+"training.lift.quickStart" = "Hızlı Başlat";
+"training.lift.emptyWorkout" = "Boş Antrenman";
+"training.lift.emptyWorkout.subtitle" = "İlerleyerek ekle";
+"training.lift.pickRoutine" = "Rutin Seç";
+"training.lift.pickRoutine.subtitle" = "Şablonlardan";
+"training.lift.startProgram" = "Program Başlat";
+"training.lift.startProgram.subtitle" = "Yapılandırılmış plan";
+
+// MARK: - Lift Program
+"training.lift.startWorkout" = "ANTRENMANI BAŞLAT";
+"training.lift.viewDetails" = "Program Detayları";
+"training.lift.pauseProgram" = "Programı Durdur";
+"training.lift.resumeProgram" = "Programı Devam Et";
+"training.lift.browsePrograms" = "Programlara Gözat";
+"training.lift.browsePrograms.subtitle" = "Yapılandırılmış antrenmanlar ve daha iyi sonuçlar elde et";
+
+// MARK: - Routine
+"routine.title" = "Rutinler";
+"routine.templates" = "Şablonlar";
+"routine.custom" = "Özel";
+"routine.createNew" = "Yeni Rutin Oluştur";
+"routine.copyCustomize" = "Kopyala ve Özelleştir";
+"routine.ourTemplates" = "Bizim Şablonlarımız";
+"routine.myCustomRoutines" = "Özel Rutinlerim";
+"routine.exercises" = "egzersiz";
+"routine.empty.custom.title" = "Henüz Özel Rutin Yok";
+"routine.empty.custom.subtitle" = "Başlamak için ilk rutininizi oluşturun";
+
+// MARK: - Routine Creation
+"routine.create.title" = "Yeni Rutin Oluştur";
+"routine.create.method" = "Rutininizi nasıl oluşturmak istersiniz?";
+"routine.create.fromScratch" = "Sıfırdan Başla";
+"routine.create.fromScratch.desc" = "Rutininizi egzersiz egzersiz oluşturun";
+"routine.create.fromTemplate" = "Şablondan Kopyala";
+"routine.create.fromTemplate.desc" = "Kanıtlanmış şablonlarımızla başlayın";
+"routine.create.save" = "Rutini Kaydet";
+"routine.createNew.subtitle" = "Özel antrenman planları oluştur";
+"routine.featuredTemplates" = "Öne Çıkan Şablonlar";
+"routine.favorites" = "Favorilerim";
+
+// MARK: - Template Cards
+"routine.template.exercises" = "Egzersizler";
+"routine.template.duration" = "Süre";
+"routine.template.sets" = "Set";
+"routine.template.start" = "Başlat";
+"routine.template.customize" = "Özelleştir";
+
+// MARK: - Lift Stats
+"training.lift.stats.thisWeek" = "Bu Hafta";
+"training.lift.stats.streak" = "Seri";
+"training.lift.stats.remaining" = "Kalan";
+"training.lift.stats.completed" = "tamamlandı";
+"training.lift.stats.workouts" = "antrenman";
+"training.lift.stats.weeks" = "hafta";
+
+// MARK: - Lift Sections
+"training.lift.recentWorkouts" = "Son Antrenmanlar";
+"training.lift.workoutRoutines" = "Antrenman Rutinleri";
+"training.lift.featuredPrograms" = "Öne Çıkan Programlar";
+"training.lift.myPrograms" = "Programlarım";
+"training.lift.lastWorkout" = "Son antrenman";
+
+// MARK: - Lift Empty States
+"training.lift.noRoutines.title" = "Henüz Rutin Yok";
+"training.lift.noRoutines.message" = "Başlamak için ilk antrenman rutininizi oluşturun";
+"training.lift.noRoutines.action" = "Rutin Oluştur";
+
+// MARK: - Training Start Actions
+"training.start.title" = "Antrenman Başlat";
+"training.start.new" = "Yeni Antrenman";
+"training.start.new.subtitle" = "Boş antrenman oluştur";
+"training.start.program" = "Program Seç";
+"training.start.program.subtitle" = "Hazır programdan başla";
+"training.start.wod" = "METCON Yap";
+"training.start.wod.subtitle" = "Günlük antrenman yap";
+"training.start.lift" = "Ağırlık Seansı";
+"training.start.lift.subtitle" = "Güç ve powerlifting";
+"training.start.cardio" = "Kardio Antrenmanı";
+"training.start.cardio.subtitle" = "Koşu, kürek, dayanıklılık";
+"training.start.action.hint" = "Bu seçeneği seçmek için dokunun";
+"training.lift.title" = "Ağırlık";
+"training.cardio.title" = "Kardio";
+"training.lift.search" = "Ağırlık ara...";
+"training.cardio.search" = "Kardio ara...";
+"training.lift.empty.custom" = "Özel Ağırlık Yok";
+"training.lift.empty.custom.message" = "İlk ağırlık antrenmanını oluştur";
+"training.lift.empty.benchmark" = "Benchmark Ağırlık Yok";
+"training.lift.empty.benchmark.message" = "Farklı bir arama dene";
+"training.cardio.empty.custom" = "Özel Kardio Yok";
+"training.cardio.empty.custom.message" = "İlk kardio antrenmanını oluştur";
+"training.cardio.empty.benchmark" = "Benchmark Kardio Yok";
+"training.cardio.empty.benchmark.message" = "Farklı bir arama dene";
+
+// Cardio Aktiviteleri
+"training.cardio.running" = "Koşu";
+"training.cardio.walking" = "Yürüyüş";
+"training.cardio.cycling" = "Bisiklet";
+
+"training.lift.create" = "Ağırlık Oluştur";
+"training.cardio.create" = "Kardio Oluştur";
+"training.lift.name" = "Ağırlık Adı";
+"training.lift.name.placeholder" = "örn., Sabah Gücü";
+"training.lift.description" = "Açıklama";
+"training.lift.description.placeholder" = "örn., Ağır bileşik hareketler";
+"training.lift.sets" = "Set";
+"training.lift.reps" = "Tekrar";
+"training.lift.exercises" = "Egzersizler";
+"training.lift.exercises.empty" = "Egzersiz eklenmedi";
+"training.lift.log_result" = "Sonuç Gir";
+"training.lift.result.title" = "Ağırlık Sonucu Gir";
+"training.lift.result.saved" = "Sonuç Kaydedildi!";
+"training.lift.result.pr_message" = "Tebrikler! Yeni PR: %dkg! 🎉";
+"training.lift.result.success_message" = "Antrenmanınız başarıyla kaydedildi.";
+"training.lift.result.total_volume" = "Toplam Hacim";
+"training.lift.result.best_set" = "En İyi Set";
+"training.lift.result.save" = "Sonucu Kaydet";
+"training.lift.result.notes" = "Notlar (İsteğe Bağlı)";
+"training.lift.result.current_pr" = "Mevcut PR: %dkg";
+
+// Missing Lift Keys
+"training.lift.noPrograms" = "Henüz Program Yok";
+"training.lift.noProgramsMessage" = "Öne çıkan programlarımıza göz atın veya kendi programınızı oluşturun";
+"training.lift.activeProgram" = "Aktif Program";
+"training.lift.stats.progress" = "İlerleme";
+"training.lift.stats.volume" = "Hacim";
+"training.lift.stats.sets" = "Setler";
+"training.lift.stats.exercises" = "Egzersizler";
+"training.lift.noHistory" = "Henüz Geçmiş Yok";
+"training.lift.noHistoryMessage" = "Takibe başlamak için ilk antrenmanınızı başlatın";
+
+"training.cardio.name" = "Kardio Adı";
+"training.cardio.name.placeholder" = "örn., Sabah Koşusu";
+"training.cardio.description" = "Açıklama";
+"training.cardio.description.placeholder" = "örn., Hafif tempo kardio";
+"training.cardio.type" = "Tür";
+"training.cardio.type.distance" = "Mesafe";
+"training.cardio.type.time" = "Süre";
+"training.cardio.exercise" = "Egzersiz";
+"training.cardio.exercise.select" = "Egzersiz Seç";
+"training.cardio.distance" = "Mesafe (metre)";
+"training.cardio.time" = "Süre (dakika)";
+"training.exercise.search" = "Egzersiz ara...";
+"training.exercise.done" = "Tamam";
+
+// MARK: - Cardio Training
+"training.cardio.templates" = "Şablonlar";
+"training.cardio.history" = "Geçmiş";
+"training.cardio.lastSession" = "Son Antrenman";
+"training.cardio.customSessions" = "Özel Antrenmanlar";
+"training.cardio.exerciseTypes" = "Egzersiz Türleri";
+"training.cardio.noExerciseTypes" = "Egzersiz Türü Yok";
+"training.cardio.noHistory" = "Geçmiş Yok";
+"training.cardio.noHistoryMessage" = "İlk kardio antrenmanınızı başlatarak takibe başlayın";
+"training.cardio.adjustSearch" = "Aramanızı değiştirin";
+"training.cardio.startSession" = "Antrenman Başlat";
+"training.cardio.clearSearch" = "Aramayı Temizle";
+"training.cardio.neverAttempted" = "Hiç Denenmedi";
+"training.cardio.browseTemplates" = "Şablonlara Göz At";
+
+// MARK: - Training Conflict
+"training.conflict.title" = "Aktif Antrenman Var";
+"training.conflict.message" = "Şu anda devam eden bir antrenmanınız var. Ne yapmak istiyorsunuz?";
+"training.conflict.continue" = "Devam Et";
+"training.conflict.finish_start" = "Bitir ve Yeni Başlat";
+"training.conflict.started_at" = "Başlangıç:";
+"training.conflict.unnamed_workout" = "İsimsiz Antrenman";
+
+// MARK: - Training Templates
+"training.templates.empty.hint" = "Antrenman tamamladıktan sonra şablon olarak kaydet";
+
 // MARK: - Nutrition
 "nutrition.title" = "Beslenme";
 "nutrition.addFood" = "Yemek Ekle";
@@ -381,7 +559,7 @@
 "training.part.cardio" = "Kardiyo";
 
 "training.part.powerStrength.desc" = "Ağırlık ve olimpik kaldırışlar";
-"training.part.metcon.desc" = "WOD ve kondisyon çalışmaları";
+"training.part.metcon.desc" = "METCON ve kondisyon çalışmaları";
 "training.part.accessory.desc" = "İzole ve yardımcı hareketler";
 "training.part.cardio.desc" = "Koşu, kürek ve bisiklet";
 
@@ -392,18 +570,18 @@
 "training.part.result" = "Sonuç:";
 
 // MARK: - WOD / METCON
-"training.wod.title" = "WOD";
+"training.wod.title" = "METCON";
 "training.wod.movements" = "Hareketler";
 "training.wod.manualCreate" = "Manuel Oluştur";
 "training.wod.start" = "Başlat";
-"training.wod.scoreTitle" = "WOD Skoru";
+"training.wod.scoreTitle" = "METCON Skoru";
 "training.wod.round" = "Round %@";
 "training.wod.time.mm" = "MM";
 "training.wod.time.ss" = "SS";
-"training.wod.result" = "WOD Sonucu";
-"training.wod.add" = "+ WOD";
-"training.wod.addResult" = "WOD Sonucu Ekle";
-"training.wod.editResult" = "WOD Sonucunu Düzenle";
+"training.wod.result" = "METCON Sonucu";
+"training.wod.add" = "+ METCON";
+"training.wod.addResult" = "METCON Sonucu Ekle";
+"training.wod.editResult" = "METCON Sonucunu Düzenle";
 "training.wod.favorites" = "Favoriler";
 "training.wod.benchmarks" = "Benchmark";
 "training.wod.forTime" = "For Time";
@@ -416,8 +594,8 @@
 "training.wod.reps" = "Tekrar";
 "training.wod.emomCompleted" = "Tamamlanan EMOM Round";
 "training.wod.total" = "Toplam";
-"training.wod.create" = "WOD Oluştur";
-"training.wod.builder.namePlaceholder" = "WOD Adı (opsiyonel)";
+"training.wod.create" = "METCON Oluştur";
+"training.wod.builder.namePlaceholder" = "METCON Adı (opsiyonel)";
 "training.wod.builder.schemePlaceholderForTime" = "Tekrar düzeni (örn: 21-15-9)";
 "training.wod.builder.schemePlaceholderAmrap" = "Hareket başına tekrar (örn: 10)";
 "training.wod.builder.movementsPlaceholder" = "Hareketler, virgülle (örn: Thruster, Burpee)";
@@ -425,7 +603,7 @@
 "training.wod.builder.schemeHintAmrap" = "Örn: 10 (her hareket round başına 10 tekrar)";
 "training.wod.builder.movementsHint" = "Örn: Thruster, Burpee";
 "training.wod.builder.start" = "Başlat";
-"training.wod.builder.title" = "WOD Oluştur";
+"training.wod.builder.title" = "METCON Oluştur";
 "training.wod.runner.undo" = "Geri Al";
 "training.wod.runner.addRound" = "Round Ekle";
 "training.wod.runner.extraReps" = "Extra: %d tekrar";
@@ -1209,6 +1387,7 @@
 "common.delete" = "Sil";
 "common.edit" = "Düzenle";
 "common.add" = "Ekle";
+"common.reps" = "tekrar";
 "common.close" = "Kapat";
 "common.done" = "Bitti";
 "common.ok" = "Tamam";
@@ -1219,6 +1398,7 @@
 "common.loading" = "Yükleniyor";
 "common.retry" = "Tekrar Dene";
 "common.user" = "Kullanıcı";
+"common.search" = "Ara";
 "common.confirm_delete" = "Silmeyi Onayla";
 
 // MARK: - Preferences (base titles)
@@ -1270,3 +1450,205 @@
 "body_measurements.trend_focus" = "Trendlere Odaklan";
 "body_measurements.trend_desc" = "Kısa süreli dalgalanmalar normaldir; uzun vadeli trendlere odaklanın.";
 "body_measurements.add_new" = "Yeni Ekle";
+
+// MARK: - Error Messages
+"error.food_not_selected" = "Hata: Yiyecek seçilmedi";
+
+// MARK: - Camera & Permissions
+"camera.settings" = "Ayarlar";
+"camera.permission_required" = "Barkod tarama için kamera izni gereklidir.";
+
+// MARK: - Body Composition
+"body_composition.title" = "Vücut Kompozisyonu";
+"body_composition.ffmi" = "FFMI";
+"body_composition.body_fat" = "Yağ Oranı";
+"body_composition.fitness_level" = "Fitness Seviyesi";
+"body_composition.measurement_required" = "Ölçüm gerekli";
+"body_composition.insufficient_data" = "Yetersiz veri";
+
+// MARK: - WOD Builder
+"wod.name_label" = "METCON Adı";
+"wod.enter_name_placeholder" = "METCON adını girin";
+"wod.type_label" = "Tür";
+"wod.rep_scheme_label" = "Tekrar Şeması";
+"wod.rep_scheme_placeholder" = "örn: 21-15-9 veya 5 round";
+"wod.rep_scheme_examples" = "Örnekler: '21-15-9' azalan tekrarlar için, '5' 5 round için";
+"wod.duration_label" = "Süre (dakika)";
+"wod.total_minutes_label" = "Toplam Dakika";
+"wod.duration_placeholder" = "örn: 20";
+"wod.movements_label" = "Hareketler";
+"wod.add_movements" = "METCON'unuza hareketler ekleyin";
+"wod.create_title" = "METCON Oluştur";
+"wod.description_label" = "METCON Açıklaması";
+"wod.score_result_label" = "Skor/Sonuç";
+"wod.score_placeholder" = "örn: 12:45 veya 5 round";
+"wod.add_title" = "METCON Ekle";
+"wod.movement_section" = "Hareket";
+"wod.movement_name_placeholder" = "Hareket adı";
+"wod.reps_optional_section" = "Tekrar (isteğe bağlı)";
+"wod.number_of_reps_placeholder" = "Tekrar sayısı";
+"wod.rx_weight_optional_section" = "RX Ağırlık (isteğe bağlı)";
+"wod.male_weight_placeholder" = "Erkek (örn., 43kg)";
+"wod.female_weight_placeholder" = "Kadın (örn., 30kg)";
+"wod.add_movement_title" = "Hareket Ekle";
+"wod.edit_movement_title" = "Hareket Düzenle";
+"wod.rx_prefix" = "RX";
+"wod.score_prefix" = "Skor";
+"wod.rx" = "RX";
+"wod.rep_scheme" = "Tekrar Şeması";
+"wod.time_cap" = "Zaman Sınırı";
+"wod.progress" = "İlerleme";
+"wod.rounds" = "Round";
+"wod.current" = "Şuanki";
+"wod.complete_round" = "Round Tamamla";
+"wod.movements" = "Hareketler";
+"wod.start" = "Başla";
+"wod.resume" = "Devam Et";
+"wod.pause" = "Duraklat";
+"wod.finish" = "Bitir";
+"wod.save_result" = "Sonucu Kaydet";
+"wod.timer_title" = "METCON Kronometre";
+"wod.result_section" = "METCON Sonucu";
+"wod.extra_reps" = "Ekstra Tekrar";
+"wod.notes_optional" = "Notlar (isteğe bağlı)";
+"wod.completed_rx" = "Bu RX olarak tamamlandı";
+
+// MARK: - Training
+"training.set.complete_set" = "Seti Tamamla";
+"training.set.cannot_delete_last" = "Son seti silemezsiniz";
+"training.set.same_as_last" = "Önceki Set Gibi";
+"training.quick_rep_selection" = "Hızlı Tekrar Seçimi";
+
+// MARK: - Workout Completion
+"workout.completion.congratulations" = "Tebrikler! 🎉";
+"workout.stats.total_sets" = "Toplam Set";
+"workout.stats.volume" = "Volume";
+
+// MARK: - Units
+"units.metric" = "Metrik";
+"units.imperial" = "İmparatorluk";
+"units.metric_format" = "cm, kg formatı";
+"units.imperial_format" = "ft, lbs formatı";
+"units.feet" = "Feet";
+"units.inches" = "İnç";
+"units.lbs" = "lbs";
+
+// MARK: - Onboarding
+"onboarding.unit_system" = "Birim Sistemi";
+
+// MARK: - Validation
+"validation.invalid_value" = "Geçersiz değer";
+
+// MARK: - Accessibility
+"accessibility.back_step" = "Bir önceki adıma döner";
+
+// MARK: - HealthKit
+"healthkit.permission_denied" = "HealthKit izni reddedildi";
+
+// MARK: - Nutrition
+"nutrition.portion_input.grams" = "Gram";
+"nutrition.portion_input.serving" = "Porsiyon";
+"nutrition.portion_input.count" = "Adet";
+"nutrition.loading_product" = "Ürün getiriliyor...";
+"nutrition.openfoodfacts_section" = "OpenFoodFacts";
+
+// MARK: - Analytics
+"analytics.change" = "Değişim";
+"analytics.calculating" = "Hesaplanıyor";
+"analytics.average" = "Ortalama";
+
+// MARK: - Common Extensions
+"common.retry" = "Tekrar Dene";
+"common.repeat" = "Tekrarla";
+"common.duplicate" = "Kopyala";
+"common.share" = "Paylaş";
+
+// MARK: - Time
+"time.minutes_short" = "DK";
+"time.seconds_short" = "SN";
+
+// MARK: - Quick Portions
+"quick_portions.title" = "Hızlı Porsiyonlar";
+"quick_portions.custom" = "Özel";
+"quick_portions.custom_amount" = "Özel Miktar (g)";
+"quick_portions.set" = "Ayarla";
+
+// MARK: - Training Cardio
+"training.cardio.templates" = "Şablonlar";
+"training.cardio.history" = "Geçmiş";
+"training.cardio.type" = "Tip";
+"training.cardio.activity" = "Aktivite";
+"training.cardio.flexibility" = "Esneklik";
+"training.cardio.anyDistanceTime" = "Herhangi bir mesafe/süre";
+"training.cardio.equipment" = "Ekipman";
+"training.cardio.personalRecord" = "Kişisel Rekor";
+"training.cardio.statistics" = "İstatistikler";
+"training.cardio.recentSessions" = "Son Seanslar";
+"training.cardio.workoutDetails" = "Antrenman Detayları";
+"training.cardio.startWorkout" = "Antrenman Başlat";
+"training.cardio.duplicate" = "Kopyala";
+"training.cardio.delete" = "Sil";
+"training.cardio.newSession" = "Yeni Seans";
+"training.cardio.setGoal" = "Bu seans için hedefinizi belirleyin";
+"training.cardio.sessionType" = "Seans Tipi";
+"training.cardio.target" = "Hedef";
+"training.cardio.notes" = "Notlar";
+"training.cardio.notesPlaceholder" = "Bu seans için opsiyonel notlar...";
+"training.cardio.equipmentOptions" = "Ekipman Seçenekleri";
+"training.cardio.startSession" = "Seansı Başlat";
+"training.cardio.distanceGoal" = "Mesafe Hedefi";
+"training.cardio.timeGoal" = "Süre Hedefi";
+"training.cardio.quickSelect" = "Hızlı Seçim";
+"training.cardio.customDistance" = "Özel Mesafe";
+"training.cardio.customDuration" = "Özel Süre";
+"training.cardio.sessionTracking" = "Seans Takibi";
+"training.cardio.logResults" = "Sonuçlarınızı kaydedin";
+"training.cardio.targetProgress" = "Hedef İlerlemesi";
+"training.cardio.duration" = "Süre";
+"training.cardio.distance" = "Mesafe";
+"training.cardio.performance" = "Performans";
+"training.cardio.additionalInfo" = "Ek Bilgiler";
+"training.cardio.heartRate" = "Kalp Atış Hızı";
+"training.cardio.feeling" = "Hissettikleriniz";
+"training.cardio.sessionNotes" = "Seans Notları";
+"training.cardio.sessionNotesPlaceholder" = "Bu seans nasıl geçti?";
+"training.cardio.completeSession" = "Seansı Tamamla";
+"training.cardio.saveSession" = "Bu seansı geçmişinize kaydetmek istiyor musunuz?";
+"training.cardio.customSessions" = "Özel Seans Yok";
+"training.cardio.noExerciseTypes" = "Egzersiz Tipi Bulunamadı";
+"training.cardio.noHistoryMessage" = "Kardiyovasküler seanslarınız burada görünecek";
+"training.cardio.adjustSearch" = "Aramanızı ayarlamayı deneyin";
+"training.cardio.clearSearch" = "Aramayı Temizle";
+"training.cardio.noHistory" = "Henüz Seans Yok";
+"training.cardio.browseTemplates" = "Şablonlara Gözat";
+"training.cardio.neverAttempted" = "Hiç denenmedi";
+
+// MARK: - Cardio Exercise Types
+"training.cardio.exercise.running" = "Koşu";
+"training.cardio.exercise.cycling" = "Bisiklet";
+"training.cardio.exercise.rowing" = "Kürek";
+"training.cardio.exercise.skiing" = "Kayak Ergometresi";
+"training.cardio.exercise.walking" = "Yürüyüş";
+
+// MARK: - Cardio Equipment
+"training.cardio.equipment.outdoor" = "Açık Hava";
+"training.cardio.equipment.treadmill" = "Koşu Bandı";
+"training.cardio.equipment.rowErg" = "Kürek Ergometresi";
+"training.cardio.equipment.bikeErg" = "Bisiklet Ergometresi";
+"training.cardio.equipment.skiErg" = "Kayak Ergometresi";
+
+// MARK: - Cardio Session Feelings
+"training.cardio.feeling.terrible" = "Berbat";
+"training.cardio.feeling.bad" = "Kötü";
+"training.cardio.feeling.okay" = "Idare Eder";
+"training.cardio.feeling.good" = "İyi";
+"training.cardio.feeling.great" = "Harika";
+
+// MARK: - Search & Placeholders
+"search.wods_placeholder" = "METCON ara...";
+"time.minutes_short" = "DK";
+"time.seconds_short" = "SN";
+
+// MARK: - Loading View
+"loading.title" = "SporHocam Hazırlanıyor";
+"loading.subtitle" = "Veriler yükleniyor...";

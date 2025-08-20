@@ -5,7 +5,6 @@ import SwiftData
 class DashboardViewModel: ObservableObject {
     // MARK: - Published Properties
     @Published var currentUser: User?
-    @Published var recentWorkouts: [Workout] = []
     @Published var todayNutritionEntries: [NutritionEntry] = []
     @Published var weeklyStats: WeeklyStats = WeeklyStats()
     @Published var isLoading = true
@@ -14,14 +13,13 @@ class DashboardViewModel: ObservableObject {
     // MARK: - Services
     private let healthKitService: HealthKitService
     private let userService = UserService()
-    private let workoutService = WorkoutService()
+    // WorkoutService removed - using LiftSession directly
     
     // MARK: - Cache Management
     private var cacheManager = DashboardCacheManager()
     
     // MARK: - Constants
     private struct Constants {
-        static let recentWorkoutsLimit = 5
         static let cacheValidityDuration: TimeInterval = 60 // 1 minute
     }
     
@@ -80,20 +78,24 @@ class DashboardViewModel: ObservableObject {
     }
     
     private func loadWorkoutData(modelContext: ModelContext) async {
-        let descriptor = FetchDescriptor<Workout>(
-            sortBy: [SortDescriptor(\Workout.startTime, order: .reverse)]
+        var descriptor = FetchDescriptor<LiftSession>(
+            sortBy: [SortDescriptor(\LiftSession.startDate, order: .reverse)]
         )
+        descriptor.predicate = #Predicate<LiftSession> { $0.isCompleted }
         
         do {
             let allWorkouts = try modelContext.fetch(descriptor)
-            recentWorkouts = Array(allWorkouts.prefix(Constants.recentWorkoutsLimit))
             
-            // Update workout service statistics
-            workoutService.loadWorkoutStats(workouts: allWorkouts)
+            // Calculate weekly stats directly
+            let weekAgo = Calendar.current.date(byAdding: .day, value: -7, to: Date()) ?? Date()
+            let weeklyWorkouts = allWorkouts.filter { $0.startDate >= weekAgo }
+            
             weeklyStats = WeeklyStats(
-                workoutCount: workoutService.weeklyWorkoutCount,
-                totalVolume: workoutService.weeklyVolume,
-                totalDuration: workoutService.weeklyDuration
+                workoutCount: weeklyWorkouts.count,
+                totalVolume: weeklyWorkouts.reduce(0) { $0 + $1.totalVolume },
+                totalDuration: weeklyWorkouts.reduce(0.0) { result, session in
+                    result + session.duration // Already in seconds (TimeInterval)
+                }
             )
         } catch {
             print("Error loading workout data: \(error)")

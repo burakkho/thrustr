@@ -1,0 +1,177 @@
+{
+  "metadata": {
+    "id": "stronglifts-5x5",
+    "name": {
+      "en": "StrongLifts 5x5",
+      "tr": "StrongLifts 5x5"
+    },
+    "description": {
+      "en": "Simple and effective strength program. Add 2.5kg to each lift every workout. Deload by 10% if you fail 3 times.",
+      "tr": "Basit ve etkili güç programı. Her antrenmanda 2.5kg ekleyin. 3 kez başarısız olursanız %10 azaltın."
+    },
+    "weeks": 12,
+    "daysPerWeek": 3,
+    "level": "beginner",
+    "category": "strength",
+    "isCustom": false,
+    "author": "Mehdi Hadim",
+    "version": "1.0"
+  },
+  "progression": {
+    "type": "linear",
+    "increment": 2.5,
+    "unit": "kg",
+    "deloadThreshold": 3,
+    "deloadPercentage": 10,
+    "notes": {
+      "en": "Add weight every successful workout. Deload if you fail the same weight 3 times.",
+      "tr": "Her başarılı antrenmanda ağırlık ekleyin. Aynı ağırlıkta 3 kez başarısız olursanız azaltın."
+    }
+  },
+  "workouts": [
+    {
+      "id": "workout-a",
+      "name": {
+        "en": "Workout A",
+        "tr": "Antrenman A"
+      },
+      "dayNumber": 1,
+      "estimatedDuration": 45,
+      "exercises": [
+        {
+          "id": "squat-a",
+          "exerciseName": "Barbell Back Squat",
+          "exerciseNameTR": "Barbell Back Squat",
+          "orderIndex": 0,
+          "targetSets": 5,
+          "targetReps": 5,
+          "targetWeight": null,
+          "restTime": 180,
+          "isWarmup": false,
+          "notes": {
+            "en": "Core movement. Focus on depth and form.",
+            "tr": "Ana hareket. Derinlik ve forma odaklanın."
+          },
+          "progression": {
+            "type": "weight",
+            "increment": 2.5
+          }
+        },
+        {
+          "id": "bench-a",
+          "exerciseName": "Barbell Bench Press",
+          "exerciseNameTR": "Barbell Bench Press",
+          "orderIndex": 1,
+          "targetSets": 5,
+          "targetReps": 5,
+          "targetWeight": null,
+          "restTime": 180,
+          "isWarmup": false,
+          "notes": {
+            "en": "Keep shoulder blades retracted.",
+            "tr": "Kürek kemiklerini geriye çekin."
+          },
+          "progression": {
+            "type": "weight",
+            "increment": 2.5
+          }
+        },
+        {
+          "id": "row-a",
+          "exerciseName": "Barbell Bent Over Row",
+          "exerciseNameTR": "Barbell Bent Over Row",
+          "orderIndex": 2,
+          "targetSets": 5,
+          "targetReps": 5,
+          "targetWeight": null,
+          "restTime": 180,
+          "isWarmup": false,
+          "notes": {
+            "en": "Pull to sternum, control the negative.",
+            "tr": "Göğse çekin, negatif hareketi kontrol edin."
+          },
+          "progression": {
+            "type": "weight",
+            "increment": 2.5
+          }
+        }
+      ]
+    },
+    {
+      "id": "workout-b",
+      "name": {
+        "en": "Workout B",
+        "tr": "Antrenman B"
+      },
+      "dayNumber": 2,
+      "estimatedDuration": 45,
+      "exercises": [
+        {
+          "id": "squat-b",
+          "exerciseName": "Barbell Back Squat",
+          "exerciseNameTR": "Barbell Back Squat",
+          "orderIndex": 0,
+          "targetSets": 5,
+          "targetReps": 5,
+          "targetWeight": null,
+          "restTime": 180,
+          "isWarmup": false,
+          "notes": {
+            "en": "Core movement. Focus on depth and form.",
+            "tr": "Ana hareket. Derinlik ve forma odaklanın."
+          },
+          "progression": {
+            "type": "weight",
+            "increment": 2.5
+          }
+        },
+        {
+          "id": "ohp-b",
+          "exerciseName": "Barbell Overhead Press",
+          "exerciseNameTR": "Barbell Overhead Press",
+          "orderIndex": 1,
+          "targetSets": 5,
+          "targetReps": 5,
+          "targetWeight": null,
+          "restTime": 180,
+          "isWarmup": false,
+          "notes": {
+            "en": "Press straight up, engage core.",
+            "tr": "Düz yukarı basın, core'u aktif edin."
+          },
+          "progression": {
+            "type": "weight",
+            "increment": 2.5
+          }
+        },
+        {
+          "id": "deadlift-b",
+          "exerciseName": "Barbell Deadlift",
+          "exerciseNameTR": "Barbell Deadlift",
+          "orderIndex": 2,
+          "targetSets": 1,
+          "targetReps": 5,
+          "targetWeight": null,
+          "restTime": 0,
+          "isWarmup": false,
+          "notes": {
+            "en": "Last exercise. Focus on hip hinge pattern.",
+            "tr": "Son egzersiz. Kalça menteşe hareketine odaklanın."
+          },
+          "progression": {
+            "type": "weight",
+            "increment": 2.5
+          }
+        }
+      ]
+    }
+  ],
+  "schedule": {
+    "pattern": "A-B-A-B",
+    "restDays": 1,
+    "notes": {
+      "en": "Alternate between Workout A and B with at least one rest day between sessions.",
+      "tr": "Antrenman A ve B arasında geçiş yapın, seanslar arasında en az bir dinlenme günü bırakın."
+    }
+  }
+}

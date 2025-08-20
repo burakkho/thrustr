@@ -19,6 +19,8 @@ class LanguageManager: ObservableObject {
         case system = "system"
         case turkish = "tr"
         case english = "en"
+        case spanish = "es"
+        case german = "de"
         
         var id: String { rawValue }
         
@@ -30,6 +32,10 @@ class LanguageManager: ObservableObject {
                 return "Türkçe"
             case .english:
                 return "İngilizce"
+            case .spanish:
+                return "Español"
+            case .german:
+                return "Deutsch"
             }
         }
         
@@ -41,6 +47,10 @@ class LanguageManager: ObservableObject {
                 return "🇹🇷"
             case .english:
                 return "🇺🇸"
+            case .spanish:
+                return "🇪🇸"
+            case .german:
+                return "🇩🇪"
             }
         }
     }
@@ -51,8 +61,45 @@ class LanguageManager: ObservableObject {
     
     private func loadLanguagePreference() {
         let savedLanguage = UserDefaults.standard.string(forKey: "app_language") ?? "system"
-        currentLanguage = Language(rawValue: savedLanguage) ?? .system
+        
+        // If no saved preference, try to match system language with supported languages
+        if savedLanguage == "system" {
+            let systemLanguage = detectBestSupportedLanguage()
+            currentLanguage = systemLanguage
+            print("🌍 Auto-detected best language: \(systemLanguage.rawValue)")
+        } else {
+            currentLanguage = Language(rawValue: savedLanguage) ?? .system
+        }
+        
         updateAppLanguage()
+    }
+    
+    /// Detects the best supported language based on system preferences
+    private func detectBestSupportedLanguage() -> Language {
+        let preferredLanguages = Locale.preferredLanguages
+        print("🔍 System preferred languages: \(preferredLanguages)")
+        
+        // Check each preferred language against supported languages
+        for preferredLang in preferredLanguages {
+            let langCode = String(preferredLang.prefix(2)) // Get first 2 characters (language code)
+            
+            switch langCode {
+            case "tr":
+                return .turkish
+            case "en":
+                return .english
+            case "es":
+                return .spanish
+            case "de":
+                return .german
+            default:
+                continue
+            }
+        }
+        
+        // If no match found, fall back to English (our base localization)
+        print("ℹ️ No supported language found in system preferences, defaulting to English")
+        return .english
     }
     
     private func saveLanguagePreference() {
@@ -79,6 +126,21 @@ class LanguageManager: ObservableObject {
                 customBundle = bundle
             }
             UserDefaults.standard.set(["en"], forKey: "AppleLanguages")
+        case .spanish:
+            if let path = Bundle.main.path(forResource: "es", ofType: "lproj"),
+               let bundle = Bundle(path: path) {
+                customBundle = bundle
+            }
+            UserDefaults.standard.set(["es"], forKey: "AppleLanguages")
+        case .german:
+            if let path = Bundle.main.path(forResource: "de", ofType: "lproj"),
+               let bundle = Bundle(path: path) {
+                customBundle = bundle
+                print("✅ German bundle found at: \(path)")
+            } else {
+                print("❌ German bundle not found")
+            }
+            UserDefaults.standard.set(["de"], forKey: "AppleLanguages")
         }
         
         UserDefaults.standard.synchronize()

@@ -1,50 +1,49 @@
-nameEN,nameTR,category,equipment,supportsWeight,supportsReps,supportsTime,supportsDistance
-Pull-ups,Pull-up,Gymnastics,Pull-up Bar,false,true,false,false
-Push-ups,Push-up,Bodyweight,None,false,true,false,false
-Air Squats,Air Squat,Bodyweight,None,false,true,false,false
-Burpees,Burpee,Bodyweight,None,false,true,false,false
-Box Jumps,Box Jump,Plyometric,Box,false,true,false,false
-Wall Balls,Wall Ball,Functional,Medicine Ball,true,true,false,false
-Kettlebell Swings,Kettlebell Swing,Functional,Kettlebell,true,true,false,false
-Double-unders,Double Under,Cardio,Jump Rope,false,true,false,false
-Toes-to-bar,Toes to Bar,Gymnastics,Pull-up Bar,false,true,false,false
-Muscle-ups,Muscle-up,Gymnastics,Rings,false,true,false,false
-Thrusters,Thruster,Weightlifting,Barbell,true,true,false,false
-Clean and Jerk,Clean and Jerk,Olympic,Barbell,true,true,false,false
-Snatch,Snatch,Olympic,Barbell,true,true,false,false
-Deadlifts,Deadlift,Powerlifting,Barbell,true,true,false,false
-Front Squats,Front Squat,Powerlifting,Barbell,true,true,false,false
-Back Squats,Back Squat,Powerlifting,Barbell,true,true,false,false
-Overhead Squats,Overhead Squat,Olympic,Barbell,true,true,false,false
-Handstand Push-ups,Handstand Push-up,Gymnastics,Wall,false,true,false,false
-Ring Dips,Ring Dip,Gymnastics,Rings,false,true,false,false
-Rope Climbs,Rope Climb,Gymnastics,Rope,false,true,false,false
-Running,Koşu,Cardio,None,false,false,true,true
-Rowing,Kürek,Cardio,Concept2 Rower,false,false,true,true
-Assault Bike,Assault Bike,Cardio,Assault Bike,false,false,true,true
-Power Clean,Power Clean,Olympic,Barbell,true,true,false,false
-Power Snatch,Power Snatch,Olympic,Barbell,true,true,false,false
-Bench Press,Bench Press,Powerlifting,Barbell,true,true,false,false
-Strict Press,Strict Press,Weightlifting,Barbell,true,true,false,false
-Push Press,Push Press,Weightlifting,Barbell,true,true,false,false
-Push Jerk,Push Jerk,Olympic,Barbell,true,true,false,false
-Split Jerk,Split Jerk,Olympic,Barbell,true,true,false,false
-Pistol Squats,Pistol Squat,Gymnastics,None,false,true,false,false
-Turkish Get-ups,Turkish Get-up,Functional,Kettlebell,true,true,false,false
-Farmers Carry,Farmers Carry,Strongman,Dumbbells,true,false,true,true
-Sled Push,Sled Push,Strongman,Sled,true,false,true,true
-GHD Sit-ups,GHD Sit-up,Core,GHD Machine,false,true,false,false
-AbMat Sit-ups,AbMat Sit-up,Core,AbMat,false,true,false,false
-V-ups,V-up,Core,None,false,true,false,false
-Plank,Plank,Core,None,false,false,true,false
-Lunges,Lunge,Bodyweight,None,false,true,false,false
-Walking Lunges,Walking Lunge,Bodyweight,None,false,true,false,true
-Dumbbell Snatches,Dumbbell Snatch,Weightlifting,Dumbbell,true,true,false,false
-Man Makers,Man Maker,Functional,Dumbbells,true,true,false,false
-Devils Press,Devils Press,Functional,Dumbbells,true,true,false,false
-Chest to Bar Pull-ups,Chest to Bar Pull-up,Gymnastics,Pull-up Bar,false,true,false,false
-Butterfly Pull-ups,Butterfly Pull-up,Gymnastics,Pull-up Bar,false,true,false,false
-Kipping Pull-ups,Kipping Pull-up,Gymnastics,Pull-up Bar,false,true,false,false
-Strict Pull-ups,Strict Pull-up,Gymnastics,Pull-up Bar,false,true,false,false
-Bar Muscle-ups,Bar Muscle-up,Gymnastics,Pull-up Bar,false,true,false,false
-Ring Rows,Ring Row,Gymnastics,Rings,false,true,false,false
+nameEN,nameTR,category,equipment,rxWeightMale,rxWeightFemale,supportsWeight,supportsReps,supportsTime,supportsDistance,wodSuitability,instructions,scalingNotes
+Pull-ups,Barfiks,Gymnastics,Pull-up Bar,,,false,true,false,false,10,"Strict or kipping pull-ups","Assistance bands or jumping pull-ups"
+Push-ups,Şınav,Bodyweight,None,,,false,true,false,false,10,"Chest to ground each rep","Knee push-ups or incline push-ups"
+Air Squats,Hava Squat,Bodyweight,None,,,false,true,false,false,10,"Hip crease below knee","Partial range of motion or assisted squats"
+Burpees,Burpee,Bodyweight,None,,,false,true,false,false,10,"Chest to floor full extension","Step back/up instead of jumping"
+Box Jumps,Box Jump,Plyometric,Box,,,false,true,false,false,9,"Full hip extension on top","Step ups or lower box"
+Wall Balls,Wall Ball,Functional,Medicine Ball,9kg,6kg,true,true,false,false,10,"Target 10ft/9ft","Lighter ball or lower target"
+Kettlebell Swings,Kettlebell Swing,Functional,Kettlebell,24kg,16kg,true,true,false,false,10,"Hip drive eye level","Lighter weight or Russian swings"
+Double-unders,Double Under,Cardio,Jump Rope,,,false,true,false,false,8,"Two rope passes per jump","Single unders or penguin taps"
+Toes-to-bar,Toes to Bar,Gymnastics,Pull-up Bar,,,false,true,false,false,9,"Toes touch bar","Knee raises or V-ups"
+Muscle-ups,Muscle-up,Gymnastics,Rings,,,false,true,false,false,7,"Full transition","Jumping muscle-ups or ring dips"
+Thrusters,Thruster,Olympic,Barbell,43kg,30kg,true,true,false,false,10,"Front squat to overhead press","Lighter weight or dumbbells"
+Clean and Jerk,Clean and Jerk,Olympic,Barbell,61kg,43kg,true,true,false,false,8,"From floor to overhead","Power clean and push press"
+Snatch,Snatch,Olympic,Barbell,61kg,43kg,true,true,false,false,7,"From floor to overhead in one motion","Muscle snatch or overhead squat"
+Deadlifts,Deadlift,Powerlifting,Barbell,102kg,70kg,true,true,false,false,10,"Hip hinge movement","Lighter weight or sumo stance"
+Front Squats,Front Squat,Powerlifting,Barbell,70kg,48kg,true,true,false,false,9,"Elbows high rack position","Goblet squats or lighter weight"
+Back Squats,Back Squat,Powerlifting,Barbell,84kg,57kg,true,true,false,false,8,"Hip crease below knee","Bodyweight or lighter weight"
+Overhead Squats,Overhead Squat,Olympic,Barbell,43kg,30kg,true,true,false,false,7,"Active shoulders overhead","PVC pipe or lighter weight"
+Handstand Push-ups,Handstand Push-up,Gymnastics,Wall,,,false,true,false,false,6,"Head touches ground","Pike push-ups or box HSPU"
+Ring Dips,Ring Dip,Gymnastics,Rings,,,false,true,false,false,8,"Full lockout","Band assistance or box dips"
+Rope Climbs,Rope Climb,Gymnastics,Rope,,,false,true,false,false,7,"15ft rope legless","Rope pulls or assisted climbs"
+Running,Koşu,Cardio,None,,,false,false,true,true,10,"Steady pace or intervals","Walk/jog intervals"
+Rowing,Kürek,Cardio,Concept2 Rower,,,false,false,true,true,10,"Strong leg drive","Reduce distance or pace"
+Assault Bike,Assault Bike,Cardio,Assault Bike,,,false,false,true,true,9,"Full body engagement","Reduce time or intensity"
+Power Clean,Power Clean,Olympic,Barbell,70kg,48kg,true,true,false,false,8,"Clean to front rack","Hang power clean or lighter"
+Power Snatch,Power Snatch,Olympic,Barbell,52kg,35kg,true,true,false,false,7,"Catch in quarter squat","Hang power snatch or lighter"
+Bench Press,Bench Press,Powerlifting,Barbell,84kg,57kg,true,true,false,false,6,"Touch chest full extension","Dumbbell press or lighter"
+Strict Press,Strict Press,Powerlifting,Barbell,52kg,35kg,true,true,false,false,8,"No leg drive","Dumbbell press or lighter"
+Push Press,Push Press,Olympic,Barbell,70kg,48kg,true,true,false,false,9,"Leg drive to overhead","Strict press or lighter"
+Push Jerk,Push Jerk,Olympic,Barbell,70kg,48kg,true,true,false,false,7,"Catch in quarter squat","Push press or lighter"
+Split Jerk,Split Jerk,Olympic,Barbell,70kg,48kg,true,true,false,false,6,"Split catch position","Push jerk or lighter"
+Pistol Squats,Pistol Squat,Gymnastics,None,,,false,true,false,false,6,"Single leg full depth","Assisted or box pistols"
+Turkish Get-ups,Turkish Get-up,Functional,Kettlebell,16kg,12kg,true,true,false,false,7,"Slow controlled movement","Lighter weight or no weight"
+Farmers Carry,Farmers Carry,Functional,Dumbbells,24kg,16kg,true,false,true,true,8,"Upright posture","Lighter weight or shorter distance"
+Sled Push,Sled Push,Functional,Sled,45kg,25kg,true,false,true,true,8,"Low body position","Lighter weight or shorter distance"
+GHD Sit-ups,GHD Sit-up,Gymnastics,GHD Machine,,,false,true,false,false,7,"Full range of motion","AbMat sit-ups or reduce reps"
+AbMat Sit-ups,AbMat Sit-up,Bodyweight,AbMat,,,false,true,false,false,10,"Shoulders touch ground","Partial range or crunches"
+V-ups,V-up,Bodyweight,None,,,false,true,false,false,9,"Touch toes","Bent knee or partial range"
+Plank,Plank,Bodyweight,None,,,false,false,true,false,8,"Straight body position","Knee plank or shorter time"
+Lunges,Lunge,Bodyweight,None,,,false,true,false,false,9,"Knee almost touches ground","Reverse lunges or shallow depth"
+Walking Lunges,Walking Lunge,Bodyweight,None,,,false,true,false,true,9,"Continuous movement","In place lunges or shorter"
+Dumbbell Snatches,Dumbbell Snatch,Functional,Dumbbell,22kg,15kg,true,true,false,false,8,"Floor to overhead","Lighter weight or hang snatch"
+Man Makers,Man Maker,Functional,Dumbbells,16kg,11kg,true,true,false,false,8,"Burpee to snatch","Lighter weight or step ups"
+Devils Press,Devils Press,Functional,Dumbbells,22kg,15kg,true,true,false,false,9,"Burpee to devil press","Lighter weight or man makers"
+Chest to Bar Pull-ups,Chest to Bar Pull-up,Gymnastics,Pull-up Bar,,,false,true,false,false,8,"Chest touches bar","Regular pull-ups or assistance"
+Butterfly Pull-ups,Butterfly Pull-up,Gymnastics,Pull-up Bar,,,false,true,false,false,7,"Continuous rhythm","Kipping pull-ups or assistance"
+Kipping Pull-ups,Kipping Pull-up,Gymnastics,Pull-up Bar,,,false,true,false,false,9,"Hip drive rhythm","Jumping pull-ups or assistance"
+Strict Pull-ups,Strict Pull-up,Gymnastics,Pull-up Bar,,,false,true,false,false,8,"No momentum","Negatives or assistance"
+Bar Muscle-ups,Bar Muscle-up,Gymnastics,Pull-up Bar,,,false,true,false,false,6,"Transition over bar","Chest to bar or assistance"

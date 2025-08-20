@@ -4,102 +4,308 @@ import Foundation
 @MainActor
 class DataSeeder {
     
-    // MARK: - Main Seed Function
-    static func seedDatabaseIfNeeded(modelContext: ModelContext) {
-        // Check counts independently to avoid duplicate seeding
-        let exerciseDescriptor = FetchDescriptor<Exercise>()
-        let exerciseCount = (try? modelContext.fetchCount(exerciseDescriptor)) ?? 0
-
-        var didSeed = false
-        if exerciseCount == 0 {
-            print("🌱 Seeding exercises…")
-            seedExercises(modelContext: modelContext)
-            didSeed = true
-        } else {
-            print("✅ Exercises already present: \(exerciseCount)")
-        }
-
-        // Foods
-        let foodDescriptor = FetchDescriptor<Food>()
-        let foodCount = (try? modelContext.fetchCount(foodDescriptor)) ?? 0
-        if foodCount == 0 {
-            print("🌱 Seeding foods…")
-            seedFoods(modelContext: modelContext)
-            didSeed = true
-        } else {
-            print("✅ Foods already present: \(foodCount)")
-        }
-
-        // Always run a normalization step to ensure critical categories are correct
-        fixOlympicExerciseCategories(modelContext: modelContext)
-        normalizeExerciseCategoriesToPartTypes(modelContext: modelContext)
-
-        // Normalize food data (categories, missing TR names)
-        normalizeFoodData(modelContext: modelContext)
-
-        if didSeed {
-            print("✅ Database seeding completed!")
-        }
-
-        // Always seed aliases for common foods (idempotent)
-        seedFoodAliasesIfNeeded(modelContext: modelContext)
-        
-        // Seed CrossFit movements if needed
-        seedCrossFitMovementsIfNeeded(modelContext: modelContext)
+    // MARK: - Configuration
+    private struct SeedingConfig {
+        static let batchSize = 100
+        static let maxRetries = 3
+        static let yieldInterval = 50 // Process 50 items then yield
     }
     
-    // MARK: - Seed Exercises
-    private static func seedExercises(modelContext: ModelContext) {
-        guard let url = Bundle.main.url(forResource: "exercises", withExtension: "csv"),
-              let csvData = try? String(contentsOf: url, encoding: .utf8) else {
-            print("❌ exercises.csv not found")
-            return
+    // MARK: - Main Seed Function
+    static func seedDatabaseIfNeeded(modelContext: ModelContext) async {
+        let isEmpty = await isDatabaseEmpty(modelContext: modelContext)
+        
+        if isEmpty {
+            Logger.info("Database is empty, starting optimized seeding...")
+            
+            do {
+                // Core data seeding with proper error handling
+                try await withThrowingTaskGroup(of: Void.self) { group in
+                    // Core data (exercises + foods) - parallel
+                    group.addTask { try await seedExercises(modelContext: modelContext) }
+                    group.addTask { try await seedFoods(modelContext: modelContext) }
+                    
+                    // Secondary data - parallel group
+                    group.addTask { try await seedBenchmarkWODsIfNeeded(modelContext: modelContext) }
+                    group.addTask { try await seedCrossFitMovementsFromCSVIfNeeded(modelContext: modelContext) }
+                    group.addTask { try await seedBenchmarkCardiosIfNeeded(modelContext: modelContext) }
+                    
+                    // JSON-based data - parallel group
+                    group.addTask { try await seedLiftProgramsFromJSONIfNeeded(modelContext: modelContext) }
+                    group.addTask { try await seedRoutineTemplatesIfNeeded(modelContext: modelContext) }
+                    
+                    // Wait for all tasks to complete
+                    try await group.waitForAll()
+                }
+                
+                // Normalization - only after new data is seeded
+                await normalizeDataAfterSeeding(modelContext: modelContext)
+                
+                // Food aliases - depends on foods being seeded
+                await seedFoodAliasesIfNeeded(modelContext: modelContext)
+                
+                Logger.success("Optimized database seeding completed!")
+                
+            } catch {
+                Logger.error("Database seeding failed: \(error)")
+                // Fallback to basic seeding
+                await fallbackSeeding(modelContext: modelContext)
+            }
+        } else {
+            Logger.success("Database already contains data, skipping seeding")
+        }
+    }
+    
+    // MARK: - Optimized Helper Functions
+    
+    /// Optimized: Single check for database emptiness
+    private static func isDatabaseEmpty(modelContext: ModelContext) async -> Bool {
+        let exerciseDescriptor = FetchDescriptor<Exercise>()
+        let exerciseCount = (try? modelContext.fetchCount(exerciseDescriptor)) ?? 0
+        return exerciseCount == 0
+    }
+    
+    /// Fallback seeding for critical failures
+    private static func fallbackSeeding(modelContext: ModelContext) async {
+        Logger.warning("Using fallback seeding...")
+        seedTestExercises(modelContext: modelContext)
+    }
+    
+    /// Optimized: Combined normalization after seeding
+    private static func normalizeDataAfterSeeding(modelContext: ModelContext) async {
+        await Task.yield() // Keep UI responsive
+        
+        // Run all normalizations together
+        fixOlympicExerciseCategories(modelContext: modelContext)
+        await Task.yield()
+        
+        normalizeExerciseCategoriesToPartTypes(modelContext: modelContext)
+        await Task.yield()
+        
+        normalizeFoodData(modelContext: modelContext)
+        await Task.yield()
+        
+        Logger.info("Data normalization completed")
+    }
+    
+    // MARK: - Standardized CSV Parser
+    private struct CSVParser {
+        static func parseCSVRow(_ row: String) -> [String] {
+            // Very simple CSV parsing - just split by comma
+            // This is safer and should prevent crashes
+            let fields = row.components(separatedBy: ",")
+            return fields.map { field in
+                field.trimmingCharacters(in: .whitespacesAndNewlines)
+                    .trimmingCharacters(in: CharacterSet(charactersIn: "\""))
+            }
         }
         
-        let rows = csvData.components(separatedBy: .newlines)
-        var successCount = 0
-
-        // If you want a full import (no quotas, no curation)
-        // Debug'da varsayılan: true, Release'de: false. İsterseniz UserDefaults ile override edin → key: "seed.importAll"
-        let importAll: Bool = {
-            #if DEBUG
-            return UserDefaults.standard.object(forKey: "seed.importAll") as? Bool ?? true
-            #else
-            return UserDefaults.standard.object(forKey: "seed.importAll") as? Bool ?? false
-            #endif
-        }()
-
-        if importAll {
-            for (index, row) in rows.enumerated() {
-                if index == 0 || row.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty { continue }
-                let columns = parseCSVRow(row)
-                if columns.count < 9 { continue }
-
-                let nameEN = columns[0].trimmingCharacters(in: .whitespaces)
-                let nameTR = columns[1].trimmingCharacters(in: .whitespaces)
-                let category = ExerciseCategory.fromString(columns[2])
-                let equipment = columns[3].trimmingCharacters(in: .whitespaces)
-
-                let exercise = Exercise(
-                    nameEN: nameEN,
-                    nameTR: nameTR.isEmpty ? nameEN : nameTR,
-                    category: category.rawValue,
-                    equipment: equipment
-                )
-                exercise.supportsWeight = columns[4].lowercased() == "true"
-                exercise.supportsReps = columns[5].lowercased() == "true"
-                exercise.supportsTime = columns[6].lowercased() == "true"
-                exercise.supportsDistance = columns[7].lowercased() == "true"
-                exercise.instructions = columns[8].isEmpty ? nil : columns[8]
-
-                modelContext.insert(exercise)
-                successCount += 1
+        static func parseCSVFile(_ filename: String) throws -> [[String]] {
+            guard let url = Bundle.main.url(forResource: filename, withExtension: "csv") else {
+                throw DataSeederError.fileNotFound(filename)
             }
-
-            do { try modelContext.save(); print("✅ Seeded ALL exercises: total=\(successCount)") } catch { print("❌ Error saving exercises: \(error)") }
-        } else {
-
-        // Quotas for curated set (total ~120). We map fine-grained categories to these buckets.
+            
+            let csvData: String
+            do {
+                csvData = try String(contentsOf: url, encoding: .utf8)
+            } catch {
+                throw DataSeederError.parsingError("Failed to read CSV file: \(error)")
+            }
+            
+            // Split by newlines and clean up
+            let rows = csvData.components(separatedBy: .newlines)
+                .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+                .filter { !$0.isEmpty }
+            
+            guard rows.count > 1 else {
+                throw DataSeederError.emptyFile(filename)
+            }
+            
+            var parsedRows: [[String]] = []
+            
+            for (index, row) in rows.enumerated() {
+                let parsedRow = parseCSVRow(row)
+                
+                // Skip completely empty rows
+                if parsedRow.allSatisfy({ $0.isEmpty }) {
+                    Logger.warning("Skipping empty row at index \(index) in \(filename)")
+                    continue
+                }
+                
+                parsedRows.append(parsedRow)
+            }
+            
+            Logger.info("Successfully parsed \(parsedRows.count) rows from \(filename)")
+            return parsedRows
+        }
+        
+        static func parseJSONFile<T: Codable>(_ filename: String, as type: T.Type) throws -> T {
+            guard let url = Bundle.main.url(forResource: filename, withExtension: "json") else {
+                throw DataSeederError.fileNotFound(filename)
+            }
+            
+            let data: Data
+            do {
+                data = try Data(contentsOf: url)
+            } catch {
+                throw DataSeederError.parsingError("Failed to read JSON file: \(error)")
+            }
+            
+            do {
+                return try JSONDecoder().decode(type, from: data)
+            } catch {
+                throw DataSeederError.parsingError("Failed to decode JSON: \(error)")
+            }
+        }
+    }
+    
+    // MARK: - Exercise ID Resolution
+    private struct ExerciseResolver {
+        private var exerciseCache: [String: UUID] = [:]
+        
+        mutating func resolveExerciseID(name: String, modelContext: ModelContext) -> UUID? {
+            // Check cache first
+            if let cachedID = exerciseCache[name] {
+                return cachedID
+            }
+            
+            // Search in database
+            let descriptor = FetchDescriptor<Exercise>(
+                predicate: #Predicate<Exercise> { 
+                    $0.nameEN.localizedStandardContains(name) || 
+                    $0.nameTR.localizedStandardContains(name)
+                }
+            )
+            
+            if let exercise = try? modelContext.fetch(descriptor).first {
+                exerciseCache[name] = exercise.id
+                return exercise.id
+            }
+            
+            return nil
+        }
+        
+        mutating func resolveExerciseIDs(names: [String], modelContext: ModelContext) -> [UUID] {
+            return names.compactMap { resolveExerciseID(name: $0, modelContext: modelContext) }
+        }
+    }
+    
+    // MARK: - Test Exercise Seeding
+    private static func seedTestExercises(modelContext: ModelContext) {
+        let testExercises = [
+            ("Back Squat", "Back Squat", "legs", "barbell"),
+            ("Bench Press", "Bench Press", "push", "barbell"),
+            ("Deadlift", "Deadlift", "strength", "barbell"),
+            ("Pull Up", "Pull Up", "pull", "pullup_bar"),
+            ("Overhead Press", "Overhead Press", "push", "barbell")
+        ]
+        
+        for (nameEN, nameTR, category, equipment) in testExercises {
+            let exercise = Exercise(
+                nameEN: nameEN,
+                nameTR: nameTR,
+                category: category,
+                equipment: equipment
+            )
+            modelContext.insert(exercise)
+        }
+        
+        do {
+            try modelContext.save()
+            Logger.success("Created \(testExercises.count) test exercises")
+        } catch {
+            Logger.error("Failed to save test exercises: \(error)")
+        }
+    }
+    
+    // MARK: - Seed Exercises with Improved Error Handling
+    private static func seedExercises(modelContext: ModelContext) async throws {
+        let resourceName = Bundle.main.url(forResource: "basic_exercises", withExtension: "csv") != nil ? "basic_exercises" : "exercises"
+        
+        do {
+            let rows = try CSVParser.parseCSVFile(resourceName)
+            var successCount = 0
+            var processedCount = 0
+            
+            // Check if we should import all or curated set
+            let importAll: Bool = {
+                #if DEBUG
+                return UserDefaults.standard.object(forKey: "seed.importAll") as? Bool ?? true
+                #else
+                return UserDefaults.standard.object(forKey: "seed.importAll") as? Bool ?? false
+                #endif
+            }()
+            
+            if importAll {
+                // Import all exercises
+                for (index, columns) in rows.enumerated() {
+                    if index == 0 { continue } // Skip header
+                    if columns.count < 8 { continue }
+                    
+                    do {
+                        let exercise = try createExerciseFromCSV(columns: columns)
+                        modelContext.insert(exercise)
+                        successCount += 1
+                        processedCount += 1
+                        
+                        // Save in batches
+                        if processedCount % SeedingConfig.batchSize == 0 {
+                            try modelContext.save()
+                            Logger.info("Batch saved: \(processedCount) exercises")
+                            await Task.yield()
+                        }
+                    } catch {
+                        Logger.warning("Failed to create exercise at row \(index): \(error)")
+                        continue
+                    }
+                }
+            } else {
+                // Import curated set
+                successCount = try await seedCuratedExercises(rows: rows, modelContext: modelContext)
+            }
+            
+            // Save remaining exercises
+            try modelContext.save()
+            Logger.success("Seeded exercises: total=\(successCount)")
+            
+        } catch {
+            Logger.error("Failed to seed exercises: \(error)")
+            throw error
+        }
+    }
+    
+    private static func createExerciseFromCSV(columns: [String]) throws -> Exercise {
+        guard columns.count >= 8 else {
+            throw DataSeederError.invalidDataFormat("Exercise requires at least 8 columns")
+        }
+        
+        let nameEN = columns[0].trimmingCharacters(in: .whitespaces)
+        let nameTR = columns[1].trimmingCharacters(in: .whitespaces)
+        let categoryString = columns[2].trimmingCharacters(in: .whitespaces)
+        let equipment = columns[3].trimmingCharacters(in: .whitespaces)
+        
+        guard !nameEN.isEmpty else {
+            throw DataSeederError.invalidDataFormat("Exercise name cannot be empty")
+        }
+        
+        let exercise = Exercise(
+            nameEN: nameEN,
+            nameTR: nameTR.isEmpty ? nameEN : nameTR,
+            category: categoryString,
+            equipment: equipment
+        )
+        
+        // Safely parse boolean values
+        exercise.supportsWeight = columns.count > 4 && columns[4].lowercased() == "true"
+        exercise.supportsReps = columns.count > 5 && columns[5].lowercased() == "true"
+        exercise.supportsTime = columns.count > 6 && columns[6].lowercased() == "true"
+        exercise.supportsDistance = columns.count > 7 && columns[7].lowercased() == "true"
+        
+        return exercise
+    }
+    
+    private static func seedCuratedExercises(rows: [[String]], modelContext: ModelContext) async throws -> Int {
+        // Quotas for curated set (total ~120)
         let quotas: [ExerciseCategory: Int] = [
             .strength: 60,
             .core: 12,
@@ -110,10 +316,11 @@ class DataSeeder {
             .olympic: 12,
             .plyometric: 8
         ]
+        
         var used: [ExerciseCategory: Int] = [:]
-        // Track best entry per exercise name to avoid dupes across equipment variants
         var keptByName: [String: (exercise: Exercise, rank: Int, category: ExerciseCategory)] = [:]
-
+        var successCount = 0
+        
         // Equipment preference: lower rank is preferred
         let equipmentPreference: [String: Int] = [
             "barbell": 0,
@@ -132,12 +339,11 @@ class DataSeeder {
             "treadmill": 13,
             "other": 99
         ]
-
+        
         func equipmentRank(_ value: String) -> Int {
             equipmentPreference[value, default: 50]
         }
-
-        // Helper closures
+        
         func normalizeEquipment(_ raw: String) -> String {
             let v = raw.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
             switch v {
@@ -149,18 +355,17 @@ class DataSeeder {
             default: return v.isEmpty ? "other" : v
             }
         }
-
+        
         func canUse(category: ExerciseCategory) -> Bool {
             let cap = quotas[category] ?? 0
             let count = used[category] ?? 0
             return cap == 0 ? false : count < cap
         }
-
+        
         func markUsed(_ category: ExerciseCategory) {
             used[category] = (used[category] ?? 0) + 1
         }
-
-        // Map CSV fine-grained category to curated quota bucket
+        
         func quotaBucket(for category: ExerciseCategory) -> ExerciseCategory {
             switch category {
             case .push, .pull, .legs, .isolation:
@@ -169,75 +374,66 @@ class DataSeeder {
                 return category
             }
         }
-
-        // Iterate and pick curated unique rows until quotas filled or limit reached
-        for (index, row) in rows.enumerated() {
-            if index == 0 || row.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty { continue }
-            let columns = parseCSVRow(row)
-            if columns.count < 9 { continue }
-
-            let nameEN = columns[0].trimmingCharacters(in: .whitespaces)
-            let nameTR = columns[1].trimmingCharacters(in: .whitespaces)
-            let category = ExerciseCategory.fromString(columns[2])
-            let bucket = quotaBucket(for: category)
-            let equipment = normalizeEquipment(columns[3])
-
-            // Skip categories we don't curate for initial set (after bucketing)
-            if quotas[bucket] == nil { continue }
-
-            // Prefer a single canonical entry per exercise name within the curated category quotas
-            let nameKey = nameEN.lowercased()
-            let newRank = equipmentRank(equipment)
-            if let kept = keptByName[nameKey] {
-                // Only consider replacement if same curated category and new equipment is preferred
-                if kept.category == bucket && newRank < kept.rank {
-                    // Update existing kept exercise with better equipment/flags/instructions
-                    let existing = kept.exercise
-                    existing.equipment = equipment
-                    existing.supportsWeight = columns[4].lowercased() == "true"
-                    existing.supportsReps = columns[5].lowercased() == "true"
-                    existing.supportsTime = columns[6].lowercased() == "true"
-                    existing.supportsDistance = columns[7].lowercased() == "true"
-                    existing.instructions = columns[8].isEmpty ? nil : columns[8]
-                    keptByName[nameKey] = (existing, newRank, bucket)
+        
+        // Process rows
+        for (index, columns) in rows.enumerated() {
+            if index == 0 { continue } // Skip header
+            if columns.count < 8 { continue }
+            
+            do {
+                let nameEN = columns[0].trimmingCharacters(in: .whitespaces)
+                let categoryString = columns[2].trimmingCharacters(in: .whitespaces)
+                let category = ExerciseCategory.fromString(categoryString)
+                let bucket = quotaBucket(for: category)
+                let equipment = normalizeEquipment(columns[3])
+                
+                // Skip categories we don't curate for initial set
+                if quotas[bucket] == nil { continue }
+                
+                // Prefer a single canonical entry per exercise name
+                let nameKey = nameEN.lowercased()
+                let newRank = equipmentRank(equipment)
+                
+                if let kept = keptByName[nameKey] {
+                    // Only consider replacement if same curated category and new equipment is preferred
+                    if kept.category == bucket && newRank < kept.rank {
+                        let existing = kept.exercise
+                        existing.equipment = equipment
+                        existing.supportsWeight = columns[4].lowercased() == "true"
+                        existing.supportsReps = columns[5].lowercased() == "true"
+                        existing.supportsTime = columns[6].lowercased() == "true"
+                        existing.supportsDistance = columns[7].lowercased() == "true"
+                        keptByName[nameKey] = (existing, newRank, bucket)
+                    }
+                    continue
                 }
+                
+                if !canUse(category: bucket) { continue }
+                
+                let exercise = try createExerciseFromCSV(columns: columns)
+                modelContext.insert(exercise)
+                successCount += 1
+                keptByName[nameKey] = (exercise, newRank, bucket)
+                markUsed(bucket)
+                
+                if successCount >= 120 { break }
+                
+                // Yield periodically
+                if successCount % SeedingConfig.yieldInterval == 0 {
+                    await Task.yield()
+                }
+                
+            } catch {
+                Logger.warning("Failed to process exercise at row \(index): \(error)")
                 continue
             }
-
-            if !canUse(category: bucket) { continue }
-
-            let exercise = Exercise(
-                nameEN: nameEN,
-                nameTR: nameTR,
-                category: category.rawValue,
-                equipment: equipment
-            )
-
-            exercise.supportsWeight = columns[4].lowercased() == "true"
-            exercise.supportsReps = columns[5].lowercased() == "true"
-            exercise.supportsTime = columns[6].lowercased() == "true"
-            exercise.supportsDistance = columns[7].lowercased() == "true"
-            exercise.instructions = columns[8].isEmpty ? nil : columns[8]
-
-            modelContext.insert(exercise)
-            successCount += 1
-            keptByName[nameKey] = (exercise, newRank, bucket)
-            markUsed(bucket)
-
-            if successCount >= 120 { break }
         }
-
-        do {
-            try modelContext.save()
-            print("✅ Seeded curated exercises: total=\(successCount) | used=\(used)")
-        } catch {
-            print("❌ Error saving exercises: \(error)")
-        }
-        }
+        
+        return successCount
     }
     
-    // MARK: - Seed Foods
-    private static func seedFoods(modelContext: ModelContext) {
+    // MARK: - Seed Foods with Improved Error Handling
+    private static func seedFoods(modelContext: ModelContext) async throws {
         // Try foods.csv; fallback to foods_flags.csv for legacy datasets
         var csvData: String? = nil
         if let url = Bundle.main.url(forResource: "foods", withExtension: "csv"),
@@ -246,89 +442,87 @@ class DataSeeder {
         } else if let url = Bundle.main.url(forResource: "foods_flags", withExtension: "csv"),
                   let data = try? String(contentsOf: url, encoding: .utf8) {
             csvData = data
-            print("ℹ️ Using foods_flags.csv as fallback for foods seeding")
+            Logger.info("Using foods_flags.csv as fallback for foods seeding")
         }
-        guard let csvData else { print("❌ foods.csv not found"); return }
         
-        let rows = csvData.components(separatedBy: .newlines)
+        guard let csvData else { 
+            throw DataSeederError.fileNotFound("foods.csv")
+        }
+        
+        let rows = csvData.components(separatedBy: .newlines).filter { !$0.isEmpty }
         var successCount = 0
         
         for (index, row) in rows.enumerated() {
+            // Yield every 50 foods
+            if index % 50 == 0 {
+                await Task.yield()
+            }
+            
             // Skip header and empty rows
             if index == 0 || row.isEmpty { continue }
             
-            let columns = parseCSVRow(row)
-            if columns.count >= 8 {
-                // Parse nutrition values safely
-                let calories = Double(columns[3]) ?? 0
-                let protein = Double(columns[4]) ?? 0
-                let carbs = Double(columns[5]) ?? 0
-                let fat = Double(columns[6]) ?? 0
-                
-                // Map category string to enum
-                let categoryEnum = FoodCategory.fromString(columns[7])
-                
-                let food = Food(
-                    nameEN: columns[0],
-                    nameTR: columns[1],
-                    calories: calories,
-                    protein: protein,
-                    carbs: carbs,
-                    fat: fat,
-                    category: categoryEnum
-                )
-                
-                // Set brand if not empty
-                if !columns[2].isEmpty {
-                    food.brand = columns[2]
+            do {
+                let columns = CSVParser.parseCSVRow(row)
+                if columns.count >= 8 {
+                    let food = try createFoodFromCSV(columns: columns)
+                    modelContext.insert(food)
+                    successCount += 1
                 }
-                // Optional serving columns: index 8 -> servingSizeGrams, index 9 -> servingName
-                if columns.count >= 9 {
-                    let s = columns[8].trimmingCharacters(in: .whitespaces)
-                    if let g = Double(s), g > 0 { food.servingSizeGrams = g }
-                }
-                if columns.count >= 10 {
-                    let label = columns[9].trimmingCharacters(in: .whitespaces)
-                    if !label.isEmpty { food.servingName = label }
-                }
-                
-                modelContext.insert(food)
-                successCount += 1
+            } catch {
+                Logger.warning("Failed to create food at row \(index): \(error)")
+                continue
             }
         }
         
         do {
             try modelContext.save()
-            print("✅ Seeded \(successCount) foods")
+            Logger.success("Seeded \(successCount) foods")
         } catch {
-            print("❌ Error saving foods: \(error)")
+            Logger.error("Error saving foods: \(error)")
+            throw error
         }
     }
     
-    // MARK: - CSV Parser Helper
-    private static func parseCSVRow(_ row: String) -> [String] {
-        var result: [String] = []
-        var currentField = ""
-        var insideQuotes = false
-        
-        for char in row {
-            if char == "\"" {
-                insideQuotes.toggle()
-            } else if char == "," && !insideQuotes {
-                result.append(currentField.trimmingCharacters(in: .whitespaces))
-                currentField = ""
-            } else {
-                currentField.append(char)
-            }
+    private static func createFoodFromCSV(columns: [String]) throws -> Food {
+        guard columns.count >= 8 else {
+            throw DataSeederError.invalidDataFormat("Food requires at least 8 columns")
         }
         
-        // Add the last field
-        result.append(currentField.trimmingCharacters(in: .whitespaces))
+        // Parse nutrition values safely
+        let calories = Double(columns[3]) ?? 0
+        let protein = Double(columns[4]) ?? 0
+        let carbs = Double(columns[5]) ?? 0
+        let fat = Double(columns[6]) ?? 0
         
-        // Remove quotes from fields
-        return result.map { field in
-            field.trimmingCharacters(in: CharacterSet(charactersIn: "\""))
+        // Map category string to enum
+        let categoryEnum = FoodCategory.fromString(columns[7])
+        
+        let food = Food(
+            nameEN: columns[0],
+            nameTR: columns[1],
+            calories: calories,
+            protein: protein,
+            carbs: carbs,
+            fat: fat,
+            category: categoryEnum
+        )
+        
+        // Set brand if not empty
+        if !columns[2].isEmpty {
+            food.brand = columns[2]
         }
+        
+        // Optional serving columns
+        if columns.count >= 9 {
+            let s = columns[8].trimmingCharacters(in: .whitespaces)
+            if let g = Double(s), g > 0 { food.servingSizeGrams = g }
+        }
+        if columns.count >= 10 {
+            let label = columns[9].trimmingCharacters(in: .whitespaces)
+            if !label.isEmpty { food.servingName = label }
+        }
+        
+        return food
     }
     
     // MARK: - Clear Database (for testing)
@@ -338,7 +532,31 @@ class DataSeeder {
             exercises.forEach { modelContext.delete($0) }
         }
         try? modelContext.save()
-        print("🗑️ Exercises cleared (foods preserved)")
+        Logger.info("Exercises cleared (foods preserved)")
+    }
+}
+
+// MARK: - DataSeederError
+enum DataSeederError: Error, LocalizedError {
+    case fileNotFound(String)
+    case emptyFile(String)
+    case invalidDataFormat(String)
+    case parsingError(String)
+    case databaseError(String)
+    
+    var errorDescription: String? {
+        switch self {
+        case .fileNotFound(let filename):
+            return "File not found: \(filename)"
+        case .emptyFile(let filename):
+            return "File is empty: \(filename)"
+        case .invalidDataFormat(let message):
+            return "Invalid data format: \(message)"
+        case .parsingError(let message):
+            return "Parsing error: \(message)"
+        case .databaseError(let message):
+            return "Database error: \(message)"
+        }
     }
 }
 
@@ -376,12 +594,12 @@ extension DataSeeder {
         if updatedCount > 0 {
             do {
                 try modelContext.save()
-                print("🔧 Normalized olympic categories for \(updatedCount) exercises.")
+                Logger.info("Normalized olympic categories for \(updatedCount) exercises.")
             } catch {
-                print("❌ Failed to normalize olympic categories: \(error)")
+                Logger.error("Failed to normalize olympic categories: \(error)")
             }
         } else {
-            print("ℹ️ Olympic category normalization: no changes needed.")
+            Logger.info("Olympic category normalization: no changes needed.")
         }
     }
 }
@@ -403,8 +621,16 @@ extension DataSeeder {
             }
         }
 
-        if updated > 0 { try? modelContext.save(); print("🔧 Normalized exercise categories (other→strength): updated=\(updated)") }
-        else { print("ℹ️ Exercise category normalization: no changes needed.") }
+        if updated > 0 { 
+            do {
+                try modelContext.save()
+                Logger.info("Normalized exercise categories (other→strength): updated=\(updated)")
+            } catch {
+                Logger.error("Failed to save normalized exercise categories: \(error)")
+            }
+        } else { 
+            Logger.info("Exercise category normalization: no changes needed.") 
+        }
     }
 }
 
@@ -435,34 +661,56 @@ extension FoodCategory {
 // MARK: - Food Aliases Seed
 extension DataSeeder {
     @MainActor
-    static func seedFoodAliasesIfNeeded(modelContext: ModelContext) {
+    static func seedFoodAliasesIfNeeded(modelContext: ModelContext) async {
         // Prevent over-seeding by checking any existing alias
         let aliasDescriptor = FetchDescriptor<FoodAlias>()
         let aliasCount = (try? modelContext.fetchCount(aliasDescriptor)) ?? 0
         if aliasCount > 0 { return }
 
-        // Minimal alias map: term (TR) -> English canonical search key
-        let aliasMap: [String: [String]] = [
-            "tavuk göğsü": ["chicken breast"],
-            "tavuk": ["chicken"],
-            "pirinç": ["rice"],
-            "esmer pirinç": ["brown rice"],
-            "bulgur": ["bulgur"],
-            "yulaf": ["oat", "oats"],
-            "ekmek": ["bread"],
-            "makarna": ["pasta", "spaghetti"],
-            "ton balığı": ["tuna"],
-            "somon": ["salmon"],
-            "yoğurt": ["yogurt", "yoghurt"],
-            "süt": ["milk"],
-            "peynir": ["cheese"],
-            "badem": ["almond"],
-            "fındık": ["hazelnut"],
-            "ceviz": ["walnut"],
-            "muz": ["banana"],
-            "çilek": ["strawberry"],
-            "domates": ["tomato"],
-            "elma": ["apple"],
+        // Minimal alias map: term (language) -> English canonical search key
+        let aliasMap: [String: (language: String, searchKeys: [String])] = [
+            // Turkish aliases
+            "tavuk göğsü": (language: "tr", searchKeys: ["chicken breast"]),
+            "tavuk": (language: "tr", searchKeys: ["chicken"]),
+            "pirinç": (language: "tr", searchKeys: ["rice"]),
+            "esmer pirinç": (language: "tr", searchKeys: ["brown rice"]),
+            "bulgur": (language: "tr", searchKeys: ["bulgur"]),
+            "yulaf": (language: "tr", searchKeys: ["oat", "oats"]),
+            "ekmek": (language: "tr", searchKeys: ["bread"]),
+            "makarna": (language: "tr", searchKeys: ["pasta", "spaghetti"]),
+            "ton balığı": (language: "tr", searchKeys: ["tuna"]),
+            "somon": (language: "tr", searchKeys: ["salmon"]),
+            "yoğurt": (language: "tr", searchKeys: ["yogurt", "yoghurt"]),
+            "süt": (language: "tr", searchKeys: ["milk"]),
+            "peynir": (language: "tr", searchKeys: ["cheese"]),
+            "badem": (language: "tr", searchKeys: ["almond"]),
+            "fındık": (language: "tr", searchKeys: ["hazelnut"]),
+            "ceviz": (language: "tr", searchKeys: ["walnut"]),
+            "muz": (language: "tr", searchKeys: ["banana"]),
+            "çilek": (language: "tr", searchKeys: ["strawberry"]),
+            "domates": (language: "tr", searchKeys: ["tomato"]),
+            "elma": (language: "tr", searchKeys: ["apple"]),
+            
+            // Spanish aliases
+            "pechuga de pollo": (language: "es", searchKeys: ["chicken breast"]),
+            "pollo": (language: "es", searchKeys: ["chicken"]),
+            "arroz": (language: "es", searchKeys: ["rice"]),
+            "arroz integral": (language: "es", searchKeys: ["brown rice"]),
+            "avena": (language: "es", searchKeys: ["oat", "oats"]),
+            "pan": (language: "es", searchKeys: ["bread"]),
+            "pasta": (language: "es", searchKeys: ["pasta", "spaghetti"]),
+            "atún": (language: "es", searchKeys: ["tuna"]),
+            "salmón": (language: "es", searchKeys: ["salmon"]),
+            "yogur": (language: "es", searchKeys: ["yogurt", "yoghurt"]),
+            "leche": (language: "es", searchKeys: ["milk"]),
+            "queso": (language: "es", searchKeys: ["cheese"]),
+            "almendra": (language: "es", searchKeys: ["almond"]),
+            "avellana": (language: "es", searchKeys: ["hazelnut"]),
+            "nuez": (language: "es", searchKeys: ["walnut"]),
+            "plátano": (language: "es", searchKeys: ["banana"]),
+            "fresa": (language: "es", searchKeys: ["strawberry"]),
+            "tomate": (language: "es", searchKeys: ["tomato"]),
+            "manzana": (language: "es", searchKeys: ["apple"]),
         ]
 
         // Build index of foods by normalized EN name for fast linking
@@ -471,75 +719,23 @@ extension DataSeeder {
         let idx: [String: [Food]] = Dictionary(grouping: foods, by: { $0.nameEN.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() })
 
         var created = 0
-        for (trTerm, enKeys) in aliasMap {
-            for key in enKeys {
+        for (term, aliasInfo) in aliasMap {
+            for key in aliasInfo.searchKeys {
                 let enKey = key.lowercased()
                 guard let targets = idx[enKey] else { continue }
                 for food in targets.prefix(10) { // limit excessive linking
-                    let alias = FoodAlias(term: trTerm, language: "tr", food: food)
+                    let alias = FoodAlias(term: term, language: aliasInfo.language, food: food)
                     modelContext.insert(alias)
                     created += 1
                 }
             }
         }
 
-        try? modelContext.save()
-        print("✅ Seeded Food Aliases: created=\(created)")
-    }
-    
-    // MARK: - Seed CrossFit Movements
-    private static func seedCrossFitMovementsIfNeeded(modelContext: ModelContext) {
-        // Check if CrossFit movements already exist
-        var descriptor = FetchDescriptor<Exercise>()
-        descriptor.predicate = #Predicate<Exercise> { exercise in
-            exercise.category == "CrossFit"
-        }
-        
-        guard let existingMovements = try? modelContext.fetch(descriptor),
-              existingMovements.isEmpty else {
-            print("ℹ️ CrossFit movements already seeded")
-            return
-        }
-        
-        guard let url = Bundle.main.url(forResource: "crossfit_movements", withExtension: "csv"),
-              let csvData = try? String(contentsOf: url, encoding: .utf8) else {
-            print("❌ crossfit_movements.csv not found")
-            return
-        }
-        
-        let rows = csvData.components(separatedBy: .newlines)
-        var successCount = 0
-        
-        for (index, row) in rows.enumerated() {
-            if index == 0 || row.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty { continue }
-            let columns = parseCSVRow(row)
-            if columns.count < 8 { continue }
-            
-            let nameEN = columns[0].trimmingCharacters(in: .whitespaces)
-            let nameTR = columns[1].trimmingCharacters(in: .whitespaces)
-            _ = columns[2].trimmingCharacters(in: .whitespaces) // Category from CSV not used, defaulting to CrossFit
-            let equipment = columns[3].trimmingCharacters(in: .whitespaces)
-            
-            let exercise = Exercise(
-                nameEN: nameEN,
-                nameTR: nameTR.isEmpty ? nameEN : nameTR,
-                category: "CrossFit",
-                equipment: equipment
-            )
-            exercise.supportsWeight = columns[4].lowercased() == "true"
-            exercise.supportsReps = columns[5].lowercased() == "true"
-            exercise.supportsTime = columns[6].lowercased() == "true"
-            exercise.supportsDistance = columns[7].lowercased() == "true"
-            
-            modelContext.insert(exercise)
-            successCount += 1
-        }
-        
         do {
             try modelContext.save()
-            print("✅ Seeded CrossFit movements: total=\(successCount)")
+            Logger.success("Seeded Food Aliases: created=\(created)")
         } catch {
-            print("❌ Error saving CrossFit movements: \(error)")
+            Logger.error("Failed to save food aliases: \(error)")
         }
     }
 }
@@ -572,10 +768,14 @@ extension DataSeeder {
         }
 
         if updated > 0 {
-            try? modelContext.save()
-            print("🔧 Normalized food data: updated=\(updated)")
+            do {
+                try modelContext.save()
+                Logger.info("Normalized food data: updated=\(updated)")
+            } catch {
+                Logger.error("Failed to save normalized food data: \(error)")
+            }
         } else {
-            print("ℹ️ Food normalization: no changes needed.")
+            Logger.info("Food normalization: no changes needed.")
         }
     }
 
@@ -607,4 +807,698 @@ extension DataSeeder {
         if matches("zeytinya[gğ][ıi]|ya[gğ][ıi]|ket[çc]ap|mayonez|sal[cç]a|sirke|sos|hardal|vinegar|olive oil|oil") { return .condiments }
         return nil
     }
+    
+    // MARK: - Seed Benchmark WODs
+    private static func seedBenchmarkWODsIfNeeded(modelContext: ModelContext) async throws {
+        // Check if benchmark WODs already exist
+        let descriptor = FetchDescriptor<WOD>(predicate: #Predicate<WOD> { !$0.isCustom })
+        let existingWODs = (try? modelContext.fetch(descriptor)) ?? []
+        
+        // Force re-seed if existing WODs have incorrect categories
+        let needsReseed = existingWODs.contains { wod in
+            wod.category == "The Girls" || wod.category == "Hero WODs"
+        }
+        
+        if !existingWODs.isEmpty && !needsReseed {
+            Logger.success("Benchmark WODs already present: \(existingWODs.count)")
+            return
+        }
+        
+        // Delete existing benchmark WODs if they need re-seeding
+        if needsReseed {
+            Logger.info("Re-seeding benchmark WODs due to category mismatch...")
+            for wod in existingWODs {
+                modelContext.delete(wod)
+            }
+        }
+        
+        Logger.info("Seeding benchmark WODs from CSV...")
+        await Task.yield() // Keep UI responsive
+        try await seedBenchmarkWODsFromCSV(modelContext: modelContext)
+    }
+    
+    private static func seedBenchmarkWODsFromCSV(modelContext: ModelContext) async throws {
+        do {
+            let rows = try CSVParser.parseCSVFile("benchmark_wods")
+            guard rows.count > 1 else { return } // Skip empty file
+            
+            let headers = rows[0]
+            var created = 0
+            
+            for (index, values) in rows.enumerated() {
+                if index == 0 { continue } // Skip header
+                guard values.count >= headers.count else { continue }
+                
+                // Create dictionary from headers and values
+                let row = Dictionary(uniqueKeysWithValues: zip(headers, values))
+                
+                // Extract basic WOD info
+                guard let name = row["name"], !name.isEmpty,
+                      let type = row["type"], !type.isEmpty,
+                      let categoryStr = row["category"] else { continue }
+                
+                // Convert type
+                let wodType = WODType(rawValue: type) ?? .custom
+                
+                // Create WOD
+                let wod = WOD(
+                    name: name,
+                    type: wodType,
+                    category: categoryStr,
+                    repScheme: parseRepScheme(row["repScheme"]),
+                    timeCap: parseTimeCap(row["timeCap"]),
+                    isCustom: false
+                )
+                
+                // Add movements
+                addMovementsFromCSV(to: wod, from: row)
+                
+                modelContext.insert(wod)
+                created += 1
+                
+                // Yield periodically
+                if created % SeedingConfig.yieldInterval == 0 {
+                    await Task.yield()
+                }
+            }
+            
+            try modelContext.save()
+            Logger.success("Created \(created) benchmark WODs")
+            
+        } catch {
+            Logger.error("Failed to seed benchmark WODs: \(error)")
+            throw error
+        }
+    }
+    
+    private static func parseRepScheme(_ repSchemeStr: String?) -> [Int] {
+        guard let repSchemeStr = repSchemeStr, !repSchemeStr.isEmpty else { return [] }
+        return repSchemeStr.components(separatedBy: ",")
+            .compactMap { Int($0.trimmingCharacters(in: .whitespacesAndNewlines)) }
+    }
+    
+    private static func parseTimeCap(_ timeCapStr: String?) -> Int? {
+        guard let timeCapStr = timeCapStr, !timeCapStr.isEmpty else { return nil }
+        return Int(timeCapStr)
+    }
+    
+    private static func addMovementsFromCSV(to wod: WOD, from row: [String: String]) {
+        for i in 1...4 { // Support up to 4 movements
+            guard let movementName = row["movement\(i)"], !movementName.isEmpty else { continue }
+            
+            let movement = WODMovement(
+                name: movementName,
+                rxWeightMale: row["rxMale\(i)"],
+                rxWeightFemale: row["rxFemale\(i)"],
+                reps: Int(row["reps\(i)"] ?? ""),
+                orderIndex: i - 1
+            )
+            
+            movement.wod = wod
+            wod.movements.append(movement)
+        }
+    }
+    
+    // MARK: - Seed CrossFit Movements from CSV
+    private static func seedCrossFitMovementsFromCSVIfNeeded(modelContext: ModelContext) async throws {
+        // Check if CrossFit movements already exist
+        let descriptor = FetchDescriptor<CrossFitMovement>()
+        let existingCount = (try? modelContext.fetchCount(descriptor)) ?? 0
+        
+        if existingCount > 0 {
+            Logger.success("CrossFit movements already present: \(existingCount)")
+            return
+        }
+        
+        Logger.info("Seeding CrossFit movements from CSV...")
+        try await seedCrossFitMovementsFromCSV(modelContext: modelContext)
+    }
+    
+    private static func seedCrossFitMovementsFromCSV(modelContext: ModelContext) async throws {
+        do {
+            let rows = try CSVParser.parseCSVFile("crossfit_movements")
+            guard rows.count > 1 else { return } // Skip empty file
+            
+            let headers = rows[0]
+            var created = 0
+            
+            for (index, values) in rows.enumerated() {
+                if index == 0 { continue } // Skip header
+                guard values.count >= headers.count else { continue }
+                
+                // Create dictionary from headers and values
+                let row = Dictionary(uniqueKeysWithValues: zip(headers, values))
+                
+                // Extract movement info
+                guard let nameEN = row["nameEN"], !nameEN.isEmpty,
+                      let category = row["category"], !category.isEmpty,
+                      let equipment = row["equipment"] else { continue }
+                
+                let movement = CrossFitMovement(
+                    nameEN: nameEN,
+                    nameTR: row["nameTR"] ?? nameEN,
+                    category: category,
+                    equipment: equipment,
+                    rxWeightMale: parseEmptyString(row["rxWeightMale"]),
+                    rxWeightFemale: parseEmptyString(row["rxWeightFemale"]),
+                    supportsWeight: parseBool(row["supportsWeight"]),
+                    supportsReps: parseBool(row["supportsReps"]),
+                    supportsTime: parseBool(row["supportsTime"]),
+                    supportsDistance: parseBool(row["supportsDistance"]),
+                    wodSuitability: parseInt(row["wodSuitability"]) ?? 10,
+                    instructions: parseEmptyString(row["instructions"]),
+                    scalingNotes: parseEmptyString(row["scalingNotes"])
+                )
+                
+                modelContext.insert(movement)
+                created += 1
+                
+                // Yield periodically
+                if created % SeedingConfig.yieldInterval == 0 {
+                    await Task.yield()
+                }
+            }
+            
+            try modelContext.save()
+            Logger.success("Created \(created) CrossFit movements")
+            
+        } catch {
+            Logger.error("Failed to seed CrossFit movements: \(error)")
+            throw error
+        }
+    }
+    
+    private static func parseEmptyString(_ str: String?) -> String? {
+        guard let str = str, !str.isEmpty else { return nil }
+        return str
+    }
+    
+    private static func parseBool(_ str: String?) -> Bool {
+        return str?.lowercased() == "true"
+    }
+    
+    private static func parseInt(_ str: String?) -> Int? {
+        guard let str = str, !str.isEmpty else { return nil }
+        return Int(str)
+    }
+    
+    // MARK: - Seed Benchmark Lifts
+    private static func seedBenchmarkLiftsIfNeeded(modelContext: ModelContext) async throws {
+        // Check if benchmark lifts already exist
+        let descriptor = FetchDescriptor<Lift>(predicate: #Predicate<Lift> { !$0.isCustom })
+        let existingLifts = (try? modelContext.fetch(descriptor)) ?? []
+        
+        if !existingLifts.isEmpty {
+            Logger.success("Benchmark lifts already present: \(existingLifts.count)")
+            return
+        }
+        
+        Logger.info("Seeding benchmark lifts from CSV...")
+        try await seedBenchmarkLiftsFromCSV(modelContext: modelContext)
+    }
+    
+    private static func seedBenchmarkLiftsFromCSV(modelContext: ModelContext) async throws {
+        do {
+            let rows = try CSVParser.parseCSVFile("benchmark_lifts")
+            guard rows.count > 1 else { return }
+            
+            let headers = rows[0]
+            var created = 0
+            
+            for (index, values) in rows.enumerated() {
+                if index == 0 { continue } // Skip header
+                guard values.count >= headers.count else { continue }
+                
+                let row = Dictionary(uniqueKeysWithValues: zip(headers, values))
+                
+                // Extract lift info
+                guard let name = row["name"], !name.isEmpty else { continue }
+                
+                let lift = Lift(
+                    name: name,
+                    nameEN: row["nameEN"] ?? name,
+                    nameTR: row["nameTR"] ?? name,
+                    nameES: row["nameES"] ?? name,
+                    nameDE: row["nameDE"] ?? name,
+                    type: row["type"] ?? "strength",
+                    category: row["category"] ?? "benchmark",
+                    description: row["description"] ?? "",
+                    descriptionTR: row["descriptionTR"] ?? "",
+                    descriptionES: row["descriptionES"] ?? "",
+                    descriptionDE: row["descriptionDE"] ?? "",
+                    sets: Int(row["sets"] ?? "5") ?? 5,
+                    reps: Int(row["reps"] ?? "5") ?? 5,
+                    isCustom: false
+                )
+                
+                modelContext.insert(lift)
+                created += 1
+                
+                // Yield periodically
+                if created % SeedingConfig.yieldInterval == 0 {
+                    await Task.yield()
+                }
+            }
+            
+            try modelContext.save()
+            Logger.success("Created \(created) benchmark lifts")
+            
+        } catch {
+            Logger.error("Failed to seed benchmark lifts: \(error)")
+            throw error
+        }
+    }
+    
+    // MARK: - Seed Benchmark Cardios
+    private static func seedBenchmarkCardiosIfNeeded(modelContext: ModelContext) async throws {
+        // Check if cardio workouts already exist
+        let descriptor = FetchDescriptor<CardioWorkout>(predicate: #Predicate<CardioWorkout> { !$0.isCustom })
+        let existingCardios = (try? modelContext.fetch(descriptor)) ?? []
+        
+        if !existingCardios.isEmpty {
+            Logger.success("Cardio workouts already present: \(existingCardios.count)")
+            return
+        }
+        
+        Logger.info("Seeding cardio workouts from CSV...")
+        try await seedCardiosFromCSV(modelContext: modelContext)
+    }
+    
+    private static func seedCardiosFromCSV(modelContext: ModelContext) async throws {
+        do {
+            let rows = try CSVParser.parseCSVFile("cardios")
+            guard rows.count > 1 else { return }
+            
+            let headers = rows[0]
+            var created = 0
+            
+            for (index, values) in rows.enumerated() {
+                if index == 0 { continue } // Skip header
+                guard values.count >= headers.count else { continue }
+                
+                let row = Dictionary(uniqueKeysWithValues: zip(headers, values))
+                
+                // Extract cardio workout info
+                guard let name = row["name"], !name.isEmpty else { continue }
+                
+                // Parse equipment array from JSON-like string
+                let equipmentString = row["equipment"] ?? "[]"
+                let equipment = parseEquipmentArray(equipmentString)
+                
+                let workout = CardioWorkout(
+                    name: name,
+                    nameEN: row["nameEN"] ?? name,
+                    nameTR: row["nameTR"] ?? name,
+                    nameES: row["nameES"] ?? name,
+                    nameDE: row["nameDE"] ?? name,
+                    type: "exercise", // All are exercise types now
+                    category: row["category"] ?? "exercise",
+                    description: row["description"] ?? "",
+                    descriptionTR: row["descriptionTR"] ?? "",
+                    descriptionES: row["descriptionES"] ?? "",
+                    descriptionDE: row["descriptionDE"] ?? "",
+                    targetDistance: nil, // No predetermined targets
+                    targetTime: nil, // No predetermined targets
+                    estimatedCalories: nil, // Will be calculated per session
+                    difficulty: "any", // Exercise types work for any level
+                    equipment: equipment,
+                    isTemplate: true,
+                    isCustom: false
+                )
+                
+                // Add default exercise for this exercise type
+                if let exerciseType = row["exerciseType"], !exerciseType.isEmpty {
+                    let exercise = CardioExercise(
+                        name: name,
+                        exerciseType: exerciseType,
+                        targetDistance: nil, // User will set per session
+                        targetTime: nil, // User will set per session
+                        equipment: equipment.first ?? "outdoor"
+                    )
+                    workout.addExercise(exercise)
+                }
+                
+                modelContext.insert(workout)
+                created += 1
+                
+                // Yield periodically
+                if created % SeedingConfig.yieldInterval == 0 {
+                    await Task.yield()
+                }
+            }
+            
+            try modelContext.save()
+            Logger.success("Created \(created) cardio workouts")
+            
+        } catch {
+            Logger.error("Failed to seed cardio workouts: \(error)")
+            throw error
+        }
+    }
+    
+    // MARK: - Helper Methods
+    private static func parseEquipmentArray(_ equipmentString: String) -> [String] {
+        // Parse JSON-like array string: ["outdoor", "treadmill"]
+        let cleaned = equipmentString
+            .replacingOccurrences(of: "[", with: "")
+            .replacingOccurrences(of: "]", with: "")
+            .replacingOccurrences(of: "\"", with: "")
+            .replacingOccurrences(of: " ", with: "")
+        
+        if cleaned.isEmpty {
+            return ["outdoor"] // Default equipment
+        }
+        
+        return cleaned.components(separatedBy: ",").filter { !$0.isEmpty }
+    }
+}
+
+// MARK: - JSON-Based Lift Programs
+extension DataSeeder {
+    
+    // MARK: - JSON Parsing Models
+    struct JSONLiftProgram: Codable {
+        let metadata: JSONProgramMetadata
+        let progression: JSONProgression
+        let workouts: [JSONWorkout]
+        let schedule: JSONSchedule
+    }
+    
+    struct JSONProgramMetadata: Codable {
+        let id: String
+        let name: LocalizedString
+        let description: LocalizedString
+        let weeks: Int
+        let daysPerWeek: Int
+        let level: String
+        let category: String
+        let isCustom: Bool
+        let author: String?
+        let version: String
+    }
+    
+    struct LocalizedString: Codable {
+        let en: String
+        let tr: String
+    }
+    
+    struct JSONProgression: Codable {
+        let type: String
+        let increment: Double
+        let unit: String
+        let deloadThreshold: Int
+        let deloadPercentage: Int
+        let notes: LocalizedString
+    }
+    
+    struct JSONWorkout: Codable {
+        let id: String
+        let name: LocalizedString
+        let dayNumber: Int
+        let estimatedDuration: Int
+        let exercises: [JSONExercise]
+    }
+    
+    struct JSONExercise: Codable {
+        let id: String
+        let exerciseName: String
+        let exerciseNameTR: String
+        let orderIndex: Int
+        let targetSets: Int
+        let targetReps: Int
+        let targetWeight: Double?
+        let restTime: Int
+        let isWarmup: Bool
+        let notes: LocalizedString
+        let progression: JSONExerciseProgression
+    }
+    
+    struct JSONExerciseProgression: Codable {
+        let type: String
+        let increment: Double
+    }
+    
+    struct JSONSchedule: Codable {
+        let pattern: String
+        let restDays: Int
+        let notes: LocalizedString
+    }
+    
+    // MARK: - JSON Loading Functions
+    @MainActor
+    static func seedLiftProgramsFromJSONIfNeeded(modelContext: ModelContext) async throws {
+        // Check if lift programs already exist
+        let descriptor = FetchDescriptor<LiftProgram>(predicate: #Predicate<LiftProgram> { !$0.isCustom })
+        let existingPrograms = (try? modelContext.fetch(descriptor)) ?? []
+        
+        if !existingPrograms.isEmpty {
+            Logger.success("Lift programs already seeded: \(existingPrograms.count)")
+            return
+        }
+        
+        Logger.info("Loading lift programs from JSON files...")
+        try await loadLiftProgramsFromJSON(modelContext: modelContext)
+    }
+    
+    @MainActor
+    private static func loadLiftProgramsFromJSON(modelContext: ModelContext) async throws {
+        // Try different ways to find the LiftPrograms folder
+        var programsURL: URL?
+        
+        // First try: Resources/LiftPrograms
+        if let resourcesURL = Bundle.main.url(forResource: "Resources", withExtension: nil) {
+            programsURL = resourcesURL.appendingPathComponent("LiftPrograms")
+        }
+        
+        // Second try: Direct LiftPrograms folder in bundle
+        if programsURL == nil || !FileManager.default.fileExists(atPath: programsURL!.path) {
+            programsURL = Bundle.main.url(forResource: "LiftPrograms", withExtension: nil)
+        }
+        
+        // Third try: Look for specific JSON file to find the folder
+        if programsURL == nil {
+            if let jsonURL = Bundle.main.url(forResource: "stronglifts5x5", withExtension: "json") {
+                programsURL = jsonURL.deletingLastPathComponent()
+            }
+        }
+        
+        guard let finalURL = programsURL, 
+              FileManager.default.fileExists(atPath: finalURL.path) else {
+            throw DataSeederError.fileNotFound("LiftPrograms folder")
+        }
+        
+        do {
+            let fileURLs = try FileManager.default.contentsOfDirectory(
+                at: finalURL,
+                includingPropertiesForKeys: nil,
+                options: .skipsHiddenFiles
+            ).filter { $0.pathExtension == "json" }
+            
+            var loadedCount = 0
+            var exerciseResolver = ExerciseResolver()
+            
+            for fileURL in fileURLs {
+                if let program = try await loadSingleProgramFromJSON(
+                    fileURL: fileURL, 
+                    modelContext: modelContext,
+                    exerciseResolver: &exerciseResolver
+                ) {
+                    modelContext.insert(program)
+                    loadedCount += 1
+                    Logger.info("Loaded program: \(program.localizedName)")
+                }
+            }
+            
+            try modelContext.save()
+            Logger.success("Successfully loaded \(loadedCount) lift programs from JSON")
+            
+        } catch {
+            Logger.error("Failed to load lift programs from JSON: \(error)")
+            throw error
+        }
+    }
+    
+    @MainActor
+    private static func loadSingleProgramFromJSON(
+        fileURL: URL, 
+        modelContext: ModelContext,
+        exerciseResolver: inout ExerciseResolver
+    ) async throws -> LiftProgram? {
+        do {
+            let data = try Data(contentsOf: fileURL)
+            let jsonProgram = try JSONDecoder().decode(JSONLiftProgram.self, from: data)
+            
+            // Create LiftProgram from JSON
+            let program = LiftProgram(
+                name: jsonProgram.metadata.name.en,
+                nameEN: jsonProgram.metadata.name.en,
+                nameTR: jsonProgram.metadata.name.tr,
+                description: jsonProgram.metadata.description.en,
+                descriptionEN: jsonProgram.metadata.description.en,
+                descriptionTR: jsonProgram.metadata.description.tr,
+                weeks: jsonProgram.metadata.weeks,
+                daysPerWeek: jsonProgram.metadata.daysPerWeek,
+                level: jsonProgram.metadata.level,
+                category: jsonProgram.metadata.category,
+                isCustom: jsonProgram.metadata.isCustom
+            )
+            
+            // Create workouts from JSON
+            for jsonWorkout in jsonProgram.workouts {
+                let workout = LiftWorkout(
+                    name: jsonWorkout.name.en,
+                    nameEN: jsonWorkout.name.en,
+                    nameTR: jsonWorkout.name.tr,
+                    dayNumber: jsonWorkout.dayNumber,
+                    estimatedDuration: jsonWorkout.estimatedDuration,
+                    isTemplate: false, // Program workout'ları template değil
+                    isCustom: false
+                )
+                
+                // Create exercises from JSON with proper ID resolution
+                for jsonExercise in jsonWorkout.exercises {
+                    // Try to resolve the exercise ID from the database
+                    let exerciseID = exerciseResolver.resolveExerciseID(
+                        name: jsonExercise.exerciseName, 
+                        modelContext: modelContext
+                    )
+                    
+                    let exercise = LiftExercise(
+                        exerciseId: exerciseID ?? UUID(), // Fallback to UUID if not found
+                        exerciseName: jsonExercise.exerciseName,
+                        orderIndex: jsonExercise.orderIndex,
+                        targetSets: jsonExercise.targetSets,
+                        targetReps: jsonExercise.targetReps,
+                        targetWeight: jsonExercise.targetWeight,
+                        restTime: jsonExercise.restTime,
+                        isWarmup: jsonExercise.isWarmup
+                    )
+                    
+                    workout.addExercise(exercise)
+                }
+                
+                program.addWorkout(workout)
+            }
+            
+            return program
+            
+        } catch {
+            Logger.error("Failed to parse JSON file \(fileURL.lastPathComponent): \(error)")
+            return nil
+        }
+    }
+    
+    // MARK: - Routine Template Seeding
+    @MainActor
+    static func seedRoutineTemplatesIfNeeded(modelContext: ModelContext) async throws {
+        // Check if routine templates already exist
+        let descriptor = FetchDescriptor<LiftWorkout>(
+            predicate: #Predicate<LiftWorkout> { $0.isTemplate && !$0.isCustom }
+        )
+        let existingTemplates = (try? modelContext.fetch(descriptor)) ?? []
+        
+        if !existingTemplates.isEmpty {
+            Logger.success("Routine templates already present: \(existingTemplates.count)")
+            return
+        }
+        
+        Logger.info("Loading routine templates from JSON...")
+        try await loadRoutineTemplatesFromJSON(modelContext: modelContext)
+    }
+    
+    @MainActor
+    private static func loadRoutineTemplatesFromJSON(modelContext: ModelContext) async throws {
+        do {
+            let routineData = try CSVParser.parseJSONFile("routine_templates", as: RoutineTemplateData.self)
+            var createdCount = 0
+            var exerciseResolver = ExerciseResolver()
+            
+            for template in routineData.templates {
+                if let workout = try await createWorkoutFromTemplate(
+                    template, 
+                    modelContext: modelContext,
+                    exerciseResolver: &exerciseResolver
+                ) {
+                    modelContext.insert(workout)
+                    createdCount += 1
+                }
+            }
+            
+            try modelContext.save()
+            Logger.success("Created \(createdCount) routine templates")
+            
+        } catch {
+            Logger.error("Failed to parse routine templates JSON: \(error)")
+            throw error
+        }
+    }
+    
+    private static func createWorkoutFromTemplate(
+        _ template: RoutineTemplate, 
+        modelContext: ModelContext,
+        exerciseResolver: inout ExerciseResolver
+    ) async throws -> LiftWorkout? {
+        let workout = LiftWorkout(
+            name: template.name,
+            nameEN: template.nameEN,
+            nameTR: template.nameTR,
+            estimatedDuration: template.estimatedDuration,
+            isTemplate: true,
+            isCustom: false
+        )
+        
+        // Get all available exercises from database
+        let exerciseDescriptor = FetchDescriptor<Exercise>()
+        let availableExercises = (try? modelContext.fetch(exerciseDescriptor)) ?? []
+        let exerciseDict = Dictionary(uniqueKeysWithValues: availableExercises.map { ($0.nameEN, $0) })
+        
+        for (index, exerciseName) in template.exercises.enumerated() {
+            // Try to find the exercise in the database
+            if let exercise = exerciseDict[exerciseName] {
+                let liftExercise = LiftExercise(
+                    exerciseId: exercise.id,
+                    exerciseName: exercise.nameEN,
+                    orderIndex: index
+                )
+                workout.addExercise(liftExercise)
+            } else {
+                // If not found, try to resolve by name
+                if let exerciseID = exerciseResolver.resolveExerciseID(
+                    name: exerciseName, 
+                    modelContext: modelContext
+                ) {
+                    let liftExercise = LiftExercise(
+                        exerciseId: exerciseID,
+                        exerciseName: exerciseName,
+                        orderIndex: index
+                    )
+                    workout.addExercise(liftExercise)
+                } else {
+                    Logger.warning("Exercise '\(exerciseName)' not found in database for template '\(template.name)'")
+                    continue
+                }
+            }
+        }
+        
+        return workout.exercises.isEmpty ? nil : workout
+    }
+}
+
+// MARK: - Routine Template JSON Models
+private struct RoutineTemplateData: Codable {
+    let templates: [RoutineTemplate]
+}
+
+private struct RoutineTemplate: Codable {
+    let id: String
+    let name: String
+    let nameEN: String
+    let nameTR: String
+    let nameES: String?
+    let nameDE: String?
+    let category: String
+    let estimatedDuration: Int
+    let isTemplate: Bool
+    let isCustom: Bool
+    let exercises: [String]
 }

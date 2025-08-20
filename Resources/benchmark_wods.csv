@@ -1,0 +1,20 @@
+name,nameEN,nameTR,type,category,description,descriptionTR,timeCap,rounds,movement1,rxMale1,rxFemale1,reps1,movement2,rxMale2,rxFemale2,reps2,movement3,rxMale3,rxFemale3,reps3,movement4,rxMale4,rxFemale4,reps4,repScheme
+Fran,Fran,Fran,for_time,girls,"21-15-9 reps for time","21-15-9 tekrar süreye karşı",,,"Thrusters","43kg","30kg",,"Pull-ups",,,,,,,,,,,"21,15,9"
+Grace,Grace,Grace,for_time,girls,"30 reps for time","30 tekrar süreye karşı",,,"Clean and Jerk","61kg","43kg","30",,,,,,,,,,,,
+Helen,Helen,Helen,for_time,girls,"3 rounds for time","3 tur süreye karşı",,3,"400m Run",,,1,"Kettlebell Swings","24kg","16kg","21","Pull-ups",,,12,,,,,
+Diane,Diane,Diane,for_time,girls,"21-15-9 reps for time","21-15-9 tekrar süreye karşı",,,"Deadlifts","102kg","70kg",,"Handstand Push-ups",,,,,,,,,,,"21,15,9"
+Cindy,Cindy,Cindy,amrap,girls,"AMRAP in 20 minutes","20 dakika AMRAP","1200",,"Pull-ups",,,5,"Push-ups",,,10,"Air Squats",,,15,,,,,
+Annie,Annie,Annie,for_time,girls,"50-40-30-20-10 reps for time","50-40-30-20-10 tekrar süreye karşı",,,"Double-unders",,,,,"Sit-ups",,,,,,,,,,,"50,40,30,20,10"
+Christine,Christine,Christine,for_time,girls,"3 rounds for time","3 tur süreye karşı",,3,"500m Row",,,1,"Deadlifts (BW)",,,"12","Box Jumps","21""","21""","21",,,,,
+Kelly,Kelly,Kelly,for_time,girls,"5 rounds for time","5 tur süreye karşı",,5,"400m Run",,,1,"Box Jumps","24""","20""","30","Wall Balls","9kg","6kg","30",,,,,
+Barbara,Barbara,Barbara,for_time,girls,"5 rounds for time","5 tur süreye karşı",,5,"Pull-ups",,,20,"Push-ups",,,30,"Sit-ups",,,40,"Air Squats",,,50,,
+Elizabeth,Elizabeth,Elizabeth,for_time,girls,"21-15-9 reps for time","21-15-9 tekrar süreye karşı",,,"Clean","61kg","43kg",,"Ring Dips",,,,,,,,,,,"21,15,9"
+Isabel,Isabel,Isabel,for_time,girls,"30 reps for time","30 tekrar süreye karşı",,,"Snatch","61kg","43kg","30",,,,,,,,,,,,
+Karen,Karen,Karen,for_time,girls,"150 reps for time","150 tekrar süreye karşı",,,"Wall Balls","9kg","6kg","150",,,,,,,,,,,,
+Jackie,Jackie,Jackie,for_time,girls,"For time","Süreye karşı",,,"1000m Row",,,1,"Thrusters","20kg","15kg","50","Pull-ups",,,30,,,,,
+Nancy,Nancy,Nancy,for_time,girls,"5 rounds for time","5 tur süreye karşı",,5,"400m Run",,,1,"Overhead Squats","43kg","30kg","15",,,,,,,,,,
+Linda,Linda,Linda,for_time,girls,"10-9-8-7-6-5-4-3-2-1 reps","10-9-8-7-6-5-4-3-2-1 tekrar",,,"Deadlifts","1.5xBW","1.5xBW",,"Bench Press","BW","BW",,"Clean","0.75xBW","0.75xBW",,,,,"10,9,8,7,6,5,4,3,2,1"
+Murph,Murph,Murph,for_time,heroes,"For time with 9kg/6kg vest","9kg/6kg yelek ile süreye karşı",,,"1 Mile Run",,,1,"Pull-ups",,,100,"Push-ups",,,200,"Air Squats",,,300,"1 Mile Run",,,1
+DT,DT,DT,for_time,heroes,"5 rounds for time","5 tur süreye karşı",,5,"Deadlifts","70kg","48kg","12","Hang Power Cleans","70kg","48kg","9","Push Jerks","70kg","48kg","6",,,,,
+Kalsu,Kalsu,Kalsu,for_time,heroes,"100 thrusters with 5 burpees EMOM","EMOM 5 burpee ile 100 thruster",,,"Thrusters","61kg","43kg","100","Burpees",,,5,,,,,,,,,,
+Amanda,Amanda,Amanda,for_time,heroes,"9-7-5 reps for time","9-7-5 tekrar süreye karşı",,,"Muscle-ups",,,,,"Squat Snatches","61kg","43kg",,,,,,,,,"9,7,5"

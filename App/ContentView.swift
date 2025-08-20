@@ -50,5 +50,5 @@ struct LocalizationView<Content: View>: View {
 
 #Preview {
     ContentView()
-        .modelContainer(for: [Exercise.self, User.self, Workout.self, WorkoutPart.self, ExerciseSet.self], inMemory: true)
+        .modelContainer(for: [Exercise.self, User.self, LiftSession.self], inMemory: true)
 }

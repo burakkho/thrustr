@@ -158,9 +158,9 @@ struct NutritionView: View {
             } else {
                 // Fallback view if selectedFood is nil
                 VStack {
-                    Text("Hata: Yiyecek seçilmedi")
+                    Text("error.food_not_selected".localized)
                         .font(.headline)
-                    Button("Kapat") {
+                    Button("common.close".localized) {
                         showingMealEntry = false
                     }
                     .buttonStyle(.borderedProminent)

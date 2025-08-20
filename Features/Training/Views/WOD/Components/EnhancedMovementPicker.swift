@@ -4,13 +4,13 @@ import SwiftData
 struct EnhancedMovementPicker: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.theme) private var theme
-    @Query private var exercises: [Exercise]
+    @Query private var crossfitMovements: [CrossFitMovement]
     
     let onAdd: (WODMovementData) -> Void
     
     @State private var searchText = ""
     @State private var selectedCategory = "All"
-    @State private var selectedMovement: Exercise?
+    @State private var selectedMovement: CrossFitMovement?
     @State private var reps = ""
     @State private var rxWeightMale = ""
     @State private var rxWeightFemale = ""
@@ -29,32 +29,26 @@ struct EnhancedMovementPicker: View {
         let notes: String
     }
     
-    // CrossFit specific movements
-    private let crossfitMovements = [
-        "Pull-ups", "Push-ups", "Air Squats", "Burpees",
-        "Box Jumps", "Wall Balls", "Kettlebell Swings",
-        "Double-unders", "Toes-to-bar", "Muscle-ups",
-        "Thrusters", "Clean and Jerk", "Snatches",
-        "Deadlifts", "Front Squats", "Back Squats",
-        "Overhead Squats", "Handstand Push-ups",
-        "Ring Dips", "Ring Rows", "Rope Climbs",
-        "400m Run", "500m Row", "Cal Bike", "Cal Ski"
-    ]
     
     private let categories = [
-        "All", "Gymnastics", "Weightlifting", "Cardio", "Bodyweight"
+        "All", "Gymnastics", "Olympic", "Powerlifting", "Cardio", "Bodyweight", "Functional", "Plyometric"
     ]
     
-    private var filteredMovements: [String] {
-        let allMovements = crossfitMovements + exercises.map { $0.nameTR }
+    private var filteredMovements: [CrossFitMovement] {
+        let categoryFiltered = selectedCategory == "All" ? 
+            crossfitMovements : 
+            crossfitMovements.filter { $0.category == selectedCategory }
         
         if searchText.isEmpty {
-            return Array(Set(allMovements)).sorted()
+            return categoryFiltered.sorted { $0.displayName < $1.displayName }
         }
         
-        return Array(Set(allMovements))
-            .filter { $0.localizedCaseInsensitiveContains(searchText) }
-            .sorted()
+        return categoryFiltered
+            .filter { 
+                $0.displayName.localizedCaseInsensitiveContains(searchText) ||
+                $0.nameEN.localizedCaseInsensitiveContains(searchText)
+            }
+            .sorted { $0.displayName < $1.displayName }
     }
     
     private var mainContent: some View {
@@ -96,17 +90,15 @@ struct EnhancedMovementPicker: View {
                     // Movement List
                     ScrollView {
                         LazyVStack(spacing: theme.spacing.s) {
-                            ForEach(filteredMovements, id: \.self) { movement in
-                                MovementRow(
-                                    name: movement,
+                            ForEach(filteredMovements, id: \.nameEN) { movement in
+                                CrossFitMovementRow(
+                                    movement: movement,
                                     isSelected: false,
                                     onTap: {
-                                        selectedMovement = exercises.first { $0.nameTR == movement }
-                                        if selectedMovement == nil {
-                                            // Create temporary Exercise object for custom movement
-                                            let temp = Exercise(nameEN: movement, nameTR: movement, category: "Custom", equipment: "")
-                                            selectedMovement = temp
-                                        }
+                                        selectedMovement = movement
+                                        // Auto-fill RX weights if available
+                                        rxWeightMale = movement.rxWeightMale ?? ""
+                                        rxWeightFemale = movement.rxWeightFemale ?? ""
                                     }
                                 )
                             }
@@ -123,7 +115,7 @@ struct EnhancedMovementPicker: View {
                                     Text("Selected Movement")
                                         .font(theme.typography.caption)
                                         .foregroundColor(theme.colors.textSecondary)
-                                    Text(selectedMovement?.nameTR ?? "")
+                                    Text(selectedMovement?.displayName ?? "")
                                         .font(theme.typography.headline)
                                         .foregroundColor(theme.colors.textPrimary)
                                 }
@@ -261,7 +253,7 @@ struct EnhancedMovementPicker: View {
         guard let movement = selectedMovement else { return }
         
         let wodMovement = WODMovementData(
-            name: movement.nameTR,
+            name: movement.displayName,
             reps: reps,
             rxWeightMale: rxWeightMale,
             rxWeightFemale: rxWeightFemale,
@@ -296,7 +288,61 @@ private struct MovementCategoryChip: View {
     }
 }
 
-// MARK: - Movement Row
+// MARK: - CrossFit Movement Row
+private struct CrossFitMovementRow: View {
+    let movement: CrossFitMovement
+    let isSelected: Bool
+    let onTap: () -> Void
+    @Environment(\.theme) private var theme
+    
+    var body: some View {
+        Button(action: onTap) {
+            HStack(spacing: theme.spacing.m) {
+                // Category icon
+                Image(systemName: movement.categoryEnum.icon)
+                    .font(.title3)
+                    .foregroundColor(theme.colors.accent)
+                    .frame(width: 24)
+                
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(movement.displayName)
+                        .font(theme.typography.body)
+                        .fontWeight(.medium)
+                        .foregroundColor(theme.colors.textPrimary)
+                    
+                    HStack {
+                        Text(movement.category)
+                            .font(theme.typography.caption2)
+                            .foregroundColor(theme.colors.textSecondary)
+                        
+                        if let rxMale = movement.rxWeightMale {
+                            Text("• RX: \(rxMale)")
+                                .font(theme.typography.caption2)
+                                .foregroundColor(theme.colors.accent)
+                        }
+                        
+                        Text("• WOD: \(movement.wodSuitability)/10")
+                            .font(theme.typography.caption2)
+                            .foregroundColor(movement.wodSuitability >= 8 ? theme.colors.success : theme.colors.warning)
+                    }
+                }
+                
+                Spacer()
+                
+                if isSelected {
+                    Image(systemName: "checkmark.circle.fill")
+                        .foregroundColor(theme.colors.success)
+                }
+            }
+            .padding()
+            .background(theme.colors.cardBackground)
+            .cornerRadius(theme.radius.m)
+        }
+        .buttonStyle(PlainButtonStyle())
+    }
+}
+
+// MARK: - Movement Row (Legacy)
 private struct MovementRow: View {
     let name: String
     let isSelected: Bool

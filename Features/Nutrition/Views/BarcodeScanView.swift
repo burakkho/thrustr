@@ -60,13 +60,13 @@ struct BarcodeScanView: View {
         .onAppear { checkPermission() }
         .alert(LocalizationKeys.Common.error.localized, isPresented: $permissionDenied) {
             Button(LocalizationKeys.Common.close.localized, role: .cancel) { dismiss() }
-            Button("Ayarlar") {
+            Button("camera.settings".localized) {
                 if let url = URL(string: UIApplication.openSettingsURLString) {
                     UIApplication.shared.open(url)
                 }
             }
         } message: {
-            Text("Barkod tarama için kamera izni gereklidir.")
+            Text("camera.permission_required".localized)
         }
         .alert(LocalizationKeys.Common.error.localized, isPresented: .constant(errorMessage != nil)) {
             Button(LocalizationKeys.Common.ok.localized) { errorMessage = nil }

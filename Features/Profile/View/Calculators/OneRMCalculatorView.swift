@@ -6,6 +6,12 @@ struct OneRMCalculatorView: View {
     @State private var selectedFormula: RMFormula = .brzycki
     @State private var calculatedRM: Double?
     
+    let onCalculated: ((Double) -> Void)?
+    
+    init(onCalculated: ((Double) -> Void)? = nil) {
+        self.onCalculated = onCalculated
+    }
+    
     var body: some View {
         ScrollView {
             VStack(spacing: 24) {
@@ -62,7 +68,11 @@ struct OneRMCalculatorView: View {
         guard let weightValue = Double(weight.replacingOccurrences(of: ",", with: ".")),
               let repsValue = Int(reps) else { return }
         
-        calculatedRM = selectedFormula.calculate(weight: weightValue, reps: repsValue)
+        let result = selectedFormula.calculate(weight: weightValue, reps: repsValue)
+        calculatedRM = result
+        
+        // Call the callback if provided
+        onCalculated?(result)
     }
 }
 

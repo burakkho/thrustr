@@ -24,6 +24,183 @@
 "training.newWorkout" = "New Workout";
 "training.history" = "History";
 
+// MARK: - Lift Training
+"training.lift.title" = "Lift Training";
+"training.lift.tabs.workouts" = "Workouts";
+"training.lift.tabs.programs" = "Programs";
+"training.lift.tabs.routines" = "Routines";
+"training.lift.tabs.history" = "History";
+
+// MARK: - Lift Quick Start
+"training.lift.quickStart" = "Quick Start";
+"training.lift.emptyWorkout" = "Empty Workout";
+"training.lift.emptyWorkout.subtitle" = "Add as you go";
+"training.lift.pickRoutine" = "Pick Routine";
+"training.lift.pickRoutine.subtitle" = "From templates";
+"training.lift.startProgram" = "Start Program";
+"training.lift.startProgram.subtitle" = "Structured plan";
+
+// MARK: - Lift Program
+"training.lift.startWorkout" = "START WORKOUT";
+"training.lift.viewDetails" = "View Program Details";
+"training.lift.pauseProgram" = "Pause Program";
+"training.lift.resumeProgram" = "Resume Program";
+"training.lift.browsePrograms" = "Browse Programs";
+"training.lift.browsePrograms.subtitle" = "Get structured workouts and better results";
+
+// MARK: - Routine
+"routine.title" = "Routines";
+"routine.templates" = "Templates";
+"routine.custom" = "Custom";
+"routine.createNew" = "Create New Routine";
+"routine.createNew.subtitle" = "Build custom workout plans";
+"routine.copyCustomize" = "Copy & Customize";
+"routine.ourTemplates" = "Our Templates";
+"routine.myCustomRoutines" = "My Custom Routines";
+"routine.featuredTemplates" = "Featured Templates";
+"routine.favorites" = "Favorites";
+"routine.exercises" = "exercises";
+"routine.empty.custom.title" = "No Custom Routines Yet";
+"routine.empty.custom.subtitle" = "Create your first routine to get started";
+
+// MARK: - Routine Creation
+"routine.create.title" = "Create New Routine";
+"routine.create.method" = "How would you like to create your routine?";
+"routine.create.fromScratch" = "Start From Scratch";
+"routine.create.fromScratch.desc" = "Build your routine exercise by exercise";
+"routine.create.fromTemplate" = "Copy From Template";
+"routine.create.fromTemplate.desc" = "Start with our proven templates";
+"routine.create.save" = "Save Routine";
+
+// MARK: - Template Cards
+"routine.template.exercises" = "Exercises";
+"routine.template.duration" = "Duration";
+"routine.template.sets" = "Sets";
+"routine.template.start" = "Start";
+"routine.template.customize" = "Customize";
+
+// MARK: - Lift Stats
+"training.lift.stats.thisWeek" = "This Week";
+"training.lift.stats.streak" = "Streak";
+"training.lift.stats.remaining" = "Remaining";
+"training.lift.stats.completed" = "completed";
+"training.lift.stats.workouts" = "workouts";
+"training.lift.stats.weeks" = "weeks";
+
+// MARK: - Lift Sections
+"training.lift.recentWorkouts" = "Recent Workouts";
+"training.lift.workoutRoutines" = "Workout Routines";
+"training.lift.featuredPrograms" = "Featured Programs";
+"training.lift.myPrograms" = "My Programs";
+"training.lift.lastWorkout" = "Last workout";
+
+// MARK: - Lift Empty States
+"training.lift.noRoutines.title" = "No Routines Yet";
+"training.lift.noRoutines.message" = "Create your first workout routine to get started";
+"training.lift.noRoutines.action" = "Create Routine";
+
+// MARK: - Training Start Actions
+"training.start.title" = "Start Workout";
+"training.start.new" = "New Workout";
+"training.start.new.subtitle" = "Create empty workout";
+"training.start.program" = "Select Program";
+"training.start.program.subtitle" = "Start from template";
+"training.start.wod" = "Do METCON";
+"training.start.wod.subtitle" = "Metabolic conditioning";
+"training.start.lift" = "Lift Session";
+"training.start.lift.subtitle" = "Strength and powerlifting";
+"training.start.cardio" = "Cardio Workout";
+"training.start.cardio.subtitle" = "Running, rowing, endurance";
+"training.start.action.hint" = "Tap to select this option";
+"training.lift.title" = "Lift";
+"training.cardio.title" = "Cardio";
+"training.lift.search" = "Search lifts...";
+"training.cardio.search" = "Search cardio...";
+"training.lift.empty.custom" = "No Custom Lifts";
+"training.lift.empty.custom.message" = "Create your first lift workout";
+"training.lift.empty.benchmark" = "No Benchmark Lifts";
+"training.lift.empty.benchmark.message" = "Try a different search";
+"training.cardio.empty.custom" = "No Custom Cardio";
+"training.cardio.empty.custom.message" = "Create your first cardio workout";
+"training.cardio.empty.benchmark" = "No Benchmark Cardio";
+"training.cardio.empty.benchmark.message" = "Try a different search";
+
+// Cardio Activities
+"training.cardio.running" = "Running";
+"training.cardio.walking" = "Walking";
+"training.cardio.cycling" = "Cycling";
+"training.lift.create" = "Create Lift";
+"training.cardio.create" = "Create Cardio";
+"training.lift.name" = "Lift Name";
+"training.lift.name.placeholder" = "e.g., Morning Power";
+"training.lift.description" = "Description";
+"training.lift.description.placeholder" = "e.g., Heavy compound movements";
+"training.lift.sets" = "Sets";
+"training.lift.reps" = "Reps";
+"training.lift.exercises" = "Exercises";
+"training.lift.exercises.empty" = "No exercises added";
+"training.lift.log_result" = "Log Result";
+"training.lift.result.title" = "Log Lift Result";
+"training.lift.result.saved" = "Result Saved!";
+"training.lift.result.pr_message" = "Congratulations! You've set a new PR: %dkg! 🎉";
+"training.lift.result.success_message" = "Your workout has been recorded successfully.";
+"training.lift.result.total_volume" = "Total Volume";
+"training.lift.result.best_set" = "Best Set";
+"training.lift.result.save" = "Save Result";
+"training.lift.result.notes" = "Notes (Optional)";
+"training.lift.result.current_pr" = "Current PR: %dkg";
+
+// Missing Lift Keys
+"training.lift.noPrograms" = "No Programs Yet";
+"training.lift.noProgramsMessage" = "Browse our featured programs or create your own";
+"training.lift.activeProgram" = "Active Program";
+"training.lift.stats.progress" = "Progress";
+"training.lift.stats.volume" = "Volume";
+"training.lift.stats.sets" = "Sets";
+"training.lift.stats.exercises" = "Exercises";
+"training.lift.noHistory" = "No History Yet";
+"training.lift.noHistoryMessage" = "Start your first workout to begin tracking";
+
+"training.cardio.name" = "Cardio Name";
+"training.cardio.name.placeholder" = "e.g., Morning Run";
+"training.cardio.description" = "Description";
+"training.cardio.description.placeholder" = "e.g., Easy pace cardio";
+"training.cardio.type" = "Type";
+"training.cardio.type.distance" = "Distance";
+"training.cardio.type.time" = "Time";
+"training.cardio.exercise" = "Exercise";
+"training.cardio.exercise.select" = "Select Exercise";
+"training.cardio.distance" = "Distance (meters)";
+"training.cardio.time" = "Time (minutes)";
+"training.exercise.search" = "Search exercises...";
+"training.exercise.done" = "Done";
+
+// MARK: - Cardio Training
+"training.cardio.templates" = "Templates";
+"training.cardio.history" = "History";
+"training.cardio.lastSession" = "Last Session";
+"training.cardio.customSessions" = "Custom Sessions";
+"training.cardio.exerciseTypes" = "Exercise Types";
+"training.cardio.noExerciseTypes" = "No Exercise Types";
+"training.cardio.noHistory" = "No History";
+"training.cardio.noHistoryMessage" = "Start your first cardio session to begin tracking";
+"training.cardio.adjustSearch" = "Try adjusting your search";
+"training.cardio.startSession" = "Start Session";
+"training.cardio.clearSearch" = "Clear Search";
+"training.cardio.neverAttempted" = "Never Attempted";
+"training.cardio.browseTemplates" = "Browse Templates";
+
+// MARK: - Training Conflict
+"training.conflict.title" = "Active Workout Exists";
+"training.conflict.message" = "You have an active workout in progress. What would you like to do?";
+"training.conflict.continue" = "Continue";
+"training.conflict.finish_start" = "Finish & Start New";
+"training.conflict.started_at" = "Started at:";
+"training.conflict.unnamed_workout" = "Unnamed Workout";
+
+// MARK: - Training Templates
+"training.templates.empty.hint" = "Complete a workout and save it as a template";
+
 // MARK: - Nutrition
 "nutrition.title" = "Nutrition";
 "nutrition.addFood" = "Add Food";
@@ -381,7 +558,7 @@
 "training.part.cardio" = "Cardio";
 
 "training.part.powerStrength.desc" = "Weight and Olympic lifts";
-"training.part.metcon.desc" = "WODs and conditioning";
+"training.part.metcon.desc" = "METCON and conditioning";
 "training.part.accessory.desc" = "Isolation and assistance movements";
 "training.part.cardio.desc" = "Running, rowing and cycling";
 
@@ -392,18 +569,18 @@
 "training.part.result" = "Result:";
 
 // MARK: - WOD / METCON
-"training.wod.title" = "WOD";
+"training.wod.title" = "METCON";
 "training.wod.movements" = "Movements";
 "training.wod.manualCreate" = "Create Manually";
 "training.wod.start" = "Start";
-"training.wod.scoreTitle" = "WOD Score";
+"training.wod.scoreTitle" = "METCON Score";
 "training.wod.round" = "Round %@";
 "training.wod.time.mm" = "MM";
 "training.wod.time.ss" = "SS";
-"training.wod.result" = "WOD Result";
-"training.wod.add" = "+ WOD";
-"training.wod.addResult" = "Add WOD Result";
-"training.wod.editResult" = "Edit WOD Result";
+"training.wod.result" = "METCON Result";
+"training.wod.add" = "+ METCON";
+"training.wod.addResult" = "Add METCON Result";
+"training.wod.editResult" = "Edit METCON Result";
 "training.wod.favorites" = "Favorites";
 "training.wod.benchmarks" = "Benchmarks";
 "training.wod.forTime" = "For Time";
@@ -416,8 +593,8 @@
 "training.wod.reps" = "Reps";
 "training.wod.emomCompleted" = "EMOM Rounds Completed";
 "training.wod.total" = "Total";
-"training.wod.create" = "Create WOD";
-"training.wod.builder.namePlaceholder" = "WOD Name (optional)";
+"training.wod.create" = "Create METCON";
+"training.wod.builder.namePlaceholder" = "METCON Name (optional)";
 "training.wod.builder.schemePlaceholderForTime" = "Rep scheme (e.g., 21-15-9)";
 "training.wod.builder.schemePlaceholderAmrap" = "Reps per movement (e.g., 10)";
 "training.wod.builder.movementsPlaceholder" = "Movements, comma separated (e.g., Thruster, Burpee)";
@@ -425,7 +602,7 @@
 "training.wod.builder.schemeHintAmrap" = "e.g., 10 (each movement 10 reps per round)";
 "training.wod.builder.movementsHint" = "e.g., Thruster, Burpee";
 "training.wod.builder.start" = "Start";
-"training.wod.builder.title" = "Create WOD";
+"training.wod.builder.title" = "Create METCON";
 "training.wod.runner.undo" = "Undo";
 "training.wod.runner.addRound" = "Add Round";
 "training.wod.runner.extraReps" = "Extra: %d reps";
@@ -1189,6 +1366,7 @@
 "common.delete" = "Delete";
 "common.edit" = "Edit";
 "common.add" = "Add";
+"common.reps" = "reps";
 "common.close" = "Close";
 "common.done" = "Done";
 "common.ok" = "OK";
@@ -1199,6 +1377,7 @@
 "common.loading" = "Loading";
 "common.retry" = "Retry";
 "common.user" = "User";
+"common.search" = "Search";
 "common.confirm_delete" = "Confirm Delete";
 
 // MARK: - Preferences (base titles)
@@ -1250,3 +1429,205 @@
 "body_measurements.trend_focus" = "Focus on Trends";
 "body_measurements.trend_desc" = "Short-term fluctuations are normal; focus on long-term trends.";
 "body_measurements.add_new" = "Add New";
+
+// MARK: - Error Messages
+"error.food_not_selected" = "Error: No food selected";
+
+// MARK: - Camera & Permissions
+"camera.settings" = "Settings";
+"camera.permission_required" = "Camera permission is required for barcode scanning.";
+
+// MARK: - Body Composition
+"body_composition.title" = "Body Composition";
+"body_composition.ffmi" = "FFMI";
+"body_composition.body_fat" = "Body Fat";
+"body_composition.fitness_level" = "Fitness Level";
+"body_composition.measurement_required" = "Measurement required";
+"body_composition.insufficient_data" = "Insufficient data";
+
+// MARK: - WOD Builder
+"wod.name_label" = "METCON Name";
+"wod.enter_name_placeholder" = "Enter METCON name";
+"wod.type_label" = "Type";
+"wod.rep_scheme_label" = "Rep Scheme";
+"wod.rep_scheme_placeholder" = "e.g., 21-15-9 or 5 rounds";
+"wod.rep_scheme_examples" = "Examples: '21-15-9' for decreasing reps, '5' for 5 rounds";
+"wod.duration_label" = "Duration (minutes)";
+"wod.total_minutes_label" = "Total Minutes";
+"wod.duration_placeholder" = "e.g., 20";
+"wod.movements_label" = "Movements";
+"wod.add_movements" = "Add movements to your METCON";
+"wod.create_title" = "Create METCON";
+"wod.description_label" = "METCON Description";
+"wod.score_result_label" = "Score/Result";
+"wod.score_placeholder" = "e.g., 12:45 or 5 rounds";
+"wod.add_title" = "Add METCON";
+"wod.movement_section" = "Movement";
+"wod.movement_name_placeholder" = "Movement name";
+"wod.reps_optional_section" = "Reps (optional)";
+"wod.number_of_reps_placeholder" = "Number of reps";
+"wod.rx_weight_optional_section" = "RX Weight (optional)";
+"wod.male_weight_placeholder" = "Male (e.g., 43kg)";
+"wod.female_weight_placeholder" = "Female (e.g., 30kg)";
+"wod.add_movement_title" = "Add Movement";
+"wod.edit_movement_title" = "Edit Movement";
+"wod.rx_prefix" = "RX";
+"wod.score_prefix" = "Score";
+"wod.rx" = "RX";
+"wod.rep_scheme" = "Rep Scheme";
+"wod.time_cap" = "Time Cap";
+"wod.progress" = "Progress";
+"wod.rounds" = "Rounds";
+"wod.current" = "Current";
+"wod.complete_round" = "Complete Round";
+"wod.movements" = "Movements";
+"wod.start" = "Start";
+"wod.resume" = "Resume";
+"wod.pause" = "Pause";
+"wod.finish" = "Finish";
+"wod.save_result" = "Save Result";
+"wod.timer_title" = "METCON Timer";
+"wod.result_section" = "METCON Result";
+"wod.extra_reps" = "Extra Reps";
+"wod.notes_optional" = "Notes (optional)";
+"wod.completed_rx" = "This was completed RX";
+
+// MARK: - Training
+"training.set.complete_set" = "Complete Set";
+"training.set.cannot_delete_last" = "Cannot delete last set";
+"training.set.same_as_last" = "Same as Last Set";
+"training.quick_rep_selection" = "Quick Rep Selection";
+
+// MARK: - Workout Completion
+"workout.completion.congratulations" = "Congratulations! 🎉";
+"workout.stats.total_sets" = "Total Sets";
+"workout.stats.volume" = "Volume";
+
+// MARK: - Units
+"units.metric" = "Metric";
+"units.imperial" = "Imperial";
+"units.metric_format" = "cm, kg format";
+"units.imperial_format" = "ft, lbs format";
+"units.feet" = "Feet";
+"units.inches" = "Inches";
+"units.lbs" = "lbs";
+
+// MARK: - Onboarding
+"onboarding.unit_system" = "Unit System";
+
+// MARK: - Validation
+"validation.invalid_value" = "Invalid value";
+
+// MARK: - Accessibility
+"accessibility.back_step" = "Returns to previous step";
+
+// MARK: - HealthKit
+"healthkit.permission_denied" = "HealthKit permission denied";
+
+// MARK: - Nutrition
+"nutrition.portion_input.grams" = "Grams";
+"nutrition.portion_input.serving" = "Serving";
+"nutrition.portion_input.count" = "Count";
+"nutrition.loading_product" = "Loading product...";
+"nutrition.openfoodfacts_section" = "OpenFoodFacts";
+
+// MARK: - Analytics
+"analytics.change" = "Change";
+"analytics.calculating" = "Calculating";
+"analytics.average" = "Average";
+
+// MARK: - Common Extensions
+"common.retry" = "Retry";
+"common.repeat" = "Repeat";
+"common.duplicate" = "Duplicate";
+"common.share" = "Share";
+
+// MARK: - Time
+"time.minutes_short" = "MM";
+"time.seconds_short" = "SS";
+
+// MARK: - Quick Portions
+"quick_portions.title" = "Quick Portions";
+"quick_portions.custom" = "Custom";
+"quick_portions.custom_amount" = "Custom Amount (g)";
+"quick_portions.set" = "Set";
+
+// MARK: - Training Cardio
+"training.cardio.templates" = "Templates";
+"training.cardio.history" = "History";
+"training.cardio.type" = "Type";
+"training.cardio.activity" = "Activity";
+"training.cardio.flexibility" = "Flexibility";
+"training.cardio.anyDistanceTime" = "Any distance/time";
+"training.cardio.equipment" = "Equipment";
+"training.cardio.personalRecord" = "Personal Record";
+"training.cardio.statistics" = "Statistics";
+"training.cardio.recentSessions" = "Recent Sessions";
+"training.cardio.workoutDetails" = "Workout Details";
+"training.cardio.startWorkout" = "Start Workout";
+"training.cardio.duplicate" = "Duplicate";
+"training.cardio.delete" = "Delete";
+"training.cardio.newSession" = "New Session";
+"training.cardio.setGoal" = "Set your goal for this session";
+"training.cardio.sessionType" = "Session Type";
+"training.cardio.target" = "Target";
+"training.cardio.notes" = "Notes";
+"training.cardio.notesPlaceholder" = "Optional notes for this session...";
+"training.cardio.equipmentOptions" = "Equipment Options";
+"training.cardio.startSession" = "Start Session";
+"training.cardio.distanceGoal" = "Distance Goal";
+"training.cardio.timeGoal" = "Time Goal";
+"training.cardio.quickSelect" = "Quick Select";
+"training.cardio.customDistance" = "Custom Distance";
+"training.cardio.customDuration" = "Custom Duration";
+"training.cardio.sessionTracking" = "Session Tracking";
+"training.cardio.logResults" = "Log your results";
+"training.cardio.targetProgress" = "Target Progress";
+"training.cardio.duration" = "Duration";
+"training.cardio.distance" = "Distance";
+"training.cardio.performance" = "Performance";
+"training.cardio.additionalInfo" = "Additional Info";
+"training.cardio.heartRate" = "Heart Rate";
+"training.cardio.feeling" = "Feeling";
+"training.cardio.sessionNotes" = "Session Notes";
+"training.cardio.sessionNotesPlaceholder" = "How did this session go?";
+"training.cardio.completeSession" = "Complete Session";
+"training.cardio.saveSession" = "Save this session to your history?";
+"training.cardio.customSessions" = "No Custom Sessions";
+"training.cardio.noExerciseTypes" = "No Exercise Types Found";
+"training.cardio.noHistoryMessage" = "Your cardio sessions will appear here";
+"training.cardio.adjustSearch" = "Try adjusting your search";
+"training.cardio.clearSearch" = "Clear Search";
+"training.cardio.noHistory" = "No Sessions Yet";
+"training.cardio.browseTemplates" = "Browse Templates";
+"training.cardio.neverAttempted" = "Never attempted";
+
+// MARK: - Cardio Exercise Types
+"training.cardio.exercise.running" = "Running";
+"training.cardio.exercise.cycling" = "Cycling";
+"training.cardio.exercise.rowing" = "Rowing";
+"training.cardio.exercise.skiing" = "Ski Erg";
+"training.cardio.exercise.walking" = "Walking";
+
+// MARK: - Cardio Equipment
+"training.cardio.equipment.outdoor" = "Outdoor";
+"training.cardio.equipment.treadmill" = "Treadmill";
+"training.cardio.equipment.rowErg" = "Row Erg";
+"training.cardio.equipment.bikeErg" = "Bike Erg";
+"training.cardio.equipment.skiErg" = "Ski Erg";
+
+// MARK: - Cardio Session Feelings
+"training.cardio.feeling.terrible" = "Terrible";
+"training.cardio.feeling.bad" = "Bad";
+"training.cardio.feeling.okay" = "Okay";
+"training.cardio.feeling.good" = "Good";
+"training.cardio.feeling.great" = "Great";
+
+// MARK: - Search & Placeholders
+"search.wods_placeholder" = "Search METCON...";
+"time.minutes_short" = "MM";
+"time.seconds_short" = "SS";
+
+// MARK: - Loading View
+"loading.title" = "SporHocam is Preparing";
+"loading.subtitle" = "Loading data...";

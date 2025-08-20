@@ -1,9 +1,19 @@
 import SwiftUI
+import SwiftData
 
 struct RecentWorkoutsSection: View {
     @Environment(\.theme) private var theme
     @EnvironmentObject private var tabRouter: TabRouter
-    let workouts: [Workout]
+    @Query(
+        filter: #Predicate<LiftSession> { $0.isCompleted },
+        sort: \LiftSession.startDate,
+        order: .reverse
+    ) private var recentSessions: [LiftSession]
+    
+    // Show last 5 sessions
+    private var workouts: [LiftSession] {
+        Array(recentSessions.prefix(5))
+    }
     
     var body: some View {
         VStack(alignment: .leading, spacing: theme.spacing.m) {
@@ -118,13 +128,13 @@ private struct StartWorkoutButton: View {
 
 // MARK: - Workouts List Component
 private struct WorkoutsList: View {
-    let workouts: [Workout]
+    let workouts: [LiftSession]
     
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 12) {
-                ForEach(workouts, id: \.id) { workout in
-                    WorkoutCard(workout: workout)
+                ForEach(workouts, id: \.id) { session in
+                    LiftSessionCard(session: session)
                 }
             }
             .padding(.horizontal)
@@ -132,18 +142,43 @@ private struct WorkoutsList: View {
     }
 }
 
-#Preview {
-    let emptyWorkouts: [Workout] = []
-    let sampleWorkouts = [
-        Workout(name: "Push Day"),
-        Workout(name: "Pull Day"),
-        Workout(name: "Leg Day")
-    ]
+// MARK: - Lift Session Card
+private struct LiftSessionCard: View {
+    @Environment(\.theme) private var theme
+    let session: LiftSession
     
-    return VStack(spacing: 20) {
-        RecentWorkoutsSection(workouts: emptyWorkouts)
-        RecentWorkoutsSection(workouts: sampleWorkouts)
+    var body: some View {
+        VStack(alignment: .leading, spacing: theme.spacing.s) {
+            Text(session.workout.name)
+                .font(theme.typography.headline)
+                .foregroundColor(theme.colors.textPrimary)
+            
+            Text(session.startDate.formatted(date: .abbreviated, time: .omitted))
+                .font(theme.typography.caption)
+                .foregroundColor(theme.colors.textSecondary)
+            
+            HStack {
+                Text("\(Int(session.totalVolume))kg")
+                    .font(theme.typography.body)
+                    .foregroundColor(theme.colors.accent)
+                
+                Spacer()
+                
+                Text("\(session.totalSets) sets")
+                    .font(theme.typography.caption)
+                    .foregroundColor(theme.colors.textSecondary)
+            }
+        }
+        .padding()
+        .frame(width: 160)
+        .background(theme.colors.cardBackground)
+        .cornerRadius(theme.radius.m)
     }
-    .environmentObject(TabRouter())
-    .padding()
+}
+
+#Preview {
+    RecentWorkoutsSection()
+        .environmentObject(TabRouter())
+        .modelContainer(for: [LiftSession.self], inMemory: true)
+        .padding()
 }

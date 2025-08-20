@@ -6,8 +6,11 @@ final class WOD {
     var id: UUID
     var name: String
     var type: String // WODType raw value
+    var category: String // WODCategory raw value (girls, heroes, opens, custom)
     var repScheme: [Int] // [21, 15, 9] for 21-15-9 format
     var timeCap: Int? // in seconds
+    var rounds: Int? // for EMOM, Tabata etc
+    var difficulty: String? // beginner, intermediate, advanced
     var isCustom: Bool
     var isFavorite: Bool
     var createdAt: Date
@@ -20,15 +23,21 @@ final class WOD {
     init(
         name: String,
         type: WODType,
+        category: String = "custom",
         repScheme: [Int] = [],
         timeCap: Int? = nil,
+        rounds: Int? = nil,
+        difficulty: String? = nil,
         isCustom: Bool = true
     ) {
         self.id = UUID()
         self.name = name
         self.type = type.rawValue
+        self.category = category
         self.repScheme = repScheme
         self.timeCap = timeCap
+        self.rounds = rounds
+        self.difficulty = difficulty
         self.isCustom = isCustom
         self.isFavorite = false
         self.createdAt = Date()
@@ -42,6 +51,10 @@ final class WOD {
 extension WOD {
     var wodType: WODType {
         WODType(rawValue: type) ?? .custom
+    }
+    
+    var wodCategory: WODCategory {
+        WODCategory(rawValue: category) ?? .custom
     }
     
     var formattedRepScheme: String {

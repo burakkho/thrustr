@@ -1,0 +1,6 @@
+name,nameEN,nameTR,nameES,nameDE,category,description,descriptionTR,descriptionES,descriptionDE,equipment,exerciseType
+Running,Running,Koşu,Carrera,Laufen,exercise,Outdoor or treadmill running,Açık hava veya koşu bandında koşu,Carrera al aire libre o en cinta,Laufen im Freien oder auf dem Laufband,"[""outdoor"", ""treadmill""]",run
+Cycling,Cycling,Bisiklet,Ciclismo,Radfahren,exercise,Outdoor cycling or stationary bike,Açık hava bisikleti veya sabit bisiklet,Ciclismo al aire libre o bicicleta estacionaria,Radfahren im Freien oder Heimtrainer,"[""outdoor"", ""bike_erg""]",bike
+Rowing,Rowing,Kürek,Remo,Rudern,exercise,Indoor rowing on erg machine,Kapalı alanda rowing makinesi,Remo interior en máquina erg,Rudern drinnen an der Ergometermaschine,"[""row_erg""]",row
+Ski Erg,Ski Erg,Ski Erg,Ski Erg,Ski Erg,exercise,Full body ski machine workout,Tüm vücut ski makinesi antrenmanı,Entrenamiento de máquina de esquí de cuerpo completo,Ganzkörper-Ski-Maschinen-Training,"[""ski_erg""]",ski
+Walking,Walking,Yürüyüş,Caminata,Gehen,exercise,Outdoor or treadmill walking,Açık hava veya koşu bandında yürüyüş,Caminata al aire libre o en cinta,Gehen im Freien oder auf dem Laufband,"[""outdoor"", ""treadmill""]",walk

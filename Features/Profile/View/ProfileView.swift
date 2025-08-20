@@ -167,7 +167,7 @@ struct CompositionStatsSection: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Vücut Kompozisyonu")
+            Text("body_composition.title".localized)
                 .font(.headline)
                 .fontWeight(.semibold)
             
@@ -176,9 +176,9 @@ struct CompositionStatsSection: View {
                 NavigationLink(destination: FFMICalculatorView()) {
                     CompositionMiniCard(
                         icon: "figure.strengthtraining.traditional",
-                        title: "FFMI",
+                        title: "body_composition.ffmi".localized,
                         value: ffmiValue.map { String(format: "%.1f", $0) } ?? "—",
-                        subtitle: ffmiValue.map { FitnessLevelCalculator.ffmiCategory(for: $0) } ?? "Ölçüm gerekli",
+                        subtitle: ffmiValue.map { FitnessLevelCalculator.ffmiCategory(for: $0) } ?? "body_composition.measurement_required".localized,
                         color: .green
                     )
                 }
@@ -187,9 +187,9 @@ struct CompositionStatsSection: View {
                 NavigationLink(destination: NavyMethodCalculatorView()) {
                     CompositionMiniCard(
                         icon: "percent",
-                        title: "Yağ Oranı",
+                        title: "body_composition.body_fat".localized,
                         value: bodyFatPercent.map { String(format: "%.1f%%", $0) } ?? "—",
-                        subtitle: bodyFatPercent.map { FitnessLevelCalculator.bodyFatCategory(for: $0, gender: gender) } ?? "Ölçüm gerekli",
+                        subtitle: bodyFatPercent.map { FitnessLevelCalculator.bodyFatCategory(for: $0, gender: gender) } ?? "body_composition.measurement_required".localized,
                         color: .orange
                     )
                 }
@@ -197,9 +197,9 @@ struct CompositionStatsSection: View {
                 // Fitness Level Card
                 CompositionMiniCard(
                     icon: "bolt.heart",
-                    title: "Fitness Seviyesi",
+                    title: "body_composition.fitness_level".localized,
                     value: fitnessScore.map { "\($0.score)" } ?? "—",
-                    subtitle: fitnessScore.map { $0.stage.rawValue } ?? "Yetersiz veri",
+                    subtitle: fitnessScore.map { $0.stage.rawValue } ?? "body_composition.insufficient_data".localized,
                     color: .blue
                 )
             }

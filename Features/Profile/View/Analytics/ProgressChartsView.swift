@@ -16,15 +16,15 @@ struct ProgressChartsView: View {
     
     // PERFORMANCE: Dynamic queries with date filtering
     @Query private var allWeightEntries: [WeightEntry]
-    @Query private var allWorkouts: [Workout]
+    @Query private var allLiftSessions: [LiftSession]
     @Query private var allBodyMeasurements: [BodyMeasurement]
     
     private var weightEntries: [WeightEntry] {
         allWeightEntries.filter { $0.date >= cutoffDate }
     }
     
-    private var workouts: [Workout] {
-        allWorkouts.filter { $0.date >= cutoffDate }
+    private var liftSessions: [LiftSession] {
+        allLiftSessions.filter { $0.isCompleted && $0.startDate >= cutoffDate }
     }
     
     private var bodyMeasurements: [BodyMeasurement] {
@@ -54,7 +54,7 @@ struct ProgressChartsView: View {
                     chartType: selectedChartType,
                     timeRange: selectedTimeRange,
                     weightEntries: weightEntries,
-                    workouts: workouts,
+                    liftSessions: liftSessions,
                     bodyMeasurements: bodyMeasurements,
                     user: currentUser
                 )
@@ -63,14 +63,14 @@ struct ProgressChartsView: View {
                 SummaryStatisticsSection(
                     chartType: selectedChartType,
                     weightEntries: weightEntries,
-                    workouts: workouts,
+                    liftSessions: liftSessions,
                     timeRange: selectedTimeRange
                 )
                 
                 // Insights Section
                 InsightsSection(
                     weightEntries: weightEntries,
-                    workouts: workouts,
+                    liftSessions: liftSessions,
                     timeRange: selectedTimeRange
                 )
             }
@@ -186,7 +186,7 @@ struct MainChartSection: View {
     let chartType: ChartType
     let timeRange: TimeRange
     let weightEntries: [WeightEntry]
-    let workouts: [Workout]
+    let liftSessions: [LiftSession]
     let bodyMeasurements: [BodyMeasurement]
     let user: User?
     
@@ -201,9 +201,9 @@ struct MainChartSection: View {
                 case .weight:
                     WeightChartView(entries: weightEntries)
                 case .workoutVolume:
-                    WorkoutVolumeChartView(workouts: workouts)
+                    WorkoutVolumeChartView(liftSessions: liftSessions)
                 case .workoutFrequency:
-                    WorkoutFrequencyChartView(workouts: workouts, timeRange: timeRange)
+                    WorkoutFrequencyChartView(liftSessions: liftSessions, timeRange: timeRange)
                 case .bodyMeasurements:
                     BodyMeasurementsChartView(measurements: bodyMeasurements)
                 }
@@ -268,17 +268,17 @@ struct WeightChartView: View {
 
 // MARK: - Workout Volume Chart View
 struct WorkoutVolumeChartView: View {
-    let workouts: [Workout]
+    let liftSessions: [LiftSession]
     
     private var weeklyData: [WeeklyVolumeData] {
         let calendar = Calendar.current
-        let grouped = Dictionary(grouping: workouts) { workout in
-            calendar.dateInterval(of: .weekOfYear, for: workout.date)?.start ?? workout.date
+        let grouped = Dictionary(grouping: liftSessions) { session in
+            calendar.dateInterval(of: .weekOfYear, for: session.startDate)?.start ?? session.startDate
         }
         
-        return grouped.map { (week, workouts) in
-            let totalVolume = workouts.reduce(0.0) { total, workout in
-                total + workout.totalVolume
+        return grouped.map { (week, sessions) in
+            let totalVolume = sessions.reduce(0.0) { total, session in
+                total + session.totalVolume
             }
             return WeeklyVolumeData(week: week, volume: totalVolume)
         }.sorted { $0.week < $1.week }
@@ -308,17 +308,17 @@ struct WorkoutVolumeChartView: View {
 
 // MARK: - Workout Frequency Chart View
 struct WorkoutFrequencyChartView: View {
-    let workouts: [Workout]
+    let liftSessions: [LiftSession]
     let timeRange: TimeRange
     
     private var frequencyData: [FrequencyData] {
         let calendar = Calendar.current
-        let grouped = Dictionary(grouping: workouts) { workout in
-            calendar.dateInterval(of: .weekOfYear, for: workout.date)?.start ?? workout.date
+        let grouped = Dictionary(grouping: liftSessions) { session in
+            calendar.dateInterval(of: .weekOfYear, for: session.startDate)?.start ?? session.startDate
         }
         
-        return grouped.map { (week, workouts) in
-            FrequencyData(period: week, count: workouts.count)
+        return grouped.map { (week, sessions) in
+            FrequencyData(period: week, count: sessions.count)
         }.sorted { $0.period < $1.period }
     }
     
@@ -408,7 +408,7 @@ struct FallbackChartView: View {
 struct SummaryStatisticsSection: View {
     let chartType: ChartType
     let weightEntries: [WeightEntry]
-    let workouts: [Workout]
+    let liftSessions: [LiftSession]
     let timeRange: TimeRange
     
     var body: some View {
@@ -422,7 +422,7 @@ struct SummaryStatisticsSection: View {
                 case .weight:
                     WeightStatisticsCards(entries: weightEntries)
                 case .workoutVolume, .workoutFrequency:
-                    WorkoutStatisticsCards(workouts: workouts, timeRange: timeRange)
+                    WorkoutStatisticsCards(liftSessions: liftSessions, timeRange: timeRange)
                 case .bodyMeasurements:
                     BodyMeasurementStatisticsCards()
                 }
@@ -480,11 +480,11 @@ struct WeightStatisticsCards: View {
 
 // MARK: - Workout Statistics Cards
 struct WorkoutStatisticsCards: View {
-    let workouts: [Workout]
+    let liftSessions: [LiftSession]
     let timeRange: TimeRange
     
     private var totalWorkouts: Int {
-        workouts.count
+        liftSessions.count
     }
     
     private var averageWorkoutsPerWeek: Double {
@@ -493,7 +493,7 @@ struct WorkoutStatisticsCards: View {
     }
     
     private var totalVolume: Double {
-        workouts.reduce(0) { $0 + $1.totalVolume }
+        liftSessions.reduce(0) { $0 + $1.totalVolume }
     }
     
     private var averageVolume: Double {
@@ -531,14 +531,14 @@ struct WorkoutStatisticsCards: View {
 struct BodyMeasurementStatisticsCards: View {
     var body: some View {
         StatCard(
-            title: "Değişim",
-            value: "Hesaplanıyor",
+            title: "analytics.change".localized,
+            value: "analytics.calculating".localized,
             color: .blue
         )
         
         StatCard(
-            title: "Ortalama",
-            value: "Hesaplanıyor",
+            title: "analytics.average".localized,
+            value: "analytics.calculating".localized,
             color: .green
         )
     }
@@ -571,7 +571,7 @@ struct StatCard: View {
 // MARK: - Insights Section
 struct InsightsSection: View {
     let weightEntries: [WeightEntry]
-    let workouts: [Workout]
+    let liftSessions: [LiftSession]
     let timeRange: TimeRange
     
     var body: some View {
@@ -585,11 +585,11 @@ struct InsightsSection: View {
                     WeightInsightCard(entries: weightEntries)
                 }
                 
-                if !workouts.isEmpty {
-                    WorkoutInsightCard(workouts: workouts, timeRange: timeRange)
+                if !liftSessions.isEmpty {
+                    WorkoutInsightCard(liftSessions: liftSessions, timeRange: timeRange)
                 }
                 
-                if workouts.isEmpty && weightEntries.isEmpty {
+                if liftSessions.isEmpty && weightEntries.isEmpty {
                     EmptyInsightCard()
                 }
             }
@@ -630,12 +630,12 @@ struct WeightInsightCard: View {
 }
 
 struct WorkoutInsightCard: View {
-    let workouts: [Workout]
+    let liftSessions: [LiftSession]
     let timeRange: TimeRange
     
     private var consistency: String {
         let weeks = timeRange.weekCount
-        let averagePerWeek = weeks > 0 ? Double(workouts.count) / Double(weeks) : 0
+        let averagePerWeek = weeks > 0 ? Double(liftSessions.count) / Double(weeks) : 0
         
         if averagePerWeek >= 4 {
             return LocalizationKeys.localized(LocalizationKeys.ProgressCharts.consistencyExcellent)

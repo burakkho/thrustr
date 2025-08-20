@@ -14,8 +14,8 @@ final class WODResult {
     
     // Relationships
     var wod: WOD?
+    var wodId: UUID? // For easier querying
     var user: User?
-    var workout: Workout? // Link to the workout this was part of
     
     init(
         totalTime: Int? = nil,
@@ -36,6 +36,16 @@ final class WODResult {
 
 // MARK: - Computed Properties
 extension WODResult {
+    // Calculate score based on WOD type
+    var score: Double {
+        if let totalTime = totalTime {
+            return Double(totalTime)
+        } else if let rounds = rounds {
+            return Double(rounds * 100 + (extraReps ?? 0))
+        }
+        return 0
+    }
+    
     // Format time for display
     var formattedTime: String? {
         guard let totalTime = totalTime else { return nil }

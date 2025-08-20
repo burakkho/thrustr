@@ -2,6 +2,7 @@ import SwiftUI
 
 struct HealthStatsGrid: View {
     @Environment(\.theme) private var theme
+    @EnvironmentObject private var unitSettings: UnitSettings
     let user: User
     
     var body: some View {
@@ -11,7 +12,7 @@ struct HealthStatsGrid: View {
         ) {
             StepsStatCard(steps: user.healthKitSteps)
             CaloriesStatCard(calories: user.healthKitCalories)
-            WeightStatCard(weight: user.displayWeight)
+            WeightStatCard(weight: UnitsFormatter.formatWeight(kg: user.currentWeight, system: unitSettings.unitSystem))
             BMIStatCard(bmi: user.bmi, category: user.bmiCategory)
         }
     }
@@ -96,5 +97,6 @@ private struct BMIStatCard: View {
     user.calculateMetrics()
     
     return HealthStatsGrid(user: user)
+        .environmentObject(UnitSettings())
         .padding()
 }

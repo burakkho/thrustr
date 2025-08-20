@@ -1,0 +1,71 @@
+nameEN,nameTR,category,equipment,supportsWeight,supportsReps,supportsTime,supportsDistance
+Back Squat,Back Squat,legs,barbell,true,true,false,false
+Front Squat,Front Squat,legs,barbell,true,true,false,false
+Deadlift,Deadlift,strength,barbell,true,true,false,false
+Romanian Deadlift,Romanian Deadlift,legs,barbell,true,true,false,false
+Bench Press,Bench Press,push,barbell,true,true,false,false
+Incline Bench Press,Incline Bench Press,push,barbell,true,true,false,false
+Overhead Press,Overhead Press,push,barbell,true,true,false,false
+Push Press,Push Press,push,barbell,true,true,false,false
+Pull Up,Pull Up,pull,pullup_bar,false,true,false,false
+Chin Up,Chin Up,pull,pullup_bar,false,true,false,false
+Barbell Row,Barbell Row,pull,barbell,true,true,false,false
+Pendlay Row,Pendlay Row,pull,barbell,true,true,false,false
+Dumbbell Row,Dumbbell Row,pull,dumbbell,true,true,false,false
+Lat Pulldown,Lat Pulldown,pull,cable,true,true,false,false
+Dips,Dips,push,bodyweight,false,true,false,false
+Military Press,Military Press,push,barbell,true,true,false,false
+Dumbbell Press,Dumbbell Press,push,dumbbell,true,true,false,false
+Dumbbell Bench Press,Dumbbell Bench Press,push,dumbbell,true,true,false,false
+Squat,Squat,legs,bodyweight,false,true,false,false
+Goblet Squat,Goblet Squat,legs,dumbbell,true,true,false,false
+Lunges,Lunges,legs,bodyweight,false,true,false,false
+Walking Lunges,Walking Lunges,legs,dumbbell,true,true,false,false
+Bulgarian Split Squat,Bulgarian Split Squat,legs,dumbbell,true,true,false,false
+Leg Press,Leg Press,legs,machine,true,true,false,false
+Leg Curl,Leg Curl,legs,machine,true,true,false,false
+Leg Extension,Leg Extension,legs,machine,true,true,false,false
+Calf Raises,Calf Raises,legs,bodyweight,false,true,false,false
+Tricep Extension,Tricep Extension,isolation,dumbbell,true,true,false,false
+Bicep Curl,Bicep Curl,isolation,dumbbell,true,true,false,false
+Hammer Curl,Hammer Curl,isolation,dumbbell,true,true,false,false
+Lateral Raise,Lateral Raise,isolation,dumbbell,true,true,false,false
+Front Raise,Front Raise,isolation,dumbbell,true,true,false,false
+Rear Delt Fly,Rear Delt Fly,isolation,dumbbell,true,true,false,false
+Face Pull,Face Pull,pull,cable,true,true,false,false
+Shrugs,Shrugs,isolation,barbell,true,true,false,false
+Plank,Plank,core,bodyweight,false,false,true,false
+Side Plank,Side Plank,core,bodyweight,false,false,true,false
+Sit Up,Sit Up,core,bodyweight,false,true,false,false
+Crunches,Crunches,core,bodyweight,false,true,false,false
+Russian Twist,Russian Twist,core,bodyweight,false,true,false,false
+Leg Raises,Leg Raises,core,bodyweight,false,true,false,false
+Hanging Knee Raises,Hanging Knee Raises,core,pullup_bar,false,true,false,false
+Ab Wheel,Ab Wheel,core,other,false,true,false,false
+Hip Thrust,Hip Thrust,legs,barbell,true,true,false,false
+Good Morning,Good Morning,legs,barbell,true,true,false,false
+Sumo Deadlift,Sumo Deadlift,strength,barbell,true,true,false,false
+Rack Pull,Rack Pull,strength,barbell,true,true,false,false
+Box Squat,Box Squat,legs,barbell,true,true,false,false
+Push Up,Push Up,push,bodyweight,false,true,false,false
+Diamond Push Up,Diamond Push Up,push,bodyweight,false,true,false,false
+Wide Grip Push Up,Wide Grip Push Up,push,bodyweight,false,true,false,false
+Burpees,Burpees,functional,bodyweight,false,true,false,false
+Mountain Climbers,Mountain Climbers,functional,bodyweight,false,true,true,false
+Box Jump,Box Jump,plyometric,box,false,true,false,false
+Jump Squat,Jump Squat,plyometric,bodyweight,false,true,false,false
+Kettlebell Swing,Kettlebell Swing,functional,kettlebell,true,true,false,false
+Turkish Get Up,Turkish Get Up,functional,kettlebell,true,true,false,false
+Farmers Walk,Farmers Walk,functional,dumbbell,true,false,false,true
+Sled Push,Sled Push,functional,sled,true,false,false,true
+Sled Pull,Sled Pull,functional,sled,true,false,false,true
+Battle Ropes,Battle Ropes,functional,rope,false,false,true,false
+Wall Ball,Wall Ball,functional,ball,true,true,false,false
+Thruster,Thruster,functional,barbell,true,true,false,false
+Clean,Clean,olympic,barbell,true,true,false,false
+Power Clean,Power Clean,olympic,barbell,true,true,false,false
+Snatch,Snatch,olympic,barbell,true,true,false,false
+Power Snatch,Power Snatch,olympic,barbell,true,true,false,false
+Clean and Jerk,Clean and Jerk,olympic,barbell,true,true,false,false
+Muscle Up,Muscle Up,functional,pullup_bar,false,true,false,false
+Barbell Curls,Barbell Curls,isolation,barbell,true,true,false,false

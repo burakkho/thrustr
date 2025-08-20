@@ -47,11 +47,11 @@ struct WODBuilderView: View {
                 VStack(spacing: theme.spacing.l) {
                     // WOD Name
                     VStack(alignment: .leading, spacing: theme.spacing.s) {
-                        Label("WOD Name", systemImage: "tag")
+                        Label("wod.name_label".localized, systemImage: "tag")
                             .font(theme.typography.caption)
                             .foregroundColor(theme.colors.textSecondary)
                         
-                        TextField("Enter WOD name", text: $wodName)
+                        TextField("wod.enter_name_placeholder".localized, text: $wodName)
                             .textFieldStyle(.plain)
                             .font(theme.typography.body)
                             .padding()
@@ -61,11 +61,11 @@ struct WODBuilderView: View {
                     
                     // WOD Type
                     VStack(alignment: .leading, spacing: theme.spacing.s) {
-                        Label("Type", systemImage: "timer")
+                        Label("wod.type_label".localized, systemImage: "timer")
                             .font(theme.typography.caption)
                             .foregroundColor(theme.colors.textSecondary)
                         
-                        Picker("WOD Type", selection: $wodType) {
+                        Picker("wod.type_label".localized, selection: $wodType) {
                             ForEach(WODType.allCases, id: \.self) { type in
                                 Text(type.displayName).tag(type)
                             }
@@ -76,18 +76,18 @@ struct WODBuilderView: View {
                     // Rep Scheme (for For Time WODs)
                     if wodType == .forTime {
                         VStack(alignment: .leading, spacing: theme.spacing.s) {
-                            Label("Rep Scheme", systemImage: "repeat")
+                            Label("wod.rep_scheme_label".localized, systemImage: "repeat")
                                 .font(theme.typography.caption)
                                 .foregroundColor(theme.colors.textSecondary)
                             
-                            TextField("e.g., 21-15-9 or 5 rounds", text: $repScheme)
+                            TextField("wod.rep_scheme_placeholder".localized, text: $repScheme)
                                 .textFieldStyle(.plain)
                                 .font(theme.typography.body)
                                 .padding()
                                 .background(theme.colors.backgroundSecondary)
                                 .cornerRadius(theme.radius.m)
                             
-                            Text("Examples: '21-15-9' for decreasing reps, '5' for 5 rounds")
+                            Text("wod.rep_scheme_examples".localized)
                                 .font(theme.typography.caption2)
                                 .foregroundColor(theme.colors.textSecondary)
                         }
@@ -96,11 +96,11 @@ struct WODBuilderView: View {
                     // Time Cap (for AMRAP or general time limit)
                     if wodType == .amrap || wodType == .emom {
                         VStack(alignment: .leading, spacing: theme.spacing.s) {
-                            Label(wodType == .amrap ? "Duration (minutes)" : "Total Minutes", systemImage: "clock")
+                            Label(wodType == .amrap ? "wod.duration_label".localized : "wod.total_minutes_label".localized, systemImage: "clock")
                                 .font(theme.typography.caption)
                                 .foregroundColor(theme.colors.textSecondary)
                             
-                            TextField("e.g., 20", text: $timeCap)
+                            TextField("wod.duration_placeholder".localized, text: $timeCap)
                                 .textFieldStyle(.plain)
                                 .font(theme.typography.body)
                                 .keyboardType(.numberPad)
@@ -113,7 +113,7 @@ struct WODBuilderView: View {
                     // Movements
                     VStack(alignment: .leading, spacing: theme.spacing.m) {
                         HStack {
-                            Label("Movements", systemImage: "figure.run")
+                            Label("wod.movements_label".localized, systemImage: "figure.run")
                                 .font(theme.typography.caption)
                                 .foregroundColor(theme.colors.textSecondary)
                             
@@ -126,7 +126,7 @@ struct WODBuilderView: View {
                         }
                         
                         if movements.isEmpty {
-                            Text("Add movements to your WOD")
+                            Text("wod.add_movements".localized)
                                 .font(theme.typography.caption)
                                 .foregroundColor(theme.colors.textSecondary)
                                 .frame(maxWidth: .infinity)
@@ -164,15 +164,15 @@ struct WODBuilderView: View {
                 }
                 .padding()
             }
-            .navigationTitle("Create WOD")
+            .navigationTitle("wod.create_title".localized)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Cancel") { dismiss() }
+                    Button("common.cancel".localized) { dismiss() }
                 }
                 
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Save") { saveWOD() }
+                    Button("common.save".localized) { saveWOD() }
                         .fontWeight(.semibold)
                         .disabled(!isValid)
                 }
@@ -272,13 +272,13 @@ private struct MovementRow: View {
                 
                 HStack(spacing: theme.spacing.s) {
                     if !movement.reps.isEmpty {
-                        Text("\(movement.reps) reps")
+                        Text("\(movement.reps) \("common.reps".localized)")
                             .font(theme.typography.caption)
                             .foregroundColor(theme.colors.textSecondary)
                     }
                     
                     if !movement.rxWeightMale.isEmpty {
-                        Text("RX: \(movement.rxWeightMale)")
+                        Text("\("wod.rx_prefix".localized): \(movement.rxWeightMale)")
                             .font(theme.typography.caption)
                             .foregroundColor(theme.colors.accent)
                     }
@@ -317,29 +317,29 @@ private struct MovementPickerView: View {
     var body: some View {
         NavigationStack {
             Form {
-                Section("Movement") {
-                    TextField("Movement name", text: $movementName)
+                Section("wod.movement_section".localized) {
+                    TextField("wod.movement_name_placeholder".localized, text: $movementName)
                 }
                 
-                Section("Reps (optional)") {
-                    TextField("Number of reps", text: $reps)
+                Section("wod.reps_optional_section".localized) {
+                    TextField("wod.number_of_reps_placeholder".localized, text: $reps)
                         .keyboardType(.numberPad)
                 }
                 
-                Section("RX Weight (optional)") {
-                    TextField("Male (e.g., 43kg)", text: $rxWeightMale)
-                    TextField("Female (e.g., 30kg)", text: $rxWeightFemale)
+                Section("wod.rx_weight_optional_section".localized) {
+                    TextField("wod.male_weight_placeholder".localized, text: $rxWeightMale)
+                    TextField("wod.female_weight_placeholder".localized, text: $rxWeightFemale)
                 }
             }
-            .navigationTitle("Add Movement")
+            .navigationTitle("wod.add_movement_title".localized)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Cancel") { dismiss() }
+                    Button("common.cancel".localized) { dismiss() }
                 }
                 
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Add") {
+                    Button("common.add".localized) {
                         let movement = WODBuilderView.WODMovementData(
                             name: movementName,
                             reps: reps,
@@ -379,29 +379,29 @@ private struct MovementEditView: View {
     var body: some View {
         NavigationStack {
             Form {
-                Section("Movement") {
-                    TextField("Movement name", text: $movementName)
+                Section("wod.movement_section".localized) {
+                    TextField("wod.movement_name_placeholder".localized, text: $movementName)
                 }
                 
-                Section("Reps (optional)") {
-                    TextField("Number of reps", text: $reps)
+                Section("wod.reps_optional_section".localized) {
+                    TextField("wod.number_of_reps_placeholder".localized, text: $reps)
                         .keyboardType(.numberPad)
                 }
                 
-                Section("RX Weight (optional)") {
-                    TextField("Male (e.g., 43kg)", text: $rxWeightMale)
-                    TextField("Female (e.g., 30kg)", text: $rxWeightFemale)
+                Section("wod.rx_weight_optional_section".localized) {
+                    TextField("wod.male_weight_placeholder".localized, text: $rxWeightMale)
+                    TextField("wod.female_weight_placeholder".localized, text: $rxWeightFemale)
                 }
             }
-            .navigationTitle("Edit Movement")
+            .navigationTitle("wod.edit_movement_title".localized)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Cancel") { dismiss() }
+                    Button("common.cancel".localized) { dismiss() }
                 }
                 
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Save") {
+                    Button("common.save".localized) {
                         var updated = movement
                         updated.name = movementName
                         updated.reps = reps

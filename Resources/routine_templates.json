@@ -1,0 +1,44 @@
+{
+  "templates": [
+    {
+      "id": "upper-body-template",
+      "name": "Upper Body Template",
+      "nameEN": "Upper Body Template",
+      "nameTR": "Üst Vücut Şablonu",
+      "nameES": "Plantilla Tren Superior",
+      "nameDE": "Oberkörper Vorlage",
+      "category": "upper",
+      "estimatedDuration": 60,
+      "isTemplate": true,
+      "isCustom": false,
+      "exercises": [
+        "Bench Press",
+        "Barbell Row",
+        "Overhead Press",
+        "Pull Up",
+        "Dips",
+        "Barbell Curls"
+      ]
+    },
+    {
+      "id": "lower-body-template",
+      "name": "Lower Body Template",
+      "nameEN": "Lower Body Template",
+      "nameTR": "Alt Vücut Şablonu",
+      "nameES": "Plantilla Tren Inferior",
+      "nameDE": "Unterkörper Vorlage",
+      "category": "lower",
+      "estimatedDuration": 60,
+      "isTemplate": true,
+      "isCustom": false,
+      "exercises": [
+        "Squat",
+        "Romanian Deadlift",
+        "Bulgarian Split Squat",
+        "Hip Thrust",
+        "Walking Lunges",
+        "Calf Raises"
+      ]
+    }
+  ]
+}

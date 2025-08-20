@@ -131,7 +131,11 @@ struct WODQRScannerView: View {
                     EnhancedWODTimerView(
                         wod: wod,
                         movements: wod.movements,
-                        isRX: true
+                        isRX: true,
+                        onCompletion: {
+                            showingTimer = false
+                            dismiss()
+                        }
                     )
                 }
             }
@@ -168,7 +172,6 @@ struct WODQRScannerView: View {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                 isProcessing = false
                 showingTimer = true
-                dismiss() // Dismiss scanner when timer opens
             }
         } catch {
             errorMessage = error.localizedDescription

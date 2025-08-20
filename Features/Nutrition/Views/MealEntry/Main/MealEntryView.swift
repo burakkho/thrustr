@@ -212,8 +212,8 @@ extension MealEntryView {
         VStack(alignment: .leading, spacing: 12) {
             // Mode toggle
             Picker("", selection: $inputMode) {
-                Text("Gram").tag(PortionInputMode.grams)
-                Text("Porsiyon").tag(PortionInputMode.serving)
+                Text("nutrition.portion_input.grams".localized).tag(PortionInputMode.grams)
+                Text("nutrition.portion_input.serving".localized).tag(PortionInputMode.serving)
             }
             .pickerStyle(.segmented)
             
@@ -232,7 +232,7 @@ extension MealEntryView {
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                     HStack(spacing: 8) {
-                        Text("Adet")
+                        Text("nutrition.portion_input.count".localized)
                         TextField("1", value: $servingCount, format: .number)
                             .textFieldStyle(.roundedBorder)
                             .keyboardType(.decimalPad)

@@ -47,7 +47,7 @@ struct EntryRowView: View {
         Button(role: .destructive) {
             deleteEntry()
         } label: {
-            Label("Delete", systemImage: "trash")
+            Label("common.delete".localized, systemImage: "trash")
         }
     }
     
@@ -55,7 +55,7 @@ struct EntryRowView: View {
         Button {
             onEdit()
         } label: {
-            Label("Edit", systemImage: "pencil")
+            Label("common.edit".localized, systemImage: "pencil")
         }
         .tint(.orange)
     }
@@ -64,7 +64,7 @@ struct EntryRowView: View {
         Button {
             duplicateEntry()
         } label: {
-            Label("Duplicate", systemImage: "doc.on.doc")
+            Label("common.duplicate".localized, systemImage: "doc.on.doc")
         }
         .tint(.green)
     }

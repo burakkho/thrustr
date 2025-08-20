@@ -213,7 +213,7 @@ private struct LoadingOverlay: View {
             Color.black.opacity(0.25).ignoresSafeArea()
             VStack(spacing: 12) {
                 ProgressView()
-                Text("Ürün getiriliyor…")
+                Text("nutrition.loading_product".localized)
                     .font(.subheadline)
                     .foregroundColor(.white)
             }
@@ -369,7 +369,7 @@ extension FoodSelectionView {
                 }
             }
             if hasOffResults {
-                Section(header: Text("OpenFoodFacts")) {
+                Section(header: Text("nutrition.openfoodfacts_section".localized)) {
                     ForEach(offResults, id: \.id) { food in
                         FoodRowView(food: food) {
                             // Prevent duplicates by barcode if exists

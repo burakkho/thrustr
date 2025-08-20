@@ -268,7 +268,7 @@ private extension MeasurementInput {
                 errorText = "\(Int(range.lowerBound)) - \(Int(range.upperBound)) \(unit)"
             }
         } else {
-            errorText = "Geçersiz değer"
+            errorText = "validation.invalid_value".localized
         }
     }
 }

@@ -283,7 +283,7 @@ enum LocalizationKeys {
             static let sets = "training.exercise.sets"
         }
 
-        // MARK: - WOD / METCON
+        // MARK: - METCON
         enum WOD {
             static let title = "training.wod.title"
             static let result = "training.wod.result"
@@ -345,6 +345,115 @@ enum LocalizationKeys {
             }
         }
         
+        // MARK: - Cardio
+        enum Cardio {
+            static let title = "training.cardio.title"
+            
+            // Main tabs
+            static let templates = "training.cardio.templates"
+            static let history = "training.cardio.history"
+            
+            // Exercise types
+            static let running = "training.cardio.running"
+            static let cycling = "training.cardio.cycling"
+            static let rowing = "training.cardio.rowing"
+            static let skiing = "training.cardio.skiing"
+            static let walking = "training.cardio.walking"
+            
+            // Session types
+            static let distanceGoal = "training.cardio.distanceGoal"
+            static let timeGoal = "training.cardio.timeGoal"
+            static let sessionType = "training.cardio.sessionType"
+            static let target = "training.cardio.target"
+            
+            // Session input
+            static let newSession = "training.cardio.newSession"
+            static let setGoal = "training.cardio.setGoal"
+            static let quickSelect = "training.cardio.quickSelect"
+            static let customDistance = "training.cardio.customDistance"
+            static let customDuration = "training.cardio.customDuration"
+            static let notes = "training.cardio.notes"
+            static let notesPlaceholder = "training.cardio.notesPlaceholder"
+            static let equipmentOptions = "training.cardio.equipmentOptions"
+            static let startSession = "training.cardio.startSession"
+            
+            // Session tracking
+            static let sessionTracking = "training.cardio.sessionTracking"
+            static let logResults = "training.cardio.logResults"
+            static let duration = "training.cardio.duration"
+            static let distance = "training.cardio.distance"
+            static let targetProgress = "training.cardio.targetProgress"
+            static let performance = "training.cardio.performance"
+            static let pace = "training.cardio.pace"
+            static let speed = "training.cardio.speed"
+            static let calories = "training.cardio.calories"
+            static let additionalInfo = "training.cardio.additionalInfo"
+            static let heartRate = "training.cardio.heartRate"
+            static let feeling = "training.cardio.feeling"
+            static let sessionNotes = "training.cardio.sessionNotes"
+            static let sessionNotesPlaceholder = "training.cardio.sessionNotesPlaceholder"
+            static let completeSession = "training.cardio.completeSession"
+            static let saveSession = "training.cardio.saveSession"
+            
+            // Workout details
+            static let workoutDetails = "training.cardio.workoutDetails"
+            static let type = "training.cardio.type"
+            static let activity = "training.cardio.activity"
+            static let flexibility = "training.cardio.flexibility"
+            static let anyDistanceTime = "training.cardio.anyDistanceTime"
+            static let equipment = "training.cardio.equipment"
+            static let personalRecord = "training.cardio.personalRecord"
+            static let statistics = "training.cardio.statistics"
+            static let totalSessions = "training.cardio.totalSessions"
+            static let lastPerformed = "training.cardio.lastPerformed"
+            static let recentSessions = "training.cardio.recentSessions"
+            static let startWorkout = "training.cardio.startWorkout"
+            static let duplicate = "training.cardio.duplicate"
+            static let delete = "training.cardio.delete"
+            
+            // History and results
+            static let noHistory = "training.cardio.noHistory"
+            static let noHistoryMessage = "training.cardio.noHistoryMessage"
+            static let browseTemplates = "training.cardio.browseTemplates"
+            static let personalRecordBadge = "training.cardio.personalRecordBadge"
+            static let lastSession = "training.cardio.lastSession"
+            
+            // Categories
+            static let exerciseTypes = "training.cardio.exerciseTypes"
+            static let customSessions = "training.cardio.customSessions"
+            
+            // Empty states
+            static let noExerciseTypes = "training.cardio.noExerciseTypes"
+            static let adjustSearch = "training.cardio.adjustSearch"
+            static let clearSearch = "training.cardio.clearSearch"
+            static let neverAttempted = "training.cardio.neverAttempted"
+            
+            // Equipment types
+            static let outdoor = "training.cardio.outdoor"
+            static let treadmill = "training.cardio.treadmill"
+            static let rowErg = "training.cardio.rowErg"
+            static let bikeErg = "training.cardio.bikeErg"
+            static let skiErg = "training.cardio.skiErg"
+            
+            // Feelings
+            static let terrible = "training.cardio.terrible"
+            static let bad = "training.cardio.bad"
+            static let okay = "training.cardio.okay"
+            static let good = "training.cardio.good"
+            static let great = "training.cardio.great"
+            
+            // Units and formatting
+            static let km = "training.cardio.km"
+            static let meters = "training.cardio.meters"
+            static let minutes = "training.cardio.minutes"
+            static let seconds = "training.cardio.seconds"
+            static let hours = "training.cardio.hours"
+            static let bpm = "training.cardio.bpm"
+            static let kcal = "training.cardio.kcal"
+            static let minPerKm = "training.cardio.minPerKm"
+            static let kmPerHour = "training.cardio.kmPerHour"
+        }
+        
         enum Category {
             static let push = "training.category.push"
             static let pull = "training.category.pull"
@@ -388,6 +497,7 @@ enum LocalizationKeys {
             static let reps = "training.set.reps"
             static let meters = "training.set.meters"
             static let completed = "training.set.completed"
+            static let sameAsLast = "training.set.same_as_last"
         }
         
         enum Rest {
@@ -1393,6 +1503,40 @@ enum LocalizationKeys {
             static let progress = "photo_instruction_progress"
         }
     
+    // MARK: - Routine
+    enum Routine {
+        static let title = "routine.title"
+        static let templates = "routine.templates"
+        static let custom = "routine.custom"
+        static let createNew = "routine.createNew"
+        static let createNewSubtitle = "routine.createNew.subtitle"
+        static let copyCustomize = "routine.copyCustomize"
+        static let ourTemplates = "routine.ourTemplates"
+        static let myCustomRoutines = "routine.myCustomRoutines"
+        static let featuredTemplates = "routine.featuredTemplates"
+        static let exercises = "routine.exercises"
+        static let emptyCustomTitle = "routine.empty.custom.title"
+        static let emptyCustomSubtitle = "routine.empty.custom.subtitle"
+        static let favorites = "routine.favorites"
+        
+        enum Create {
+            static let title = "routine.create.title"
+            static let method = "routine.create.method"
+            static let fromScratch = "routine.create.fromScratch"
+            static let fromScratchDesc = "routine.create.fromScratch.desc"
+            static let fromTemplate = "routine.create.fromTemplate"
+            static let fromTemplateDesc = "routine.create.fromTemplate.desc"
+        }
+        
+        enum Template {
+            static let exercises = "routine.template.exercises"
+            static let duration = "routine.template.duration"
+            static let sets = "routine.template.sets"
+            static let start = "routine.template.start"
+            static let customize = "routine.template.customize"
+        }
+    }
+    
     // MARK: - Common
     enum Common {
         static let save = "common.save"
@@ -1413,6 +1557,7 @@ enum LocalizationKeys {
         static let completed = "common.completed"
         static let category = "common.category"
         static let categoryStats = "common.category_stats"
+        static let search = "common.search"
         // Added for confirmation prompts
         static let confirmDiscard = "common.confirm_discard"
         static let discard = "common.discard"

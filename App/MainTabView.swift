@@ -66,6 +66,6 @@ struct MainTabView: View {
 
 #Preview {
     MainTabView()
-        .modelContainer(for: [User.self, Workout.self, Exercise.self, Food.self, NutritionEntry.self])
+        .modelContainer(for: [User.self, LiftSession.self, Exercise.self, Food.self, NutritionEntry.self])
         .environmentObject(LanguageManager.shared)
 }

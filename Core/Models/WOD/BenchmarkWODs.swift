@@ -11,22 +11,6 @@ struct BenchmarkWOD {
     let category: WODCategory
 }
 
-enum WODCategory: String, CaseIterable {
-    case girls = "The Girls"
-    case heroes = "Hero WODs"
-    case opens = "Open WODs"
-    case custom = "Custom"
-    
-    var icon: String {
-        switch self {
-        case .girls: return "figure.run"
-        case .heroes: return "star.fill"
-        case .opens: return "trophy.fill"
-        case .custom: return "square.and.pencil"
-        }
-    }
-}
-
 // MARK: - Benchmark WODs Database
 struct BenchmarkWODDatabase {
     static let all: [BenchmarkWOD] = girls + heroes

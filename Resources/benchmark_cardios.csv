@@ -1,0 +1,7 @@
+name,nameEN,nameTR,nameES,nameDE,type,category,description,descriptionTR,descriptionES,descriptionDE,distance,targetTime,exercise
+1000m Row,1000m Row,1000m Kürek,1000m Remo,1000m Rudern,distance,benchmark,"Row 1000 meters for time","Süreye karşı 1000 metre kürek","Remar 1000 metros por tiempo","1000 Meter auf Zeit rudern",1000,240,Rowing
+1000m Ski,1000m Ski,1000m Kayak,1000m Esquí,1000m Ski,distance,benchmark,"Ski 1000 meters for time","Süreye karşı 1000 metre kayak","Esquiar 1000 metros por tiempo","1000 Meter auf Zeit Ski-Ergometer",1000,240,Ski Erg
+2000m Bike,2000m Bike,2000m Bisiklet,2000m Bicicleta,2000m Fahrrad,distance,benchmark,"Bike 2000 meters for time","Süreye karşı 2000 metre bisiklet","2000 metros en bicicleta por tiempo","2000 Meter auf Zeit Fahrrad",2000,300,Assault Bike
+5000m Run,5000m Run,5000m Koşu,5000m Carrera,5000m Lauf,distance,benchmark,"Run 5000 meters for time","Süreye karşı 5000 metre koşu","Correr 5000 metros por tiempo","5000 Meter auf Zeit laufen",5000,1500,Running
+500m Row Sprint,500m Row Sprint,500m Kürek Sprint,500m Remo Sprint,500m Rudern Sprint,distance,benchmark,"Sprint 500 meters on rower","Kürek makinesinde 500 metre sprint","Sprint de 500 metros en remo","500 Meter Sprint am Rudergerät",500,90,Rowing
+10 min AMRAP Run,10 min AMRAP Run,10 dk AMRAP Koşu,10 min AMRAP Carrera,10 min AMRAP Lauf,time,benchmark,"Max distance in 10 minutes","10 dakikada maksimum mesafe","Distancia máxima en 10 minutos","Maximale Distanz in 10 Minuten",0,600,Running

@@ -4,7 +4,7 @@ import SwiftData
 struct AchievementsView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var users: [User]
-    @Query private var workouts: [Workout]
+    @Query private var liftSessions: [LiftSession]
     @Query private var weightEntries: [WeightEntry]
     @Query private var nutritionEntries: [NutritionEntry]
     
@@ -18,7 +18,7 @@ struct AchievementsView: View {
         Achievement.allAchievements.map { achievement in
             var updatedAchievement = achievement
             updatedAchievement.updateProgress(
-                workouts: workouts,
+                liftSessions: liftSessions,
                 weightEntries: weightEntries,
                 nutritionEntries: nutritionEntries,
                 user: currentUser
@@ -348,21 +348,23 @@ struct Achievement: Identifiable {
         min(currentProgress / targetValue, 1.0)
     }
     
-    mutating func updateProgress(workouts: [Workout], weightEntries: [WeightEntry], nutritionEntries: [NutritionEntry], user: User?) {
+    mutating func updateProgress(liftSessions: [LiftSession], weightEntries: [WeightEntry], nutritionEntries: [NutritionEntry], user: User?) {
+        let completedSessions = liftSessions.filter { $0.isCompleted }
+        
         switch title {
         case LocalizationKeys.Achievements.Item.firstWorkoutTitle.localized:
-            currentProgress = Double(workouts.count >= 1 ? 1 : 0)
+            currentProgress = Double(completedSessions.count >= 1 ? 1 : 0)
         case LocalizationKeys.Achievements.Item.w10Title.localized:
-            currentProgress = Double(min(workouts.count, 10))
+            currentProgress = Double(min(completedSessions.count, 10))
         case LocalizationKeys.Achievements.Item.w50Title.localized:
-            currentProgress = Double(min(workouts.count, 50))
+            currentProgress = Double(min(completedSessions.count, 50))
         case LocalizationKeys.Achievements.Item.w100Title.localized:
-            currentProgress = Double(min(workouts.count, 100))
+            currentProgress = Double(min(completedSessions.count, 100))
         case LocalizationKeys.Achievements.Item.weekendWarriorTitle.localized:
-            let weekendWorkouts = workouts.filter { Calendar.current.isDateInWeekend($0.date) }.count
-            currentProgress = Double(min(weekendWorkouts, 10))
+            let weekendSessions = completedSessions.filter { Calendar.current.isDateInWeekend($0.startDate) }.count
+            currentProgress = Double(min(weekendSessions, 10))
         case LocalizationKeys.Achievements.Item.weightHunterTitle.localized:
-            let totalVolume = workouts.reduce(0) { $0 + $1.totalVolume }
+            let totalVolume = completedSessions.reduce(0) { $0 + $1.totalVolume }
             currentProgress = min(totalVolume, 10000)
         case LocalizationKeys.Achievements.Item.firstWeightTitle.localized:
             currentProgress = Double(weightEntries.count >= 1 ? 1 : 0)

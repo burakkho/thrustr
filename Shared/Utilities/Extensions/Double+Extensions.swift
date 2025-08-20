@@ -252,24 +252,74 @@ import Foundation
 
 extension String {
     
-    // MARK: - Main Localization Method
+    // MARK: - Main Localization Method with Multi-level Fallback
     var localized: String {
         // Try to get the current language from UserDefaults
         let savedLanguage = UserDefaults.standard.string(forKey: "app_language") ?? "system"
         
         // Determine which bundle to use
         if savedLanguage == "system" {
-            // Use system language
-            return NSLocalizedString(self, comment: "")
+            // Use system language with fallback
+            return localizedWithFallback()
         } else {
-            // Use specific language bundle
-            guard let path = Bundle.main.path(forResource: savedLanguage, ofType: "lproj"),
+            // Use specific language bundle with fallback
+            return localizedWithFallback(preferredLanguage: savedLanguage)
+        }
+    }
+    
+    // MARK: - Advanced Fallback Mechanism
+    private func localizedWithFallback(preferredLanguage: String? = nil) -> String {
+        let fallbackLanguages: [String]
+        
+        if let preferredLanguage = preferredLanguage {
+            // Specific language requested - try it first, then fallback chain
+            fallbackLanguages = [preferredLanguage, "en", "tr", "Base"]
+        } else {
+            // System language - determine best supported language, then fallback chain
+            let systemLanguages = Locale.preferredLanguages.map { String($0.prefix(2)) }
+            let supportedLanguages = ["tr", "en", "es", "de"]
+            
+            // Find first supported language from system preferences
+            let detectedLanguage = systemLanguages.first { supportedLanguages.contains($0) } ?? "en"
+            fallbackLanguages = [detectedLanguage, "en", "Base"]
+        }
+        
+        // Try each language in fallback chain
+        for language in fallbackLanguages {
+            if let translation = tryLocalization(language: language) {
+                // Check if translation is actually different from key (not missing)
+                if translation != self {
+                    return translation
+                }
+            }
+        }
+        
+        // Final fallback - return the key itself with a warning
+        print("⚠️ No translation found for key: '\(self)' in any supported language")
+        return self
+    }
+    
+    // MARK: - Try Localization for Specific Language
+    private func tryLocalization(language: String) -> String? {
+        // Handle Base localization
+        if language == "Base" {
+            guard let path = Bundle.main.path(forResource: "Base", ofType: "lproj"),
                   let bundle = Bundle(path: path) else {
-                // Fallback to default localization
                 return NSLocalizedString(self, comment: "")
             }
             return NSLocalizedString(self, bundle: bundle, comment: "")
         }
+        
+        // Handle specific language
+        guard let path = Bundle.main.path(forResource: language, ofType: "lproj"),
+              let bundle = Bundle(path: path) else {
+            return nil
+        }
+        
+        let translation = NSLocalizedString(self, bundle: bundle, comment: "")
+        
+        // Return nil if translation equals the key (meaning no translation found)
+        return translation == self ? nil : translation
     }
     
     // MARK: - Localization with Arguments

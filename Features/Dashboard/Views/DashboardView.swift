@@ -27,7 +27,7 @@ struct DashboardView: View {
                         viewModel.showingWeightEntry = true
                     })
                     
-                    RecentWorkoutsSection(workouts: viewModel.recentWorkouts)
+                    RecentWorkoutsSection()
                     WeeklyProgressSection(stats: viewModel.weeklyStats)
                 }
                 .padding(DashboardSpacing.contentPadding)
@@ -81,7 +81,7 @@ private struct LoadingOverlay: View {
 
 #Preview {
     DashboardView()
-        .modelContainer(for: [User.self, Workout.self, Exercise.self, Food.self, NutritionEntry.self])
+        .modelContainer(for: [User.self, LiftSession.self, Exercise.self, Food.self, NutritionEntry.self])
         .environmentObject(TabRouter())
         .environmentObject(HealthKitService())
 }

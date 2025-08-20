@@ -48,13 +48,13 @@ struct PersonalInfoStepView: View {
                             .submitLabel(.next)
                             .accessibilityLabel(Text(LocalizationKeys.Onboarding.PersonalInfo.name.localized))
                             .accessibilityHint(Text("İsminizi girin"))
-								.onChange(of: data.name) { _, _ in
-									// Debounce validation to avoid stutter while typing
-									nameDebounceWork?.cancel()
-									let task = DispatchWorkItem { validateAndUpdateErrors() }
-									nameDebounceWork = task
-									DispatchQueue.main.asyncAfter(deadline: .now() + 0.25, execute: task)
-								}
+                            .onChange(of: data.name) { _, _ in
+                                // Debounce validation to avoid stutter while typing
+                                nameDebounceWork?.cancel()
+                                let task = DispatchWorkItem { validateAndUpdateErrors() }
+                                nameDebounceWork = task
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.25, execute: task)
+                            }
                         if let nameError = nameError {
                             Text(nameError)
                                 .font(.caption)
@@ -84,9 +84,9 @@ struct PersonalInfoStepView: View {
 
                     // Unit System Selection (after Age, before Gender)
                     VStack(alignment: .leading, spacing: 8) {
-                        Text("Birim Sistemi")
+                        Text("onboarding.unit_system".localized)
                             .font(.headline)
-                        Picker("Birim Sistemi", selection: Binding(
+                        Picker("onboarding.unit_system".localized, selection: Binding(
                             get: { data.unitSystem },
                             set: { newValue in
                                 withAnimation(.easeInOut(duration: 0.25)) {
@@ -94,15 +94,15 @@ struct PersonalInfoStepView: View {
                                 }
                             }
                         )) {
-                            Text("Metric").tag("metric")
-                            Text("Imperial").tag("imperial")
+                            Text("units.metric".localized).tag("metric")
+                            Text("units.imperial".localized).tag("imperial")
                         }
                         .pickerStyle(SegmentedPickerStyle())
                         .padding(8)
                         .background(Color(.systemGray6))
                         .cornerRadius(12)
                         
-                        Text(data.unitSystem == "metric" ? "cm, kg formatı" : "ft, lbs formatı")
+                        Text(data.unitSystem == "metric" ? "units.metric_format".localized : "units.imperial_format".localized)
                             .font(.caption)
                             .foregroundColor(.secondary)
                     }
@@ -173,7 +173,7 @@ struct PersonalInfoStepView: View {
                                     .font(.headline)
                                 HStack(spacing: 12) {
                                     VStack(alignment: .leading, spacing: 4) {
-                                        Text("Feet")
+                                        Text("units.feet".localized)
                                             .font(.caption)
                                             .foregroundColor(.secondary)
                                         Stepper(value: $heightFeet, in: 4...7) {
@@ -183,7 +183,7 @@ struct PersonalInfoStepView: View {
                                         .onChange(of: heightFeet) { _, _ in updateMetricHeightFromImperial() }
                                     }
                                     VStack(alignment: .leading, spacing: 4) {
-                                        Text("Inches")
+                                        Text("units.inches".localized)
                                             .font(.caption)
                                             .foregroundColor(.secondary)
                                         Stepper(value: $heightInches, in: 0...11) {
@@ -235,13 +235,13 @@ struct PersonalInfoStepView: View {
                                 Text(LocalizationKeys.Onboarding.PersonalInfo.weight.localized)
                                     .font(.headline)
                                 HStack {
-                                    TextField("lbs", text: $weightLbsText)
+                                    TextField("units.lbs".localized, text: $weightLbsText)
                                         .keyboardType(.decimalPad)
                                         .textFieldStyle(RoundedBorderTextFieldStyle())
                                         .onChange(of: weightLbsText) { _, newValue in
                                             updateMetricWeightFromLbsText(newValue)
                                         }
-                                    Text("lbs")
+                                    Text("units.lbs".localized)
                                         .foregroundColor(.secondary)
                                 }
                                 .padding(8)
@@ -257,7 +257,7 @@ struct PersonalInfoStepView: View {
                 }
 				.padding(.horizontal)
             }
-			.scrollDismissesKeyboard(.interactively)
+			.scrollDismissesKeyboard(.immediately) // ✅ Daha güvenli keyboard handling
             
             PrimaryButton(title: LocalizationKeys.Onboarding.continueAction.localized, icon: "arrow.right", isEnabled: isFormValid) {
                 validateAndUpdateErrors()
@@ -274,6 +274,11 @@ struct PersonalInfoStepView: View {
 				}
 			}
         .onAppear { validateAndUpdateErrors() }
+        .onTapGesture {
+            // ✅ Klavyeyi kapatmak için tap gesture
+            focusedField = nil
+        }
+        .ignoresSafeArea(.keyboard, edges: .bottom) // ✅ Keyboard safe area'yı ignore et
     }
 
     // MARK: - Validation Helpers
