@@ -19,7 +19,8 @@ struct TrainingView: View {
                     tabs: [
                         TrainingTab(title: "training.lift.title".localized, icon: "dumbbell.fill"),
                         TrainingTab(title: LocalizationKeys.Training.Cardio.title.localized, icon: "heart.fill"),
-                        TrainingTab(title: "METCON", icon: "flame.fill")
+                        TrainingTab(title: "METCON", icon: "flame.fill"),
+                        TrainingTab(title: "Warm-Up", icon: "thermometer.sun")
                     ]
                 )
                 
@@ -34,6 +35,9 @@ struct TrainingView: View {
                             .environment(coordinator)
                     case .wod:
                         WODMainView()
+                            .environment(coordinator)
+                    case .warmup:
+                        WarmUpMainView()
                             .environment(coordinator)
                     }
                 }

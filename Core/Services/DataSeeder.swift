@@ -1,14 +1,13 @@
 import SwiftData
 import Foundation
 
-@MainActor
 class DataSeeder {
     
     // MARK: - Configuration
     private struct SeedingConfig {
-        static let batchSize = 100
+        static let batchSize = 10      // Reduced for stability
         static let maxRetries = 3
-        static let yieldInterval = 50 // Process 50 items then yield
+        static let yieldInterval = 10  // More frequent yielding
     }
     
     // MARK: - Main Seed Function
@@ -19,26 +18,45 @@ class DataSeeder {
             Logger.info("Database is empty, starting optimized seeding...")
             
             do {
-                // Core data seeding with proper error handling
-                try await withThrowingTaskGroup(of: Void.self) { group in
-                    // Core data (exercises + foods) - parallel
-                    group.addTask { try await seedExercises(modelContext: modelContext) }
-                    group.addTask { try await seedFoods(modelContext: modelContext) }
-                    
-                    // Secondary data - parallel group
-                    group.addTask { try await seedBenchmarkWODsIfNeeded(modelContext: modelContext) }
-                    group.addTask { try await seedCrossFitMovementsFromCSVIfNeeded(modelContext: modelContext) }
-                    group.addTask { try await seedBenchmarkCardiosIfNeeded(modelContext: modelContext) }
-                    
-                    // JSON-based data - parallel group
-                    group.addTask { try await seedLiftProgramsFromJSONIfNeeded(modelContext: modelContext) }
-                    group.addTask { try await seedRoutineTemplatesIfNeeded(modelContext: modelContext) }
-                    
-                    // Wait for all tasks to complete
-                    try await group.waitForAll()
+                // Sequential seeding for SwiftData compatibility
+                Logger.info("Starting sequential database seeding...")
+                
+                // Core data seeding - sequential with individual error handling
+                do {
+                    try await seedExercises(modelContext: modelContext)
+                } catch {
+                    Logger.error("Failed to seed exercises: \(error)")
+                    throw error
                 }
                 
-                // Normalization - only after new data is seeded
+                // Warmup exercises seeding (required for templates)
+                do {
+                    try await seedWarmupExercises(modelContext: modelContext)
+                } catch {
+                    Logger.warning("Failed to seed warmup exercises: \(error)")
+                    // Don't throw - warmup is optional
+                }
+                
+                do {
+                    try await seedFoods(modelContext: modelContext)
+                } catch {
+                    Logger.error("Failed to seed foods: \(error)")
+                    throw error
+                }
+                
+                // Secondary data seeding - sequential
+                try await seedBenchmarkWODsIfNeeded(modelContext: modelContext)
+                try await seedCrossFitMovementsFromCSVIfNeeded(modelContext: modelContext)
+                try await seedBenchmarkCardiosIfNeeded(modelContext: modelContext)
+                
+                // JSON-based data seeding - sequential
+                try await seedLiftProgramsFromJSONIfNeeded(modelContext: modelContext)
+                try await seedRoutineTemplatesIfNeeded(modelContext: modelContext)
+                
+                // Full warmup template seeding from CSV
+                try await seedWarmUpTemplatesIfNeeded(modelContext: modelContext)
+                
+                // Normalization - after all data is seeded
                 await normalizeDataAfterSeeding(modelContext: modelContext)
                 
                 // Food aliases - depends on foods being seeded
@@ -48,7 +66,8 @@ class DataSeeder {
                 
             } catch {
                 Logger.error("Database seeding failed: \(error)")
-                // Fallback to basic seeding
+                // Fallback to basic seeding with minimal test data
+                Logger.info("Attempting fallback seeding...")
                 await fallbackSeeding(modelContext: modelContext)
             }
         } else {
@@ -67,8 +86,34 @@ class DataSeeder {
     
     /// Fallback seeding for critical failures
     private static func fallbackSeeding(modelContext: ModelContext) async {
-        Logger.warning("Using fallback seeding...")
-        seedTestExercises(modelContext: modelContext)
+        Logger.warning("🚨 Using fallback seeding with minimal test data...")
+        
+        do {
+            // Create absolutely minimal test exercises
+            let testExercises = [
+                ("Squat", "Squat", "legs", "bodyweight"),
+                ("Push Up", "Push Up", "push", "bodyweight"),
+                ("Plank", "Plank", "core", "bodyweight")
+            ]
+            
+            for (nameEN, nameTR, category, equipment) in testExercises {
+                let exercise = Exercise(
+                    nameEN: nameEN,
+                    nameTR: nameTR,
+                    category: category,
+                    equipment: equipment
+                )
+                modelContext.insert(exercise)
+            }
+            
+            // Try to save the minimal data
+            try modelContext.save()
+            Logger.success("✅ Fallback seeding completed with \(testExercises.count) basic exercises")
+        } catch {
+            Logger.error("❌ Even fallback seeding failed: \(error)")
+            // At this point, the app will have an empty database
+            // but it should still function
+        }
     }
     
     /// Optimized: Combined normalization after seeding
@@ -76,13 +121,13 @@ class DataSeeder {
         await Task.yield() // Keep UI responsive
         
         // Run all normalizations together
-        fixOlympicExerciseCategories(modelContext: modelContext)
+        await fixOlympicExerciseCategories(modelContext: modelContext)
         await Task.yield()
         
-        normalizeExerciseCategoriesToPartTypes(modelContext: modelContext)
+        await normalizeExerciseCategoriesToPartTypes(modelContext: modelContext)
         await Task.yield()
         
-        normalizeFoodData(modelContext: modelContext)
+        await normalizeFoodData(modelContext: modelContext)
         await Task.yield()
         
         Logger.info("Data normalization completed")
@@ -91,17 +136,21 @@ class DataSeeder {
     // MARK: - Standardized CSV Parser
     private struct CSVParser {
         static func parseCSVRow(_ row: String) -> [String] {
-            // Very simple CSV parsing - just split by comma
-            // This is safer and should prevent crashes
+            // Very simple and safe CSV parsing
             let fields = row.components(separatedBy: ",")
             return fields.map { field in
-                field.trimmingCharacters(in: .whitespacesAndNewlines)
-                    .trimmingCharacters(in: CharacterSet(charactersIn: "\""))
+                let trimmed = field.trimmingCharacters(in: .whitespacesAndNewlines)
+                // Remove quotes safely
+                if trimmed.hasPrefix("\"") && trimmed.hasSuffix("\"") && trimmed.count > 1 {
+                    return String(trimmed.dropFirst().dropLast())
+                }
+                return trimmed
             }
         }
         
         static func parseCSVFile(_ filename: String) throws -> [[String]] {
             guard let url = Bundle.main.url(forResource: filename, withExtension: "csv") else {
+                Logger.error("CSV file not found in bundle: \(filename).csv")
                 throw DataSeederError.fileNotFound(filename)
             }
             
@@ -218,12 +267,31 @@ class DataSeeder {
         }
     }
     
-    // MARK: - Seed Exercises with Improved Error Handling
+    // MARK: - Seed Exercises with Improved Error Handling  
     private static func seedExercises(modelContext: ModelContext) async throws {
-        let resourceName = Bundle.main.url(forResource: "basic_exercises", withExtension: "csv") != nil ? "basic_exercises" : "exercises"
+        // Thread-safe resource name selection - first check what's actually in the bundle
+        let resourceName: String = {
+            // First try the new name
+            if Bundle.main.url(forResource: "lift_exercises", withExtension: "csv") != nil {
+                return "lift_exercises"
+            }
+            // Try legacy names
+            if Bundle.main.url(forResource: "basic_exercises", withExtension: "csv") != nil {
+                return "basic_exercises"
+            }
+            if Bundle.main.url(forResource: "exercises", withExtension: "csv") != nil {
+                return "exercises"
+            }
+            // If none found, we'll get an error in parseCSVFile
+            return "lift_exercises"
+        }()
         
         do {
-            let rows = try CSVParser.parseCSVFile(resourceName)
+            // Load basic exercises (lift, strength, etc.)
+            let basicRows = try CSVParser.parseCSVFile(resourceName)
+            Logger.info("Loaded \(basicRows.count) basic exercise rows")
+            
+            let rows = basicRows
             var successCount = 0
             var processedCount = 0
             
@@ -255,7 +323,7 @@ class DataSeeder {
                             await Task.yield()
                         }
                     } catch {
-                        Logger.warning("Failed to create exercise at row \(index): \(error)")
+                        Logger.error("❌ Failed to create exercise at row \(index): \(error), columns: \(columns)")
                         continue
                     }
                 }
@@ -288,6 +356,7 @@ class DataSeeder {
             throw DataSeederError.invalidDataFormat("Exercise name cannot be empty")
         }
         
+        // Create exercise with basic info first
         let exercise = Exercise(
             nameEN: nameEN,
             nameTR: nameTR.isEmpty ? nameEN : nameTR,
@@ -295,11 +364,19 @@ class DataSeeder {
             equipment: equipment
         )
         
-        // Safely parse boolean values
-        exercise.supportsWeight = columns.count > 4 && columns[4].lowercased() == "true"
-        exercise.supportsReps = columns.count > 5 && columns[5].lowercased() == "true"
-        exercise.supportsTime = columns.count > 6 && columns[6].lowercased() == "true"
-        exercise.supportsDistance = columns.count > 7 && columns[7].lowercased() == "true"
+        // Parse boolean values safely and update properties
+        if columns.count > 4 {
+            exercise.supportsWeight = columns[4].lowercased() == "true"
+        }
+        if columns.count > 5 {
+            exercise.supportsReps = columns[5].lowercased() == "true"
+        }
+        if columns.count > 6 {
+            exercise.supportsTime = columns[6].lowercased() == "true"
+        }
+        if columns.count > 7 {
+            exercise.supportsDistance = columns[7].lowercased() == "true"
+        }
         
         return exercise
     }
@@ -432,9 +509,63 @@ class DataSeeder {
         return successCount
     }
     
+    // MARK: - Seed Warmup Exercises Separately
+    private static func seedWarmupExercises(modelContext: ModelContext) async throws {
+        Logger.info("🔥 Starting warmup exercises seeding...")
+        
+        do {
+            let rows = try CSVParser.parseCSVFile("warmup_exercises")
+            Logger.info("📁 Loaded \(rows.count) warmup exercise rows")
+            
+            // Get existing exercises to check for duplicates
+            let existingDescriptor = FetchDescriptor<Exercise>()
+            let existingExercises = (try? modelContext.fetch(existingDescriptor)) ?? []
+            let existingNames = Set(existingExercises.map { $0.nameEN.lowercased() })
+            
+            var successCount = 0
+            var skippedCount = 0
+            
+            for (index, columns) in rows.enumerated() {
+                if index == 0 { continue } // Skip header
+                if columns.count < 8 { continue }
+                
+                // Check for duplicate before creating
+                let nameEN = columns[0].trimmingCharacters(in: .whitespaces)
+                if existingNames.contains(nameEN.lowercased()) {
+                    Logger.info("⏭️ Skipping duplicate warmup exercise: \(nameEN)")
+                    skippedCount += 1
+                    continue
+                }
+                
+                do {
+                    let exercise = try createExerciseFromCSV(columns: columns)
+                    modelContext.insert(exercise)
+                    successCount += 1
+                    
+                    // Save in very small batches for warmup exercises
+                    if successCount % 5 == 0 {
+                        try modelContext.save()
+                        await Task.yield()
+                    }
+                } catch {
+                    Logger.error("❌ Failed to create warmup exercise at row \(index): \(error), columns: \(columns)")
+                    continue
+                }
+            }
+            
+            // Final save
+            try modelContext.save()
+            Logger.success("Seeded \(successCount) warmup exercises (skipped \(skippedCount) duplicates)")
+            
+        } catch {
+            Logger.warning("Could not load warmup exercises: \(error)")
+            // Don't throw - warmup exercises are optional
+        }
+    }
+    
     // MARK: - Seed Foods with Improved Error Handling
     private static func seedFoods(modelContext: ModelContext) async throws {
-        // Try foods.csv; fallback to foods_flags.csv for legacy datasets
+        // Try foods.csv directly; fallback to legacy locations
         var csvData: String? = nil
         if let url = Bundle.main.url(forResource: "foods", withExtension: "csv"),
            let data = try? String(contentsOf: url, encoding: .utf8) {
@@ -565,7 +696,7 @@ extension DataSeeder {
     /// Ensures well-known Olympic weightlifting movements are categorized correctly as `olympic`.
     /// This is safe to run on every launch; it only updates records that are miscategorized.
     @MainActor
-    static func fixOlympicExerciseCategories(modelContext: ModelContext) {
+    static func fixOlympicExerciseCategories(modelContext: ModelContext) async {
         let olympicExactNames: Set<String> = [
             "clean and jerk",
             "snatch",
@@ -607,7 +738,7 @@ extension DataSeeder {
 // MARK: - Exercise Normalization to 4 Part Types
 extension DataSeeder {
     @MainActor
-    static func normalizeExerciseCategoriesToPartTypes(modelContext: ModelContext) {
+    static func normalizeExerciseCategoriesToPartTypes(modelContext: ModelContext) async {
         let descriptor = FetchDescriptor<Exercise>()
         guard let exercises = try? modelContext.fetch(descriptor) else { return }
 
@@ -743,7 +874,7 @@ extension DataSeeder {
 // MARK: - Food Normalization
 extension DataSeeder {
     @MainActor
-    static func normalizeFoodData(modelContext: ModelContext) {
+    static func normalizeFoodData(modelContext: ModelContext) async {
         let descriptor = FetchDescriptor<Food>()
         guard let foods = try? modelContext.fetch(descriptor) else { return }
 
@@ -936,7 +1067,7 @@ extension DataSeeder {
     
     private static func seedCrossFitMovementsFromCSV(modelContext: ModelContext) async throws {
         do {
-            let rows = try CSVParser.parseCSVFile("crossfit_movements")
+            let rows = try CSVParser.parseCSVFile("metcon_exercises")
             guard rows.count > 1 else { return } // Skip empty file
             
             let headers = rows[0]
@@ -1002,7 +1133,8 @@ extension DataSeeder {
         return Int(str)
     }
     
-    // MARK: - Seed Benchmark Lifts
+    // MARK: - Seed Benchmark Lifts (DEPRECATED - file doesn't exist in new structure)
+    /*
     private static func seedBenchmarkLiftsIfNeeded(modelContext: ModelContext) async throws {
         // Check if benchmark lifts already exist
         let descriptor = FetchDescriptor<Lift>(predicate: #Predicate<Lift> { !$0.isCustom })
@@ -1016,7 +1148,9 @@ extension DataSeeder {
         Logger.info("Seeding benchmark lifts from CSV...")
         try await seedBenchmarkLiftsFromCSV(modelContext: modelContext)
     }
+    */
     
+    /*
     private static func seedBenchmarkLiftsFromCSV(modelContext: ModelContext) async throws {
         do {
             let rows = try CSVParser.parseCSVFile("benchmark_lifts")
@@ -1068,6 +1202,7 @@ extension DataSeeder {
             throw error
         }
     }
+    */
     
     // MARK: - Seed Benchmark Cardios
     private static func seedBenchmarkCardiosIfNeeded(modelContext: ModelContext) async throws {
@@ -1086,7 +1221,14 @@ extension DataSeeder {
     
     private static func seedCardiosFromCSV(modelContext: ModelContext) async throws {
         do {
-            let rows = try CSVParser.parseCSVFile("cardios")
+            // Try the new path first, then fall back to legacy benchmark_cardios.csv
+            var rows: [[String]]
+            do {
+                rows = try CSVParser.parseCSVFile("cardio_exercises")
+            } catch {
+                Logger.info("cardio_exercises.csv not found, trying legacy benchmark_cardios.csv")
+                rows = try CSVParser.parseCSVFile("benchmark_cardios")
+            }
             guard rows.count > 1 else { return }
             
             let headers = rows[0]
@@ -1265,14 +1407,14 @@ extension DataSeeder {
         // Try different ways to find the LiftPrograms folder
         var programsURL: URL?
         
-        // First try: Resources/LiftPrograms
-        if let resourcesURL = Bundle.main.url(forResource: "Resources", withExtension: nil) {
-            programsURL = resourcesURL.appendingPathComponent("LiftPrograms")
+        // First try: Use subdirectory parameter for new structure
+        if let url = Bundle.main.url(forResource: "", withExtension: nil, subdirectory: "Training/Programs/LiftPrograms") {
+            programsURL = url
         }
         
-        // Second try: Direct LiftPrograms folder in bundle
-        if programsURL == nil || !FileManager.default.fileExists(atPath: programsURL!.path) {
-            programsURL = Bundle.main.url(forResource: "LiftPrograms", withExtension: nil)
+        // Second try: Legacy subdirectory
+        if programsURL == nil {
+            programsURL = Bundle.main.url(forResource: "", withExtension: nil, subdirectory: "LiftPrograms")
         }
         
         // Third try: Look for specific JSON file to find the folder
@@ -1284,7 +1426,7 @@ extension DataSeeder {
         
         guard let finalURL = programsURL, 
               FileManager.default.fileExists(atPath: finalURL.path) else {
-            throw DataSeederError.fileNotFound("LiftPrograms folder")
+            throw DataSeederError.fileNotFound("LiftPrograms folder (checked Training/Programs/LiftPrograms and legacy locations)")
         }
         
         do {
@@ -1409,7 +1551,7 @@ extension DataSeeder {
     @MainActor
     private static func loadRoutineTemplatesFromJSON(modelContext: ModelContext) async throws {
         do {
-            let routineData = try CSVParser.parseJSONFile("routine_templates", as: RoutineTemplateData.self)
+            let routineData = try CSVParser.parseJSONFile("lift_routines", as: RoutineTemplateData.self)
             var createdCount = 0
             var exerciseResolver = ExerciseResolver()
             
@@ -1433,6 +1575,7 @@ extension DataSeeder {
         }
     }
     
+    @MainActor
     private static func createWorkoutFromTemplate(
         _ template: RoutineTemplate, 
         modelContext: ModelContext,
@@ -1450,7 +1593,13 @@ extension DataSeeder {
         // Get all available exercises from database
         let exerciseDescriptor = FetchDescriptor<Exercise>()
         let availableExercises = (try? modelContext.fetch(exerciseDescriptor)) ?? []
-        let exerciseDict = Dictionary(uniqueKeysWithValues: availableExercises.map { ($0.nameEN, $0) })
+        
+        // Handle duplicate exercise names by taking the first occurrence
+        let exerciseGroups = Dictionary(grouping: availableExercises, by: { $0.nameEN })
+        let exerciseDict = exerciseGroups.compactMapValues { exercises in
+            // If there are duplicates, prefer non-warmup exercises, otherwise take first
+            exercises.first { $0.category != "warmup" } ?? exercises.first
+        }
         
         for (index, exerciseName) in template.exercises.enumerated() {
             // Try to find the exercise in the database
@@ -1481,6 +1630,121 @@ extension DataSeeder {
         }
         
         return workout.exercises.isEmpty ? nil : workout
+    }
+    
+    // MARK: - WarmUp Template Seeding
+    static func seedWarmUpTemplatesIfNeeded(modelContext: ModelContext) async throws {
+        // Check if warm-up templates already exist
+        let existingTemplates = try modelContext.fetch(FetchDescriptor<WarmUpTemplate>())
+        if !existingTemplates.isEmpty {
+            Logger.info("WarmUp templates already exist (\(existingTemplates.count)), skipping seeding")
+            return
+        }
+        
+        Logger.info("🔥 Starting WarmUp templates seeding from CSV...")
+        
+        do {
+            // Use the standardized CSV parser
+            let rows = try CSVParser.parseCSVFile("warmup_routines")
+            guard rows.count > 1 else {
+                Logger.warning("warmup_routines.csv is empty or has no data rows")
+                return
+            }
+            
+            // Parse header to get column indices (more robust than assuming order)
+            let headers = rows[0]
+            let nameENIdx = headers.firstIndex(of: "nameEN") ?? 0
+            let nameTRIdx = headers.firstIndex(of: "nameTR") ?? 1
+            let descriptionIdx = headers.firstIndex(of: "description") ?? 2
+            let categoryIdx = headers.firstIndex(of: "category") ?? 3
+            let durationIdx = headers.firstIndex(of: "duration") ?? 4
+            let difficultyIdx = headers.firstIndex(of: "difficulty") ?? 5
+            let exercisesIdx = headers.firstIndex(of: "exercises") ?? 6
+            
+            var createdCount = 0
+            var exerciseResolver = ExerciseResolver()
+            
+            // Process data rows
+            for (index, row) in rows.enumerated() {
+                if index == 0 { continue } // Skip header
+                
+                guard row.count > max(nameENIdx, nameTRIdx, categoryIdx, durationIdx) else {
+                    Logger.warning("Insufficient columns in warmup template row \(index): \(row)")
+                    continue
+                }
+                
+                let nameEN = row[nameENIdx].trimmingCharacters(in: .whitespacesAndNewlines)
+                let nameTR = row[nameTRIdx].trimmingCharacters(in: .whitespacesAndNewlines)
+                let description = row.count > descriptionIdx ? row[descriptionIdx].trimmingCharacters(in: .whitespacesAndNewlines) : ""
+                let category = row[categoryIdx].trimmingCharacters(in: .whitespacesAndNewlines)
+                let duration = Int(row[durationIdx].trimmingCharacters(in: .whitespacesAndNewlines)) ?? 300
+                let difficulty = row.count > difficultyIdx ? row[difficultyIdx].trimmingCharacters(in: .whitespacesAndNewlines) : "beginner"
+                
+                guard !nameEN.isEmpty else {
+                    Logger.warning("Empty name in warmup template row \(index)")
+                    continue
+                }
+                
+                // Parse exercises string - handle quoted comma-separated values
+                var exerciseNames: [String] = []
+                if row.count > exercisesIdx {
+                    let exercisesString = row[exercisesIdx].trimmingCharacters(in: .whitespacesAndNewlines)
+                    if !exercisesString.isEmpty {
+                        // Remove surrounding quotes if present and split by comma
+                        let cleanedString = exercisesString.replacingOccurrences(of: "\"", with: "")
+                        exerciseNames = cleanedString.components(separatedBy: ",")
+                            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+                            .filter { !$0.isEmpty }
+                    }
+                }
+                
+                // Resolve exercise IDs from names
+                var exerciseIds: [UUID] = []
+                for exerciseName in exerciseNames {
+                    if let resolvedId = exerciseResolver.resolveExerciseID(name: exerciseName, modelContext: modelContext) {
+                        exerciseIds.append(resolvedId)
+                        Logger.info("✅ Resolved '\(exerciseName)' to ID: \(resolvedId)")
+                    } else {
+                        Logger.warning("⚠️ Could not resolve exercise '\(exerciseName)' for template '\(nameEN)'")
+                    }
+                }
+                
+                // Create template only if we have at least one exercise
+                if !exerciseIds.isEmpty {
+                    let template = WarmUpTemplate(
+                        name: nameEN,
+                        nameEN: nameEN,
+                        nameTR: nameTR.isEmpty ? nameEN : nameTR,
+                        description: description,
+                        category: category,
+                        estimatedDuration: duration,
+                        difficulty: difficulty,
+                        exerciseIds: exerciseIds,
+                        isCustom: false
+                    )
+                    
+                    modelContext.insert(template)
+                    createdCount += 1
+                    Logger.info("✅ Created WarmUp template '\(nameEN)' [\(category)] with \(exerciseIds.count)/\(exerciseNames.count) exercises")
+                } else {
+                    Logger.warning("⚠️ Skipping WarmUp template '\(nameEN)' - no exercises could be resolved")
+                }
+                
+                // Yield periodically for responsiveness
+                if createdCount % SeedingConfig.yieldInterval == 0 {
+                    await Task.yield()
+                }
+            }
+            
+            // Save all templates
+            try modelContext.save()
+            Logger.success("🎉 Successfully created \(createdCount) WarmUp templates from CSV")
+            
+        } catch {
+            Logger.error("❌ Failed to seed WarmUp templates from CSV: \(error)")
+            // Don't create fallback - let it fail gracefully
+            throw error
+        }
     }
 }
 

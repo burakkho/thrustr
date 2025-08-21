@@ -49,7 +49,10 @@ struct SporHocamApp: App {
                 CardioWorkout.self,
                 CardioExercise.self,
                 CardioSession.self,
-                CardioResult.self
+                CardioResult.self,
+                // WarmUp models
+                WarmUpTemplate.self,
+                WarmUpSession.self
             )
         } catch {
             // Graceful fallback: Try creating a temporary in-memory container
@@ -90,6 +93,9 @@ struct SporHocamApp: App {
                     CardioExercise.self,
                     CardioSession.self,
                     CardioResult.self,
+                    // WarmUp models
+                    WarmUpTemplate.self,
+                    WarmUpSession.self,
                     configurations: config
                 )
             } catch {
@@ -180,8 +186,9 @@ struct SporHocamApp: App {
             isSeedingDatabase = true
         }
         
-        // DataSeeder @MainActor olduğu için main thread'de çalıştırmalıyız
-        // Ancak Task.yield() ile UI'ı responsive tutarız
+        // DataSeeder with improved thread safety and sequential approach (warmup disabled)
+        Logger.info("🔄 Starting DataSeeder (warmup seeding disabled for stability)")
+        
         await DataSeeder.seedDatabaseIfNeeded(
             modelContext: container.mainContext
         )

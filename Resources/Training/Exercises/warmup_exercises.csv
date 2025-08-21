@@ -1,0 +1,26 @@
+nameEN,nameTR,category,equipment,supportsWeight,supportsReps,supportsTime,supportsDistance
+Jumping Jacks,Jumping Jack,warmup,none,false,true,true,false
+Arm Circles,Kol Çevirme,warmup,none,false,true,false,false
+Leg Swings,Bacak Salladırma,warmup,none,false,true,false,false
+High Knees,Yüksek Diz,warmup,none,false,true,true,false
+Butt Kicks,Topuk Vurma,warmup,none,false,true,true,false
+Bodyweight Squats,Kilo Squat,warmup,none,false,true,false,false
+Lunges,Lunge,warmup,none,false,true,false,false
+Push-ups,Şınav,warmup,none,false,true,false,false
+Mountain Climbers,Dağcı,warmup,none,false,true,true,false
+Burpees,Burpee,warmup,none,false,true,false,false
+Shoulder Rolls,Omuz Çevirme,warmup,none,false,true,false,false
+Hip Circles,Kalça Çevirme,warmup,none,false,true,false,false
+Ankle Circles,Ayak Bileği Çevirme,warmup,none,false,true,false,false
+Neck Rolls,Boyun Çevirme,warmup,none,false,true,false,false
+Torso Twists,Gövde Çevirme,warmup,none,false,true,false,false
+Knee Raises,Diz Kaldırma,warmup,none,false,true,false,false
+Calf Raises,Baldır Kaldırma,warmup,none,false,true,false,false
+Arm Swings,Kol Sallama,warmup,none,false,true,false,false
+Side Steps,Yana Adım,warmup,none,false,true,false,false
+Marching in Place,Yerinde Yürüme,warmup,none,false,true,true,false
+Inchworms,Tırtıl,warmup,none,false,true,false,false
+Bear Crawl,Ayı Yürüşü,warmup,none,false,true,true,false
+Cat-Cow Stretch,Kedi-İnek Esnetme,warmup,none,false,true,false,false
+Downward Dog,Köpek Pozu,warmup,none,false,false,true,false
+Plank Hold,Plank Tutma,warmup,none,false,false,true,false

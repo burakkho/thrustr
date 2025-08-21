@@ -7,14 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		410368892E5100DD00746850 /* crossfit_movements.csv in Resources */ = {isa = PBXBuildFile; fileRef = 410368882E5100DD00746850 /* crossfit_movements.csv */; };
+		410368892E5100DD00746850 /* metcon_exercises.csv in Resources */ = {isa = PBXBuildFile; fileRef = 410368882E5100DD00746850 /* metcon_exercises.csv */; };
 		4103688B2E5100E300746850 /* benchmark_wods.csv in Resources */ = {isa = PBXBuildFile; fileRef = 4103688A2E5100E300746850 /* benchmark_wods.csv */; };
-		410368922E511B3E00746850 /* benchmark_cardios.csv in Resources */ = {isa = PBXBuildFile; fileRef = 410368902E511B3E00746850 /* benchmark_cardios.csv */; };
-		410368932E511B3E00746850 /* benchmark_lifts.csv in Resources */ = {isa = PBXBuildFile; fileRef = 410368912E511B3E00746850 /* benchmark_lifts.csv */; };
 		410368A12E51226E00746850 /* DatabaseError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 410368A02E51226E00746850 /* DatabaseError.swift */; };
 		410368A32E51227500746850 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 410368A22E51227500746850 /* Logger.swift */; };
 		41247AFB2E4FF7E8007B07F6 /* QRCodeGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41247AFA2E4FF7E8007B07F6 /* QRCodeGenerator.swift */; };
-		419F979F2E53778B00336895 /* routine_templates.json in Resources */ = {isa = PBXBuildFile; fileRef = 419F979E2E53778B00336895 /* routine_templates.json */; };
+		419F979F2E53778B00336895 /* lift_routines.json in Resources */ = {isa = PBXBuildFile; fileRef = 419F979E2E53778B00336895 /* lift_routines.json */; };
 		419F97B92E5377FF00336895 /* TemplateCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 419F97B22E5377FF00336895 /* TemplateCard.swift */; };
 		419F97BA2E5377FF00336895 /* CustomizeTemplateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 419F97B52E5377FF00336895 /* CustomizeTemplateView.swift */; };
 		419F97BB2E5377FF00336895 /* ScratchRoutineBuilderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 419F97B62E5377FF00336895 /* ScratchRoutineBuilderView.swift */; };
@@ -30,7 +28,7 @@
 		419F97CD2E54804800336895 /* CardioWorkout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 419F97CA2E54804800336895 /* CardioWorkout.swift */; };
 		419F97CE2E54804800336895 /* CardioResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 419F97C82E54804800336895 /* CardioResult.swift */; };
 		419F97D22E54807500336895 /* CardioWorkoutDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = 419F97D02E54807500336895 /* CardioWorkoutDetail.swift */; };
-		419F97D42E54809300336895 /* cardios.csv in Resources */ = {isa = PBXBuildFile; fileRef = 419F97D32E54809300336895 /* cardios.csv */; };
+		419F97D42E54809300336895 /* cardio_exercises.csv in Resources */ = {isa = PBXBuildFile; fileRef = 419F97D32E54809300336895 /* cardio_exercises.csv */; };
 		419F97D62E54891700336895 /* CardioSessionInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 419F97D52E54891700336895 /* CardioSessionInputView.swift */; };
 		419F97D82E54891C00336895 /* CardioSessionTrackingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 419F97D72E54891C00336895 /* CardioSessionTrackingView.swift */; };
 		419F97E22E54D36A00336895 /* QuickActionButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 419F97DA2E54D36A00336895 /* QuickActionButton.swift */; };
@@ -60,6 +58,12 @@
 		419F98152E5527A200336895 /* CardioQuickStartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 419F98122E5527A200336895 /* CardioQuickStartView.swift */; };
 		419F98162E5527A200336895 /* CardioSessionSummaryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 419F98132E5527A200336895 /* CardioSessionSummaryView.swift */; };
 		419F98182E552DCD00336895 /* CardioPreparationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 419F98172E552DCD00336895 /* CardioPreparationView.swift */; };
+		419F981C2E567E6E00336895 /* WarmUpTemplate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 419F981A2E567E6E00336895 /* WarmUpTemplate.swift */; };
+		419F981D2E567E6E00336895 /* WarmUpSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 419F98192E567E6E00336895 /* WarmUpSession.swift */; };
+		419F98212E567E9D00336895 /* WarmUpSessionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 419F981F2E567E9D00336895 /* WarmUpSessionView.swift */; };
+		419F98222E567E9D00336895 /* WarmUpMainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 419F981E2E567E9D00336895 /* WarmUpMainView.swift */; };
+		419F98252E567EB000336895 /* warmup_routines.csv in Resources */ = {isa = PBXBuildFile; fileRef = 419F98242E567EB000336895 /* warmup_routines.csv */; };
+		419F98262E567EB000336895 /* warmup_exercises.csv in Resources */ = {isa = PBXBuildFile; fileRef = 419F98232E567EB000336895 /* warmup_exercises.csv */; };
 		41DADE4F2E4EA7D500954BF5 /* foods.csv in Resources */ = {isa = PBXBuildFile; fileRef = 41DADE2C2E4EA7D500954BF5 /* foods.csv */; };
 		41DADE512E4EA7D500954BF5 /* privacy_en.html in Resources */ = {isa = PBXBuildFile; fileRef = 41DADE282E4EA7D500954BF5 /* privacy_en.html */; };
 		41DADE532E4EA7D500954BF5 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 41DADDB02E4EA7D500954BF5 /* Localizable.strings */; };
@@ -188,7 +192,7 @@
 		41F407172E527D3A008042DD /* WorkoutPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41F407162E527D3A008042DD /* WorkoutPreviewView.swift */; };
 		41F407182E527D3A008042DD /* ProgramDashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41F407152E527D3A008042DD /* ProgramDashboardView.swift */; };
 		41F4071A2E528382008042DD /* OneRMSetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41F407192E528382008042DD /* OneRMSetupView.swift */; };
-		966C980C561D4993980F083D /* basic_exercises.csv in Resources */ = {isa = PBXBuildFile; fileRef = 966C980C561D4993980F083E /* basic_exercises.csv */; };
+		966C980C561D4993980F083D /* lift_exercises.csv in Resources */ = {isa = PBXBuildFile; fileRef = 966C980C561D4993980F083E /* lift_exercises.csv */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -209,14 +213,12 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		410368882E5100DD00746850 /* crossfit_movements.csv */ = {isa = PBXFileReference; lastKnownFileType = text; path = crossfit_movements.csv; sourceTree = "<group>"; };
+		410368882E5100DD00746850 /* metcon_exercises.csv */ = {isa = PBXFileReference; lastKnownFileType = text; path = metcon_exercises.csv; sourceTree = "<group>"; };
 		4103688A2E5100E300746850 /* benchmark_wods.csv */ = {isa = PBXFileReference; lastKnownFileType = text; path = benchmark_wods.csv; sourceTree = "<group>"; };
-		410368902E511B3E00746850 /* benchmark_cardios.csv */ = {isa = PBXFileReference; lastKnownFileType = text; path = benchmark_cardios.csv; sourceTree = "<group>"; };
-		410368912E511B3E00746850 /* benchmark_lifts.csv */ = {isa = PBXFileReference; lastKnownFileType = text; path = benchmark_lifts.csv; sourceTree = "<group>"; };
 		410368A02E51226E00746850 /* DatabaseError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseError.swift; sourceTree = "<group>"; };
 		410368A22E51227500746850 /* Logger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
 		41247AFA2E4FF7E8007B07F6 /* QRCodeGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeGenerator.swift; sourceTree = "<group>"; };
-		419F979E2E53778B00336895 /* routine_templates.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = routine_templates.json; sourceTree = "<group>"; };
+		419F979E2E53778B00336895 /* lift_routines.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = lift_routines.json; sourceTree = "<group>"; };
 		419F97B02E5377FF00336895 /* ExerciseLibraryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExerciseLibraryView.swift; sourceTree = "<group>"; };
 		419F97B12E5377FF00336895 /* RoutineNameInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoutineNameInputView.swift; sourceTree = "<group>"; };
 		419F97B22E5377FF00336895 /* TemplateCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TemplateCard.swift; sourceTree = "<group>"; };
@@ -232,7 +234,7 @@
 		419F97C92E54804800336895 /* CardioSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardioSession.swift; sourceTree = "<group>"; };
 		419F97CA2E54804800336895 /* CardioWorkout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardioWorkout.swift; sourceTree = "<group>"; };
 		419F97D02E54807500336895 /* CardioWorkoutDetail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardioWorkoutDetail.swift; sourceTree = "<group>"; };
-		419F97D32E54809300336895 /* cardios.csv */ = {isa = PBXFileReference; lastKnownFileType = text; path = cardios.csv; sourceTree = "<group>"; };
+		419F97D32E54809300336895 /* cardio_exercises.csv */ = {isa = PBXFileReference; lastKnownFileType = text; path = cardio_exercises.csv; sourceTree = "<group>"; };
 		419F97D52E54891700336895 /* CardioSessionInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardioSessionInputView.swift; sourceTree = "<group>"; };
 		419F97D72E54891C00336895 /* CardioSessionTrackingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardioSessionTrackingView.swift; sourceTree = "<group>"; };
 		419F97D92E54D36A00336895 /* EmptyStateCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyStateCard.swift; sourceTree = "<group>"; };
@@ -262,6 +264,12 @@
 		419F98122E5527A200336895 /* CardioQuickStartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardioQuickStartView.swift; sourceTree = "<group>"; };
 		419F98132E5527A200336895 /* CardioSessionSummaryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardioSessionSummaryView.swift; sourceTree = "<group>"; };
 		419F98172E552DCD00336895 /* CardioPreparationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardioPreparationView.swift; sourceTree = "<group>"; };
+		419F98192E567E6E00336895 /* WarmUpSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WarmUpSession.swift; sourceTree = "<group>"; };
+		419F981A2E567E6E00336895 /* WarmUpTemplate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WarmUpTemplate.swift; sourceTree = "<group>"; };
+		419F981E2E567E9D00336895 /* WarmUpMainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WarmUpMainView.swift; sourceTree = "<group>"; };
+		419F981F2E567E9D00336895 /* WarmUpSessionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WarmUpSessionView.swift; sourceTree = "<group>"; };
+		419F98232E567EB000336895 /* warmup_exercises.csv */ = {isa = PBXFileReference; lastKnownFileType = text; path = warmup_exercises.csv; sourceTree = "<group>"; };
+		419F98242E567EB000336895 /* warmup_routines.csv */ = {isa = PBXFileReference; lastKnownFileType = text; path = warmup_routines.csv; sourceTree = "<group>"; };
 		41DADDAD2E4EA7D500954BF5 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		41DADDAE2E4EA7D500954BF5 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		41DADDAF2E4EA7D500954BF5 /* tr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = tr; path = tr.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -396,7 +404,7 @@
 		41F407152E527D3A008042DD /* ProgramDashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgramDashboardView.swift; sourceTree = "<group>"; };
 		41F407162E527D3A008042DD /* WorkoutPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutPreviewView.swift; sourceTree = "<group>"; };
 		41F407192E528382008042DD /* OneRMSetupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OneRMSetupView.swift; sourceTree = "<group>"; };
-		966C980C561D4993980F083E /* basic_exercises.csv */ = {isa = PBXFileReference; lastKnownFileType = text; path = basic_exercises.csv; sourceTree = "<group>"; };
+		966C980C561D4993980F083E /* lift_exercises.csv */ = {isa = PBXFileReference; lastKnownFileType = text; path = lift_exercises.csv; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -424,6 +432,53 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		4151B52F2E57097F00A4E11E /* Training */ = {
+			isa = PBXGroup;
+			children = (
+				4151B5322E570A3400A4E11E /* Routines */,
+				4151B5312E5709E600A4E11E /* Programs */,
+				4151B5302E5709A400A4E11E /* Exercises */,
+			);
+			path = Training;
+			sourceTree = "<group>";
+		};
+		4151B5302E5709A400A4E11E /* Exercises */ = {
+			isa = PBXGroup;
+			children = (
+				966C980C561D4993980F083E /* lift_exercises.csv */,
+				419F98232E567EB000336895 /* warmup_exercises.csv */,
+				410368882E5100DD00746850 /* metcon_exercises.csv */,
+				419F97D32E54809300336895 /* cardio_exercises.csv */,
+			);
+			path = Exercises;
+			sourceTree = "<group>";
+		};
+		4151B5312E5709E600A4E11E /* Programs */ = {
+			isa = PBXGroup;
+			children = (
+				41F407112E527001008042DD /* LiftPrograms */,
+			);
+			path = Programs;
+			sourceTree = "<group>";
+		};
+		4151B5322E570A3400A4E11E /* Routines */ = {
+			isa = PBXGroup;
+			children = (
+				419F98242E567EB000336895 /* warmup_routines.csv */,
+				419F979E2E53778B00336895 /* lift_routines.json */,
+				4103688A2E5100E300746850 /* benchmark_wods.csv */,
+			);
+			path = Routines;
+			sourceTree = "<group>";
+		};
+		4151B5332E570A4D00A4E11E /* Nutrition */ = {
+			isa = PBXGroup;
+			children = (
+				41DADE2C2E4EA7D500954BF5 /* foods.csv */,
+			);
+			path = Nutrition;
+			sourceTree = "<group>";
+		};
 		419F97B32E5377FF00336895 /* Components */ = {
 			isa = PBXGroup;
 			children = (
@@ -502,6 +557,24 @@
 			path = Sections;
 			sourceTree = "<group>";
 		};
+		419F981B2E567E6E00336895 /* WarmUp */ = {
+			isa = PBXGroup;
+			children = (
+				419F98192E567E6E00336895 /* WarmUpSession.swift */,
+				419F981A2E567E6E00336895 /* WarmUpTemplate.swift */,
+			);
+			path = WarmUp;
+			sourceTree = "<group>";
+		};
+		419F98202E567E9D00336895 /* WarmUp */ = {
+			isa = PBXGroup;
+			children = (
+				419F981E2E567E9D00336895 /* WarmUpMainView.swift */,
+				419F981F2E567E9D00336895 /* WarmUpSessionView.swift */,
+			);
+			path = WarmUp;
+			sourceTree = "<group>";
+		};
 		41DADDB32E4EA7D500954BF5 /* App */ = {
 			isa = PBXGroup;
 			children = (
@@ -524,15 +597,7 @@
 		41DADE2D2E4EA7D500954BF5 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				419F97D32E54809300336895 /* cardios.csv */,
-				419F979E2E53778B00336895 /* routine_templates.json */,
-				41F407112E527001008042DD /* LiftPrograms */,
-				410368902E511B3E00746850 /* benchmark_cardios.csv */,
-				410368912E511B3E00746850 /* benchmark_lifts.csv */,
-				4103688A2E5100E300746850 /* benchmark_wods.csv */,
-				410368882E5100DD00746850 /* crossfit_movements.csv */,
-				966C980C561D4993980F083E /* basic_exercises.csv */,
-				41DADE2C2E4EA7D500954BF5 /* foods.csv */,
+				4151B52F2E57097F00A4E11E /* Training */,
 				41DADE2A2E4EA7D500954BF5 /* Legal */,
 				41DADDB02E4EA7D500954BF5 /* Localizable.strings */,
 			);
@@ -858,6 +923,7 @@
 				41DADDB32E4EA7D500954BF5 /* App */,
 				41DAE0172E4FC75200954BF5 /* Shared */,
 				41DADE2D2E4EA7D500954BF5 /* Resources */,
+				4151B5332E570A4D00A4E11E /* Nutrition */,
 				41F4066D2E522D0E008042DD /* sporhocam.app */,
 				41F4066E2E522D0E008042DD /* sporhocamTests.xctest */,
 				41F4066F2E522D0E008042DD /* sporhocamUITests.xctest */,
@@ -943,6 +1009,7 @@
 		41F406A92E526870008042DD /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				419F98202E567E9D00336895 /* WarmUp */,
 				41F406882E526870008042DD /* Cardio */,
 				41F406912E526870008042DD /* Lift */,
 				41F406982E526870008042DD /* Main */,
@@ -1002,6 +1069,7 @@
 		41F406E32E5268F4008042DD /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				419F981B2E567E6E00336895 /* WarmUp */,
 				419F97C12E5379B500336895 /* Extensions */,
 				41F406C72E5268F4008042DD /* Cardio */,
 				41F406CD2E5268F4008042DD /* Lift */,
@@ -1173,13 +1241,13 @@
 				41DADE532E4EA7D500954BF5 /* Localizable.strings in Resources */,
 				4103688B2E5100E300746850 /* benchmark_wods.csv in Resources */,
 				41F407122E527001008042DD /* stronglifts5x5.json in Resources */,
-				410368892E5100DD00746850 /* crossfit_movements.csv in Resources */,
-				419F97D42E54809300336895 /* cardios.csv in Resources */,
+				410368892E5100DD00746850 /* metcon_exercises.csv in Resources */,
+				419F97D42E54809300336895 /* cardio_exercises.csv in Resources */,
 				41DADE542E4EA7D500954BF5 /* terms_en.html in Resources */,
-				419F979F2E53778B00336895 /* routine_templates.json in Resources */,
-				966C980C561D4993980F083D /* basic_exercises.csv in Resources */,
-				410368922E511B3E00746850 /* benchmark_cardios.csv in Resources */,
-				410368932E511B3E00746850 /* benchmark_lifts.csv in Resources */,
+				419F979F2E53778B00336895 /* lift_routines.json in Resources */,
+				966C980C561D4993980F083D /* lift_exercises.csv in Resources */,
+				419F98252E567EB000336895 /* warmup_routines.csv in Resources */,
+				419F98262E567EB000336895 /* warmup_exercises.csv in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1369,8 +1437,12 @@
 				41F407072E5268F4008042DD /* FoodAlias.swift in Sources */,
 				41F407092E5268F4008042DD /* WODType.swift in Sources */,
 				41F4070A2E5268F4008042DD /* WODQRData.swift in Sources */,
+				419F98212E567E9D00336895 /* WarmUpSessionView.swift in Sources */,
+				419F98222E567E9D00336895 /* WarmUpMainView.swift in Sources */,
 				41F4070B2E5268F4008042DD /* ErrorHandlingService.swift in Sources */,
 				41F4070C2E5268F4008042DD /* BodyTrackingModels.swift in Sources */,
+				419F981C2E567E6E00336895 /* WarmUpTemplate.swift in Sources */,
+				419F981D2E567E6E00336895 /* WarmUpSession.swift in Sources */,
 				41F4070D2E5268F4008042DD /* BarcodeCache.swift in Sources */,
 				41F4070E2E5268F4008042DD /* UserService.swift in Sources */,
 				41F4070F2E5268F4008042DD /* User.swift in Sources */,

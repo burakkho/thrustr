@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-Export a snapshot of foods from OpenFoodFacts into Resources/foods.csv
+Export a snapshot of foods from OpenFoodFacts into Nutrition/foods.csv
 
 Usage:
-  python3 Scripts/off_export.py --out Resources/foods.csv --limit 80
+  python3 Scripts/off_export.py --out Nutrition/foods.csv --limit 80
 
 Notes:
 - No external deps (uses urllib). Respects OFF API via lightweight queries.
@@ -136,7 +136,7 @@ def to_float(value: Any) -> float:
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--out", default="Resources/foods.csv", help="Output CSV path")
+    parser.add_argument("--out", default="Nutrition/foods.csv", help="Output CSV path")
     parser.add_argument("--limit", type=int, default=60, help="Max items per query")
     parser.add_argument("--lc", default="tr", help="Preferred locale (default: tr)")
     args = parser.parse_args()

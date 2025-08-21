@@ -5,12 +5,14 @@ enum WorkoutType: Int, CaseIterable {
     case lift = 0
     case cardio = 1
     case wod = 2
+    case warmup = 3
     
     var title: String {
         switch self {
         case .lift: return "training.lift.title".localized
         case .cardio: return LocalizationKeys.Training.Cardio.title.localized
         case .wod: return "WOD"
+        case .warmup: return "Warm-Up"
         }
     }
     
@@ -19,6 +21,7 @@ enum WorkoutType: Int, CaseIterable {
         case .lift: return "dumbbell.fill"
         case .cardio: return "heart.fill"
         case .wod: return "flame.fill"
+        case .warmup: return "thermometer.sun"
         }
     }
 }
