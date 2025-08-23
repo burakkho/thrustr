@@ -41,6 +41,7 @@ final class CardioWorkout {
     // Relationships
     var exercises: [CardioExercise]
     var sessions: [CardioSession]
+    var program: CardioProgram?
     
     init(
         name: String,
@@ -93,6 +94,7 @@ final class CardioWorkout {
         
         self.exercises = []
         self.sessions = []
+        self.program = nil
     }
 }
 

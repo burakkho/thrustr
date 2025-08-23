@@ -43,7 +43,7 @@ struct WODShareView: View {
             }
         }
         
-        text += "\n\n#CrossFit #WOD #SporHocam"
+        text += "\n\n#CrossFit #WOD #Thrustr"
         
         return text
     }
@@ -236,7 +236,7 @@ struct WODShareCard: View {
                         .font(.title)
                         .foregroundColor(.white)
                     
-                    Text("SPORHOCAM")
+                    Text("Thrustr  b")
                         .font(.title2)
                         .fontWeight(.bold)
                         .foregroundColor(.white)
@@ -357,7 +357,7 @@ struct WODShareCard: View {
                 
                 Spacer()
                 
-                Text("sporhocam.app")
+                Text("thrustr.app")
                     .font(theme.typography.caption)
                     .foregroundColor(theme.colors.accent)
             }

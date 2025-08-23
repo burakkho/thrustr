@@ -1,6 +1,6 @@
 //
 //  GoalsStepView.swift
-//  SporHocam
+//  Thrustr
 //
 //  Goals Selection Step - Localized & Fixed
 //

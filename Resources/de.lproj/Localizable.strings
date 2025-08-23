@@ -3,7 +3,7 @@
 "common.discard_message" = "Nicht gespeicherte Änderungen gehen verloren.";
 /*
    Localizable.strings (German)
-   SporHocam - German Localization
+   Thrustr - German Localization
 */
 
 // MARK: - Tab Bar
@@ -25,6 +25,13 @@
 "training.history" = "Verlauf";
 "training.active" = "Aktiv";
 "training.templates" = "Vorlagen";
+
+// MARK: - Training Analytics & Dashboard
+"training.analytics.title" = "Analytik";
+"training.dashboard.title" = "Dashboard";
+"training.dashboard.thisWeek" = "Diese Woche";
+"training.dashboard.quickActions" = "Schnellaktionen";
+"training.dashboard.noRecentActivity" = "Keine aktuellen Aktivitäten";
 
 // MARK: - Lift Training
 "training.lift.title" = "Krafttraining";
@@ -191,7 +198,7 @@
 "onboarding.skip" = "Überspringen";
 
 // Welcome Step
-"onboarding.welcome.title" = "Willkommen bei\nSporHocam! 💪";
+"onboarding.welcome.title" = "Willkommen bei\nThrustr! 💪";
 "onboarding.welcome.subtitle" = "Wir begleiten dich auf deiner Fitnessreise.\nLass uns anfangen!";
 "onboarding.welcome.start" = "Los geht's!";
 "onboarding.feature.workout" = "Intelligentes Workout-Tracking";
@@ -1541,6 +1548,117 @@
 "time.minutes_short" = "Min";
 "time.seconds_short" = "Sek";
 
+// MARK: - Missing Cardio Training Strings
+"training.cardio.cycling" = "Radfahren";
+"training.cardio.description" = "Beschreibung";
+"training.cardio.description.placeholder" = "z.B. Gemütliches Tempo Cardio";
+"training.cardio.distance" = "Distanz";
+"training.cardio.exercise" = "Übung";
+"training.cardio.exercise.select" = "Übung auswählen";
+"training.cardio.exerciseTypes" = "Übungstypen";
+"training.cardio.history" = "Verlauf";
+"training.cardio.lastSession" = "Letzte Sitzung";
+"training.cardio.name" = "Cardio-Name";
+"training.cardio.name.placeholder" = "z.B. Morgenlauf";
+"training.cardio.running" = "Laufen";
+"training.cardio.startSession" = "Sitzung starten";
+"training.cardio.templates" = "Vorlagen";
+"training.cardio.time" = "Zeit (Minuten)";
+"training.cardio.type" = "Typ";
+"training.cardio.type.distance" = "Distanz";
+"training.cardio.type.time" = "Zeit";
+"training.cardio.walking" = "Gehen";
+
+// MARK: - Missing Lift Training Strings
+"training.lift.activeProgram" = "Aktives Programm";
+"training.lift.description" = "Beschreibung";
+"training.lift.description.placeholder" = "z.B. Schwere Grundübungen";
+"training.lift.exercises" = "Übungen";
+"training.lift.exercises.empty" = "Keine Übungen hinzugefügt";
+"training.lift.log_result" = "Ergebnis protokollieren";
+"training.lift.name" = "Lift-Name";
+"training.lift.name.placeholder" = "z.B. Morgenkraft";
+"training.lift.noHistory" = "Noch kein Verlauf";
+"training.lift.noHistoryMessage" = "Starten Sie Ihr erstes Training zum Verfolgen";
+"training.lift.noPrograms" = "Noch keine Programme";
+"training.lift.noProgramsMessage" = "Programme durchsuchen oder eigenes erstellen";
+"training.lift.reps" = "Wiederholungen";
+"training.lift.result.best_set" = "Bester Satz";
+"training.lift.result.current_pr" = "Aktueller PR: %dkg";
+"training.lift.result.notes" = "Notizen (Optional)";
+"training.lift.result.pr_message" = "Glückwunsch! Neuer PR: %dkg! 🎉";
+"training.lift.result.save" = "Ergebnis speichern";
+"training.lift.result.saved" = "Ergebnis gespeichert!";
+"training.lift.result.success_message" = "Training erfolgreich aufgezeichnet.";
+"training.lift.result.title" = "Lift-Ergebnis protokollieren";
+"training.lift.result.total_volume" = "Gesamtvolumen";
+"training.lift.sets" = "Sätze";
+"training.lift.stats.exercises" = "Übungen";
+"training.lift.stats.progress" = "Fortschritt";
+"training.lift.stats.sets" = "Sätze";
+"training.lift.stats.volume" = "Volumen";
+
+// MARK: - Additional Training Strings
+"training.set.same_as_last" = "Wie letzter Satz";
+"training.conflict.continue" = "Fortsetzen";
+"training.conflict.finish_start" = "Beenden & Starten";
+"training.conflict.message" = "Sie haben bereits ein aktives Training";
+"training.conflict.title" = "Aktives Training";
+"training.exercise.done" = "Fertig";
+"training.exercise.search" = "Übungen suchen";
+
+// MARK: - Additional Cardio Strings
+"training.cardio.additionalInfo" = "Zusätzliche Informationen";
+"training.cardio.heartRate" = "Herzfrequenz";
+"training.cardio.feeling" = "Gefühl";
+"training.cardio.sessionNotes" = "Sitzungsnotizen";
+"training.cardio.sessionNotesPlaceholder" = "Wie war diese Sitzung?";
+"training.cardio.completeSession" = "Sitzung abschließen";
+"training.cardio.saveSession" = "Diese Sitzung in Ihrem Verlauf speichern?";
+"training.cardio.customSessions" = "Keine benutzerdefinierten Sitzungen";
+"training.cardio.noExerciseTypes" = "Keine Übungsarten gefunden";
+"training.cardio.noHistoryMessage" = "Ihre Cardio-Sitzungen werden hier erscheinen";
+"training.cardio.adjustSearch" = "Versuchen Sie, Ihre Suche anzupassen";
+"training.cardio.clearSearch" = "Suche löschen";
+"training.cardio.noHistory" = "Noch keine Sitzungen";
+"training.cardio.browseTemplates" = "Vorlagen durchsuchen";
+"training.cardio.neverAttempted" = "Nie versucht";
+
+// MARK: - Training Analytics (Additional Keys)
+"training.analytics.trackProgress" = "Verfolgen Sie Ihren Fortschritt und Ihre Erfolge";
+"training.analytics.thisWeek" = "Diese Woche";
+"training.analytics.sessions" = "Sitzungen";
+"training.analytics.totalTime" = "Gesamtzeit";
+"training.analytics.streak" = "Serie";
+"training.analytics.prs" = "PRs";
+"training.analytics.days" = "Tage";
+"training.analytics.monthlyGoals" = "Monatsziele";
+"training.analytics.editGoals" = "Ziele bearbeiten";
+"training.analytics.distance" = "Distanz";
+"training.analytics.viewAll" = "Alle anzeigen";
+"training.analytics.recentPRs" = "Neueste PRs";
+"training.analytics.noPRsYet" = "Noch keine PRs";
+"training.analytics.noPRsMessage" = "Trainings absolvieren, um persönliche Rekorde zu verfolgen";
+"training.analytics.startTraining" = "Training beginnen";
+"training.analytics.noUserProfile" = "Kein Benutzerprofil";
+"training.analytics.setupProfileMessage" = "Vervollständigen Sie Ihr Profil, um Analysen zu sehen";
+"training.analytics.setupProfile" = "Profil einrichten";
+
+// MARK: - Training Lift (Additional Keys)
+"training.lift.train" = "Training";
+"training.lift.programs" = "Programme";
+"training.lift.routines" = "Routinen";
+"training.lift.history" = "Verlauf";
+"training.lift.sessionInProgress" = "Sitzung läuft";
+"training.lift.newWorkout" = "Neues Training";
+"training.lift.cancel" = "Abbrechen";
+"training.lift.close" = "Schließen";
+"training.lift.done" = "Fertig";
+"training.lift.save" = "Speichern";
+"training.lift.delete" = "Löschen";
+"training.lift.edit" = "Bearbeiten";
+"training.lift.seeAll" = "Alle anzeigen";
+
 // MARK: - Loading View
-"loading.title" = "SporHocam wird vorbereitet";
+"loading.title" = "Thrustr wird vorbereitet";
 "loading.subtitle" = "Daten werden geladen...";

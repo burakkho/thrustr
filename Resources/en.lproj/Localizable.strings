@@ -3,7 +3,7 @@
 "common.discard_message" = "Unsaved changes will be lost.";
 /*
    Localizable.strings (English)
-   SporHocam - English Localization
+   Thrustr - English Localization
 */
 
 // MARK: - Tab Bar
@@ -23,6 +23,13 @@
 "training.title" = "Training";
 "training.newWorkout" = "New Workout";
 "training.history" = "History";
+
+// MARK: - Training Analytics & Dashboard
+"training.analytics.title" = "Analytics";
+"training.dashboard.title" = "Dashboard";
+"training.dashboard.thisWeek" = "This Week";
+"training.dashboard.quickActions" = "Quick Actions";
+"training.dashboard.noRecentActivity" = "No recent activity";
 
 // MARK: - Lift Training
 "training.lift.title" = "Lift Training";
@@ -297,7 +304,7 @@
 "onboarding.skip" = "Skip";
 
 // Welcome Step
-"onboarding.welcome.title" = "Welcome to\nSpor Hocam! 💪";
+"onboarding.welcome.title" = "Welcome to\nThrustr! 💪";
 "onboarding.welcome.subtitle" = "We're with you on your fitness journey.\nLet's get started!";
 "onboarding.welcome.start" = "Let's Start!";
 "onboarding.feature.workout" = "Smart workout tracking";
@@ -1628,6 +1635,41 @@
 "time.minutes_short" = "MM";
 "time.seconds_short" = "SS";
 
+// MARK: - Training Analytics (Additional Keys)
+"training.analytics.trackProgress" = "Track your progress and achievements";
+"training.analytics.thisWeek" = "This Week";
+"training.analytics.sessions" = "Sessions";
+"training.analytics.totalTime" = "Total Time";
+"training.analytics.streak" = "Streak";
+"training.analytics.prs" = "PRs";
+"training.analytics.days" = "days";
+"training.analytics.monthlyGoals" = "Monthly Goals";
+"training.analytics.editGoals" = "Edit Goals";
+"training.analytics.distance" = "Distance";
+"training.analytics.viewAll" = "View All";
+"training.analytics.recentPRs" = "Recent PRs";
+"training.analytics.noPRsYet" = "No PRs Yet";
+"training.analytics.noPRsMessage" = "Complete workouts to start tracking personal records";
+"training.analytics.startTraining" = "Start Training";
+"training.analytics.noUserProfile" = "No User Profile";
+"training.analytics.setupProfileMessage" = "Complete your profile setup to see analytics";
+"training.analytics.setupProfile" = "Setup Profile";
+
+// MARK: - Training Lift (Additional Keys)
+"training.lift.train" = "Train";
+"training.lift.programs" = "Programs";
+"training.lift.routines" = "Routines";
+"training.lift.history" = "History";
+"training.lift.sessionInProgress" = "Session in progress";
+"training.lift.newWorkout" = "New Workout";
+"training.lift.cancel" = "Cancel";
+"training.lift.close" = "Close";
+"training.lift.done" = "Done";
+"training.lift.save" = "Save";
+"training.lift.delete" = "Delete";
+"training.lift.edit" = "Edit";
+"training.lift.seeAll" = "See All";
+
 // MARK: - Loading View
-"loading.title" = "SporHocam is Preparing";
+"loading.title" = "Thrustr is Preparing";
 "loading.subtitle" = "Loading data...";

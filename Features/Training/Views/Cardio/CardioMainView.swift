@@ -21,17 +21,16 @@ struct CardioMainView: View {
     }
     
     private let tabs = [
-        TrainingTab(title: LocalizationKeys.Training.Cardio.templates.localized, icon: "heart.text.square"),
-        TrainingTab(title: LocalizationKeys.Training.Cardio.history.localized, icon: "clock.arrow.circlepath")
+        TrainingTab(title: "Train", icon: "heart.fill"),
+        TrainingTab(title: "Programs", icon: "rectangle.3.group"),
+        TrainingTab(title: "Routines", icon: "square.stack"),
+        TrainingTab(title: "History", icon: "clock.arrow.circlepath")
     ]
     
     var body: some View {
         VStack(spacing: 0) {
             // Header
             headerView
-            
-            // Quick Start Button
-            quickStartButton
             
             // Tab Selector
             TrainingTabSelector(
@@ -43,13 +42,23 @@ struct CardioMainView: View {
             Group {
                 switch selectedTab {
                 case 0:
-                    CardioTemplatesSection(
-                        workouts: cardioWorkouts,
+                    CardioTrainSection(
                         selectedWorkout: $selectedWorkout,
                         selectedWorkoutForSession: $selectedWorkoutForSession,
+                        showingQuickStart: $showingQuickStart,
+                        selectedTab: $selectedTab,
                         currentUser: currentUser
                     )
                 case 1:
+                    CardioProgramsSection(
+                        currentUser: currentUser
+                    )
+                case 2:
+                    CardioRoutinesSection(
+                        currentUser: currentUser,
+                        showingNewCardio: $showingNewCardio
+                    )
+                case 3:
                     CardioHistorySection(
                         sessions: cardioSessions,
                         currentUser: currentUser
@@ -83,17 +92,30 @@ struct CardioMainView: View {
                     .fontWeight(.bold)
                     .foregroundColor(theme.colors.textPrimary)
                 
-                if let lastSession = cardioSessions.filter({ $0.isCompleted }).sorted(by: { $0.startDate > $1.startDate }).first {
-                    Text("\(LocalizationKeys.Training.Cardio.lastSession.localized): \(lastSession.startDate, formatter: RelativeDateTimeFormatter())")
+                if coordinator.hasActiveSession && coordinator.activeSessionType == .cardio {
+                    Label("Session in progress", systemImage: "circle.fill")
                         .font(theme.typography.caption)
-                        .foregroundColor(theme.colors.textSecondary)
+                        .foregroundColor(theme.colors.success)
                 }
             }
             
             Spacer()
             
-            Button(action: { showingNewCardio = true }) {
-                Image(systemName: "plus.circle.fill")
+            // Quick Actions Menu
+            Menu {
+                Button(action: { showingQuickStart = true }) {
+                    Label("Quick Start", systemImage: "play.circle")
+                }
+                
+                Button(action: { showingNewCardio = true }) {
+                    Label("New Routine", systemImage: "plus.circle")
+                }
+                
+                Button(action: { selectedTab = 1 }) {
+                    Label("Browse Programs", systemImage: "rectangle.3.group")
+                }
+            } label: {
+                Image(systemName: "ellipsis.circle")
                     .font(.title2)
                     .foregroundColor(theme.colors.accent)
             }
@@ -101,214 +123,267 @@ struct CardioMainView: View {
         .padding(.horizontal)
         .padding(.vertical, theme.spacing.m)
     }
-    
-    private var quickStartButton: some View {
-        Button(action: { showingQuickStart = true }) {
-            HStack(spacing: theme.spacing.m) {
-                Image(systemName: "play.circle.fill")
-                    .font(.title2)
-                    .foregroundColor(.white)
-                
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("Hızlı Başlat")
-                        .font(theme.typography.headline)
-                        .fontWeight(.semibold)
-                        .foregroundColor(.white)
-                    
-                    Text("GPS ile koşu, yürüyüş veya bisiklet")
-                        .font(theme.typography.caption)
-                        .foregroundColor(.white.opacity(0.9))
-                }
-                
-                Spacer()
-                
-                Image(systemName: "chevron.right")
-                    .font(.body)
-                    .foregroundColor(.white.opacity(0.8))
-            }
-            .padding(theme.spacing.l)
-            .background(
-                LinearGradient(
-                    colors: [theme.colors.accent, theme.colors.accent.opacity(0.8)],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
-            )
-            .cornerRadius(theme.radius.m)
-            .shadow(color: theme.colors.accent.opacity(0.3), radius: 8, y: 4)
-        }
-        .buttonStyle(PlainButtonStyle())
-        .padding(.horizontal)
-        .padding(.vertical, theme.spacing.s)
-    }
 }
 
-// MARK: - Cardio Templates Section
-struct CardioTemplatesSection: View {
+// MARK: - Cardio Train Section
+struct CardioTrainSection: View {
     @Environment(\.theme) private var theme
-    let workouts: [CardioWorkout]
+    @Environment(\.modelContext) private var modelContext
+    
+    @Query private var cardioSessions: [CardioSession]
+    @Query(filter: #Predicate<CardioProgramExecution> { !$0.isCompleted })
+    private var activeProgramExecutions: [CardioProgramExecution]
+    
     @Binding var selectedWorkout: CardioWorkout?
     @Binding var selectedWorkoutForSession: CardioWorkout?
+    @Binding var showingQuickStart: Bool
+    @Binding var selectedTab: Int
     let currentUser: User?
     
-    @State private var searchText = ""
-    @State private var selectedCategory: CardioCategory = .exercise
-    
-    private var filteredWorkouts: [CardioWorkout] {
-        let categoryWorkouts = selectedCategory == .exercise ? 
-            workouts.filter { !$0.isCustom } : 
-            workouts.filter { $0.isCustom }
-        
-        if searchText.isEmpty {
-            return categoryWorkouts.sorted { $0.name < $1.name }
-        }
-        
-        return categoryWorkouts.filter { workout in
-            workout.localizedName.localizedCaseInsensitiveContains(searchText) ||
-            workout.localizedDescription.localizedCaseInsensitiveContains(searchText)
-        }.sorted { $0.name < $1.name }
+    private var recentSessions: [CardioSession] {
+        cardioSessions
+            .filter { $0.isCompleted }
+            .sorted { $0.startDate > $1.startDate }
+            .prefix(3)
+            .map { $0 }
     }
     
     var body: some View {
         ScrollView {
-            VStack(spacing: theme.spacing.l) {
-                // Search Bar
-                searchBar
-                
-                // Category Filter
-                categoryFilter
-                
-                // Workouts List
-                if !filteredWorkouts.isEmpty {
-                    workoutsList
+            VStack(spacing: theme.spacing.xl) {
+                // Active Program Card (if exists)
+                if let activeExecution = activeProgramExecutions.first {
+                    compactProgramCard(execution: activeExecution)
                 } else {
-                    EmptyStateCard(
-                        icon: "heart.circle",
-                        title: selectedCategory == .custom ? 
-                            LocalizationKeys.Training.Cardio.customSessions.localized : 
-                            LocalizationKeys.Training.Cardio.noExerciseTypes.localized,
-                        message: searchText.isEmpty ? 
-                            LocalizationKeys.Training.Cardio.noHistoryMessage.localized : 
-                            LocalizationKeys.Training.Cardio.adjustSearch.localized,
-                        primaryAction: .init(
-                            title: searchText.isEmpty ? 
-                                LocalizationKeys.Training.Cardio.startSession.localized : 
-                                LocalizationKeys.Training.Cardio.clearSearch.localized,
-                            action: { searchText = "" }
-                        )
-                    )
-                    .padding(.top, 50)
+                    // Quick Start Section
+                    quickStartSection
+                }
+                
+                // Recent Sessions
+                if !recentSessions.isEmpty {
+                    recentSessionsSection
+                }
+                
+                // Browse Programs CTA
+                if activeProgramExecutions.isEmpty {
+                    browseProgramsCTA
                 }
             }
             .padding(.vertical, theme.spacing.m)
         }
     }
     
-    private var searchBar: some View {
-        HStack {
-            Image(systemName: "magnifyingglass")
-                .foregroundColor(theme.colors.textSecondary)
-            TextField(LocalizationKeys.Training.Exercise.searchPlaceholder.localized, text: $searchText)
-                .textFieldStyle(.plain)
-            if !searchText.isEmpty {
-                Button(action: { searchText = "" }) {
-                    Image(systemName: "xmark.circle.fill")
-                        .foregroundColor(theme.colors.textSecondary)
-                }
-            }
+    private func compactProgramCard(execution: CardioProgramExecution) -> some View {
+        VStack(spacing: theme.spacing.m) {
+            UnifiedWorkoutCard(
+                title: execution.program.localizedName,
+                subtitle: "Week \(execution.currentWeek) • \(execution.currentWorkout?.localizedName ?? "")",
+                primaryStats: [
+                    WorkoutStat(
+                        label: "This Week",
+                        value: "\(execution.completedSessionsThisWeek)/\(execution.program.daysPerWeek)",
+                        icon: "checkmark.circle"
+                    ),
+                    WorkoutStat(
+                        label: "Distance",
+                        value: execution.formattedTotalDistance,
+                        icon: "ruler"
+                    ),
+                    WorkoutStat(
+                        label: "Streak",
+                        value: "\(execution.currentStreak)",
+                        icon: "flame.fill"
+                    )
+                ],
+                cardStyle: .detailed,
+                primaryAction: { /* View details */ },
+                secondaryAction: { startCurrentWorkout(execution.currentWorkout) }
+            )
+            .padding(.horizontal)
+            
+            QuickActionButton(
+                title: "Continue Training",
+                icon: "play.circle.fill",
+                style: .primary,
+                size: .fullWidth,
+                action: { startCurrentWorkout(execution.currentWorkout) }
+            )
+            .padding(.horizontal)
         }
-        .padding(theme.spacing.m)
-        .background(theme.colors.backgroundSecondary)
-        .cornerRadius(theme.radius.m)
-        .padding(.horizontal)
     }
     
-    private var categoryFilter: some View {
-        HStack(spacing: theme.spacing.m) {
-            ForEach(CardioCategory.allCases, id: \.self) { category in
-                Button(action: { selectedCategory = category }) {
-                    Text(category.displayName)
-                        .font(theme.typography.caption)
-                        .fontWeight(selectedCategory == category ? .semibold : .regular)
-                        .foregroundColor(selectedCategory == category ? .white : theme.colors.textSecondary)
-                        .padding(.horizontal, theme.spacing.m)
-                        .padding(.vertical, theme.spacing.s)
-                        .background(
-                            RoundedRectangle(cornerRadius: theme.radius.m)
-                                .fill(selectedCategory == category ? theme.colors.accent : theme.colors.backgroundSecondary)
-                        )
-                }
-            }
-            Spacer()
-        }
-        .padding(.horizontal)
+    private func startCurrentWorkout(_ workout: CardioWorkout?) {
+        guard let workout = workout else { return }
+        selectedWorkoutForSession = workout
     }
     
-    private var workoutsList: some View {
-        LazyVStack(spacing: theme.spacing.m) {
-            ForEach(filteredWorkouts) { workout in
-                UnifiedWorkoutCard(
-                    title: workout.localizedName,
-                    subtitle: workout.displayEquipment,
-                    description: workout.localizedDescription,
-                    primaryStats: buildWorkoutStats(for: workout),
-                    secondaryInfo: buildSecondaryInfo(for: workout),
-                    isFavorite: workout.isFavorite,
-                    cardStyle: .detailed,
-                    primaryAction: { selectedWorkout = workout },
-                    secondaryAction: { startWorkout(workout) }
-                )
+    // MARK: - Quick Start Section
+    private var quickStartSection: some View {
+        VStack(alignment: .leading, spacing: theme.spacing.m) {
+            Text("Quick Start")
+                .font(theme.typography.headline)
+                .foregroundColor(theme.colors.textPrimary)
                 .padding(.horizontal)
+            
+            HStack(spacing: theme.spacing.m) {
+                quickActionCard(
+                    icon: "plus.circle.fill",
+                    title: "Empty Cardio",
+                    subtitle: "Start blank session",
+                    color: theme.colors.accent,
+                    action: { showingQuickStart = true }
+                )
+                
+                quickActionCard(
+                    icon: "list.bullet.rectangle",
+                    title: "Pick Routine",
+                    subtitle: "Choose custom workout",
+                    color: theme.colors.success,
+                    action: { selectedTab = 2 } // Navigate to Routines tab
+                )
+                
+                quickActionCard(
+                    icon: "heart.fill",
+                    title: "Start Program",
+                    subtitle: "Structured plan",
+                    color: Color.cardioColor,
+                    action: { selectedTab = 1 } // Navigate to Programs tab
+                )
+            }
+            .padding(.horizontal)
+        }
+    }
+    
+    private func quickActionCard(
+        icon: String,
+        title: String,
+        subtitle: String,
+        color: Color,
+        action: @escaping () -> Void
+    ) -> some View {
+        Button(action: action) {
+            VStack(spacing: theme.spacing.s) {
+                ZStack {
+                    Circle()
+                        .fill(color.opacity(0.15))
+                        .frame(width: 44, height: 44)
+                    
+                    Image(systemName: icon)
+                        .font(.title3)
+                        .foregroundColor(color)
+                }
+                
+                Text(title)
+                    .font(theme.typography.caption)
+                    .fontWeight(.medium)
+                    .foregroundColor(theme.colors.textPrimary)
+                    .multilineTextAlignment(.center)
+                    .lineLimit(2)
+                
+                Text(subtitle)
+                    .font(.caption2)
+                    .foregroundColor(theme.colors.textSecondary)
+                    .multilineTextAlignment(.center)
+                    .lineLimit(2)
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, theme.spacing.m)
+            .background(theme.colors.cardBackground)
+            .cornerRadius(theme.radius.m)
+        }
+        .buttonStyle(PlainButtonStyle())
+    }
+    
+    // MARK: - Recent Sessions Section
+    private var recentSessionsSection: some View {
+        VStack(alignment: .leading, spacing: theme.spacing.m) {
+            HStack {
+                Text("Recent Sessions")
+                    .font(theme.typography.headline)
+                    .fontWeight(.semibold)
+                    .foregroundColor(theme.colors.textPrimary)
+                Spacer()
+                Button(LocalizationKeys.Training.Lift.seeAll.localized) {
+                    selectedTab = 3 // Navigate to History tab
+                }
+                .font(theme.typography.caption)
+                .foregroundColor(theme.colors.accent)
+            }
+            .padding(.horizontal)
+            
+            LazyVStack(spacing: theme.spacing.s) {
+                ForEach(recentSessions, id: \.id) { session in
+                    recentSessionCard(session: session)
+                        .padding(.horizontal)
+                }
             }
         }
     }
     
-    private func buildWorkoutStats(for workout: CardioWorkout) -> [WorkoutStat] {
+    private func recentSessionCard(session: CardioSession) -> some View {
+        UnifiedWorkoutCard(
+            title: session.workoutName,
+            subtitle: formatDuration(TimeInterval(session.duration)),
+            description: formatRelativeDate(session.startDate),
+            primaryStats: buildSessionStats(for: session),
+            secondaryInfo: [],
+            cardStyle: .compact,
+            primaryAction: { /* View session detail */ }
+        )
+    }
+    
+    private func buildSessionStats(for session: CardioSession) -> [WorkoutStat] {
         var stats: [WorkoutStat] = []
         
-        if let exercise = workout.exercises.first {
+        if session.totalDistance > 0 {
             stats.append(WorkoutStat(
-                label: "Type",
-                value: exercise.exerciseType.capitalized,
-                icon: exercise.exerciseIcon
+                label: "Distance",
+                value: String(format: "%.1f km", session.totalDistance / 1000),
+                icon: "ruler"
             ))
         }
         
-        if let pr = workout.personalRecord {
-            if let time = pr.formattedTime {
-                stats.append(WorkoutStat(
-                    label: "PR",
-                    value: time,
-                    icon: "trophy.fill"
-                ))
-            } else if let distance = pr.formattedDistance {
-                stats.append(WorkoutStat(
-                    label: "PR",
-                    value: distance,
-                    icon: "trophy.fill"
-                ))
-            }
+        if let averageSpeed = session.averageSpeed, averageSpeed > 0 {
+            stats.append(WorkoutStat(
+                label: "Avg Speed",
+                value: String(format: "%.1f km/h", averageSpeed * 3.6),
+                icon: "speedometer"
+            ))
         }
         
         return stats
     }
     
-    private func buildSecondaryInfo(for workout: CardioWorkout) -> [String] {
-        var info: [String] = []
-        
-        if let lastDate = workout.lastPerformed {
-            let formatter = RelativeDateTimeFormatter()
-            formatter.unitsStyle = .short
-            info.append(formatter.localizedString(for: lastDate, relativeTo: Date()))
-        } else {
-            info.append(LocalizationKeys.Training.Cardio.neverAttempted.localized)
-        }
-        
-        return info
+    // MARK: - Browse Programs CTA
+    private var browseProgramsCTA: some View {
+        QuickActionButton(
+            title: "Browse Programs",
+            icon: "rectangle.3.group",
+            subtitle: "Structured cardio programs",
+            style: .outlined,
+            size: .fullWidth,
+            action: { selectedTab = 1 } // Navigate to Programs tab
+        )
+        .padding(.horizontal)
     }
     
-    private func startWorkout(_ workout: CardioWorkout) {
-        selectedWorkoutForSession = workout
+    // MARK: - Helper Methods
+    private func formatDuration(_ duration: TimeInterval) -> String {
+        let minutes = Int(duration) / 60
+        let hours = minutes / 60
+        let remainingMinutes = minutes % 60
+        
+        if hours > 0 {
+            return "\(hours)h \(remainingMinutes)m"
+        } else {
+            return "\(minutes)m"
+        }
+    }
+    
+    private func formatRelativeDate(_ date: Date) -> String {
+        let formatter = RelativeDateTimeFormatter()
+        formatter.unitsStyle = .abbreviated
+        return formatter.localizedString(for: date, relativeTo: Date())
     }
 }
 
@@ -401,6 +476,342 @@ struct CardioHistorySection: View {
     private func viewSessionDetail(_ session: CardioSession) {
         // Navigate to session detail
         Logger.info("View cardio session detail: \(session.id)")
+    }
+}
+
+// MARK: - Cardio Programs Section
+struct CardioProgramsSection: View {
+    @Environment(\.theme) private var theme
+    @Environment(\.modelContext) private var modelContext
+    
+    @Query(filter: #Predicate<CardioProgram> { !$0.isCustom })
+    private var availablePrograms: [CardioProgram]
+    
+    @Query(filter: #Predicate<CardioProgramExecution> { !$0.isCompleted })
+    private var activeExecutions: [CardioProgramExecution]
+    
+    let currentUser: User?
+    @State private var selectedProgram: CardioProgram?
+    @State private var showingProgramDetail = false
+    
+    var body: some View {
+        ScrollView {
+            VStack(spacing: theme.spacing.xl) {
+                // Active Program (if any)
+                if let activeExecution = activeExecutions.first {
+                    activeProgramSection(activeExecution)
+                }
+                
+                // Available Programs
+                if !availablePrograms.isEmpty {
+                    availableProgramsSection
+                } else {
+                    emptyStateSection
+                }
+            }
+            .padding(.vertical, theme.spacing.m)
+        }
+        .sheet(item: $selectedProgram) { program in
+            CardioProgramDetailView(program: program, currentUser: currentUser)
+        }
+    }
+    
+    private func activeProgramSection(_ execution: CardioProgramExecution) -> some View {
+        VStack(spacing: theme.spacing.m) {
+            HStack {
+                Text("Active Program")
+                    .font(theme.typography.headline)
+                    .fontWeight(.semibold)
+                    .foregroundColor(theme.colors.textPrimary)
+                Spacer()
+            }
+            .padding(.horizontal)
+            
+            UnifiedWorkoutCard(
+                title: execution.program.localizedName,
+                subtitle: execution.formattedProgress,
+                description: "Continue your structured cardio training",
+                primaryStats: [
+                    WorkoutStat(
+                        label: "This Week",
+                        value: "\(execution.completedSessionsThisWeek)/\(execution.program.daysPerWeek)",
+                        icon: "checkmark.circle"
+                    ),
+                    WorkoutStat(
+                        label: "Progress",
+                        value: "\(Int(execution.progressPercentage * 100))%",
+                        icon: "chart.line.uptrend.xyaxis"
+                    )
+                ],
+                secondaryInfo: [execution.formattedTotalDistance],
+                cardStyle: .detailed,
+                primaryAction: { /* Start next session */ }
+            )
+            .padding(.horizontal)
+        }
+    }
+    
+    private var availableProgramsSection: some View {
+        VStack(alignment: .leading, spacing: theme.spacing.m) {
+            HStack {
+                Text("Available Programs")
+                    .font(theme.typography.headline)
+                    .fontWeight(.semibold)
+                    .foregroundColor(theme.colors.textPrimary)
+                Spacer()
+            }
+            .padding(.horizontal)
+            
+            LazyVStack(spacing: theme.spacing.m) {
+                ForEach(availablePrograms, id: \.id) { program in
+                    programCard(program)
+                        .padding(.horizontal)
+                }
+            }
+        }
+    }
+    
+    private func programCard(_ program: CardioProgram) -> some View {
+        UnifiedWorkoutCard(
+            title: program.localizedName,
+            subtitle: "\(program.weeks) weeks • \(program.daysPerWeek) days/week",
+            description: program.localizedDescription,
+            primaryStats: [
+                WorkoutStat(
+                    label: "Level",
+                    value: program.level.capitalized,
+                    icon: program.difficultyIcon
+                ),
+                WorkoutStat(
+                    label: "Duration",
+                    value: program.estimatedDuration,
+                    icon: "clock"
+                ),
+                WorkoutStat(
+                    label: "Type",
+                    value: program.category.capitalized,
+                    icon: program.categoryIcon
+                )
+            ],
+            secondaryInfo: program.totalDistance != nil ? [
+                "Goal: \(String(format: "%.0fK", (program.totalDistance ?? 0) / 1000))"
+            ] : [],
+            cardStyle: .detailed,
+            primaryAction: {
+                selectedProgram = program
+            }
+        )
+    }
+    
+    private var emptyStateSection: some View {
+        EmptyStateCard(
+            icon: "rectangle.3.group",
+            title: "No Programs Available",
+            message: "Cardio programs are being prepared. Check back soon for structured training programs.",
+            primaryAction: .init(
+                title: "Browse Workouts",
+                action: { /* Navigate to workouts */ }
+            )
+        )
+        .padding(.top, 50)
+    }
+}
+
+// MARK: - Cardio Routines Section  
+struct CardioRoutinesSection: View {
+    @Environment(\.theme) private var theme
+    @Environment(\.modelContext) private var modelContext
+    let currentUser: User?
+    @Binding var showingNewCardio: Bool
+    
+    @State private var builtInRoutines: [CardioRoutine] = []
+    @Query private var customRoutines: [CardioRoutine]
+    @State private var selectedRoutine: CardioRoutine?
+    
+    init(currentUser: User?, showingNewCardio: Binding<Bool>) {
+        self.currentUser = currentUser
+        self._showingNewCardio = showingNewCardio
+        
+        // Filter only custom routines in query
+        self._customRoutines = Query(
+            filter: #Predicate<CardioRoutine> { routine in
+                routine.isCustom == true
+            },
+            sort: [SortDescriptor(\CardioRoutine.updatedAt, order: .reverse)]
+        )
+    }
+    
+    var body: some View {
+        ScrollView {
+            VStack(spacing: theme.spacing.l) {
+                // Built-in Routines Section
+                builtInRoutinesSection
+                
+                // Custom Routines Section  
+                customRoutinesSection
+            }
+            .padding(.vertical, theme.spacing.m)
+        }
+        .onAppear {
+            loadBuiltInRoutines()
+        }
+        .sheet(item: $selectedRoutine) { routine in
+            if let user = currentUser {
+                CardioRoutineSessionView(
+                    routine: routine,
+                    user: user
+                )
+            }
+        }
+    }
+    
+    // MARK: - Built-in Routines Section
+    private var builtInRoutinesSection: some View {
+        VStack(alignment: .leading, spacing: theme.spacing.m) {
+            // Section Header
+            HStack {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Built-in Routines")
+                        .font(theme.typography.title3)
+                        .fontWeight(.semibold)
+                        .foregroundColor(theme.colors.textPrimary)
+                    
+                    Text("Popular cardio workouts")
+                        .font(theme.typography.caption)
+                        .foregroundColor(theme.colors.textSecondary)
+                }
+                
+                Spacer()
+            }
+            .padding(.horizontal)
+            
+            // Routines Grid
+            LazyVGrid(columns: [
+                GridItem(.flexible()),
+                GridItem(.flexible())
+            ], spacing: theme.spacing.m) {
+                ForEach(builtInRoutines.prefix(8), id: \.id) { routine in
+                    routineCard(routine)
+                }
+            }
+            .padding(.horizontal)
+        }
+    }
+    
+    // MARK: - Custom Routines Section
+    private var customRoutinesSection: some View {
+        VStack(alignment: .leading, spacing: theme.spacing.m) {
+            // Section Header
+            HStack {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Custom Routines")
+                        .font(theme.typography.title3)
+                        .fontWeight(.semibold)
+                        .foregroundColor(theme.colors.textPrimary)
+                    
+                    Text("Your personalized workouts")
+                        .font(theme.typography.caption)
+                        .foregroundColor(theme.colors.textSecondary)
+                }
+                
+                Spacer()
+                
+                Button("Create") {
+                    showingNewCardio = true
+                }
+                .font(theme.typography.body)
+                .fontWeight(.medium)
+                .foregroundColor(theme.colors.accent)
+            }
+            .padding(.horizontal)
+            
+            // Custom Routines or Empty State
+            if customRoutines.isEmpty {
+                EmptyStateCard(
+                    icon: "square.stack",
+                    title: "No Custom Routines",
+                    message: "Create your first custom cardio routine to see it here.",
+                    primaryAction: .init(
+                        title: "Create Routine",
+                        action: { showingNewCardio = true }
+                    )
+                )
+                .padding(.horizontal)
+            } else {
+                LazyVGrid(columns: [
+                    GridItem(.flexible()),
+                    GridItem(.flexible())
+                ], spacing: theme.spacing.m) {
+                    ForEach(customRoutines, id: \.id) { routine in
+                        routineCard(routine)
+                    }
+                }
+                .padding(.horizontal)
+            }
+        }
+    }
+    
+    // MARK: - Routine Card
+    private func routineCard(_ routine: CardioRoutine) -> some View {
+        Button(action: { selectedRoutine = routine }) {
+            VStack(alignment: .leading, spacing: theme.spacing.s) {
+                // Icon and Difficulty
+                HStack {
+                    ZStack {
+                        Circle()
+                            .fill(Color.cardioColor.opacity(0.15))
+                            .frame(width: 32, height: 32)
+                        
+                        Image(systemName: routine.icon)
+                            .font(.system(size: 16))
+                            .foregroundColor(Color.cardioColor)
+                    }
+                    
+                    Spacer()
+                    
+                    // Difficulty Badge
+                    Text(routine.difficulty.capitalized)
+                        .font(.caption2)
+                        .fontWeight(.medium)
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 2)
+                        .background(Color(routine.difficultyColor).opacity(0.2))
+                        .foregroundColor(Color(routine.difficultyColor))
+                        .cornerRadius(4)
+                }
+                
+                // Title
+                Text(routine.localizedName)
+                    .font(theme.typography.body)
+                    .fontWeight(.semibold)
+                    .foregroundColor(theme.colors.textPrimary)
+                    .lineLimit(1)
+                
+                // Primary Target (Distance or Duration)
+                Text(routine.primaryTarget)
+                    .font(theme.typography.headline)
+                    .fontWeight(.bold)
+                    .foregroundColor(Color.cardioColor)
+                
+                // Estimated Time
+                if !routine.formattedEstimatedTime.isEmpty {
+                    Text("~\(routine.formattedEstimatedTime)")
+                        .font(theme.typography.caption)
+                        .foregroundColor(theme.colors.textSecondary)
+                }
+            }
+            .padding(theme.spacing.m)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(theme.colors.cardBackground)
+            .cornerRadius(theme.radius.m)
+            .shadow(color: theme.shadows.card.opacity(0.05), radius: 2)
+        }
+        .buttonStyle(PlainButtonStyle())
+    }
+    
+    // MARK: - Helper Methods
+    private func loadBuiltInRoutines() {
+        builtInRoutines = CardioRoutineService.shared.loadBuiltInRoutines()
     }
 }
 

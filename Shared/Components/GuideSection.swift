@@ -1,6 +1,6 @@
 //
 //  GuideSection.swift
-//  SporHocam
+//  Thrustr
 //
 //  Created by Assistant on 10/8/25.
 //

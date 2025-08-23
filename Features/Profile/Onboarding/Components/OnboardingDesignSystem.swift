@@ -1,6 +1,6 @@
 //
 //  OnboardingDesignSystem.swift
-//  SporHocam
+//  Thrustr
 //
 //  Onboarding Design System - Modern Visual Components
 //

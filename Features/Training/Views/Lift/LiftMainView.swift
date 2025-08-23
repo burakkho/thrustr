@@ -4,13 +4,13 @@ import SwiftData
 struct LiftMainView: View {
     @Environment(\.theme) private var theme
     @Environment(TrainingCoordinator.self) private var coordinator
-    @State private var selectedTab = 1 // Start with Workouts tab
+    @State private var selectedTab = 0 // Start with Train tab
     
     private let tabs = [
-        TrainingTab(title: "Workouts"),
-        TrainingTab(title: "Programs"),
-        TrainingTab(title: "Routines"),
-        TrainingTab(title: "History")
+        TrainingTab(title: LocalizationKeys.Training.Lift.train.localized),
+        TrainingTab(title: LocalizationKeys.Training.Lift.programs.localized),
+        TrainingTab(title: LocalizationKeys.Training.Lift.routines.localized),
+        TrainingTab(title: LocalizationKeys.Training.Lift.history.localized)
     ]
     
     var body: some View {
@@ -52,7 +52,7 @@ struct LiftMainView: View {
                     .foregroundColor(theme.colors.textPrimary)
                 
                 if coordinator.hasActiveSession && coordinator.activeSessionType == .lift {
-                    Label("Session in progress", systemImage: "circle.fill")
+                    Label(LocalizationKeys.Training.Lift.sessionInProgress.localized, systemImage: "circle.fill")
                         .font(theme.typography.caption)
                         .foregroundColor(theme.colors.success)
                 }
@@ -63,15 +63,15 @@ struct LiftMainView: View {
             // Quick Actions Menu
             Menu {
                 Button(action: { coordinator.navigateToNewWorkout() }) {
-                    Label("New Workout", systemImage: "plus.circle")
+                    Label(LocalizationKeys.Training.Lift.newWorkout.localized, systemImage: "plus.circle")
                 }
                 
                 Button(action: { coordinator.navigateToProgramSelection() }) {
-                    Label("Browse Programs", systemImage: "rectangle.3.group")
+                    Label(LocalizationKeys.Training.Lift.browsePrograms.localized, systemImage: "rectangle.3.group")
                 }
                 
                 Button(action: { coordinator.performQuickAction(.emptyWorkout) }) {
-                    Label("Quick Start", systemImage: "bolt.fill")
+                    Label(LocalizationKeys.Training.Lift.quickStart.localized, systemImage: "bolt.fill")
                 }
             } label: {
                 Image(systemName: "ellipsis.circle")

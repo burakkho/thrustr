@@ -1,0 +1,268 @@
+{
+  "metadata": {
+    "id": "10k-runner",
+    "name": {
+      "en": "10K Runner",
+      "tr": "10K Koşucusu"
+    },
+    "description": {
+      "en": "Take your running to the next level. Build from 5K to 10K distance with structured training. Requires ability to run 5K continuously.",
+      "tr": "Koşunuzu bir sonraki seviyeye taşıyın. Yapılandırılmış antrenmanla 5K'dan 10K'ya ulaşın. 5K sürekli koşabilme yeteneği gerektirir."
+    },
+    "weeks": 8,
+    "daysPerWeek": 4,
+    "level": "intermediate",
+    "category": "running",
+    "isCustom": false,
+    "author": "10K Training",
+    "version": "1.0",
+    "totalDistance": 10000,
+    "targetPace": 6.0,
+    "intensityLevel": "moderate"
+  },
+  "workouts": [
+    {
+      "week": 1,
+      "name": {
+        "en": "Week 1",
+        "tr": "Hafta 1"
+      },
+      "description": {
+        "en": "Base building: 5min warm-up, 20min easy run, 5min cool-down",
+        "tr": "Temel oluşturma: 5dk ısınma, 20dk kolay koş, 5dk soğuma"
+      },
+      "targetTime": 1800,
+      "estimatedCalories": 280,
+      "exercises": [
+        {
+          "name": "Warm-up Walk",
+          "duration": 300,
+          "intensity": "low"
+        },
+        {
+          "name": "Easy Run",
+          "duration": 1200,
+          "intensity": "moderate"
+        },
+        {
+          "name": "Cool-down Walk",
+          "duration": 300,
+          "intensity": "low"
+        }
+      ]
+    },
+    {
+      "week": 2,
+      "name": {
+        "en": "Week 2",
+        "tr": "Hafta 2"
+      },
+      "description": {
+        "en": "Building endurance: 5min warm-up, 25min easy run, 5min cool-down",
+        "tr": "Dayanıklılık geliştirme: 5dk ısınma, 25dk kolay koş, 5dk soğuma"
+      },
+      "targetTime": 2100,
+      "estimatedCalories": 320,
+      "exercises": [
+        {
+          "name": "Warm-up Walk",
+          "duration": 300,
+          "intensity": "low"
+        },
+        {
+          "name": "Easy Run",
+          "duration": 1500,
+          "intensity": "moderate"
+        },
+        {
+          "name": "Cool-down Walk",
+          "duration": 300,
+          "intensity": "low"
+        }
+      ]
+    },
+    {
+      "week": 3,
+      "name": {
+        "en": "Week 3",
+        "tr": "Hafta 3"
+      },
+      "description": {
+        "en": "Adding intervals: 5min warm-up, 30min run with 5x2min intervals, 5min cool-down",
+        "tr": "Aralık ekleme: 5dk ısınma, 5x2dk aralıklı 30dk koş, 5dk soğuma"
+      },
+      "targetTime": 2400,
+      "estimatedCalories": 380,
+      "exercises": [
+        {
+          "name": "Warm-up Walk",
+          "duration": 300,
+          "intensity": "low"
+        },
+        {
+          "name": "Interval Run",
+          "duration": 1800,
+          "intensity": "high",
+          "pattern": "5x2min fast intervals with 1min recovery"
+        },
+        {
+          "name": "Cool-down Walk",
+          "duration": 300,
+          "intensity": "low"
+        }
+      ]
+    },
+    {
+      "week": 4,
+      "name": {
+        "en": "Week 4",
+        "tr": "Hafta 4"
+      },
+      "description": {
+        "en": "Long run week: 5min warm-up, 35min continuous run, 5min cool-down",
+        "tr": "Uzun koşu haftası: 5dk ısınma, 35dk sürekli koş, 5dk soğuma"
+      },
+      "targetTime": 2700,
+      "estimatedCalories": 420,
+      "exercises": [
+        {
+          "name": "Warm-up Walk",
+          "duration": 300,
+          "intensity": "low"
+        },
+        {
+          "name": "Long Run",
+          "duration": 2100,
+          "intensity": "moderate"
+        },
+        {
+          "name": "Cool-down Walk",
+          "duration": 300,
+          "intensity": "low"
+        }
+      ]
+    },
+    {
+      "week": 5,
+      "name": {
+        "en": "Week 5",
+        "tr": "Hafta 5"
+      },
+      "description": {
+        "en": "Tempo training: 5min warm-up, 40min tempo run, 5min cool-down",
+        "tr": "Tempo antrenmanı: 5dk ısınma, 40dk tempo koş, 5dk soğuma"
+      },
+      "targetTime": 3000,
+      "estimatedCalories": 480,
+      "exercises": [
+        {
+          "name": "Warm-up Walk",
+          "duration": 300,
+          "intensity": "low"
+        },
+        {
+          "name": "Tempo Run",
+          "duration": 2400,
+          "intensity": "high"
+        },
+        {
+          "name": "Cool-down Walk",
+          "duration": 300,
+          "intensity": "low"
+        }
+      ]
+    },
+    {
+      "week": 6,
+      "name": {
+        "en": "Week 6",
+        "tr": "Hafta 6"
+      },
+      "description": {
+        "en": "Peak distance: 5min warm-up, 45min continuous run, 5min cool-down",
+        "tr": "Zirve mesafe: 5dk ısınma, 45dk sürekli koş, 5dk soğuma"
+      },
+      "targetTime": 3300,
+      "estimatedCalories": 520,
+      "exercises": [
+        {
+          "name": "Warm-up Walk",
+          "duration": 300,
+          "intensity": "low"
+        },
+        {
+          "name": "Long Run",
+          "duration": 2700,
+          "intensity": "moderate"
+        },
+        {
+          "name": "Cool-down Walk",
+          "duration": 300,
+          "intensity": "low"
+        }
+      ]
+    },
+    {
+      "week": 7,
+      "name": {
+        "en": "Week 7",
+        "tr": "Hafta 7"
+      },
+      "description": {
+        "en": "Race prep: 5min warm-up, 50min steady run (8-9K), 5min cool-down",
+        "tr": "Yarış hazırlığı: 5dk ısınma, 50dk sabit koş (8-9K), 5dk soğuma"
+      },
+      "targetTime": 3600,
+      "estimatedCalories": 560,
+      "exercises": [
+        {
+          "name": "Warm-up Walk",
+          "duration": 300,
+          "intensity": "low"
+        },
+        {
+          "name": "Steady Run",
+          "duration": 3000,
+          "intensity": "moderate",
+          "goal": "Aim for 8-9K distance"
+        },
+        {
+          "name": "Cool-down Walk",
+          "duration": 300,
+          "intensity": "low"
+        }
+      ]
+    },
+    {
+      "week": 8,
+      "name": {
+        "en": "Week 8",
+        "tr": "Hafta 8"
+      },
+      "description": {
+        "en": "10K goal: 5min warm-up, 55min run (aim for 10K), 5min cool-down",
+        "tr": "10K hedefi: 5dk ısınma, 55dk koş (10K hedefle), 5dk soğuma"
+      },
+      "targetTime": 3900,
+      "estimatedCalories": 600,
+      "exercises": [
+        {
+          "name": "Warm-up Walk",
+          "duration": 300,
+          "intensity": "low"
+        },
+        {
+          "name": "10K Goal Run",
+          "duration": 3300,
+          "intensity": "moderate",
+          "goal": "Complete 10K distance"
+        },
+        {
+          "name": "Cool-down Walk",
+          "duration": 300,
+          "intensity": "low"
+        }
+      ]
+    }
+  ]
+}

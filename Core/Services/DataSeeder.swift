@@ -29,13 +29,6 @@ class DataSeeder {
                     throw error
                 }
                 
-                // Warmup exercises seeding (required for templates)
-                do {
-                    try await seedWarmupExercises(modelContext: modelContext)
-                } catch {
-                    Logger.warning("Failed to seed warmup exercises: \(error)")
-                    // Don't throw - warmup is optional
-                }
                 
                 do {
                     try await seedFoods(modelContext: modelContext)
@@ -51,10 +44,9 @@ class DataSeeder {
                 
                 // JSON-based data seeding - sequential
                 try await seedLiftProgramsFromJSONIfNeeded(modelContext: modelContext)
+                try await seedCardioProgramsIfNeeded(modelContext: modelContext)
                 try await seedRoutineTemplatesIfNeeded(modelContext: modelContext)
                 
-                // Full warmup template seeding from CSV
-                try await seedWarmUpTemplatesIfNeeded(modelContext: modelContext)
                 
                 // Normalization - after all data is seeded
                 await normalizeDataAfterSeeding(modelContext: modelContext)
@@ -388,7 +380,6 @@ class DataSeeder {
             .core: 12,
             .functional: 10,
             .cardio: 8,
-            .warmup: 6,
             .flexibility: 4,
             .olympic: 12,
             .plyometric: 8
@@ -509,59 +500,6 @@ class DataSeeder {
         return successCount
     }
     
-    // MARK: - Seed Warmup Exercises Separately
-    private static func seedWarmupExercises(modelContext: ModelContext) async throws {
-        Logger.info("🔥 Starting warmup exercises seeding...")
-        
-        do {
-            let rows = try CSVParser.parseCSVFile("warmup_exercises")
-            Logger.info("📁 Loaded \(rows.count) warmup exercise rows")
-            
-            // Get existing exercises to check for duplicates
-            let existingDescriptor = FetchDescriptor<Exercise>()
-            let existingExercises = (try? modelContext.fetch(existingDescriptor)) ?? []
-            let existingNames = Set(existingExercises.map { $0.nameEN.lowercased() })
-            
-            var successCount = 0
-            var skippedCount = 0
-            
-            for (index, columns) in rows.enumerated() {
-                if index == 0 { continue } // Skip header
-                if columns.count < 8 { continue }
-                
-                // Check for duplicate before creating
-                let nameEN = columns[0].trimmingCharacters(in: .whitespaces)
-                if existingNames.contains(nameEN.lowercased()) {
-                    Logger.info("⏭️ Skipping duplicate warmup exercise: \(nameEN)")
-                    skippedCount += 1
-                    continue
-                }
-                
-                do {
-                    let exercise = try createExerciseFromCSV(columns: columns)
-                    modelContext.insert(exercise)
-                    successCount += 1
-                    
-                    // Save in very small batches for warmup exercises
-                    if successCount % 5 == 0 {
-                        try modelContext.save()
-                        await Task.yield()
-                    }
-                } catch {
-                    Logger.error("❌ Failed to create warmup exercise at row \(index): \(error), columns: \(columns)")
-                    continue
-                }
-            }
-            
-            // Final save
-            try modelContext.save()
-            Logger.success("Seeded \(successCount) warmup exercises (skipped \(skippedCount) duplicates)")
-            
-        } catch {
-            Logger.warning("Could not load warmup exercises: \(error)")
-            // Don't throw - warmup exercises are optional
-        }
-    }
     
     // MARK: - Seed Foods with Improved Error Handling
     private static func seedFoods(modelContext: ModelContext) async throws {
@@ -1315,10 +1253,49 @@ extension DataSeeder {
     }
 }
 
-// MARK: - JSON-Based Lift Programs
+// MARK: - JSON-Based Programs
 extension DataSeeder {
     
-    // MARK: - JSON Parsing Models
+    // MARK: - JSON Parsing Models for Cardio Programs
+    struct JSONCardioProgram: Codable {
+        let metadata: JSONCardioProgramMetadata
+        let workouts: [JSONCardioWorkout]
+    }
+    
+    struct JSONCardioProgramMetadata: Codable {
+        let id: String
+        let name: LocalizedString
+        let description: LocalizedString
+        let weeks: Int
+        let daysPerWeek: Int
+        let level: String
+        let category: String
+        let isCustom: Bool
+        let author: String?
+        let version: String
+        let totalDistance: Double?
+        let targetPace: Double?
+        let intensityLevel: String
+    }
+    
+    struct JSONCardioWorkout: Codable {
+        let week: Int
+        let name: LocalizedString
+        let description: LocalizedString
+        let targetTime: Int
+        let estimatedCalories: Int
+        let exercises: [JSONCardioExercise]
+    }
+    
+    struct JSONCardioExercise: Codable {
+        let name: String
+        let duration: Int
+        let intensity: String
+        let pattern: String?
+        let goal: String?
+    }
+    
+    // MARK: - JSON Parsing Models for Lift Programs
     struct JSONLiftProgram: Codable {
         let metadata: JSONProgramMetadata
         let progression: JSONProgression
@@ -1597,8 +1574,8 @@ extension DataSeeder {
         // Handle duplicate exercise names by taking the first occurrence
         let exerciseGroups = Dictionary(grouping: availableExercises, by: { $0.nameEN })
         let exerciseDict = exerciseGroups.compactMapValues { exercises in
-            // If there are duplicates, prefer non-warmup exercises, otherwise take first
-            exercises.first { $0.category != "warmup" } ?? exercises.first
+            // If there are duplicates, take the first one
+            exercises.first
         }
         
         for (index, exerciseName) in template.exercises.enumerated() {
@@ -1632,118 +1609,140 @@ extension DataSeeder {
         return workout.exercises.isEmpty ? nil : workout
     }
     
-    // MARK: - WarmUp Template Seeding
-    static func seedWarmUpTemplatesIfNeeded(modelContext: ModelContext) async throws {
-        // Check if warm-up templates already exist
-        let existingTemplates = try modelContext.fetch(FetchDescriptor<WarmUpTemplate>())
-        if !existingTemplates.isEmpty {
-            Logger.info("WarmUp templates already exist (\(existingTemplates.count)), skipping seeding")
+    
+    // MARK: - Cardio Programs Seeding
+    @MainActor
+    static func seedCardioProgramsIfNeeded(modelContext: ModelContext) async throws {
+        // Check if cardio programs already exist
+        let descriptor = FetchDescriptor<CardioProgram>(predicate: #Predicate<CardioProgram> { !$0.isCustom })
+        let existingPrograms = (try? modelContext.fetch(descriptor)) ?? []
+        
+        if !existingPrograms.isEmpty {
+            Logger.success("Cardio programs already seeded: \(existingPrograms.count)")
             return
         }
         
-        Logger.info("🔥 Starting WarmUp templates seeding from CSV...")
+        Logger.info("Loading cardio programs from JSON files...")
+        try await loadCardioProgramsFromJSON(modelContext: modelContext)
+    }
+    
+    @MainActor
+    private static func loadCardioProgramsFromJSON(modelContext: ModelContext) async throws {
+        // Try different ways to find the CardioPrograms folder
+        var programsURL: URL?
+        
+        // First try: Use subdirectory parameter for new structure
+        if let url = Bundle.main.url(forResource: "", withExtension: nil, subdirectory: "Training/Programs/CardioPrograms") {
+            programsURL = url
+        }
+        
+        // Second try: Legacy subdirectory
+        if programsURL == nil {
+            programsURL = Bundle.main.url(forResource: "", withExtension: nil, subdirectory: "CardioPrograms")
+        }
+        
+        // Third try: Look for specific JSON file to find the folder
+        if programsURL == nil {
+            if let jsonURL = Bundle.main.url(forResource: "couch-to-5k", withExtension: "json") {
+                programsURL = jsonURL.deletingLastPathComponent()
+            }
+        }
+        
+        guard let finalURL = programsURL, 
+              FileManager.default.fileExists(atPath: finalURL.path) else {
+            throw DataSeederError.fileNotFound("CardioPrograms folder (checked Training/Programs/CardioPrograms and legacy locations)")
+        }
         
         do {
-            // Use the standardized CSV parser
-            let rows = try CSVParser.parseCSVFile("warmup_routines")
-            guard rows.count > 1 else {
-                Logger.warning("warmup_routines.csv is empty or has no data rows")
-                return
-            }
+            let fileURLs = try FileManager.default.contentsOfDirectory(
+                at: finalURL,
+                includingPropertiesForKeys: nil,
+                options: .skipsHiddenFiles
+            ).filter { $0.pathExtension == "json" }
             
-            // Parse header to get column indices (more robust than assuming order)
-            let headers = rows[0]
-            let nameENIdx = headers.firstIndex(of: "nameEN") ?? 0
-            let nameTRIdx = headers.firstIndex(of: "nameTR") ?? 1
-            let descriptionIdx = headers.firstIndex(of: "description") ?? 2
-            let categoryIdx = headers.firstIndex(of: "category") ?? 3
-            let durationIdx = headers.firstIndex(of: "duration") ?? 4
-            let difficultyIdx = headers.firstIndex(of: "difficulty") ?? 5
-            let exercisesIdx = headers.firstIndex(of: "exercises") ?? 6
+            var loadedCount = 0
             
-            var createdCount = 0
-            var exerciseResolver = ExerciseResolver()
-            
-            // Process data rows
-            for (index, row) in rows.enumerated() {
-                if index == 0 { continue } // Skip header
-                
-                guard row.count > max(nameENIdx, nameTRIdx, categoryIdx, durationIdx) else {
-                    Logger.warning("Insufficient columns in warmup template row \(index): \(row)")
-                    continue
-                }
-                
-                let nameEN = row[nameENIdx].trimmingCharacters(in: .whitespacesAndNewlines)
-                let nameTR = row[nameTRIdx].trimmingCharacters(in: .whitespacesAndNewlines)
-                let description = row.count > descriptionIdx ? row[descriptionIdx].trimmingCharacters(in: .whitespacesAndNewlines) : ""
-                let category = row[categoryIdx].trimmingCharacters(in: .whitespacesAndNewlines)
-                let duration = Int(row[durationIdx].trimmingCharacters(in: .whitespacesAndNewlines)) ?? 300
-                let difficulty = row.count > difficultyIdx ? row[difficultyIdx].trimmingCharacters(in: .whitespacesAndNewlines) : "beginner"
-                
-                guard !nameEN.isEmpty else {
-                    Logger.warning("Empty name in warmup template row \(index)")
-                    continue
-                }
-                
-                // Parse exercises string - handle quoted comma-separated values
-                var exerciseNames: [String] = []
-                if row.count > exercisesIdx {
-                    let exercisesString = row[exercisesIdx].trimmingCharacters(in: .whitespacesAndNewlines)
-                    if !exercisesString.isEmpty {
-                        // Remove surrounding quotes if present and split by comma
-                        let cleanedString = exercisesString.replacingOccurrences(of: "\"", with: "")
-                        exerciseNames = cleanedString.components(separatedBy: ",")
-                            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
-                            .filter { !$0.isEmpty }
-                    }
-                }
-                
-                // Resolve exercise IDs from names
-                var exerciseIds: [UUID] = []
-                for exerciseName in exerciseNames {
-                    if let resolvedId = exerciseResolver.resolveExerciseID(name: exerciseName, modelContext: modelContext) {
-                        exerciseIds.append(resolvedId)
-                        Logger.info("✅ Resolved '\(exerciseName)' to ID: \(resolvedId)")
-                    } else {
-                        Logger.warning("⚠️ Could not resolve exercise '\(exerciseName)' for template '\(nameEN)'")
-                    }
-                }
-                
-                // Create template only if we have at least one exercise
-                if !exerciseIds.isEmpty {
-                    let template = WarmUpTemplate(
-                        name: nameEN,
-                        nameEN: nameEN,
-                        nameTR: nameTR.isEmpty ? nameEN : nameTR,
-                        description: description,
-                        category: category,
-                        estimatedDuration: duration,
-                        difficulty: difficulty,
-                        exerciseIds: exerciseIds,
-                        isCustom: false
-                    )
-                    
-                    modelContext.insert(template)
-                    createdCount += 1
-                    Logger.info("✅ Created WarmUp template '\(nameEN)' [\(category)] with \(exerciseIds.count)/\(exerciseNames.count) exercises")
-                } else {
-                    Logger.warning("⚠️ Skipping WarmUp template '\(nameEN)' - no exercises could be resolved")
-                }
-                
-                // Yield periodically for responsiveness
-                if createdCount % SeedingConfig.yieldInterval == 0 {
-                    await Task.yield()
+            for fileURL in fileURLs {
+                if let program = try await loadSingleCardioProgramFromJSON(fileURL: fileURL, modelContext: modelContext) {
+                    modelContext.insert(program)
+                    loadedCount += 1
+                    Logger.info("Loaded cardio program: \(program.localizedName)")
                 }
             }
             
-            // Save all templates
             try modelContext.save()
-            Logger.success("🎉 Successfully created \(createdCount) WarmUp templates from CSV")
+            Logger.success("Successfully loaded \(loadedCount) cardio programs from JSON")
             
         } catch {
-            Logger.error("❌ Failed to seed WarmUp templates from CSV: \(error)")
-            // Don't create fallback - let it fail gracefully
+            Logger.error("Failed to load cardio programs from JSON: \(error)")
             throw error
+        }
+    }
+    
+    @MainActor
+    private static func loadSingleCardioProgramFromJSON(fileURL: URL, modelContext: ModelContext) async throws -> CardioProgram? {
+        do {
+            let data = try Data(contentsOf: fileURL)
+            let jsonProgram = try JSONDecoder().decode(JSONCardioProgram.self, from: data)
+            
+            // Create CardioProgram from JSON
+            let program = CardioProgram(
+                name: jsonProgram.metadata.name.en,
+                nameEN: jsonProgram.metadata.name.en,
+                nameTR: jsonProgram.metadata.name.tr,
+                description: jsonProgram.metadata.description.en,
+                descriptionEN: jsonProgram.metadata.description.en,
+                descriptionTR: jsonProgram.metadata.description.tr,
+                weeks: jsonProgram.metadata.weeks,
+                daysPerWeek: jsonProgram.metadata.daysPerWeek,
+                level: jsonProgram.metadata.level,
+                category: jsonProgram.metadata.category,
+                isCustom: jsonProgram.metadata.isCustom,
+                totalDistance: jsonProgram.metadata.totalDistance,
+                targetPace: jsonProgram.metadata.targetPace,
+                intensityLevel: jsonProgram.metadata.intensityLevel
+            )
+            
+            // Create workouts from JSON
+            for jsonWorkout in jsonProgram.workouts {
+                let workout = CardioWorkout(
+                    name: jsonWorkout.name.en,
+                    nameEN: jsonWorkout.name.en,
+                    nameTR: jsonWorkout.name.tr,
+                    type: "time",
+                    category: "program",
+                    description: jsonWorkout.description.en,
+                    descriptionTR: jsonWorkout.description.tr,
+                    targetDistance: nil,
+                    targetTime: jsonWorkout.targetTime,
+                    estimatedCalories: jsonWorkout.estimatedCalories,
+                    difficulty: program.level,
+                    equipment: ["outdoor"],
+                    isTemplate: true,
+                    isCustom: false
+                )
+                
+                // Create exercises from JSON
+                for (index, jsonExercise) in jsonWorkout.exercises.enumerated() {
+                    let exercise = CardioExercise(
+                        name: jsonExercise.name,
+                        exerciseType: "cardio",
+                        targetDistance: nil,
+                        targetTime: jsonExercise.duration,
+                        equipment: "outdoor"
+                    )
+                    exercise.orderIndex = index
+                    workout.addExercise(exercise)
+                }
+                
+                program.addWorkout(workout)
+            }
+            
+            return program
+            
+        } catch {
+            Logger.error("Failed to parse cardio JSON file \(fileURL.lastPathComponent): \(error)")
+            return nil
         }
     }
 }

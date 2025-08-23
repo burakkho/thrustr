@@ -1,6 +1,6 @@
 //
 //  MeasurementsStepView.swift
-//  SporHocam
+//  Thrustr
 //
 //  Body Measurements Step - Localized
 //

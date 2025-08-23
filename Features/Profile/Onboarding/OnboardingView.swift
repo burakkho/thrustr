@@ -1,6 +1,6 @@
 //
 //  OnboardingView.swift
-//  SporHocam
+//  Thrustr
 //
 //  Main Onboarding Coordinator - Localized
 //

@@ -1,6 +1,6 @@
 //
 //  SummaryStepView.swift
-//  SporHocam
+//  Thrustr
 //
 //  Summary Step - Localized & Fixed
 //

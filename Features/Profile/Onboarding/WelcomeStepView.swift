@@ -1,6 +1,6 @@
 //
 //  WelcomeStepView.swift
-//  SporHocam
+//  Thrustr
 //
 //  Welcome Step - Minimal & Clean Design
 //

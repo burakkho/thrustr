@@ -3,7 +3,7 @@
 "common.discard_message" = "Kaydedilmemiş değişiklikler kaybolacak.";
 /*
    Localizable.strings (Turkish)
-   SporHocam - Turkish Localization
+   Thrustr - Turkish Localization
 */
 
 // MARK: - Tab Bar
@@ -23,6 +23,13 @@
 "training.title" = "Antrenman";
 "training.newWorkout" = "Yeni Antrenman";
 "training.history" = "Geçmiş";
+
+// MARK: - Training Analytics & Dashboard
+"training.analytics.title" = "Analizler";
+"training.dashboard.title" = "Gösterge Paneli";
+"training.dashboard.thisWeek" = "Bu Hafta";
+"training.dashboard.quickActions" = "Hızlı İşlemler";
+"training.dashboard.noRecentActivity" = "Son etkinlik yok";
 
 // MARK: - Lift Training
 "training.lift.title" = "Ağırlık Antrenmanı";
@@ -298,7 +305,7 @@
 "onboarding.skip" = "Atla";
 
 // Welcome Step
-"onboarding.welcome.title" = "Spor Hocam'a\nHoş Geldin! 💪";
+"onboarding.welcome.title" = "Thrustr'a\nHoş Geldin! 💪";
 "onboarding.welcome.subtitle" = "Fitness yolculuğunda yanındayız.\nHadi başlayalım!";
 "onboarding.welcome.start" = "Başlayalım!";
 "onboarding.feature.workout" = "Akıllı antrenman takibi";
@@ -1649,6 +1656,41 @@
 "time.minutes_short" = "DK";
 "time.seconds_short" = "SN";
 
+// MARK: - Training Analytics (Additional Keys)
+"training.analytics.trackProgress" = "İlerlemenizi ve başarılarınızı takip edin";
+"training.analytics.thisWeek" = "Bu Hafta";
+"training.analytics.sessions" = "Seanslar";
+"training.analytics.totalTime" = "Toplam Süre";
+"training.analytics.streak" = "Seri";
+"training.analytics.prs" = "PR'lar";
+"training.analytics.days" = "gün";
+"training.analytics.monthlyGoals" = "Aylık Hedefler";
+"training.analytics.editGoals" = "Hedefleri Düzenle";
+"training.analytics.distance" = "Mesafe";
+"training.analytics.viewAll" = "Tümünü Gör";
+"training.analytics.recentPRs" = "Son PR'lar";
+"training.analytics.noPRsYet" = "Henüz PR Yok";
+"training.analytics.noPRsMessage" = "Kişisel rekorları takip etmeye başlamak için antrenmanları tamamlayın";
+"training.analytics.startTraining" = "Antrenmana Başla";
+"training.analytics.noUserProfile" = "Kullanıcı Profili Yok";
+"training.analytics.setupProfileMessage" = "Analitikleri görmek için profil kurulumunuzu tamamlayın";
+"training.analytics.setupProfile" = "Profil Kur";
+
+// MARK: - Training Lift (Additional Keys)
+"training.lift.train" = "Antreman";
+"training.lift.programs" = "Programlar";
+"training.lift.routines" = "Rutinler";
+"training.lift.history" = "Geçmiş";
+"training.lift.sessionInProgress" = "Oturum devam ediyor";
+"training.lift.newWorkout" = "Yeni Antreman";
+"training.lift.cancel" = "İptal";
+"training.lift.close" = "Kapat";
+"training.lift.done" = "Tamam";
+"training.lift.save" = "Kaydet";
+"training.lift.delete" = "Sil";
+"training.lift.edit" = "Düzenle";
+"training.lift.seeAll" = "Tümünü Gör";
+
 // MARK: - Loading View
-"loading.title" = "SporHocam Hazırlanıyor";
+"loading.title" = "Thrustr Hazırlanıyor";
 "loading.subtitle" = "Veriler yükleniyor...";

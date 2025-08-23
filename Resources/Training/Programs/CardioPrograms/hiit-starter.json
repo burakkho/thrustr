@@ -1,0 +1,215 @@
+{
+  "metadata": {
+    "id": "hiit-starter",
+    "name": {
+      "en": "HIIT Starter",
+      "tr": "HIIT Başlangıç",
+      "de": "HIIT Einsteiger",
+      "es": "HIIT Principiante"
+    },
+    "description": {
+      "en": "High-Intensity Interval Training for beginners. Short bursts of intense exercise followed by recovery periods. Perfect for burning fat and improving cardiovascular fitness.",
+      "tr": "Yeni başlayanlar için Yüksek Yoğunluklu Aralık Antrenmanı. Kısa süreli yoğun egzersizleri dinlenme dönemleri takip eder. Yağ yakma ve kardiyovasküler fitness için mükemmel.",
+      "de": "Hochintensives Intervalltraining für Anfänger. Kurze intensive Übungsphasen gefolgt von Erholungsphasen. Perfekt zum Fettverbrennen und zur Verbesserung der kardiovaskulären Fitness.",
+      "es": "Entrenamiento de Intervalos de Alta Intensidad para principiantes. Ráfagas cortas de ejercicio intenso seguidas de períodos de recuperación. Perfecto para quemar grasa y mejorar el estado cardiovascular."
+    },
+    "weeks": 6,
+    "daysPerWeek": 4,
+    "level": "beginner",
+    "category": "hiit",
+    "isCustom": false,
+    "author": "HIIT Training",
+    "version": "1.0",
+    "totalDistance": null,
+    "targetPace": null,
+    "intensityLevel": "high"
+  },
+  "workouts": [
+    {
+      "week": 1,
+      "name": {
+        "en": "Week 1",
+        "tr": "Hafta 1"
+      },
+      "description": {
+        "en": "5min warm-up, 20sec work + 40sec rest (8 rounds), 5min cool-down",
+        "tr": "5dk ısınma, 20sn çalışma + 40sn dinlenme (8 tur), 5dk soğuma"
+      },
+      "targetTime": 1200,
+      "estimatedCalories": 200,
+      "exercises": [
+        {
+          "name": "Warm-up",
+          "duration": 300,
+          "intensity": "low"
+        },
+        {
+          "name": "HIIT Intervals",
+          "duration": 480,
+          "intensity": "high",
+          "pattern": "20sec work, 40sec rest (8 rounds)"
+        },
+        {
+          "name": "Cool-down",
+          "duration": 300,
+          "intensity": "low"
+        }
+      ]
+    },
+    {
+      "week": 2,
+      "name": {
+        "en": "Week 2",
+        "tr": "Hafta 2"
+      },
+      "description": {
+        "en": "5min warm-up, 25sec work + 35sec rest (10 rounds), 5min cool-down",
+        "tr": "5dk ısınma, 25sn çalışma + 35sn dinlenme (10 tur), 5dk soğuma"
+      },
+      "targetTime": 1300,
+      "estimatedCalories": 220,
+      "exercises": [
+        {
+          "name": "Warm-up",
+          "duration": 300,
+          "intensity": "low"
+        },
+        {
+          "name": "HIIT Intervals",
+          "duration": 600,
+          "intensity": "high",
+          "pattern": "25sec work, 35sec rest (10 rounds)"
+        },
+        {
+          "name": "Cool-down",
+          "duration": 300,
+          "intensity": "low"
+        }
+      ]
+    },
+    {
+      "week": 3,
+      "name": {
+        "en": "Week 3",
+        "tr": "Hafta 3"
+      },
+      "description": {
+        "en": "5min warm-up, 30sec work + 30sec rest (12 rounds), 5min cool-down",
+        "tr": "5dk ısınma, 30sn çalışma + 30sn dinlenme (12 tur), 5dk soğuma"
+      },
+      "targetTime": 1420,
+      "estimatedCalories": 250,
+      "exercises": [
+        {
+          "name": "Warm-up",
+          "duration": 300,
+          "intensity": "low"
+        },
+        {
+          "name": "HIIT Intervals",
+          "duration": 720,
+          "intensity": "high",
+          "pattern": "30sec work, 30sec rest (12 rounds)"
+        },
+        {
+          "name": "Cool-down",
+          "duration": 300,
+          "intensity": "low"
+        }
+      ]
+    },
+    {
+      "week": 4,
+      "name": {
+        "en": "Week 4",
+        "tr": "Hafta 4"
+      },
+      "description": {
+        "en": "5min warm-up, 35sec work + 25sec rest (12 rounds), 5min cool-down",
+        "tr": "5dk ısınma, 35sn çalışma + 25sn dinlenme (12 tur), 5dk soğuma"
+      },
+      "targetTime": 1420,
+      "estimatedCalories": 270,
+      "exercises": [
+        {
+          "name": "Warm-up",
+          "duration": 300,
+          "intensity": "low"
+        },
+        {
+          "name": "HIIT Intervals",
+          "duration": 720,
+          "intensity": "high",
+          "pattern": "35sec work, 25sec rest (12 rounds)"
+        },
+        {
+          "name": "Cool-down",
+          "duration": 300,
+          "intensity": "low"
+        }
+      ]
+    },
+    {
+      "week": 5,
+      "name": {
+        "en": "Week 5",
+        "tr": "Hafta 5"
+      },
+      "description": {
+        "en": "5min warm-up, 40sec work + 20sec rest (15 rounds), 5min cool-down",
+        "tr": "5dk ısınma, 40sn çalışma + 20sn dinlenme (15 tur), 5dk soğuma"
+      },
+      "targetTime": 1500,
+      "estimatedCalories": 300,
+      "exercises": [
+        {
+          "name": "Warm-up",
+          "duration": 300,
+          "intensity": "low"
+        },
+        {
+          "name": "HIIT Intervals",
+          "duration": 900,
+          "intensity": "high",
+          "pattern": "40sec work, 20sec rest (15 rounds)"
+        },
+        {
+          "name": "Cool-down",
+          "duration": 300,
+          "intensity": "low"
+        }
+      ]
+    },
+    {
+      "week": 6,
+      "name": {
+        "en": "Week 6",
+        "tr": "Hafta 6"
+      },
+      "description": {
+        "en": "5min warm-up, 45sec work + 15sec rest (16 rounds), 5min cool-down",
+        "tr": "5dk ısınma, 45sn çalışma + 15sn dinlenme (16 tur), 5dk soğuma"
+      },
+      "targetTime": 1560,
+      "estimatedCalories": 320,
+      "exercises": [
+        {
+          "name": "Warm-up",
+          "duration": 300,
+          "intensity": "low"
+        },
+        {
+          "name": "HIIT Intervals",
+          "duration": 960,
+          "intensity": "high",
+          "pattern": "45sec work, 15sec rest (16 rounds)"
+        },
+        {
+          "name": "Cool-down",
+          "duration": 300,
+          "intensity": "low"
+        }
+      ]
+    }
+  ]
+}

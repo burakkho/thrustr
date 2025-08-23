@@ -1,5 +1,5 @@
 // LocalizationKeys.swift
-// SporHocam - Legacy Compatible Localization Keys
+// Thrustr - Legacy Compatible Localization Keys
 
 import Foundation
 
@@ -547,6 +547,82 @@ enum LocalizationKeys {
             static let message = "training.activeConflict.message"
             static let `continue` = "training.activeConflict.continue"
             static let finishAndStart = "training.activeConflict.finishAndStart"
+        }
+        
+        // MARK: - Dashboard
+        enum Dashboard {
+            static let title = "training.dashboard.title"
+            static let welcome = "training.dashboard.welcome"
+            static let quickActions = "training.dashboard.quickActions"
+            static let recentActivity = "training.dashboard.recentActivity"
+            static let thisWeek = "training.dashboard.thisWeek"
+            static let lastWorkout = "training.dashboard.lastWorkout"
+            static let motivation = "training.dashboard.motivation"
+            static let streak = "training.dashboard.streak"
+            static let workoutsCompleted = "training.dashboard.workoutsCompleted"
+            static let totalTime = "training.dashboard.totalTime"
+            static let quickStart = "training.dashboard.quickStart"
+            static let continueProgram = "training.dashboard.continueProgram"
+            static let noRecentActivity = "training.dashboard.noRecentActivity"
+        }
+        
+        // MARK: - Analytics
+        enum Analytics {
+            static let title = "training.analytics.title"
+            static let comingSoon = "training.analytics.comingSoon"
+            static let comingSoonDesc = "training.analytics.comingSoon.desc"
+            static let progressCharts = "training.analytics.progressCharts"
+            static let performanceMetrics = "training.analytics.performanceMetrics"
+            static let bodyMetrics = "training.analytics.bodyMetrics"
+            static let achievements = "training.analytics.achievements"
+            
+            // Additional analytics strings
+            static let trackProgress = "training.analytics.trackProgress"
+            static let thisWeek = "training.analytics.thisWeek"
+            static let sessions = "training.analytics.sessions"
+            static let totalTime = "training.analytics.totalTime"
+            static let streak = "training.analytics.streak"
+            static let prs = "training.analytics.prs"
+            static let days = "training.analytics.days"
+            static let monthlyGoals = "training.analytics.monthlyGoals"
+            static let editGoals = "training.analytics.editGoals"
+            static let distance = "training.analytics.distance"
+            static let viewAll = "training.analytics.viewAll"
+            static let recentPRs = "training.analytics.recentPRs"
+            static let noPRsYet = "training.analytics.noPRsYet"
+            static let noPRsMessage = "training.analytics.noPRsMessage"
+            static let startTraining = "training.analytics.startTraining"
+            static let noUserProfile = "training.analytics.noUserProfile"
+            static let setupProfileMessage = "training.analytics.setupProfileMessage"
+            static let setupProfile = "training.analytics.setupProfile"
+        }
+        
+        // MARK: - Lift Training
+        enum Lift {
+            static let title = "training.lift.title"
+            
+            // Tab titles
+            static let train = "training.lift.train"
+            static let programs = "training.lift.programs"
+            static let routines = "training.lift.routines"
+            static let history = "training.lift.history"
+            
+            // Status messages
+            static let sessionInProgress = "training.lift.sessionInProgress"
+            
+            // Menu actions
+            static let newWorkout = "training.lift.newWorkout"
+            static let browsePrograms = "training.lift.browsePrograms"
+            static let quickStart = "training.lift.quickStart"
+            
+            // Common actions
+            static let cancel = "training.lift.cancel"
+            static let close = "training.lift.close"
+            static let done = "training.lift.done"
+            static let save = "training.lift.save"
+            static let delete = "training.lift.delete"
+            static let edit = "training.lift.edit"
+            static let seeAll = "training.lift.seeAll"
         }
     }
     

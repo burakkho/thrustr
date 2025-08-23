@@ -402,7 +402,7 @@ struct CardioSessionSummaryView: View {
             text += "⚡ Tempo: \(pace)\n"
         }
         
-        text += "\n#SporHocam #Fitness"
+        text += "\n#Thrustr #Fitness"
         
         return text
     }

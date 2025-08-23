@@ -75,6 +75,25 @@ final class User {
     var hasHomeGym: Bool
     var equipmentNotes: String?
     
+    // MARK: - Analytics & Performance Tracking
+    var currentWorkoutStreak: Int
+    var longestWorkoutStreak: Int
+    var lastStreakUpdate: Date?
+    
+    // MARK: - User Goals (Customizable)
+    var monthlySessionGoal: Int
+    var monthlyDistanceGoal: Double // meters
+    var goalCompletionRate: Double
+    
+    // MARK: - PR Tracking (8 Specific Exercises)
+    var totalPRsThisMonth: Int
+    var totalPRsAllTime: Int
+    var lastPRDate: Date?
+    
+    // MARK: - Performance Analytics
+    var averageSessionDuration: TimeInterval
+    var lastAnalyticsUpdate: Date?
+    
     // MARK: - Computed Properties Using Enums
     var genderEnum: Gender {
         get { Gender(rawValue: gender) ?? .male }
@@ -188,6 +207,25 @@ final class User {
         // Initialize equipment setup with common plates
         self.availablePlates = [1.25, 2.5, 5, 10, 15, 20] // Standard gym plates
         self.hasHomeGym = false
+        
+        // Initialize analytics & performance tracking
+        self.currentWorkoutStreak = 0
+        self.longestWorkoutStreak = 0
+        self.lastStreakUpdate = nil
+        
+        // Initialize user goals (reasonable defaults)
+        self.monthlySessionGoal = 16 // 4 sessions per week
+        self.monthlyDistanceGoal = 50000 // 50km per month
+        self.goalCompletionRate = 0.0
+        
+        // Initialize PR tracking
+        self.totalPRsThisMonth = 0
+        self.totalPRsAllTime = 0
+        self.lastPRDate = nil
+        
+        // Initialize performance analytics
+        self.averageSessionDuration = 0
+        self.lastAnalyticsUpdate = nil
         self.equipmentNotes = nil
         
         // Calculate initial metrics

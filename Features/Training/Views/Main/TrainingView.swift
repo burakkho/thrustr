@@ -14,19 +14,23 @@ struct TrainingView: View {
                 TrainingTabSelector(
                     selection: Binding(
                         get: { coordinator.selectedWorkoutType.rawValue },
-                        set: { coordinator.selectWorkoutType(WorkoutType(rawValue: $0) ?? .lift) }
+                        set: { coordinator.selectWorkoutType(WorkoutType(rawValue: $0) ?? .dashboard) }
                     ),
                     tabs: [
+                        TrainingTab(title: LocalizationKeys.Training.Dashboard.title.localized, icon: "house.fill"),
                         TrainingTab(title: "training.lift.title".localized, icon: "dumbbell.fill"),
                         TrainingTab(title: LocalizationKeys.Training.Cardio.title.localized, icon: "heart.fill"),
-                        TrainingTab(title: "METCON", icon: "flame.fill"),
-                        TrainingTab(title: "Warm-Up", icon: "thermometer.sun")
+                        TrainingTab(title: LocalizationKeys.Training.WOD.title.localized, icon: "flame.fill"),
+                        TrainingTab(title: LocalizationKeys.Training.Analytics.title.localized, icon: "chart.bar.fill")
                     ]
                 )
                 
                 // Content based on selected workout type
                 Group {
                     switch coordinator.selectedWorkoutType {
+                    case .dashboard:
+                        TrainingDashboardView()
+                            .environment(coordinator)
                     case .lift:
                         LiftMainView()
                             .environment(coordinator)
@@ -36,8 +40,8 @@ struct TrainingView: View {
                     case .wod:
                         WODMainView()
                             .environment(coordinator)
-                    case .warmup:
-                        WarmUpMainView()
+                    case .analytics:
+                        TrainingAnalyticsView(modelContext: modelContext)
                             .environment(coordinator)
                     }
                 }

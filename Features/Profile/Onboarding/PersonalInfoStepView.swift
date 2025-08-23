@@ -1,6 +1,6 @@
 //
 //  PersonalInfoStepView.swift
-//  SporHocam
+//  Thrustr
 //
 //  Personal Information Step - Localized & Fixed
 //

@@ -81,7 +81,7 @@ class LocationManager: NSObject {
         
         switch currentStatus {
         case .notDetermined:
-            // Only request if not determined
+            // Request authorization - will trigger delegate callback
             Logger.info("Requesting location authorization")
             locationManager.requestWhenInUseAuthorization()
         case .authorizedWhenInUse, .authorizedAlways:

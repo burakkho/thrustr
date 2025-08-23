@@ -116,6 +116,6 @@ private struct WeeklyStatRow: View {
         totalDuration: 7200 // 2 hours
     )
     
-    return WeeklyProgressSection(stats: stats)
+    WeeklyProgressSection(stats: stats)
         .padding()
 }

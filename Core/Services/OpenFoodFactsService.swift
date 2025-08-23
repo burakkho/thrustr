@@ -94,7 +94,7 @@ struct OpenFoodFactsLookupResult {
 final class OpenFoodFactsService: ObservableObject {
     // MARK: - Configuration
     private let baseURL = URL(string: "https://world.openfoodfacts.org/api/v2/")!
-    private let userAgent = "SporHocam/1.0 (+https://sporhocam.app)"
+    private let userAgent = "Thrustr/1.0 (+https://thrustr.app)"
     private let timeout: TimeInterval = 10
     private let maxRetries = 3
     private let retryBaseDelay: TimeInterval = 0.5
