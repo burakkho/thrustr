@@ -23,28 +23,110 @@ import UserNotifications
  */
 @MainActor
 class HealthKitService: ObservableObject {
+    static let shared = HealthKitService()
+    
     private let healthStore = HKHealthStore()
     private var observerQueries: [HKObserverQuery] = []
     
-    // OPTIMIZED: Add caching for better performance
-    private var cachedSteps: Double = 0
-    private var cachedCalories: Double = 0
-    private var cachedWeight: Double? = nil
+    // OPTIMIZED: Add comprehensive caching for better performance
+    private var cachedHealthData: [String: Any] = [:]
     private var lastCacheUpdate: Date = Date.distantPast
     private let cacheValidityDuration: TimeInterval = 900 // 15 minutes - performance optimization
     
+    // Legacy cache properties for backward compatibility
+    private var cachedSteps: Double = 0
+    private var cachedCalories: Double = 0
+    private var cachedWeight: Double? = nil
+    
     // MARK: - Published Properties
     @Published var isAuthorized = false
-    @Published var todaySteps: Double = 0
-    @Published var todayCalories: Double = 0
-    @Published var currentWeight: Double? = nil
     @Published var isLoading = false
     @Published var error: Error?
     
+    // MARK: Activity & Fitness Data
+    @Published var todaySteps: Double = 0
+    @Published var todayActiveCalories: Double = 0
+    @Published var todayBasalCalories: Double = 0
+    @Published var todayDistance: Double = 0
+    
+    var todayCalories: Double {
+        return todayActiveCalories + todayBasalCalories
+    }
+    @Published var todayFlightsClimbed: Double = 0
+    @Published var todayExerciseMinutes: Double = 0
+    @Published var todayStandHours: Double = 0
+    
+    // MARK: Heart & Cardiovascular Data
+    @Published var currentHeartRate: Double? = nil
+    @Published var restingHeartRate: Double? = nil
+    @Published var heartRateVariability: Double? = nil
+    @Published var vo2Max: Double? = nil
+    
+    // MARK: Body Measurements Data
+    @Published var currentWeight: Double? = nil
+    @Published var bodyMassIndex: Double? = nil
+    @Published var bodyFatPercentage: Double? = nil
+    @Published var leanBodyMass: Double? = nil
+    @Published var currentHeight: Double? = nil
+    
+    // MARK: Sleep & Recovery Data
+    @Published var lastNightSleep: Double = 0 // hours
+    @Published var sleepEfficiency: Double = 0 // percentage
+    
+    // MARK: Workout Data
+    @Published var recentWorkouts: [HKWorkout] = []
+    @Published var workoutHistory: [WorkoutHistoryItem] = []
+    
+    // MARK: Historical Trends Data
+    @Published var stepsHistory: [HealthDataPoint] = []
+    @Published var weightHistory: [HealthDataPoint] = []
+    @Published var heartRateHistory: [HealthDataPoint] = []
+    @Published var workoutTrends: WorkoutTrends = WorkoutTrends.empty
+    
+    // MARK: Health Intelligence Data
+    @Published var currentRecoveryScore: RecoveryScore?
+    @Published var healthInsights: [HealthInsight] = []
+    @Published var fitnessAssessment: FitnessLevelAssessment?
+    
+    // MARK: Authorization Status Tracking
+    @Published var authorizationStatuses: [String: HKAuthorizationStatus] = [:]
+    
     // MARK: - Health Data Types
+    
+    // MARK: Activity & Fitness
     private let stepCountType = HKQuantityType.quantityType(forIdentifier: .stepCount)!
     private let activeEnergyType = HKQuantityType.quantityType(forIdentifier: .activeEnergyBurned)!
+    private let basalEnergyType = HKQuantityType.quantityType(forIdentifier: .basalEnergyBurned)!
+    private let distanceWalkingRunningType = HKQuantityType.quantityType(forIdentifier: .distanceWalkingRunning)!
+    private let distanceCyclingType = HKQuantityType.quantityType(forIdentifier: .distanceCycling)!
+    private let flightsClimbedType = HKQuantityType.quantityType(forIdentifier: .flightsClimbed)!
+    private let exerciseTimeType = HKQuantityType.quantityType(forIdentifier: .appleExerciseTime)!
+    private let standTimeType = HKQuantityType.quantityType(forIdentifier: .appleStandTime)!
+    
+    // MARK: Heart & Cardiovascular
+    private let heartRateType = HKQuantityType.quantityType(forIdentifier: .heartRate)!
+    private let restingHeartRateType = HKQuantityType.quantityType(forIdentifier: .restingHeartRate)!
+    private let heartRateVariabilityType = HKQuantityType.quantityType(forIdentifier: .heartRateVariabilitySDNN)!
+    private let vo2MaxType = HKQuantityType.quantityType(forIdentifier: .vo2Max)!
+    
+    // MARK: Body Measurements
     private let bodyMassType = HKQuantityType.quantityType(forIdentifier: .bodyMass)!
+    private let bodyMassIndexType = HKQuantityType.quantityType(forIdentifier: .bodyMassIndex)!
+    private let bodyFatPercentageType = HKQuantityType.quantityType(forIdentifier: .bodyFatPercentage)!
+    private let leanBodyMassType = HKQuantityType.quantityType(forIdentifier: .leanBodyMass)!
+    private let heightType = HKQuantityType.quantityType(forIdentifier: .height)!
+    
+    // MARK: Sleep & Recovery
+    private let sleepAnalysisType = HKCategoryType.categoryType(forIdentifier: .sleepAnalysis)!
+    
+    // MARK: Workouts & Training
+    private let workoutType = HKWorkoutType.workoutType()
+    
+    // MARK: Nutrition (already declared but grouping for clarity)
+    private let dietaryEnergyType = HKQuantityType.quantityType(forIdentifier: .dietaryEnergyConsumed)!
+    private let dietaryProteinType = HKQuantityType.quantityType(forIdentifier: .dietaryProtein)!
+    private let dietaryCarbohydratesType = HKQuantityType.quantityType(forIdentifier: .dietaryCarbohydrates)!
+    private let dietaryFatTotalType = HKQuantityType.quantityType(forIdentifier: .dietaryFatTotal)!
     
     // OPTIMIZED: Add performance monitoring
     private var queryPerformanceMetrics: [String: TimeInterval] = [:]
@@ -73,39 +155,106 @@ class HealthKitService: ObservableObject {
     }
     
     private func requestHealthKitPermissions() async -> Bool {
+        // MARK: Comprehensive Read Types - 20+ health metrics
         let readTypes: Set<HKObjectType> = [
+            // Activity & Fitness
             stepCountType,
             activeEnergyType,
-            bodyMassType
+            basalEnergyType,
+            distanceWalkingRunningType,
+            distanceCyclingType,
+            flightsClimbedType,
+            exerciseTimeType,
+            standTimeType,
+            
+            // Heart & Cardiovascular
+            heartRateType,
+            restingHeartRateType,
+            heartRateVariabilityType,
+            vo2MaxType,
+            
+            // Body Measurements
+            bodyMassType,
+            bodyMassIndexType,
+            bodyFatPercentageType,
+            leanBodyMassType,
+            heightType,
+            
+            // Sleep & Recovery
+            sleepAnalysisType,
+            
+            // Workouts
+            workoutType
         ]
         
+        // MARK: Write/Share Types
         let shareTypes: Set<HKSampleType> = [
+            // Body Measurements
             bodyMassType,
-            HKWorkoutType.workoutType(),
-            HKQuantityType.quantityType(forIdentifier: .heartRate)!,
-            HKQuantityType.quantityType(forIdentifier: .dietaryEnergyConsumed)!,
-            HKQuantityType.quantityType(forIdentifier: .dietaryProtein)!,
-            HKQuantityType.quantityType(forIdentifier: .dietaryCarbohydrates)!,
-            HKQuantityType.quantityType(forIdentifier: .dietaryFatTotal)!
+            bodyMassIndexType,
+            bodyFatPercentageType,
+            leanBodyMassType,
+            heightType,
+            
+            // Workouts & Activity
+            workoutType,
+            heartRateType,
+            
+            // Nutrition
+            dietaryEnergyType,
+            dietaryProteinType,
+            dietaryCarbohydratesType,
+            dietaryFatTotalType
         ]
         
         do {
             try await healthStore.requestAuthorization(toShare: shareTypes, read: readTypes)
             
+            // MARK: Comprehensive Authorization Status Tracking
+            await updateAuthorizationStatuses(for: readTypes)
+            
+            // Check if we have at least basic authorization for core metrics
             let stepStatus = healthStore.authorizationStatus(for: stepCountType)
             let calorieStatus = healthStore.authorizationStatus(for: activeEnergyType)
             let weightStatus = healthStore.authorizationStatus(for: bodyMassType)
+            let heartRateStatus = healthStore.authorizationStatus(for: heartRateType)
             
             isAuthorized = (stepStatus == .sharingAuthorized) ||
                            (calorieStatus == .sharingAuthorized) ||
-                           (weightStatus == .sharingAuthorized)
+                           (weightStatus == .sharingAuthorized) ||
+                           (heartRateStatus == .sharingAuthorized)
+            
+            Logger.info("HealthKit Authorization Summary - Steps: \(stepStatus.rawValue), Calories: \(calorieStatus.rawValue), Weight: \(weightStatus.rawValue), HR: \(heartRateStatus.rawValue)")
             
             return isAuthorized
         } catch {
-            print("HealthKit authorization error: \(error)")
+            Logger.error("HealthKit authorization error: \(error)")
             self.error = error
             return false
         }
+    }
+    
+    // MARK: - Authorization Status Management
+    @MainActor
+    private func updateAuthorizationStatuses(for types: Set<HKObjectType>) async {
+        var statuses: [String: HKAuthorizationStatus] = [:]
+        
+        for type in types {
+            let status = healthStore.authorizationStatus(for: type)
+            let identifier = type.identifier
+            statuses[identifier] = status
+        }
+        
+        authorizationStatuses = statuses
+        Logger.info("Updated authorization statuses for \(statuses.count) health data types")
+    }
+    
+    func getAuthorizationStatusSummary() -> (authorized: Int, denied: Int, notDetermined: Int) {
+        let authorized = authorizationStatuses.values.filter { $0 == .sharingAuthorized }.count
+        let denied = authorizationStatuses.values.filter { $0 == .sharingDenied }.count
+        let notDetermined = authorizationStatuses.values.filter { $0 == .notDetermined }.count
+        
+        return (authorized, denied, notDetermined)
     }
     
     private func requestNotificationPermissions() async -> Bool {
@@ -118,13 +267,11 @@ class HealthKitService: ObservableObject {
         }
     }
     
-    // OPTIMIZED: Add caching logic with timeout
+    // OPTIMIZED: Comprehensive health data reading with caching
     func readTodaysData() async {
         // Check if cache is still valid
         if Date().timeIntervalSince(lastCacheUpdate) < cacheValidityDuration {
-            todaySteps = cachedSteps
-            todayCalories = cachedCalories
-            currentWeight = cachedWeight
+            await loadFromCache()
             return
         }
         
@@ -134,40 +281,157 @@ class HealthKitService: ObservableObject {
         let startTime = Date()
         
         do {
-            // Use timeout for concurrent HealthKit operations
+            // Use timeout for concurrent HealthKit operations - ALL health metrics
             let results = try await AsyncTimeout.execute(timeout: AsyncTimeout.Duration.medium) {
                 async let steps = self.readStepsData()
-                async let calories = self.readCaloriesData()
+                async let activeCalories = self.readActiveCaloriesData()
+                async let basalCalories = self.readBasalCaloriesData()
+                async let distance = self.readDistanceData()
+                async let flightsClimbed = self.readFlightsClimbedData()
+                async let exerciseMinutes = self.readExerciseTimeData()
+                async let standHours = self.readStandTimeData()
+                
                 async let weight = self.readWeightData()
+                async let height = self.readHeightData()
+                async let bmi = self.readBMIData()
+                async let bodyFat = self.readBodyFatData()
                 
-                return await (steps, calories, weight)
+                async let heartRate = self.readCurrentHeartRateData()
+                async let restingHR = self.readRestingHeartRateData()
+                async let hrv = self.readHRVData()
+                async let vo2Max = self.readVO2MaxData()
+                
+                async let sleepHours = self.readSleepData()
+                
+                return await (
+                    // Activity
+                    steps, activeCalories, basalCalories, distance, flightsClimbed, exerciseMinutes, standHours,
+                    // Body
+                    weight, height, bmi, bodyFat,
+                    // Heart
+                    heartRate, restingHR, hrv, vo2Max,
+                    // Sleep
+                    sleepHours
+                )
             }
             
-            await updateCacheAndUI(with: results, startTime: startTime)
+            await updateComprehensiveHealthCache(with: results, startTime: startTime)
             
-            // Log HealthKit sync activity if data was successfully fetched
-            if results.0 != nil || results.1 != nil || results.2 != nil {
-                let syncedTypes = [
-                    results.0 != nil ? "Adımlar" : nil,
-                    results.1 != nil ? "Kalori" : nil, 
-                    results.2 != nil ? "Kilo" : nil
-                ].compactMap { $0 }
-                
-                if !syncedTypes.isEmpty {
-                    // Note: ActivityLoggerService integration would need user and modelContext
-                    // For now, just log the sync attempt
-                    print("HealthKit synced: \(syncedTypes.joined(separator: ", "))")
-                }
-            }
         } catch let caughtError {
             Task { @MainActor in
                 ErrorHandlingService.shared.handle(
                     caughtError,
                     severity: .medium,
                     source: "HealthKitService.readTodaysData",
-                    userAction: "Reading health data"
+                    userAction: "Reading comprehensive health data"
                 )
             }
+        }
+    }
+    
+    // MARK: - Cache Management
+    @MainActor
+    private func loadFromCache() async {
+        // Activity Data
+        todaySteps = cachedHealthData["steps"] as? Double ?? cachedSteps
+        todayActiveCalories = cachedHealthData["activeCalories"] as? Double ?? cachedCalories
+        todayBasalCalories = cachedHealthData["basalCalories"] as? Double ?? 0
+        todayDistance = cachedHealthData["distance"] as? Double ?? 0
+        todayFlightsClimbed = cachedHealthData["flightsClimbed"] as? Double ?? 0
+        todayExerciseMinutes = cachedHealthData["exerciseMinutes"] as? Double ?? 0
+        todayStandHours = cachedHealthData["standHours"] as? Double ?? 0
+        
+        // Body Data
+        currentWeight = cachedHealthData["weight"] as? Double ?? cachedWeight
+        currentHeight = cachedHealthData["height"] as? Double
+        bodyMassIndex = cachedHealthData["bmi"] as? Double
+        bodyFatPercentage = cachedHealthData["bodyFat"] as? Double
+        
+        // Heart Data
+        currentHeartRate = cachedHealthData["heartRate"] as? Double
+        restingHeartRate = cachedHealthData["restingHR"] as? Double
+        heartRateVariability = cachedHealthData["hrv"] as? Double
+        vo2Max = cachedHealthData["vo2Max"] as? Double
+        
+        // Sleep Data
+        lastNightSleep = cachedHealthData["sleepHours"] as? Double ?? 0
+        
+        Logger.info("Loaded comprehensive health data from cache")
+    }
+    
+    private func updateComprehensiveHealthCache(with results: (Double?, Double?, Double?, Double?, Double?, Double?, Double?, Double?, Double?, Double?, Double?, Double?, Double?, Double?, Double?, Double?), startTime: Date) async {
+        
+        // Update comprehensive cache
+        cachedHealthData = [
+            "steps": results.0 ?? 0,
+            "activeCalories": results.1 ?? 0,
+            "basalCalories": results.2 ?? 0,
+            "distance": results.3 ?? 0,
+            "flightsClimbed": results.4 ?? 0,
+            "exerciseMinutes": results.5 ?? 0,
+            "standHours": results.6 ?? 0,
+            "weight": results.7 as Any,
+            "height": results.8 as Any,
+            "bmi": results.9 as Any,
+            "bodyFat": results.10 as Any,
+            "heartRate": results.11 as Any,
+            "restingHR": results.12 as Any,
+            "hrv": results.13 as Any,
+            "vo2Max": results.14 as Any,
+            "sleepHours": results.15 ?? 0
+        ]
+        
+        // Update legacy cache for backward compatibility
+        cachedSteps = results.0 ?? 0
+        cachedCalories = results.1 ?? 0
+        cachedWeight = results.7
+        lastCacheUpdate = Date()
+        
+        // Update published properties
+        await MainActor.run {
+            // Activity Data
+            todaySteps = results.0 ?? 0
+            todayActiveCalories = results.1 ?? 0
+            todayBasalCalories = results.2 ?? 0
+            todayDistance = results.3 ?? 0
+            todayFlightsClimbed = results.4 ?? 0
+            todayExerciseMinutes = results.5 ?? 0
+            todayStandHours = results.6 ?? 0
+            
+            // Body Data
+            currentWeight = results.7
+            currentHeight = results.8
+            bodyMassIndex = results.9
+            bodyFatPercentage = results.10
+            
+            // Heart Data
+            currentHeartRate = results.11
+            restingHeartRate = results.12
+            heartRateVariability = results.13
+            vo2Max = results.14
+            
+            // Sleep Data
+            lastNightSleep = results.15 ?? 0
+        }
+        
+        // Record performance metrics
+        let duration = Date().timeIntervalSince(startTime)
+        queryPerformanceMetrics["readComprehensiveHealthData"] = duration
+        Logger.success("Comprehensive HealthKit data fetch completed in \(String(format: "%.2f", duration))s")
+        
+        // Log sync summary
+        let syncedMetrics = [
+            results.0 != nil ? "Steps" : nil,
+            results.1 != nil ? "Active Calories" : nil,
+            results.2 != nil ? "Basal Calories" : nil,
+            results.3 != nil ? "Distance" : nil,
+            results.7 != nil ? "Weight" : nil,
+            results.11 != nil ? "Heart Rate" : nil,
+            results.15 != nil ? "Sleep" : nil
+        ].compactMap { $0 }
+        
+        if !syncedMetrics.isEmpty {
+            Logger.success("HealthKit synced: \(syncedMetrics.joined(separator: ", "))")
         }
     }
     
@@ -181,7 +445,7 @@ class HealthKitService: ObservableObject {
         
         // Update published properties
         todaySteps = cachedSteps
-        todayCalories = cachedCalories
+        todayActiveCalories = cachedCalories
         currentWeight = cachedWeight
         
         // Record performance metrics
@@ -222,7 +486,7 @@ class HealthKitService: ObservableObject {
         }
     }
     
-    func readCaloriesData() async -> Double? {
+    func readActiveCaloriesData() async -> Double? {
         return await withCheckedContinuation { continuation in
             let calendar = Calendar.current
             let now = Date()
@@ -248,6 +512,437 @@ class HealthKitService: ObservableObject {
                 
                 let calories = result?.sumQuantity()?.doubleValue(for: HKUnit.kilocalorie()) ?? 0
                 continuation.resume(returning: calories)
+            }
+            
+            healthStore.execute(query)
+        }
+    }
+    
+    // MARK: - New Comprehensive Health Data Readers
+    
+    func readBasalCaloriesData() async -> Double? {
+        return await withCheckedContinuation { continuation in
+            let calendar = Calendar.current
+            let now = Date()
+            let startOfDay = calendar.startOfDay(for: now)
+            
+            let predicate = HKQuery.predicateForSamples(
+                withStart: startOfDay,
+                end: now,
+                options: .strictStartDate
+            )
+            
+            let query = HKStatisticsQuery(
+                quantityType: basalEnergyType,
+                quantitySamplePredicate: predicate,
+                options: .cumulativeSum
+            ) { _, result, error in
+                
+                if let error = error {
+                    Logger.error("Error reading basal calories: \(error)")
+                    continuation.resume(returning: nil)
+                    return
+                }
+                
+                let calories = result?.sumQuantity()?.doubleValue(for: HKUnit.kilocalorie()) ?? 0
+                continuation.resume(returning: calories)
+            }
+            
+            healthStore.execute(query)
+        }
+    }
+    
+    func readDistanceData() async -> Double? {
+        return await withCheckedContinuation { continuation in
+            let calendar = Calendar.current
+            let now = Date()
+            let startOfDay = calendar.startOfDay(for: now)
+            
+            let predicate = HKQuery.predicateForSamples(
+                withStart: startOfDay,
+                end: now,
+                options: .strictStartDate
+            )
+            
+            let query = HKStatisticsQuery(
+                quantityType: distanceWalkingRunningType,
+                quantitySamplePredicate: predicate,
+                options: .cumulativeSum
+            ) { _, result, error in
+                
+                if let error = error {
+                    Logger.error("Error reading distance: \(error)")
+                    continuation.resume(returning: nil)
+                    return
+                }
+                
+                let distance = result?.sumQuantity()?.doubleValue(for: HKUnit.meter()) ?? 0
+                continuation.resume(returning: distance)
+            }
+            
+            healthStore.execute(query)
+        }
+    }
+    
+    func readFlightsClimbedData() async -> Double? {
+        return await withCheckedContinuation { continuation in
+            let calendar = Calendar.current
+            let now = Date()
+            let startOfDay = calendar.startOfDay(for: now)
+            
+            let predicate = HKQuery.predicateForSamples(
+                withStart: startOfDay,
+                end: now,
+                options: .strictStartDate
+            )
+            
+            let query = HKStatisticsQuery(
+                quantityType: flightsClimbedType,
+                quantitySamplePredicate: predicate,
+                options: .cumulativeSum
+            ) { _, result, error in
+                
+                if let error = error {
+                    Logger.error("Error reading flights climbed: \(error)")
+                    continuation.resume(returning: nil)
+                    return
+                }
+                
+                let flights = result?.sumQuantity()?.doubleValue(for: HKUnit.count()) ?? 0
+                continuation.resume(returning: flights)
+            }
+            
+            healthStore.execute(query)
+        }
+    }
+    
+    func readExerciseTimeData() async -> Double? {
+        return await withCheckedContinuation { continuation in
+            let calendar = Calendar.current
+            let now = Date()
+            let startOfDay = calendar.startOfDay(for: now)
+            
+            let predicate = HKQuery.predicateForSamples(
+                withStart: startOfDay,
+                end: now,
+                options: .strictStartDate
+            )
+            
+            let query = HKStatisticsQuery(
+                quantityType: exerciseTimeType,
+                quantitySamplePredicate: predicate,
+                options: .cumulativeSum
+            ) { _, result, error in
+                
+                if let error = error {
+                    Logger.error("Error reading exercise time: \(error)")
+                    continuation.resume(returning: nil)
+                    return
+                }
+                
+                let minutes = result?.sumQuantity()?.doubleValue(for: HKUnit.minute()) ?? 0
+                continuation.resume(returning: minutes)
+            }
+            
+            healthStore.execute(query)
+        }
+    }
+    
+    func readStandTimeData() async -> Double? {
+        return await withCheckedContinuation { continuation in
+            let calendar = Calendar.current
+            let now = Date()
+            let startOfDay = calendar.startOfDay(for: now)
+            
+            let predicate = HKQuery.predicateForSamples(
+                withStart: startOfDay,
+                end: now,
+                options: .strictStartDate
+            )
+            
+            let query = HKStatisticsQuery(
+                quantityType: standTimeType,
+                quantitySamplePredicate: predicate,
+                options: .cumulativeSum
+            ) { _, result, error in
+                
+                if let error = error {
+                    Logger.error("Error reading stand time: \(error)")
+                    continuation.resume(returning: nil)
+                    return
+                }
+                
+                let hours = result?.sumQuantity()?.doubleValue(for: HKUnit.hour()) ?? 0
+                continuation.resume(returning: hours)
+            }
+            
+            healthStore.execute(query)
+        }
+    }
+    
+    func readHeightData() async -> Double? {
+        return await withCheckedContinuation { continuation in
+            let sortDescriptor = NSSortDescriptor(key: HKSampleSortIdentifierEndDate, ascending: false)
+            
+            let query = HKSampleQuery(
+                sampleType: heightType,
+                predicate: nil,
+                limit: 1,
+                sortDescriptors: [sortDescriptor]
+            ) { _, samples, error in
+                
+                if let error = error {
+                    Logger.error("Error reading height: \(error)")
+                    continuation.resume(returning: nil)
+                    return
+                }
+                
+                guard let heightSample = samples?.first as? HKQuantitySample else {
+                    continuation.resume(returning: nil)
+                    return
+                }
+                
+                let height = heightSample.quantity.doubleValue(for: HKUnit.meter())
+                continuation.resume(returning: height)
+            }
+            
+            healthStore.execute(query)
+        }
+    }
+    
+    func readBMIData() async -> Double? {
+        return await withCheckedContinuation { continuation in
+            let sortDescriptor = NSSortDescriptor(key: HKSampleSortIdentifierEndDate, ascending: false)
+            
+            let query = HKSampleQuery(
+                sampleType: bodyMassIndexType,
+                predicate: nil,
+                limit: 1,
+                sortDescriptors: [sortDescriptor]
+            ) { _, samples, error in
+                
+                if let error = error {
+                    Logger.error("Error reading BMI: \(error)")
+                    continuation.resume(returning: nil)
+                    return
+                }
+                
+                guard let bmiSample = samples?.first as? HKQuantitySample else {
+                    continuation.resume(returning: nil)
+                    return
+                }
+                
+                let bmi = bmiSample.quantity.doubleValue(for: HKUnit.count())
+                continuation.resume(returning: bmi)
+            }
+            
+            healthStore.execute(query)
+        }
+    }
+    
+    func readBodyFatData() async -> Double? {
+        return await withCheckedContinuation { continuation in
+            let sortDescriptor = NSSortDescriptor(key: HKSampleSortIdentifierEndDate, ascending: false)
+            
+            let query = HKSampleQuery(
+                sampleType: bodyFatPercentageType,
+                predicate: nil,
+                limit: 1,
+                sortDescriptors: [sortDescriptor]
+            ) { _, samples, error in
+                
+                if let error = error {
+                    Logger.error("Error reading body fat: \(error)")
+                    continuation.resume(returning: nil)
+                    return
+                }
+                
+                guard let bodyFatSample = samples?.first as? HKQuantitySample else {
+                    continuation.resume(returning: nil)
+                    return
+                }
+                
+                let bodyFat = bodyFatSample.quantity.doubleValue(for: HKUnit.percent())
+                continuation.resume(returning: bodyFat)
+            }
+            
+            healthStore.execute(query)
+        }
+    }
+    
+    func readCurrentHeartRateData() async -> Double? {
+        return await withCheckedContinuation { continuation in
+            let calendar = Calendar.current
+            let now = Date()
+            let oneHourAgo = calendar.date(byAdding: .hour, value: -1, to: now) ?? now
+            
+            let predicate = HKQuery.predicateForSamples(
+                withStart: oneHourAgo,
+                end: now,
+                options: .strictEndDate
+            )
+            
+            let sortDescriptor = NSSortDescriptor(key: HKSampleSortIdentifierEndDate, ascending: false)
+            
+            let query = HKSampleQuery(
+                sampleType: heartRateType,
+                predicate: predicate,
+                limit: 1,
+                sortDescriptors: [sortDescriptor]
+            ) { _, samples, error in
+                
+                if let error = error {
+                    Logger.error("Error reading current heart rate: \(error)")
+                    continuation.resume(returning: nil)
+                    return
+                }
+                
+                guard let hrSample = samples?.first as? HKQuantitySample else {
+                    continuation.resume(returning: nil)
+                    return
+                }
+                
+                let heartRate = hrSample.quantity.doubleValue(for: HKUnit.count().unitDivided(by: .minute()))
+                continuation.resume(returning: heartRate)
+            }
+            
+            healthStore.execute(query)
+        }
+    }
+    
+    func readRestingHeartRateData() async -> Double? {
+        return await withCheckedContinuation { continuation in
+            let sortDescriptor = NSSortDescriptor(key: HKSampleSortIdentifierEndDate, ascending: false)
+            
+            let query = HKSampleQuery(
+                sampleType: restingHeartRateType,
+                predicate: nil,
+                limit: 1,
+                sortDescriptors: [sortDescriptor]
+            ) { _, samples, error in
+                
+                if let error = error {
+                    Logger.error("Error reading resting heart rate: \(error)")
+                    continuation.resume(returning: nil)
+                    return
+                }
+                
+                guard let rhrsample = samples?.first as? HKQuantitySample else {
+                    continuation.resume(returning: nil)
+                    return
+                }
+                
+                let restingHR = rhrsample.quantity.doubleValue(for: HKUnit.count().unitDivided(by: .minute()))
+                continuation.resume(returning: restingHR)
+            }
+            
+            healthStore.execute(query)
+        }
+    }
+    
+    func readHRVData() async -> Double? {
+        return await withCheckedContinuation { continuation in
+            let sortDescriptor = NSSortDescriptor(key: HKSampleSortIdentifierEndDate, ascending: false)
+            
+            let query = HKSampleQuery(
+                sampleType: heartRateVariabilityType,
+                predicate: nil,
+                limit: 1,
+                sortDescriptors: [sortDescriptor]
+            ) { _, samples, error in
+                
+                if let error = error {
+                    Logger.error("Error reading HRV: \(error)")
+                    continuation.resume(returning: nil)
+                    return
+                }
+                
+                guard let hrvSample = samples?.first as? HKQuantitySample else {
+                    continuation.resume(returning: nil)
+                    return
+                }
+                
+                let hrv = hrvSample.quantity.doubleValue(for: HKUnit.secondUnit(with: .milli))
+                continuation.resume(returning: hrv)
+            }
+            
+            healthStore.execute(query)
+        }
+    }
+    
+    func readVO2MaxData() async -> Double? {
+        return await withCheckedContinuation { continuation in
+            let sortDescriptor = NSSortDescriptor(key: HKSampleSortIdentifierEndDate, ascending: false)
+            
+            let query = HKSampleQuery(
+                sampleType: vo2MaxType,
+                predicate: nil,
+                limit: 1,
+                sortDescriptors: [sortDescriptor]
+            ) { _, samples, error in
+                
+                if let error = error {
+                    Logger.error("Error reading VO2 Max: \(error)")
+                    continuation.resume(returning: nil)
+                    return
+                }
+                
+                guard let vo2Sample = samples?.first as? HKQuantitySample else {
+                    continuation.resume(returning: nil)
+                    return
+                }
+                
+                let vo2Max = vo2Sample.quantity.doubleValue(for: HKUnit.literUnit(with: .milli).unitDivided(by: HKUnit.gramUnit(with: .kilo).unitMultiplied(by: .minute())))
+                continuation.resume(returning: vo2Max)
+            }
+            
+            healthStore.execute(query)
+        }
+    }
+    
+    func readSleepData() async -> Double? {
+        return await withCheckedContinuation { continuation in
+            let calendar = Calendar.current
+            let now = Date()
+            let yesterday = calendar.date(byAdding: .day, value: -1, to: now) ?? now
+            
+            let predicate = HKQuery.predicateForSamples(
+                withStart: yesterday,
+                end: now,
+                options: .strictStartDate
+            )
+            
+            let query = HKSampleQuery(
+                sampleType: sleepAnalysisType,
+                predicate: predicate,
+                limit: HKObjectQueryNoLimit,
+                sortDescriptors: nil
+            ) { _, samples, error in
+                
+                if let error = error {
+                    Logger.error("Error reading sleep data: \(error)")
+                    continuation.resume(returning: nil)
+                    return
+                }
+                
+                guard let sleepSamples = samples as? [HKCategorySample] else {
+                    continuation.resume(returning: nil)
+                    return
+                }
+                
+                var totalSleepHours: Double = 0
+                
+                for sample in sleepSamples {
+                    if sample.value == HKCategoryValueSleepAnalysis.asleepUnspecified.rawValue ||
+                       sample.value == HKCategoryValueSleepAnalysis.asleepCore.rawValue ||
+                       sample.value == HKCategoryValueSleepAnalysis.asleepDeep.rawValue ||
+                       sample.value == HKCategoryValueSleepAnalysis.asleepREM.rawValue {
+                        let sleepDuration = sample.endDate.timeIntervalSince(sample.startDate)
+                        totalSleepHours += sleepDuration / 3600 // Convert to hours
+                    }
+                }
+                
+                continuation.resume(returning: totalSleepHours)
             }
             
             healthStore.execute(query)
@@ -282,6 +977,425 @@ class HealthKitService: ObservableObject {
             
             healthStore.execute(query)
         }
+    }
+    
+    // MARK: - Workout History Reading
+    
+    func readWorkoutHistory(limit: Int = 50, daysBack: Int = 30) async -> [WorkoutHistoryItem] {
+        return await withCheckedContinuation { continuation in
+            let calendar = Calendar.current
+            let endDate = Date()
+            let startDate = calendar.date(byAdding: .day, value: -daysBack, to: endDate) ?? endDate
+            
+            let predicate = HKQuery.predicateForSamples(
+                withStart: startDate,
+                end: endDate,
+                options: .strictStartDate
+            )
+            
+            let sortDescriptor = NSSortDescriptor(key: HKSampleSortIdentifierEndDate, ascending: false)
+            
+            let query = HKSampleQuery(
+                sampleType: workoutType,
+                predicate: predicate,
+                limit: limit,
+                sortDescriptors: [sortDescriptor]
+            ) { _, samples, error in
+                
+                if let error = error {
+                    Logger.error("Error reading workout history: \(error)")
+                    continuation.resume(returning: [])
+                    return
+                }
+                
+                guard let workouts = samples as? [HKWorkout] else {
+                    Logger.warning("No workout data found")
+                    continuation.resume(returning: [])
+                    return
+                }
+                
+                let workoutItems = workouts.map { WorkoutHistoryItem(from: $0) }
+                Logger.success("Retrieved \(workoutItems.count) workouts from HealthKit")
+                continuation.resume(returning: workoutItems)
+            }
+            
+            healthStore.execute(query)
+        }
+    }
+    
+    func readRecentWorkouts(limit: Int = 10) async {
+        let workouts = await readWorkoutHistory(limit: limit, daysBack: 7)
+        
+        await MainActor.run {
+            self.recentWorkouts = workouts.compactMap { item in
+                // Convert WorkoutHistoryItem back to HKWorkout if needed
+                // For now, we'll store the workout history items
+                return nil // We'll need to create HKWorkout objects or change the data structure
+            }
+            self.workoutHistory = workouts
+        }
+    }
+    
+    func getWorkoutsByType(activityType: HKWorkoutActivityType, daysBack: Int = 30) async -> [WorkoutHistoryItem] {
+        let allWorkouts = await readWorkoutHistory(limit: 100, daysBack: daysBack)
+        return allWorkouts.filter { $0.activityType == activityType }
+    }
+    
+    func getTotalWorkoutStats(daysBack: Int = 30) async -> WorkoutStats {
+        let workouts = await readWorkoutHistory(limit: 1000, daysBack: daysBack)
+        
+        let totalWorkouts = workouts.count
+        let totalDuration = workouts.reduce(0) { $0 + $1.duration }
+        let totalCalories = workouts.compactMap { $0.totalEnergyBurned }.reduce(0, +)
+        let totalDistance = workouts.compactMap { $0.totalDistance }.reduce(0, +)
+        
+        let uniqueActivityTypes = Set(workouts.map { $0.activityType }).count
+        let averageDuration = totalWorkouts > 0 ? totalDuration / Double(totalWorkouts) : 0
+        
+        return WorkoutStats(
+            totalWorkouts: totalWorkouts,
+            totalDuration: totalDuration,
+            totalCalories: totalCalories,
+            totalDistance: totalDistance,
+            uniqueActivityTypes: uniqueActivityTypes,
+            averageDuration: averageDuration,
+            daysTracked: daysBack
+        )
+    }
+    
+    // MARK: - Historical Data & Trends
+    
+    func readHistoricalStepsData(daysBack: Int = 30) async -> [HealthDataPoint] {
+        return await withCheckedContinuation { continuation in
+            let calendar = Calendar.current
+            let endDate = Date()
+            let startDate = calendar.date(byAdding: .day, value: -daysBack, to: endDate) ?? endDate
+            
+            let predicate = HKQuery.predicateForSamples(
+                withStart: startDate,
+                end: endDate,
+                options: .strictStartDate
+            )
+            
+            let query = HKStatisticsCollectionQuery(
+                quantityType: stepCountType,
+                quantitySamplePredicate: predicate,
+                options: .cumulativeSum,
+                anchorDate: calendar.startOfDay(for: startDate),
+                intervalComponents: DateComponents(day: 1)
+            )
+            
+            query.initialResultsHandler = { _, collection, error in
+                if let error = error {
+                    Logger.error("Error reading historical steps: \(error)")
+                    continuation.resume(returning: [])
+                    return
+                }
+                
+                var dataPoints: [HealthDataPoint] = []
+                
+                collection?.enumerateStatistics(from: startDate, to: endDate) { statistic, _ in
+                    if let sum = statistic.sumQuantity() {
+                        let steps = sum.doubleValue(for: HKUnit.count())
+                        let dataPoint = HealthDataPoint(date: statistic.startDate, value: steps, unit: "adım")
+                        dataPoints.append(dataPoint)
+                    }
+                }
+                
+                continuation.resume(returning: dataPoints)
+            }
+            
+            healthStore.execute(query)
+        }
+    }
+    
+    func readHistoricalWeightData(daysBack: Int = 90) async -> [HealthDataPoint] {
+        return await withCheckedContinuation { continuation in
+            let calendar = Calendar.current
+            let endDate = Date()
+            let startDate = calendar.date(byAdding: .day, value: -daysBack, to: endDate) ?? endDate
+            
+            let predicate = HKQuery.predicateForSamples(
+                withStart: startDate,
+                end: endDate,
+                options: .strictStartDate
+            )
+            
+            let sortDescriptor = NSSortDescriptor(key: HKSampleSortIdentifierEndDate, ascending: true)
+            
+            let query = HKSampleQuery(
+                sampleType: bodyMassType,
+                predicate: predicate,
+                limit: HKObjectQueryNoLimit,
+                sortDescriptors: [sortDescriptor]
+            ) { _, samples, error in
+                
+                if let error = error {
+                    Logger.error("Error reading historical weight: \(error)")
+                    continuation.resume(returning: [])
+                    return
+                }
+                
+                guard let weightSamples = samples as? [HKQuantitySample] else {
+                    continuation.resume(returning: [])
+                    return
+                }
+                
+                let dataPoints = weightSamples.map { sample in
+                    let weight = sample.quantity.doubleValue(for: HKUnit.gramUnit(with: .kilo))
+                    return HealthDataPoint(date: sample.startDate, value: weight, unit: "kg")
+                }
+                
+                continuation.resume(returning: dataPoints)
+            }
+            
+            healthStore.execute(query)
+        }
+    }
+    
+    func readHistoricalHeartRateData(daysBack: Int = 30) async -> [HealthDataPoint] {
+        return await withCheckedContinuation { continuation in
+            let calendar = Calendar.current
+            let endDate = Date()
+            let startDate = calendar.date(byAdding: .day, value: -daysBack, to: endDate) ?? endDate
+            
+            let predicate = HKQuery.predicateForSamples(
+                withStart: startDate,
+                end: endDate,
+                options: .strictStartDate
+            )
+            
+            let query = HKStatisticsCollectionQuery(
+                quantityType: restingHeartRateType,
+                quantitySamplePredicate: predicate,
+                options: .discreteAverage,
+                anchorDate: calendar.startOfDay(for: startDate),
+                intervalComponents: DateComponents(day: 1)
+            )
+            
+            query.initialResultsHandler = { _, collection, error in
+                if let error = error {
+                    Logger.error("Error reading historical heart rate: \(error)")
+                    continuation.resume(returning: [])
+                    return
+                }
+                
+                var dataPoints: [HealthDataPoint] = []
+                
+                collection?.enumerateStatistics(from: startDate, to: endDate) { statistic, _ in
+                    if let average = statistic.averageQuantity() {
+                        let heartRate = average.doubleValue(for: HKUnit.count().unitDivided(by: .minute()))
+                        let dataPoint = HealthDataPoint(date: statistic.startDate, value: heartRate, unit: "bpm")
+                        dataPoints.append(dataPoint)
+                    }
+                }
+                
+                continuation.resume(returning: dataPoints)
+            }
+            
+            healthStore.execute(query)
+        }
+    }
+    
+    func calculateWorkoutTrends(daysBack: Int = 90) async -> WorkoutTrends {
+        let workouts = await readWorkoutHistory(limit: 1000, daysBack: daysBack)
+        
+        // Group workouts by week
+        let calendar = Calendar.current
+        var weeklyData: [Date: WeeklyWorkoutData] = [:]
+        
+        for workout in workouts {
+            let weekStart = calendar.dateInterval(of: .weekOfYear, for: workout.startDate)?.start ?? workout.startDate
+            
+            if let existing = weeklyData[weekStart] {
+                weeklyData[weekStart] = WeeklyWorkoutData(
+                    weekStartDate: weekStart,
+                    workoutCount: existing.workoutCount + 1,
+                    totalDuration: existing.totalDuration + workout.duration,
+                    totalCalories: existing.totalCalories + (workout.totalEnergyBurned ?? 0)
+                )
+            } else {
+                weeklyData[weekStart] = WeeklyWorkoutData(
+                    weekStartDate: weekStart,
+                    workoutCount: 1,
+                    totalDuration: workout.duration,
+                    totalCalories: workout.totalEnergyBurned ?? 0
+                )
+            }
+        }
+        
+        let weeklyWorkouts = weeklyData.values.sorted { $0.weekStartDate < $1.weekStartDate }
+        
+        // Calculate activity type breakdown
+        var activityCounts: [String: Int] = [:]
+        var activityDurations: [String: TimeInterval] = [:]
+        
+        for workout in workouts {
+            let activityName = workout.activityDisplayName
+            activityCounts[activityName, default: 0] += 1
+            activityDurations[activityName, default: 0] += workout.duration
+        }
+        
+        let totalWorkouts = workouts.count
+        let activityBreakdown = activityCounts.map { name, count in
+            ActivityTypeData(
+                activityType: name,
+                count: count,
+                totalDuration: activityDurations[name] ?? 0,
+                percentage: totalWorkouts > 0 ? (Double(count) / Double(totalWorkouts)) * 100 : 0
+            )
+        }.sorted { $0.count > $1.count }
+        
+        // Calculate totals and averages
+        let totalDuration = workouts.reduce(0) { $0 + $1.duration }
+        let totalCalories = workouts.compactMap { $0.totalEnergyBurned }.reduce(0, +)
+        let averageDuration = totalWorkouts > 0 ? totalDuration / Double(totalWorkouts) : 0
+        let averageCaloriesPerWorkout = totalWorkouts > 0 ? totalCalories / Double(totalWorkouts) : 0
+        let longestWorkout = workouts.map { $0.duration }.max() ?? 0
+        
+        // Generate monthly calories (simplified for now)
+        let monthlyCalories = generateMonthlyCalories(from: workouts)
+        
+        return WorkoutTrends(
+            totalWorkouts: totalWorkouts,
+            weeklyWorkouts: Array(weeklyWorkouts),
+            monthlyCalories: monthlyCalories,
+            activityTypeBreakdown: activityBreakdown,
+            averageDuration: averageDuration,
+            totalDuration: totalDuration,
+            longestWorkout: longestWorkout,
+            totalCalories: totalCalories,
+            averageCaloriesPerWorkout: averageCaloriesPerWorkout
+        )
+    }
+    
+    private func generateMonthlyCalories(from workouts: [WorkoutHistoryItem]) -> [MonthlyData] {
+        let calendar = Calendar.current
+        var monthlyData: [Date: Double] = [:]
+        
+        for workout in workouts {
+            let monthStart = calendar.dateInterval(of: .month, for: workout.startDate)?.start ?? workout.startDate
+            monthlyData[monthStart, default: 0] += workout.totalEnergyBurned ?? 0
+        }
+        
+        return monthlyData.map { month, calories in
+            MonthlyData(month: month, value: calories)
+        }.sorted { $0.month < $1.month }
+    }
+    
+    func loadAllHistoricalData() async {
+        async let stepsData = readHistoricalStepsData(daysBack: 30)
+        async let weightData = readHistoricalWeightData(daysBack: 90) 
+        async let heartRateData = readHistoricalHeartRateData(daysBack: 30)
+        async let trends = calculateWorkoutTrends(daysBack: 90)
+        
+        let (steps, weight, heartRate, workoutTrends) = await (stepsData, weightData, heartRateData, trends)
+        
+        await MainActor.run {
+            self.stepsHistory = steps
+            self.weightHistory = weight
+            self.heartRateHistory = heartRate
+            self.workoutTrends = workoutTrends
+        }
+        
+        Logger.success("Historical health data loaded - Steps: \(steps.count), Weight: \(weight.count), HR: \(heartRate.count)")
+    }
+    
+    // MARK: - Health Intelligence & Recovery
+    
+    func calculateCurrentRecoveryScore() async {
+        // Calculate workout intensity for last 7 days
+        let recentWorkouts = await readWorkoutHistory(limit: 20, daysBack: 7)
+        let workoutIntensity = calculateWorkoutIntensity(from: recentWorkouts)
+        
+        let recoveryScore = HealthIntelligence.calculateRecoveryScore(
+            hrv: heartRateVariability,
+            sleepHours: lastNightSleep,
+            workoutIntensityLast7Days: workoutIntensity,
+            restingHeartRate: restingHeartRate
+        )
+        
+        await MainActor.run {
+            currentRecoveryScore = recoveryScore
+        }
+        
+        Logger.info("Recovery score calculated: \(String(format: "%.1f", recoveryScore.overallScore))")
+    }
+    
+    func generateHealthInsights() async {
+        guard workoutTrends.totalWorkouts > 0 else {
+            Logger.warning("Cannot generate health insights without workout trends")
+            return
+        }
+        
+        let insights = HealthIntelligence.generateHealthInsights(
+            recoveryScore: currentRecoveryScore ?? RecoveryScore(
+                overallScore: 50, hrvScore: 50, sleepScore: 50,
+                workoutLoadScore: 50, restingHeartRateScore: 50, date: Date()
+            ),
+            workoutTrends: self.workoutTrends,
+            stepsHistory: stepsHistory,
+            weightHistory: weightHistory
+        )
+        
+        await MainActor.run {
+            healthInsights = insights
+        }
+        
+        Logger.success("Generated \(insights.count) health insights")
+    }
+    
+    func assessFitnessLevel() async {
+        let consistencyScore = calculateConsistencyScore()
+        
+        let assessment = HealthIntelligence.assessFitnessLevel(
+            workoutTrends: workoutTrends,
+            vo2Max: vo2Max,
+            consistencyScore: consistencyScore
+        )
+        
+        await MainActor.run {
+            fitnessAssessment = assessment
+        }
+        
+        Logger.info("Fitness level assessed: \(assessment.overallLevel.rawValue)")
+    }
+    
+    func generateComprehensiveHealthReport() async -> HealthReport {
+        // Ensure all data is loaded
+        await loadAllHistoricalData()
+        await calculateCurrentRecoveryScore()
+        await generateHealthInsights()
+        await assessFitnessLevel()
+        
+        return HealthIntelligence.generateComprehensiveHealthReport(
+            healthKitService: self,
+            workoutTrends: workoutTrends
+        )
+    }
+    
+    // MARK: - Helper Methods
+    
+    private func calculateWorkoutIntensity(from workouts: [WorkoutHistoryItem]) -> Double {
+        guard !workouts.isEmpty else { return 0 }
+        
+        let totalCalories = workouts.compactMap { $0.totalEnergyBurned }.reduce(0, +)
+        let totalDuration = workouts.reduce(0) { $0 + $1.duration }
+        
+        // Intensity based on calories per minute
+        let avgIntensity = totalDuration > 0 ? totalCalories / (totalDuration / 60) : 0
+        
+        // Normalize to 0-10 scale (assuming max 15 cal/min for high intensity)
+        return min(10, avgIntensity / 15 * 10)
+    }
+    
+    private func calculateConsistencyScore() -> Double {
+        guard !workoutTrends.weeklyWorkouts.isEmpty else { return 0 }
+        
+        let weeks = workoutTrends.weeklyWorkouts.count
+        let workoutWeeks = workoutTrends.weeklyWorkouts.filter { $0.workoutCount > 0 }.count
+        
+        return weeks > 0 ? (Double(workoutWeeks) / Double(weeks)) * 100 : 0
     }
     
     // MARK: - Data Writing
@@ -582,14 +1696,21 @@ class HealthKitService: ObservableObject {
     
     // MARK: - Background Updates
     func enableBackgroundDelivery() {
-        let types: [HKQuantityType] = [stepCountType, activeEnergyType, bodyMassType]
+        let types: [HKQuantityType] = [
+            // Core metrics
+            stepCountType, activeEnergyType, bodyMassType,
+            // Extended metrics
+            heartRateType, restingHeartRateType, heartRateVariabilityType,
+            distanceWalkingRunningType, flightsClimbedType,
+            exerciseTimeType, standTimeType
+        ]
         
         for type in types {
             healthStore.enableBackgroundDelivery(for: type, frequency: .immediate) { success, error in
                 if let error = error {
-                    print("Error enabling background delivery for \(type): \(error)")
+                    Logger.error("Error enabling background delivery for \(type.identifier): \(error)")
                 } else if success {
-                    print("Background delivery enabled for \(type)")
+                    Logger.info("Background delivery enabled for \(type.identifier)")
                 }
             }
         }
@@ -619,7 +1740,7 @@ class HealthKitService: ObservableObject {
                     await self.readTodaysData()
                     await MainActor.run {
                         let steps = Int(self.todaySteps)
-                        let calories = Int(self.todayCalories)
+                        let calories = Int(self.todayActiveCalories)
                         let weightString = self.currentWeight.map { String(format: "%.1f", $0) } ?? "-"
                         print("✅ HealthKit update received for \(type.identifier) at \(Date()) | steps=\(steps) kcal=\(calories) weight=\(weightString)")
                     }

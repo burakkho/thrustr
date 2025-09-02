@@ -85,6 +85,18 @@ class TrainingCoordinator {
         wodSelectedTab = "history"
     }
     
+    func navigateToHistory() {
+        navigationPath.append("workout_history")
+    }
+    
+    func navigateToOneRMSetup() {
+        navigationPath.append("one_rm_setup")
+    }
+    
+    func navigateToPRDetail() {
+        navigationPath.append("pr_detail")
+    }
+    
     // Listen for navigation notifications
     init() {
         NotificationCenter.default.addObserver(

@@ -279,7 +279,7 @@ struct TrainingDashboardView: View {
                 Spacer()
                 
                 Button("See All") {
-                    // Navigate to history
+                    coordinator.navigateToHistory()
                 }
                 .font(theme.typography.caption)
                 .foregroundColor(theme.colors.accent)
@@ -403,6 +403,7 @@ extension CardioSession: WorkoutSession {
         TimeInterval(self.duration)
     }
 }
+
 
 // MARK: - Quick Action Card
 struct QuickActionCard: View {

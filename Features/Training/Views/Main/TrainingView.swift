@@ -7,9 +7,10 @@ struct TrainingView: View {
     @EnvironmentObject private var tabRouter: TabRouter
     @State private var coordinator = TrainingCoordinator()
     @StateObject private var errorHandler = ErrorHandlingService.shared
+    @Query private var programs: [LiftProgram]
     
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $coordinator.navigationPath) {
             VStack(spacing: 0) {
                 // Unified Tab Selector
                 TrainingTabSelector(
@@ -53,6 +54,38 @@ struct TrainingView: View {
             }
             .navigationTitle(TrainingKeys.title.localized)
             .navigationBarTitleDisplayMode(.large)
+            .navigationDestination(for: String.self) { destination in
+                switch destination {
+                case "workout_history":
+                    WorkoutHistoryView()
+                case "one_rm_setup":
+                    if let defaultProgram = programs.first {
+                        OneRMSetupView(program: defaultProgram, onComplete: { _ in })
+                    } else {
+                        EmptyStateView(
+                            systemImage: "exclamationmark.triangle",
+                            title: "No Programs Available",
+                            message: "Please set up programs first.",
+                            primaryTitle: "Back",
+                            primaryAction: { coordinator.navigationPath.removeLast() }
+                        )
+                    }
+                case "pr_detail":
+                    EmptyStateView(
+                        systemImage: "chart.bar.fill",
+                        title: "Personal Records",
+                        message: "Detailed PR tracking coming soon!",
+                        primaryTitle: "Back",
+                        primaryAction: { coordinator.navigationPath.removeLast() }
+                    )
+                default:
+                    EmptyView()
+                }
+            }
+            .sheet(isPresented: $coordinator.showingProgramSelection) {
+                LiftProgramsSection()
+                    .environment(coordinator)
+            }
         }
         .toast($errorHandler.toastMessage, type: errorHandler.toastType)
     }

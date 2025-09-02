@@ -1693,6 +1693,7 @@
 "common.retry" = "Tekrar Dene";
 "common.user" = "Kullanıcı";
 "common.search" = "Ara";
+"common.all" = "Tümü";
 "common.share" = "Paylaş";
 "common.confirm_delete" = "Silmeyi Onayla";
 

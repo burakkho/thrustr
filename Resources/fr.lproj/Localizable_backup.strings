@@ -1,241 +1,241 @@
 // MARK: - Common Actions
 "common.ok" = "OK";
-"common.cancel" = "Cancel";
-"common.save" = "Save";
-"common.edit" = "Edit";
-"common.done" = "Done";
-"common.back" = "Back";
-"common.retry" = "Retry";
-"common.finish" = "Finish";
-"common.add" = "Add";
-"common.change" = "Change";
-"common.continue_anyway" = "Continue Anyway";
-"common.confirm_discard" = "Discard changes?";
-"common.discard" = "Discard";
-"common.discard_message" = "Unsaved changes will be lost.";
+"common.cancel" = "Annuler";
+"common.save" = "Enregistrer";
+"common.edit" = "Modifier";
+"common.done" = "Terminé";
+"common.back" = "Retour";
+"common.retry" = "Réessayer";
+"common.finish" = "Terminer";
+"common.add" = "Ajouter";
+"common.change" = "Modifier";
+"common.continue_anyway" = "Continuer quand même";
+"common.confirm_discard" = "Annuler les modifications ?";
+"common.discard" = "Annuler";
+"common.discard_message" = "Les modifications non enregistrées seront perdues.";
 
 // MARK: - Navigation Titles
-"navigation.program_setup" = "Program Setup";
-"navigation.starting_weights" = "Starting Weights";
-"navigation.workout_preview" = "Workout Preview";
+"navigation.program_setup" = "Configuration du Programme";
+"navigation.starting_weights" = "Poids de Départ";
+"navigation.workout_preview" = "Aperçu d'Entraînement";
 "navigation.notes" = "Notes";
-"navigation.summary" = "Summary";
-"navigation.log_lift_result" = "Log Lift Result";
-"navigation.new_cardio" = "New Cardio";
-"navigation.add_movement" = "Add Movement";
+"navigation.summary" = "Résumé";
+"navigation.log_lift_result" = "Enregistrer Résultat de Force";
+"navigation.new_cardio" = "Nouveau Cardio";
+"navigation.add_movement" = "Ajouter Mouvement";
 "navigation.wod_history_format" = "%@ History";
-"navigation.enter_best_sets" = "Enter your best recent sets";
+"navigation.enter_best_sets" = "Entrez vos meilleures séries récentes";
 
 // MARK: - Error Handling
-"error.database" = "Database Error";
-"error.network" = "Connection Error";
-"error.healthkit" = "HealthKit Error";
-"error.data_corruption" = "Data Corruption";
-"error.unknown" = "Unknown Error";
-"error.database.recovery" = "Try restarting the app. If the problem persists, reinstall the app.";
-"error.network.recovery" = "Check your internet connection and try again.";
-"error.healthkit.recovery" = "Check HealthKit permissions and try again.";
-"error.data_corruption.recovery" = "Data will be reloaded. This may take a few minutes.";
-"error.unknown.recovery" = "Please try again. If the problem persists, contact support.";
+"error.database" = "Erreur Base de Données";
+"error.network" = "Erreur de Connexion";
+"error.healthkit" = "Erreur HealthKit";
+"error.data_corruption" = "Corruption de Données";
+"error.unknown" = "Erreur Inconnue";
+"error.database.recovery" = "Essayez de redémarrer l'app. Si le problème persiste, réinstallez l'app.";
+"error.network.recovery" = "Vérifiez votre connexion internet et réessayez.";
+"error.healthkit.recovery" = "Vérifiez les permissions HealthKit et réessayez.";
+"error.data_corruption.recovery" = "Les données seront rechargées. Cela peut prendre quelques minutes.";
+"error.unknown.recovery" = "Veuillez réessayer. Si le problème persiste, contactez le support.";
 "error.ok_button" = "OK";
-"error.retry_button" = "Try Again";
+"error.retry_button" = "Réessayer";
 /*
-   Localizable.strings (English)
-   Thrustr - English Localization
+   Localizable.strings (French)
+   Thrustr - French Localization
 */
 
 // MARK: - Tab Bar
-"tab.dashboard" = "Dashboard";
-"tab.training" = "Training";
+"tab.dashboard" = "Tableau de Bord";
+"tab.training" = "Entraînement";
 "tab.nutrition" = "Nutrition";
-"tab.profile" = "Profile";
+"tab.profile" = "Profil";
 
 // MARK: - Dashboard
-"dashboard.title" = "Dashboard";
-"dashboard.todayStats" = "Today's Stats";
-"dashboard.quickActions" = "Quick Actions";
-"dashboard.startWorkout" = "Start Workout";
-"dashboard.addMeal" = "Add Meal";
+"dashboard.title" = "Tableau de Bord";
+"dashboard.todayStats" = "Stats du Jour";
+"dashboard.quickActions" = "Actions Rapides";
+"dashboard.startWorkout" = "Démarrer Entraînement";
+"dashboard.addMeal" = "Ajouter Repas";
 
 // MARK: - Training
-"training.title" = "Training";
-"training.newWorkout" = "New Workout";
-"training.history" = "History";
+"training.title" = "Entraînement";
+"training.newWorkout" = "Nouvel Entraînement";
+"training.history" = "Historique";
 
 // MARK: - Training Analytics & Dashboard
-"training.analytics.title" = "Analytics";
-"training.dashboard.title" = "Dashboard";
-"training.dashboard.thisWeek" = "This Week";
-"training.dashboard.quickActions" = "Quick Actions";
-"training.dashboard.streak" = "Streak";
-"training.dashboard.noRecentActivity" = "No recent activity";
+"training.analytics.title" = "Analyses";
+"training.dashboard.title" = "Tableau de Bord";
+"training.dashboard.thisWeek" = "Cette Semaine";
+"training.dashboard.quickActions" = "Actions Rapides";
+"training.dashboard.streak" = "Série";
+"training.dashboard.noRecentActivity" = "Aucune activité récente";
 
 // MARK: - Notifications
-"notifications.enabled" = "Push Notifications";
-"notifications.enabled_desc" = "Get reminders and achievement alerts";
-"notifications.workout_reminders" = "Workout Reminders";
-"notifications.workout_desc" = "Daily workout motivation";
-"notifications.achievements" = "Achievement Alerts";
-"notifications.achievements_desc" = "Celebrate your milestones";
-"notifications.goals" = "Goal Reminders";
-"notifications.goals_desc" = "Stay on track with your goals";
-"notifications.open_settings" = "Open Settings";
+"notifications.enabled" = "Notifications Push";
+"notifications.enabled_desc" = "Recevez rappels et alertes de réussites";
+"notifications.workout_reminders" = "Rappels d'entraînement";
+"notifications.workout_desc" = "Motivation quotidienne d'entraînement";
+"notifications.achievements" = "Alertes de Réussites";
+"notifications.achievements_desc" = "Célébrez vos jalons";
+"notifications.goals" = "Rappels d'Objectifs";
+"notifications.goals_desc" = "Restez sur la bonne voie avec vos objectifs";
+"notifications.open_settings" = "Ouvrir Paramètres";
 
 // MARK: - Notification Status
-"notifications.status.not_determined" = "Not Configured";
+"notifications.status.not_determined" = "Non Configuré";
 "notifications.status.denied" = "Denied";
-"notifications.status.authorized" = "Fully Enabled";
-"notifications.status.provisional" = "Silent Mode";
+"notifications.status.authorized" = "Entièrement Activé";
+"notifications.status.provisional" = "Mode Silencieux";
 "notifications.status.ephemeral" = "Temporary";
 "notifications.status.unknown" = "Unknown";
-"notifications.provisional.title" = "Silent Notifications Active";
-"notifications.provisional.description" = "Notifications appear quietly in Notification Center";
-"notifications.upgrade.title" = "Enable Sound & Banners";
-"notifications.upgrade.description" = "Get alerts with sound and on-screen banners";
+"notifications.provisional.title" = "Notifications Silencieuses Actives";
+"notifications.provisional.description" = "Les notifications apparaissent silencieusement dans le Centre de Notifications";
+"notifications.upgrade.title" = "Activer Son et Bannières";
+"notifications.upgrade.description" = "Recevez des alertes avec son et bannières à l'écran";
 
 // MARK: - Notification Content
-"notifications.workout.title" = "Workout Time!";
-"notifications.workout.body" = "Time to crush your fitness goals. Let's get moving!";
-"notifications.goal.title" = "Daily Goal Check";
-"notifications.goal.body" = "How are you doing with your daily fitness goals?";
+"notifications.workout.title" = "C'est l'heure de s'entraîner!";
+"notifications.workout.body" = "Il est temps d'écraser vos objectifs fitness. C'est parti !";
+"notifications.goal.title" = "Vérification Objectif Quotidien";
+"notifications.goal.body" = "Comment avancez-vous avec vos objectifs fitness quotidiens ?";
 
 // MARK: - Onboarding Notifications
-"onboarding.notifications.title" = "Stay Motivated";
+"onboarding.notifications.title" = "Restez Motivé";
 "onboarding.notifications.subtitle" = "Get personalized reminders to help you reach your fitness goals";
-"onboarding.notifications.workout_reminders" = "Smart workout reminders";
-"onboarding.notifications.achievement_alerts" = "Achievement celebrations";
-"onboarding.notifications.goal_tracking" = "Goal progress updates";
-"onboarding.notifications.enable" = "Enable Notifications";
+"onboarding.notifications.workout_reminders" = "Rappels d'entraînement intelligents";
+"onboarding.notifications.achievement_alerts" = "Célébrations de réussites";
+"onboarding.notifications.goal_tracking" = "Mises à jour du progrès d'objectifs";
+"onboarding.notifications.enable" = "Activer les Notifications";
 "onboarding.notifications.skip" = "Not now";
 
 // MARK: - Goals
-"goals.progress" = "Goal Progress";
+"goals.progress" = "Progrès d'Objectifs";
 
 // MARK: - Onboarding Consent Notifications
-"onboarding.consent.notifications" = "Push Notifications";
+"onboarding.consent.notifications" = "Notifications Push";
 "onboarding.consent.notifications.desc" = "Get workout reminders and achievement alerts";
 
 // MARK: - Profile OneRM Calculator
-"profile.oneRM.title" = "1RM Calculator";
-"profile.oneRM.subtitle" = "One Rep Max Calculator";
-"profile.oneRM.calculate" = "Calculate";
-"profile.oneRM.trainingInfo" = "Training Information";
-"profile.oneRM.results" = "Results";
-"profile.oneRM.about" = "About 1RM";
-"profile.oneRM.weightLifted" = "Weight Lifted";
-"profile.oneRM.repCount" = "Repetitions";
-"profile.oneRM.calculationFormula" = "Formula";
-"profile.oneRM.oneRMValue" = "1RM Value";
-"profile.oneRM.percentageTable" = "Percentage Table";
-"profile.oneRM.safety" = "Safety First";
+"profile.oneRM.title" = "Calculateur 1RM";
+"profile.oneRM.subtitle" = "Calculateur Une Répétition Maximum";
+"profile.oneRM.calculate" = "Calculer";
+"profile.oneRM.trainingInfo" = "Informations d'Entraînement";
+"profile.oneRM.results" = "Résultats";
+"profile.oneRM.about" = "À propos 1RM";
+"profile.oneRM.weightLifted" = "Poids Soulevé";
+"profile.oneRM.repCount" = "Répétitions";
+"profile.oneRM.calculationFormula" = "Formule";
+"profile.oneRM.oneRMValue" = "Valeur 1RM";
+"profile.oneRM.percentageTable" = "Tableau des Pourcentages";
+"profile.oneRM.safety" = "Sécurité d'Abord";
 "profile.oneRM.safetyDesc" = "Never attempt a true 1RM without proper supervision and experience. Use calculated values for training guidance.";
-"profile.oneRM.accuracy" = "Accuracy Note";
+"profile.oneRM.accuracy" = "Note de Précision";
 "profile.oneRM.accuracyDesc" = "1RM calculations are estimates based on submaximal lifts. Individual variation exists.";
 "profile.oneRM.howToUse" = "How to Use";
 "profile.oneRM.howToUseDesc" = "Enter a weight you can lift for multiple reps (1-10) to estimate your 1RM for programming purposes.";
 
 // MARK: - Profile Navy Method Calculator
-"profile.navy.title" = "Navy Method Calculator";
-"profile.navy.calculate" = "Calculate";
+"profile.navy.title" = "Calculateur Méthode Navy";
+"profile.navy.calculate" = "Calculer";
 
 // MARK: - Profile FFMI Calculator
-"profile.ffmi.title" = "FFMI Calculator";
-"profile.ffmi.subtitle" = "Fat-Free Mass Index";
+"profile.ffmi.title" = "Calculateur FFMI";
+"profile.ffmi.subtitle" = "Indice de Masse Maigre";
 "profile.ffmi.calculate" = "Calculate";
-"profile.ffmi.measurements" = "Measurements";
+"profile.ffmi.measurements" = "Mesures";
 "profile.ffmi.results" = "Results";
-"profile.ffmi.scale" = "FFMI Scale";
-"profile.ffmi.about" = "About FFMI";
-"profile.ffmi.height" = "Height";
-"profile.ffmi.weight" = "Weight";
-"profile.ffmi.bodyFat" = "Body Fat %";
-"profile.ffmi.resultsTitle" = "Results";
+"profile.ffmi.scale" = "Échelle FFMI";
+"profile.ffmi.about" = "À propos FFMI";
+"profile.ffmi.height" = "Taille";
+"profile.ffmi.weight" = "Poids";
+"profile.ffmi.bodyFat" = "Graisse Corporelle %";
+"profile.ffmi.resultsTitle" = "Résultats";
 "profile.ffmi.score" = "FFMI Score";
 "profile.ffmi.normalizedScore" = "Normalized FFMI";
 "profile.ffmi.interpretation" = "Interpretation";
-"profile.ffmi.category" = "Category";
-"profile.ffmi.leanMass" = "Lean Mass";
-"profile.ffmi.bodyFatMass" = "Body Fat Mass";
-"profile.ffmi.ffmiValue" = "FFMI Value";
-"profile.ffmi.whatIsFFMI" = "What is FFMI?";
+"profile.ffmi.category" = "Catégorie";
+"profile.ffmi.leanMass" = "Masse Maigre";
+"profile.ffmi.bodyFatMass" = "Masse Grasse";
+"profile.ffmi.ffmiValue" = "Valeur FFMI";
+"profile.ffmi.whatIsFFMI" = "Qu'est-ce que le FFMI ?";
 "profile.ffmi.whatIsFFMIDesc" = "Fat-Free Mass Index (FFMI) is a measurement that estimates the amount of muscle mass relative to height, providing insight into natural muscle-building potential and body composition.";
-"profile.ffmi.naturalLimit" = "Natural Limit";
+"profile.ffmi.naturalLimit" = "Limite Naturelle";
 "profile.ffmi.naturalLimitDesc" = "An FFMI of 25 is generally considered the upper limit achievable naturally without performance-enhancing substances.";
-"profile.ffmi.targets" = "FFMI Targets";
+"profile.ffmi.targets" = "Objectifs FFMI";
 "profile.ffmi.targetsDesc" = "Use FFMI to set realistic muscle-building goals. Aim for steady progress within the natural range for sustainable results.";
-"profile.ffmi.note" = "Important Note";
+"profile.ffmi.note" = "Note Importante";
 "profile.ffmi.noteDesc" = "FFMI calculations are estimates. Individual variation exists and values should be used as general guidance alongside other health and fitness assessments.";
 
 // MARK: - FFMI Categories
-"profile.ffmi.belowAverage" = "Below Average";
+"profile.ffmi.belowAverage" = "En Dessous de la Moyenne";
 "profile.ffmi.average" = "Average";
-"profile.ffmi.aboveAverage" = "Above Average";
+"profile.ffmi.aboveAverage" = "Au Dessus de la Moyenne";
 "profile.ffmi.excellent" = "Excellent";
 "profile.ffmi.superior" = "Superior";
 "profile.ffmi.suspicious" = "Suspicious";
 
 // MARK: - Lift Training
-"training.lift.title" = "Lift Training";
-"training.lift.tabs.workouts" = "Workouts";
-"training.lift.tabs.programs" = "Programs";
+"training.lift.title" = "Entraînement de Force";
+"training.lift.tabs.workouts" = "Séances";
+"training.lift.tabs.programs" = "Programmes";
 "training.lift.tabs.routines" = "Routines";
 "training.lift.tabs.history" = "History";
 
 // MARK: - Lift Quick Start
-"training.lift.quickStart" = "Quick Start";
-"training.lift.emptyWorkout" = "Empty Workout";
-"training.lift.emptyWorkout.subtitle" = "Add as you go";
-"training.lift.pickRoutine" = "Pick Routine";
-"training.lift.pickRoutine.subtitle" = "From templates";
-"training.lift.startProgram" = "Start Program";
-"training.lift.startProgram.subtitle" = "Structured plan";
+"training.lift.quickStart" = "Démarrage Rapide";
+"training.lift.emptyWorkout" = "Séance Vide";
+"training.lift.emptyWorkout.subtitle" = "Ajoutez au fur et à mesure";
+"training.lift.pickRoutine" = "Choisir une Routine";
+"training.lift.pickRoutine.subtitle" = "Depuis les modèles";
+"training.lift.startProgram" = "Démarrer le Programme";
+"training.lift.startProgram.subtitle" = "Plan structuré";
 
 // MARK: - Lift Program
-"training.lift.startWorkout" = "START WORKOUT";
-"training.lift.viewDetails" = "View Program Details";
-"training.lift.pauseProgram" = "Pause Program";
-"training.lift.resumeProgram" = "Resume Program";
-"training.lift.browsePrograms" = "Browse Programs";
-"training.lift.browsePrograms.subtitle" = "Get structured workouts and better results";
+"training.lift.startWorkout" = "DÉMARRER LA SÉANCE";
+"training.lift.viewDetails" = "Voir Détails du Programme";
+"training.lift.pauseProgram" = "Mettre en Pause";
+"training.lift.resumeProgram" = "Reprendre le Programme";
+"training.lift.browsePrograms" = "Parcourir les Programmes";
+"training.lift.browsePrograms.subtitle" = "Obtenez des séances structurées et de meilleurs résultats";
 
 // MARK: - Routine
 "routine.title" = "Routines";
 "routine.templates" = "Templates";
 "routine.custom" = "Custom";
-"routine.createNew" = "Create New Routine";
+"routine.createNew" = "Créer Nouvelle Routine";
 "routine.createNew.subtitle" = "Build custom workout plans";
 "routine.copyCustomize" = "Copy & Customize";
-"routine.ourTemplates" = "Our Templates";
-"routine.myCustomRoutines" = "My Custom Routines";
-"routine.featuredTemplates" = "Featured Templates";
+"routine.ourTemplates" = "Nos Modèles";
+"routine.myCustomRoutines" = "Mes Routines Personnalisées";
+"routine.featuredTemplates" = "Modèles en Vedette";
 "routine.favorites" = "Favorites";
-"routine.exercises" = "exercises";
-"routine.empty.custom.title" = "No Custom Routines Yet";
+"routine.exercises" = "exercices";
+"routine.empty.custom.title" = "Aucune Routine Personnalisée";
 "routine.empty.custom.subtitle" = "Create your first routine to get started";
 
 // MARK: - Routine Creation
-"routine.create.title" = "Create New Routine";
+"routine.create.title" = "Créer Nouvelle Routine";
 "routine.create.method" = "How would you like to create your routine?";
-"routine.create.fromScratch" = "Start From Scratch";
-"routine.create.fromScratch.desc" = "Build your routine exercise by exercise";
-"routine.create.fromTemplate" = "Copy From Template";
+"routine.create.fromScratch" = "Commencer de Zéro";
+"routine.create.fromScratch.desc" = "Construisez votre routine exercice par exercice";
+"routine.create.fromTemplate" = "Copier d'un Modèle";
 "routine.create.fromTemplate.desc" = "Start with our proven templates";
-"routine.create.save" = "Save Routine";
+"routine.create.save" = "Enregistrer Routine";
 
 // MARK: - Template Cards
-"routine.template.exercises" = "Exercises";
-"routine.template.duration" = "Duration";
+"routine.template.exercises" = "Exercices";
+"routine.template.duration" = "Durée";
 "routine.template.sets" = "Sets";
 "routine.template.start" = "Start";
 "routine.template.customize" = "Customize";
 
 // MARK: - Lift Stats
-"training.lift.stats.thisWeek" = "This Week";
-"training.lift.stats.streak" = "Streak";
-"training.lift.stats.remaining" = "Remaining";
-"training.lift.stats.completed" = "completed";
-"training.lift.stats.workouts" = "workouts";
-"training.lift.stats.weeks" = "weeks";
+"training.lift.stats.thisWeek" = "Cette Semaine";
+"training.lift.stats.streak" = "Série";
+"training.lift.stats.remaining" = "Restantes";
+"training.lift.stats.completed" = "terminées";
+"training.lift.stats.workouts" = "séances";
+"training.lift.stats.weeks" = "semaines";
 
 // MARK: - Cardio Summary
 "cardio.summary.congratulations" = "Congratulations!";
@@ -243,22 +243,22 @@
 "cardio.summary.duration" = "Duration";
 "cardio.summary.distance" = "Distance";
 "cardio.summary.calories" = "Calories";
-"cardio.summary.yourRoute" = "Your Route";
+"cardio.summary.yourRoute" = "Votre Itinéraire";
 "cardio.summary.routeStart" = "Start";
 "cardio.summary.routeEnd" = "End";
-"cardio.summary.detailedStats" = "Detailed Statistics";
-"cardio.summary.averagePace" = "Average Pace";
-"cardio.summary.averageSpeed" = "Average Speed";
+"cardio.summary.detailedStats" = "Statistiques Détaillées";
+"cardio.summary.averagePace" = "Rythme Moyen";
+"cardio.summary.averageSpeed" = "Vitesse Moyenne";
 "cardio.summary.elevation" = "Elevation";
 "cardio.summary.perceivedEffort" = "Perceived Effort";
-"cardio.summary.heartRateStats" = "Heart Rate Statistics";
+"cardio.summary.heartRateStats" = "Statistiques Rythme Cardiaque";
 "cardio.summary.average" = "Average";
 "cardio.summary.maximum" = "Maximum";
 "cardio.summary.bpm" = "bpm";
-"cardio.summary.howAreYouFeeling" = "How are you feeling?";
+"cardio.summary.howAreYouFeeling" = "Comment vous sentez-vous ?";
 "cardio.summary.notesOptional" = "Notes (Optional)";
 "cardio.summary.notesPlaceholder" = "Your workout notes...";
-"cardio.summary.saveButton" = "Save";
+"cardio.summary.saveButton" = "Enregistrer";
 "cardio.summary.exitWithoutSaving" = "Exit Without Saving";
 
 // MARK: - Cardio Preparation
@@ -276,7 +276,7 @@
 "cardio.preparation.stepCounterNotAvailable" = "Step counter not supported";
 "cardio.preparation.stepCounterDenied" = "Motion permission required";
 "cardio.preparation.iphoneAppleWatch" = "iPhone/Apple Watch";
-"cardio.preparation.settings" = "Settings";
+"cardio.preparation.settings" = "Paramètres";
 "cardio.preparation.heartRateBand" = "Heart Rate Band";
 "cardio.preparation.heartRateBandNotConnected" = "Heart rate band not connected";
 "cardio.preparation.heartRateBandScanning" = "Searching for device...";
@@ -299,11 +299,11 @@
 "cardio.preparation.cancel" = "Cancel";
 
 // MARK: - Lift Sections
-"training.lift.recentWorkouts" = "Recent Workouts";
-"training.lift.workoutRoutines" = "Workout Routines";
-"training.lift.featuredPrograms" = "Featured Programs";
-"training.lift.myPrograms" = "My Programs";
-"training.lift.lastWorkout" = "Last workout";
+"training.lift.recentWorkouts" = "Séances Récentes";
+"training.lift.workoutRoutines" = "Routines d'Entraînement";
+"training.lift.featuredPrograms" = "Programmes en Vedette";
+"training.lift.myPrograms" = "Mes Programmes";
+"training.lift.lastWorkout" = "Dernière séance";
 
 // MARK: - Lift Empty States
 "training.lift.noRoutines.title" = "No Routines Yet";
@@ -316,8 +316,8 @@
 "training.start.new.subtitle" = "Create empty workout";
 "training.start.program" = "Select Program";
 "training.start.program.subtitle" = "Start from template";
-"training.start.wod" = "Do METCON";
-"training.start.wod.subtitle" = "Metabolic conditioning";
+"training.start.wod" = "Faire METCON";
+"training.start.wod.subtitle" = "Conditionnement métabolique";
 "training.start.lift" = "Lift Session";
 "training.start.lift.subtitle" = "Strength and powerlifting";
 "training.start.cardio" = "Cardio Workout";
@@ -345,12 +345,12 @@
 "training.cardio.quickStartDesc" = "Start cardio session";
 "training.cardio.viewHistory" = "View History";
 "training.cardio.viewHistoryDesc" = "Past sessions";
-"training.cardio.recentSessions" = "Recent Sessions";
+"training.cardio.recentSessions" = "Séances Récentes";
 "training.cardio.sessionInProgress" = "Session in progress";
 "training.cardio.distance" = "Distance";
 "training.cardio.avgSpeed" = "Avg Speed";
 "training.cardio.pace" = "Pace";
-"training.cardio.averagePace" = "Average Pace";
+"training.cardio.averagePace" = "Rythme Moyen";
 "training.cardio.calories" = "Calories";
 "training.cardio.personalRecord" = "PR";
 "training.lift.create" = "Create Lift";
@@ -361,8 +361,8 @@
 "training.lift.description.placeholder" = "e.g., Heavy compound movements";
 "training.lift.sets" = "Sets";
 "training.lift.reps" = "Reps";
-"training.lift.exercises" = "Exercises";
-"training.lift.exercises.empty" = "No exercises added";
+"training.lift.exercises" = "Exercices";
+"training.lift.exercises.empty" = "Aucun exercice ajouté";
 "training.lift.log_result" = "Log Result";
 "training.lift.result.title" = "Log Lift Result";
 "training.lift.result.saved" = "Result Saved!";
@@ -370,7 +370,7 @@
 "training.lift.result.success_message" = "Your workout has been recorded successfully.";
 "training.lift.result.total_volume" = "Total Volume";
 "training.lift.result.best_set" = "Best Set";
-"training.lift.result.save" = "Save Result";
+"training.lift.result.save" = "Enregistrer Résultat";
 "training.lift.result.notes" = "Notes (Optional)";
 "training.lift.result.current_pr" = "Current PR: %dkg";
 
@@ -378,10 +378,10 @@
 "training.lift.noPrograms" = "No Programs Yet";
 "training.lift.noProgramsMessage" = "Browse our featured programs or create your own";
 "training.lift.activeProgram" = "Active Program";
-"training.lift.stats.progress" = "Progress";
+"training.lift.stats.progress" = "Progrès";
 "training.lift.stats.volume" = "Volume";
 "training.lift.stats.sets" = "Sets";
-"training.lift.stats.exercises" = "Exercises";
+"training.lift.stats.exercises" = "Exercices";
 "training.lift.noHistory" = "No History Yet";
 "training.lift.noHistoryMessage" = "Start your first workout to begin tracking";
 
@@ -392,24 +392,24 @@
 "training.cardio.type" = "Type";
 "training.cardio.type.distance" = "Distance";
 "training.cardio.type.time" = "Time";
-"training.cardio.exercise" = "Exercise";
-"training.cardio.exercise.select" = "Select Exercise";
-"training.cardio.distance" = "Distance (meters)";
+"training.cardio.exercise" = "Exercice";
+"training.cardio.exercise.select" = "Sélectionner Exercice";
+"training.cardio.distance" = "Distance (mètres)";
 "training.cardio.time" = "Time (minutes)";
-"training.exercise.search" = "Search exercises...";
-"training.exercise.done" = "Done";
+"training.exercise.search" = "Rechercher des exercices...";
+"training.exercise.done" = "Terminé";
 
 // MARK: - Cardio Training
-"training.cardio.templates" = "Templates";
+"training.cardio.templates" = "Modèles";
 "training.cardio.history" = "History";
 "training.cardio.lastSession" = "Last Session";
 "training.cardio.customSessions" = "Custom Sessions";
-"training.cardio.exerciseTypes" = "Exercise Types";
-"training.cardio.noExerciseTypes" = "No Exercise Types";
+"training.cardio.exerciseTypes" = "Types d'Exercices";
+"training.cardio.noExerciseTypes" = "Aucun Type d'Exercice";
 "training.cardio.noHistory" = "No History";
 "training.cardio.noHistoryMessage" = "Start your first cardio session to begin tracking";
 "training.cardio.adjustSearch" = "Try adjusting your search";
-"training.cardio.startSession" = "Start Session";
+"training.cardio.startSession" = "Démarrer la Séance";
 "training.cardio.clearSearch" = "Clear Search";
 "training.cardio.neverAttempted" = "Never Attempted";
 "training.cardio.browseTemplates" = "Browse Templates";
@@ -427,29 +427,29 @@
 
 // MARK: - Nutrition
 "nutrition.title" = "Nutrition";
-"nutrition.addFood" = "Add Food";
+"nutrition.addFood" = "Ajouter aliment";
 "nutrition.calories" = "Calories";
-"nutrition.scanBarcode" = "Scan barcode";
+"nutrition.scanBarcode" = "Scanner code-barres";
 
 // Empty States - Nutrition
-"nutrition.empty.first.title" = "Start tracking nutrition";
-"nutrition.empty.first.message" = "Add your meals to track daily calories and macros.";
-"nutrition.empty.addMeal" = "Add Meal";
-"nutrition.empty.addCustomFood" = "Create Custom Food";
-"nutrition.empty.loadingFoods" = "Loading food database...";
-"nutrition.empty.today.title" = "No meals added today";
-"nutrition.empty.today.message" = "Pick from the list or create a custom food to add a meal.";
-"nutrition.empty.todayTitle" = "You haven't eaten anything today";
-"nutrition.empty.todayMessage" = "Start your day by adding your first meal! 🌅";
+"nutrition.empty.first.title" = "Commencer le suivi nutritionnel";
+"nutrition.empty.first.message" = "Ajoutez vos repas pour suivre vos calories et macros quotidiennes.";
+"nutrition.empty.addMeal" = "Ajouter repas";
+"nutrition.empty.addCustomFood" = "Créer aliment personnalisé";
+"nutrition.empty.loadingFoods" = "Chargement de la base d'aliments...";
+"nutrition.empty.today.title" = "Aucun repas ajouté aujourd'hui";
+"nutrition.empty.today.message" = "Choisissez dans la liste ou créez un aliment personnalisé pour ajouter un repas.";
+"nutrition.empty.todayTitle" = "Vous n'avez rien mangé aujourd'hui";
+"nutrition.empty.todayMessage" = "Commencez votre journée en ajoutant votre premier repas ! 🌅";
 
 // MARK: - Profile
-"profile.title" = "Profile";
-"profile.edit_profile" = "Edit Profile";
+"profile.title" = "Profil";
+"profile.edit_profile" = "Modifier le Profil";
 "profile.personal_info" = "Personal Information";
-"profile.measurements" = "Measurements";
+"profile.measurements" = "Mesures";
 "profile.tools" = "Tools";
-"profile.progress_reports" = "Progress Reports";
-"profile.settings" = "Settings";
+"profile.progress_reports" = "Rapports de Progrès";
+"profile.settings" = "Paramètres";
 "profile.premium" = "Premium";
 "profile.help" = "Help";
 "profile.logout" = "Logout";
@@ -457,13 +457,13 @@
 
 // Profile - Personal Info
 "profile.name" = "Name";
-"profile.age" = "Age";
-"profile.height" = "Height";
-"profile.weight" = "Weight";
-"profile.gender" = "Gender";
-"profile.male" = "Male";
-"profile.female" = "Female";
-"profile.fitness_goal" = "Fitness Goal";
+"profile.age" = "Âge";
+"profile.height" = "Taille";
+"profile.weight" = "Poids";
+"profile.gender" = "Genre";
+"profile.male" = "Homme";
+"profile.female" = "Femme";
+"profile.fitness_goal" = "Objectif Fitness";
 "profile.activity_level" = "Activity Level";
 
 // Profile - Goals
@@ -482,17 +482,17 @@
 "profile.personal_info_subtitle" = "Manage your personal information";
 "profile.account_management" = "Account Management";
 "profile.account_subtitle" = "Manage your account settings";
-"profile.body_tracking" = "Body Tracking";
-"profile.weight_tracking" = "Weight Tracking";
-"profile.weight_subtitle" = "Track your weight changes";
+"profile.body_tracking" = "Suivi Corporel";
+"profile.weight_tracking" = "Suivi du Poids";
+"profile.weight_subtitle" = "Suivez vos changements de poids";
 "profile.measurements_subtitle" = "Track your body measurements";
-"profile.progress_photos" = "Progress Photos";
+"profile.progress_photos" = "Photos de Progrès";
 "profile.photos_subtitle" = "Track your progress with photos";
 "profile.settings_subtitle" = "App preferences and settings";
-"profile.progress_charts" = "Progress Charts";
+"profile.progress_charts" = "Graphiques de Progrès";
 "profile.charts_subtitle" = "Visualize your progress";
 "profile.achievements_subtitle" = "Track your achievements";
-"profile.goal_tracking" = "Goal Tracking";
+"profile.goal_tracking" = "Suivi d'Objectifs";
 "profile.goals_subtitle" = "Set and track your goals";
 
 // Profile - Lifetime Achievements
@@ -521,26 +521,26 @@
 "profile.messages.save_error" = "Error occurred while saving";
 
 // MARK: - Settings
-"settings.title" = "Settings";
+"settings.title" = "Paramètres";
 "settings.app_preferences" = "App Preferences";
 "settings.language" = "Language";
-"settings.units" = "Units";
+"settings.units" = "Unités";
 "settings.theme" = "Theme";
 "settings.notifications" = "Notifications";
 "settings.system_theme" = "System";
 "settings.light_mode" = "Light";
 "settings.dark_mode" = "Dark";
-"settings.metric" = "Metric";
-"settings.imperial" = "Imperial";
+"settings.metric" = "Métrique";
+"settings.imperial" = "Impérial";
 "settings.allow_notifications" = "Allow Notifications";
 "settings.workout_reminders" = "Workout Reminders";
 "settings.nutrition_reminders" = "Nutrition Reminders";
 "settings.version" = "Version";
-"settings.privacy_policy" = "Privacy Policy";
-"settings.terms_of_service" = "Terms of Service";
+"settings.privacy_policy" = "Politique de Confidentialité";
+"settings.terms_of_service" = "Conditions d'Utilisation";
 
 // MARK: - Common
-"action.save" = "Save";
+"action.save" = "Enregistrer";
 "action.cancel" = "Cancel";
 
 // MARK: - Onboarding
@@ -553,8 +553,8 @@
 "onboarding.welcome.subtitle" = "We're with you on your fitness journey.\nLet's get started!";
 "onboarding.welcome.start" = "Let's Start!";
 "onboarding.feature.workout" = "Smart workout tracking";
-"onboarding.feature.progress" = "Progress analysis";
-"onboarding.feature.nutrition" = "Nutrition control";
+"onboarding.feature.progress" = "Analyse de progrès";
+"onboarding.feature.nutrition" = "Contrôle nutritionnel";
 "onboarding.feature.goals" = "Personal goals";
 
 // Progress
@@ -565,32 +565,32 @@
 "onboarding.personalInfo.subtitle" = "Let's get to know you better";
 "onboarding.personalInfo.name" = "Name";
 "onboarding.personalInfo.name.placeholder" = "e.g., John";
-"onboarding.personalInfo.age" = "Age";
+"onboarding.personalInfo.age" = "Âge";
 "onboarding.personalInfo.age.years" = "%d years";
-"onboarding.personalInfo.gender" = "Gender";
-"onboarding.personalInfo.gender.male" = "Male";
-"onboarding.personalInfo.gender.female" = "Female";
-"onboarding.personalInfo.height" = "Height";
-"onboarding.personalInfo.weight" = "Weight";
+"onboarding.personalInfo.gender" = "Genre";
+"onboarding.personalInfo.gender.male" = "Homme";
+"onboarding.personalInfo.gender.female" = "Femme";
+"onboarding.personalInfo.height" = "Taille";
+"onboarding.personalInfo.weight" = "Poids";
 "onboarding.continue" = "Continue";
 
 // Consent Step
 "onboarding.consent.title" = "Consent";
 "onboarding.consent.subtitle" = "Please review and accept the documents to continue.";
-"onboarding.consent.terms.title" = "Accept Terms of Service";
-"onboarding.consent.terms.desc" = "You need to accept the Terms of Service to use the app.";
-"onboarding.consent.viewTerms" = "View Terms of Service";
-"onboarding.consent.privacy.title" = "Accept Privacy Policy";
-"onboarding.consent.privacy.desc" = "Please review and accept our Privacy Policy.";
-"onboarding.consent.viewPrivacy" = "View Privacy Policy";
+"onboarding.consent.terms.title" = "Accepter Conditions d'Utilisation";
+"onboarding.consent.terms.desc" = "Vous devez accepter les Conditions d'Utilisation pour utiliser l'app.";
+"onboarding.consent.viewTerms" = "Voir Conditions d'Utilisation";
+"onboarding.consent.privacy.title" = "Accepter Politique de Confidentialité";
+"onboarding.consent.privacy.desc" = "Veuillez examiner et accepter notre Politique de Confidentialité.";
+"onboarding.consent.viewPrivacy" = "Voir Politique de Confidentialité";
 "onboarding.consent.marketing" = "I want to receive product updates and tips";
 
 // Goals Step
 "onboarding.goals.title" = "Your Goals";
 "onboarding.goals.subtitle" = "Which direction are you planning to progress?";
-"onboarding.goals.mainGoal" = "Main Goal";
+"onboarding.goals.mainGoal" = "Objectif Principal";
 "onboarding.goals.activityLevel" = "Activity Level";
-"onboarding.goals.targetWeight" = "Target Weight (Optional)";
+"onboarding.goals.targetWeight" = "Poids Cible (Optionnel)";
 "onboarding.goals.targetWeight.toggle" = "Set target weight";
 
 // Goal Options
@@ -614,38 +614,38 @@
 "onboarding.activity.veryActive.desc" = "Daily workouts, physical job";
 
 // Measurements Step
-"onboarding.measurements.title" = "Body Measurements";
+"onboarding.measurements.title" = "Mesures Corporelles";
 "onboarding.measurements.subtitle" = "Optional measurements for more accurate analysis";
 "onboarding.measurements.navyMethod" = "Navy Method";
-"onboarding.measurements.navyMethod.desc" = "With these measurements we can calculate your body fat percentage. You can skip this and add them later from Profile.";
+"onboarding.measurements.navyMethod.desc" = "Avec ces mesures, nous pouvons calculer votre pourcentage de graisse corporelle. Vous pouvez ignorer ceci et les ajouter plus tard depuis le Profil.";
 "onboarding.measurements.neck" = "Neck Circumference (Below Adam's apple)";
 "onboarding.measurements.waist.male" = "Waist Circumference (At navel level)";
 "onboarding.measurements.waist.female" = "Waist Circumference (At narrowest point)";
 "onboarding.measurements.hip" = "Hip Circumference (At widest point)";
-"onboarding.measurements.bodyFat.title" = "Calculated Body Fat %";
+"onboarding.measurements.bodyFat.title" = "% de Graisse Corporelle Calculé";
 "onboarding.measurements.bodyFat.navy" = "Navy Method:";
 "onboarding.measurements.optional.info" = "These measurements are completely optional";
-"onboarding.measurements.optional.desc" = "You can skip and add them later from Profile settings.";
+"onboarding.measurements.optional.desc" = "Vous pouvez ignorer et les ajouter plus tard depuis les paramètres du Profil.";
 "onboarding.measurements.skip" = "Skip This Step";
 "onboarding.measurements.optional" = "Optional";
 
 // MARK: - Missing Onboarding Measurements Keys
 "onboarding.measurements.navyMethod.title" = "Navy Method";
-"onboarding.measurements.navyMethod.desc" = "With these measurements we can calculate your body fat percentage. You can skip this and add them later from Profile.";
+"onboarding.measurements.navyMethod.desc" = "Avec ces mesures, nous pouvons calculer votre pourcentage de graisse corporelle. Vous pouvez ignorer ceci et les ajouter plus tard depuis le Profil.";
 "onboarding.measurements.neck.label" = "Neck Circumference (Below Adam's apple)";
 "onboarding.measurements.waist.male.label" = "Waist Circumference (At navel level)";
 "onboarding.measurements.waist.female.label" = "Waist Circumference (At narrowest point)";
 "onboarding.measurements.hip.label" = "Hip Circumference (At widest point)";
-"onboarding.measurements.bodyFat.title" = "Calculated Body Fat %";
+"onboarding.measurements.bodyFat.title" = "% de Graisse Corporelle Calculé";
 "onboarding.measurements.bodyFat.navy" = "Navy Method:";
 "onboarding.measurements.optional.info" = "These measurements are completely optional";
-"onboarding.measurements.optional.desc" = "You can skip and add them later from Profile settings.";
+"onboarding.measurements.optional.desc" = "Vous pouvez ignorer et les ajouter plus tard depuis les paramètres du Profil.";
 "onboarding.measurements.skipStep" = "Skip This Step";
 
 // Summary Step
 "onboarding.summary.title" = "Your Plan is Ready! 🎉";
 "onboarding.summary.subtitle" = "Values calculated based on your information";
-"onboarding.summary.profile" = "Profile Summary";
+"onboarding.summary.profile" = "Résumé du Profil";
 "onboarding.summary.goals" = "Goals";
 "onboarding.summary.calculatedValues" = "Calculated Values";
 "onboarding.summary.macroGoals" = "Macro Goals";
@@ -661,28 +661,28 @@
 
 // Summary Labels
 "onboarding.summary.label.name" = "Name";
-"onboarding.summary.label.age" = "Age";
-"onboarding.summary.label.gender" = "Gender";
-"onboarding.summary.label.height" = "Height";
-"onboarding.summary.label.weight" = "Weight";
-"onboarding.summary.label.targetWeight" = "Target Weight";
-"onboarding.summary.label.mainGoal" = "Main Goal";
+"onboarding.summary.label.age" = "Âge";
+"onboarding.summary.label.gender" = "Genre";
+"onboarding.summary.label.height" = "Taille";
+"onboarding.summary.label.weight" = "Poids";
+"onboarding.summary.label.targetWeight" = "Poids Cible";
+"onboarding.summary.label.mainGoal" = "Objectif Principal";
 "onboarding.summary.label.activity" = "Activity";
 "onboarding.summary.label.bmr" = "BMR";
 "onboarding.summary.label.bmr.katch" = "BMR (Katch-McArdle)";
 "onboarding.summary.label.bmr.mifflin" = "BMR (Mifflin-St Jeor)";
-"onboarding.summary.label.lbm" = "Lean Body Mass (LBM)";
-"onboarding.summary.label.bodyFat" = "Body Fat % (Navy)";
+"onboarding.summary.label.lbm" = "Masse Corporelle Maigre (MCM)";
+"onboarding.summary.label.bodyFat" = "Graisse Corporelle % (Navy)";
 "onboarding.summary.label.tdee" = "TDEE (Daily Expenditure)";
-"onboarding.summary.label.dailyCalorie" = "Daily Calorie Goal";
-"onboarding.summary.label.protein" = "Protein";
+"onboarding.summary.label.dailyCalorie" = "Objectif calorique quotidien";
+"onboarding.summary.label.protein" = "Protéines";
 "onboarding.summary.label.carbs" = "Carbs";
-"onboarding.summary.label.fat" = "Fat";
+"onboarding.summary.label.fat" = "Lipides";
 
 // MARK: - Dashboard
 // duplicate removed
 "dashboard.welcome" = "Hello, %@!";
-"dashboard.howFeeling" = "How are you feeling today?";
+"dashboard.howFeeling" = "Comment vous sentez-vous aujourd'hui ?";
 
 // Dashboard Greetings
 "dashboard.greeting.goodMorning" = "Good morning";
@@ -701,16 +701,16 @@
 "dashboard.stats.calories" = "Calories";
 "dashboard.stats.kcal" = "kcal";
 "dashboard.stats.consumed" = "Consumed";
-"dashboard.stats.weight" = "Weight";
+"dashboard.stats.weight" = "Poids";
 "dashboard.stats.lastMeasurement" = "last measurement";
 "dashboard.stats.bmi" = "BMI";
 
 // Quick Actions
 "dashboard.actions.startWorkout" = "Start Workout";
-"dashboard.actions.startWorkout.desc" = "Create a new workout and track your exercises";
-"dashboard.actions.logWeight" = "Log Weight";
+"dashboard.actions.startWorkout.desc" = "Créez un nouvel entraînement et suivez vos exercices";
+"dashboard.actions.logWeight" = "Enregistrer Poids";
 "dashboard.actions.logWeight.desc" = "Record your current weight and track progress";
-"dashboard.actions.nutrition" = "Nutrition Tracking";
+"dashboard.actions.nutrition" = "Suivi nutritionnel";
 "dashboard.actions.nutrition.desc" = "Log daily calories and macronutrients";
 
 // Empty States
@@ -728,10 +728,10 @@
 "dashboard.workout.volume" = "Volume";
 
 // Weight Entry
-"dashboard.weightEntry.title" = "Enter Current Weight";
-"dashboard.weightEntry.label" = "Weight (kg)";
+"dashboard.weightEntry.title" = "Entrer Poids Actuel";
+"dashboard.weightEntry.label" = "Poids (kg)";
 "dashboard.weightEntry.placeholder" = "e.g., 70.5";
-"dashboard.weightEntry.save" = "Save";
+"dashboard.weightEntry.save" = "Enregistrer";
 "dashboard.weightEntry.cancel" = "Cancel";
 
 // Time Formats
@@ -746,8 +746,8 @@
 "dashboard.healthPermission.allow" = "Allow";
 
 // MARK: - Training Module
-"training.title" = "Training";
-"training.history" = "History";
+"training.title" = "Entraînement";
+"training.history" = "Historique";
 "training.active" = "Active";
 "training.templates" = "Templates";
 
@@ -766,7 +766,7 @@
 // Activity Types
 "dashboard.activities.workoutCompleted" = "Workout completed";
 "dashboard.activities.cardioCompleted" = "Cardio completed";
-"dashboard.activities.wodCompleted" = "WOD completed";
+"dashboard.activities.wodCompleted" = "WOD terminé";
 "dashboard.activities.nutritionLogged" = "logged";
 "dashboard.activities.measurementUpdated" = "updated";
 "dashboard.activities.goalCompleted" = "completed";
@@ -809,7 +809,7 @@
 "training.new.quickStart" = "Quick Start";
 "training.new.empty.title" = "Empty Workout";
 "training.new.empty.subtitle" = "Start from scratch";
-"training.new.functional.title" = "Functional Training";
+"training.new.functional.title" = "Entraînement Fonctionnel";
 "training.new.functional.subtitle" = "Functional fitness movements";
 "training.new.cardio.title" = "Cardio";
 "training.new.cardio.subtitle" = "Cardiovascular training";
@@ -820,7 +820,7 @@
 "training.templates.programsHeader" = "Programs";
 "training.templates.emptyPrograms" = "No program templates yet";
 "training.templates.empty" = "Ready-made workout templates coming soon!";
-"training.templates.saveAsTemplate" = "Save as Template";
+"training.templates.saveAsTemplate" = "Enregistrer comme Modèle";
 "training.templates.removeFromTemplates" = "Remove from Templates";
 
 // MARK: - Workout Detail
@@ -839,15 +839,15 @@
 "training.part.accessory" = "Accessory";
 "training.part.cardio" = "Cardio";
 
-"training.part.powerStrength.desc" = "Weight and Olympic lifts";
-"training.part.metcon.desc" = "METCON and conditioning";
+"training.part.powerStrength.desc" = "Haltères et mouvements olympiques";
+"training.part.metcon.desc" = "METCON et conditionnement";
 "training.part.accessory.desc" = "Isolation and assistance movements";
 "training.part.cardio.desc" = "Running, rowing and cycling";
 
 "training.part.status.completed" = "Completed";
-"training.part.status.inProgress" = "In Progress";
-"training.part.noExercise" = "No exercises added yet";
-"training.part.addExercise" = "Add Exercise";
+"training.part.status.inProgress" = "En Cours";
+"training.part.noExercise" = "Aucun exercice ajouté encore";
+"training.part.addExercise" = "Ajouter Exercice";
 "training.part.result" = "Result:";
 
 // MARK: - Cardio Training
@@ -876,27 +876,27 @@
 
 // MARK: - WOD / METCON
 "training.wod.title" = "METCON";
-"training.wod.movements" = "Movements";
-"training.wod.manualCreate" = "Create Manually";
-"training.wod.start" = "Start";
-"training.wod.scoreTitle" = "METCON Score";
+"training.wod.movements" = "Mouvements";
+"training.wod.manualCreate" = "Créer Manuellement";
+"training.wod.start" = "Démarrer";
+"training.wod.scoreTitle" = "Score METCON";
 "training.wod.round" = "Round %@";
 "training.wod.time.mm" = "MM";
 "training.wod.time.ss" = "SS";
-"training.wod.result" = "METCON Result";
+"training.wod.result" = "Résultat METCON";
 "training.wod.add" = "+ METCON";
-"training.wod.addResult" = "Add METCON Result";
-"training.wod.editResult" = "Edit METCON Result";
-"training.wod.favorites" = "Favorites";
+"training.wod.addResult" = "Ajouter Résultat METCON";
+"training.wod.editResult" = "Modifier Résultat METCON";
+"training.wod.favorites" = "Favoris";
 "training.wod.benchmarks" = "Benchmarks";
 "training.wod.forTime" = "For Time";
 "training.wod.amrap" = "AMRAP";
 "training.wod.emom" = "EMOM";
-"training.wod.custom" = "Custom";
-"training.wod.customResult" = "Custom Result";
-"training.wod.enterTime" = "Enter time (MM:SS)";
-"training.wod.rounds" = "Rounds";
-"training.wod.reps" = "Reps";
+"training.wod.custom" = "Personnalisé";
+"training.wod.customResult" = "Résultat Personnalisé";
+"training.wod.enterTime" = "Entrez le temps (MM:SS)";
+"training.wod.rounds" = "Tours";
+"training.wod.reps" = "Répétitions";
 "training.wod.emomCompleted" = "EMOM Rounds Completed";
 "training.wod.total" = "Total";
 "training.wod.create" = "Create METCON";
@@ -924,14 +924,14 @@
 "training.addPart.title" = "Add Part";
 "training.addPart.subtitle" = "What type of part would you like to add?";
 "training.addPart.nameLabel" = "Part Name";
-"training.addPart.namePlaceholder" = "e.g., Warm-up, Strength";
+"training.addPart.namePlaceholder" = "par ex., Échauffement, Force";
 "training.addPart.typeLabel" = "Part Type";
 "training.addPart.add" = "Add Part";
 "training.addPart.cancel" = "Cancel";
 
 // MARK: - Exercise Selection
-"training.exercise.title" = "Select Exercise";
-"training.exercise.searchPlaceholder" = "Search exercises...";
+"training.exercise.title" = "Sélectionner Exercice";
+"training.exercise.searchPlaceholder" = "Rechercher des exercices...";
 "training.exercise.clear" = "Clear";
 "training.exercise.all" = "All";
 "training.exercise.cancel" = "Cancel";
@@ -954,7 +954,7 @@
 
 // MARK: - Set Tracking
 "training.set.back" = "Back";
-"training.set.save" = "Save";
+"training.set.save" = "Enregistrer";
 "training.set.equipment" = "Equipment:";
 "training.set.reorder" = "Reorder";
 "training.set.quickFill" = "Quick Fill";
@@ -969,7 +969,7 @@
 "training.activeConflict.continue" = "Continue";
 "training.activeConflict.finishAndStart" = "Finish and Start New";
 "training.set.header.set" = "Set";
-"training.set.header.weight" = "Weight";
+"training.set.header.weight" = "Poids";
 "training.set.header.reps" = "Reps";
 "training.set.header.time" = "Time";
 "training.set.header.distance" = "Distance";
@@ -977,8 +977,8 @@
 "training.set.addSet" = "Add Set";
 "training.set.notes" = "Notes";
 "training.set.notesPlaceholder" = "Notes about this exercise...";
-"training.set.rest" = "Rest";
-"training.set.finishExercise" = "Finish Exercise";
+"training.set.rest" = "Repos";
+"training.set.finishExercise" = "Terminer Exercice";
 
 // MARK: - Set Values
 "training.set.kg" = "kg";
@@ -992,18 +992,18 @@
 "training.set.completed" = "✓";
 
 // MARK: - Rest Timer
-"training.rest.title" = "Rest";
-"training.rest.close" = "Close";
-"training.rest.remaining" = "remaining";
-"training.rest.reset" = "Reset";
-"training.rest.start" = "Start";
+"training.rest.title" = "Repos";
+"training.rest.close" = "Fermer";
+"training.rest.remaining" = "restantes";
+"training.rest.reset" = "Réinitialiser";
+"training.rest.start" = "Démarrer";
 "training.rest.pause" = "Pause";
-"training.rest.skip" = "Skip";
+"training.rest.skip" = "Passer";
 
 // MARK: - Rest Timer Presets
-"training.rest.preset.title" = "Rest Duration";
-"training.rest.preset.subtitle" = "Choose appropriate rest time for your exercise type";
-"training.rest.preset.cancel" = "Cancel";
+"training.rest.preset.title" = "Durée de Repos";
+"training.rest.preset.subtitle" = "Choisissez un temps de repos approprié pour votre type d'exercice";
+"training.rest.preset.cancel" = "Annuler";
 "training.rest.preset.short" = "Short Rest";
 "training.rest.preset.short.desc" = "For light exercises";
 "training.rest.preset.medium" = "Medium Rest";
@@ -1037,113 +1037,113 @@
 
 // MARK: - Nutrition Module
 "nutrition.title" = "Nutrition";
-"nutrition.addFood" = "Add Food";
+"nutrition.addFood" = "Ajouter aliment";
 "nutrition.calories" = "Calories";
 
 // MARK: - Daily Summary
-"nutrition.dailySummary.title" = "Today's Meals";
-"nutrition.dailySummary.total" = "Total:";
-"nutrition.dailySummary.protein" = "Protein";
-"nutrition.dailySummary.carbs" = "Carbs";
-"nutrition.dailySummary.fat" = "Fat";
+"nutrition.dailySummary.title" = "Repas d'aujourd'hui";
+"nutrition.dailySummary.total" = "Total :";
+"nutrition.dailySummary.protein" = "Protéines";
+"nutrition.dailySummary.carbs" = "Glucides";
+"nutrition.dailySummary.fat" = "Lipides";
 
 // MARK: - Daily Goals
-"nutrition.dailyGoals.title" = "Daily Goals";
-"nutrition.dailyGoals.per100g" = "per 100g";
-"nutrition.dailyGoals.achievementMessage" = "Great! You're approaching your goal! 🎉";
+"nutrition.dailyGoals.title" = "Objectifs journaliers";
+"nutrition.dailyGoals.per100g" = "pour 100g";
+"nutrition.dailyGoals.achievementMessage" = "Parfait ! Vous vous approchez de votre objectif ! 🎉";
 
 // MARK: - Food Selection
-"nutrition.foodSelection.title" = "Select Food";
-"nutrition.foodSelection.searchPlaceholder" = "Search foods...";
-"nutrition.foodSelection.clear" = "Clear";
-"nutrition.foodSelection.all" = "All";
-"nutrition.foodSelection.cancel" = "Cancel";
-"nutrition.foodSelection.addNew" = "Add New";
-"nutrition.foodSelection.noResults" = "No foods found";
-"nutrition.foodSelection.noResultsForSearch" = "No results for '%@'";
-"nutrition.foodSelection.tryDifferentTerms" = "Try different search terms";
+"nutrition.foodSelection.title" = "Sélectionner aliment";
+"nutrition.foodSelection.searchPlaceholder" = "Rechercher aliments...";
+"nutrition.foodSelection.clear" = "Effacer";
+"nutrition.foodSelection.all" = "Tous";
+"nutrition.foodSelection.cancel" = "Annuler";
+"nutrition.foodSelection.addNew" = "Ajouter nouveau";
+"nutrition.foodSelection.noResults" = "Aucun aliment trouvé";
+"nutrition.foodSelection.noResultsForSearch" = "Aucun résultat pour '%@'";
+"nutrition.foodSelection.tryDifferentTerms" = "Essayez des termes de recherche différents";
 
 // Scan toasts
-"nutrition.scan.scanned" = "Product found";
-"nutrition.scan.cached" = "Loaded from cache";
-"nutrition.scan.existing" = "Already in your foods";
-"nutrition.scan.notFound" = "Not found. You can add it manually";
-"nutrition.scan.networkError" = "Network error. Please try again";
-"nutrition.scan.rateLimited" = "Too many requests. Please wait";
+"nutrition.scan.scanned" = "Produit trouvé";
+"nutrition.scan.cached" = "Chargé depuis le cache";
+"nutrition.scan.existing" = "Déjà dans vos aliments";
+"nutrition.scan.notFound" = "Introuvable. Vous pouvez l'ajouter manuellement";
+"nutrition.scan.networkError" = "Erreur réseau. Veuillez réessayer";
+"nutrition.scan.rateLimited" = "Trop de requêtes. Veuillez patienter";
 
 // MARK: - Meal Entry
-"nutrition.mealEntry.title" = "Add to Meal";
-"nutrition.mealEntry.addToMeal" = "Add to Meal";
-"nutrition.mealEntry.cancel" = "Cancel";
-"nutrition.mealEntry.portion" = "Portion (grams)";
-"nutrition.mealEntry.portionGrams" = "Grams";
-"nutrition.mealEntry.meal" = "Meal";
-"nutrition.mealEntry.total" = "Total: %d kcal";
-"nutrition.mealEntry.per100gCalories" = "per 100g: %d kcal";
+"nutrition.mealEntry.title" = "Ajouter au repas";
+"nutrition.mealEntry.addToMeal" = "Ajouter au repas";
+"nutrition.mealEntry.cancel" = "Annuler";
+"nutrition.mealEntry.portion" = "Portion (grammes)";
+"nutrition.mealEntry.portionGrams" = "Grammes";
+"nutrition.mealEntry.meal" = "Repas";
+"nutrition.mealEntry.total" = "Total : %d kcal";
+"nutrition.mealEntry.per100gCalories" = "pour 100g : %d kcal";
 "nutrition.mealEntry.portionOz" = "Portion (oz)";
-"nutrition.mealEntry.portionOunces" = "Ounces";
+"nutrition.mealEntry.portionOunces" = "Onces";
 
 // MARK: - Portion Input
-"nutrition.portionInput.grams" = "Grams";
-"nutrition.portionInput.serving" = "Servings";
-"nutrition.portionInput.title" = "Quick Portions";
-"nutrition.portionInput.custom" = "Custom";
-"nutrition.portionInput.customAmount" = "Custom Amount";
-"nutrition.portionInput.set" = "Set";
+"nutrition.portionInput.grams" = "Grammes";
+"nutrition.portionInput.serving" = "Portions";
+"nutrition.portionInput.title" = "Portions rapides";
+"nutrition.portionInput.custom" = "Personnalisé";
+"nutrition.portionInput.customAmount" = "Quantité personnalisée";
+"nutrition.portionInput.set" = "Définir";
 
 // Nutrition - Custom Food
-"nutrition.customFood.per100gImperial" = "Per 3.5oz (100g)";
+"nutrition.customFood.per100gImperial" = "Pour 3,5 oz (100g)";
 
 // Nutrition - Test
-"nutrition.test.addedSuccessfully" = "Test foods added successfully";
-"nutrition.test.clearedSuccessfully" = "All data cleared successfully";
+"nutrition.test.addedSuccessfully" = "Aliments de test ajoutés avec succès";
+"nutrition.test.clearedSuccessfully" = "Toutes les données effacées avec succès";
 
 // MARK: - Meal Types
-"nutrition.mealEntry.mealTypes.breakfast" = "Breakfast";
-"nutrition.mealEntry.mealTypes.lunch" = "Lunch";
-"nutrition.mealEntry.mealTypes.dinner" = "Dinner";
-"nutrition.mealEntry.mealTypes.snack" = "Snack";
+"nutrition.mealEntry.mealTypes.breakfast" = "Petit-déjeuner";
+"nutrition.mealEntry.mealTypes.lunch" = "Déjeuner";
+"nutrition.mealEntry.mealTypes.dinner" = "Dîner";
+"nutrition.mealEntry.mealTypes.snack" = "Collation";
 
 // MARK: - Custom Food Entry
-"nutrition.customFood.title" = "New Food";
-"nutrition.customFood.newFood" = "Add New Food";
-"nutrition.customFood.addNewFood" = "Add Food";
-"nutrition.customFood.subtitle" = "For homemade meals or foods you can't find";
-"nutrition.customFood.basicInfo" = "Basic Information";
-"nutrition.customFood.foodName" = "Food Name *";
-"nutrition.customFood.foodNameRequired" = "Food Name *";
-"nutrition.customFood.foodNamePlaceholder" = "e.g., Homemade Scrambled Eggs";
-"nutrition.customFood.brand" = "Brand (Optional)";
-"nutrition.customFood.brandOptional" = "Brand (Optional)";
-"nutrition.customFood.brandPlaceholder" = "e.g., Homemade";
-"nutrition.customFood.category" = "Category";
-"nutrition.customFood.nutritionValues" = "Nutrition Values";
-"nutrition.customFood.per100g" = "per 100g";
+"nutrition.customFood.title" = "Nouvel aliment";
+"nutrition.customFood.newFood" = "Ajouter nouvel aliment";
+"nutrition.customFood.addNewFood" = "Ajouter aliment";
+"nutrition.customFood.subtitle" = "Pour les repas maison ou aliments introuvables";
+"nutrition.customFood.basicInfo" = "Informations de base";
+"nutrition.customFood.foodName" = "Nom de l'aliment *";
+"nutrition.customFood.foodNameRequired" = "Nom de l'aliment *";
+"nutrition.customFood.foodNamePlaceholder" = "ex. Œufs brouillés maison";
+"nutrition.customFood.brand" = "Marque (optionnel)";
+"nutrition.customFood.brandOptional" = "Marque (optionnel)";
+"nutrition.customFood.brandPlaceholder" = "ex. Maison";
+"nutrition.customFood.category" = "Catégorie";
+"nutrition.customFood.nutritionValues" = "Valeurs nutritionnelles";
+"nutrition.customFood.per100g" = "pour 100g";
 "nutrition.customFood.caloriesRequired" = "Calories *";
-"nutrition.customFood.protein" = "Protein";
-"nutrition.customFood.carbs" = "Carbs";
-"nutrition.customFood.fat" = "Fat";
-"nutrition.customFood.preview" = "Preview";
-"nutrition.customFood.addFood" = "Add Food";
-"nutrition.customFood.cancel" = "Cancel";
-"nutrition.customFood.error" = "Error";
+"nutrition.customFood.protein" = "Protéines";
+"nutrition.customFood.carbs" = "Glucides";
+"nutrition.customFood.fat" = "Lipides";
+"nutrition.customFood.preview" = "Aperçu";
+"nutrition.customFood.addFood" = "Ajouter aliment";
+"nutrition.customFood.cancel" = "Annuler";
+"nutrition.customFood.error" = "Erreur";
 "nutrition.customFood.ok" = "OK";
 
 // MARK: - Favorites Section
-"nutrition.favorites.favorites" = "Favorites";
-"nutrition.favorites.recent" = "Recently Used";
-"nutrition.favorites.popular" = "Popular";
-"nutrition.favorites.timesUsed" = "used %d times";
-"nutrition.favorites.emptyFavorites" = "No favorite foods yet";
-"nutrition.favorites.emptyRecent" = "No recent foods yet\nAs you add foods, they'll appear here";
-"nutrition.favorites.emptyFavoritesDesc" = "Tap the heart icon to add favorites";
-"nutrition.common.addFood" = "Add Food";
-"nutrition.favorites.emptyRecentDesc" = "As you add foods, your recent items will appear here";
+"nutrition.favorites.favorites" = "Favoris";
+"nutrition.favorites.recent" = "Utilisés récemment";
+"nutrition.favorites.popular" = "Populaires";
+"nutrition.favorites.timesUsed" = "utilisé %d fois";
+"nutrition.favorites.emptyFavorites" = "Aucun aliment favori pour le moment";
+"nutrition.favorites.emptyRecent" = "Aucun aliment récent pour le moment\nEn ajoutant des aliments, ils apparaîtront ici";
+"nutrition.favorites.emptyFavoritesDesc" = "Appuyez sur l'icône cœur pour ajouter des favoris";
+"nutrition.common.addFood" = "Ajouter aliment";
+"nutrition.favorites.emptyRecentDesc" = "En ajoutant des aliments, vos articles récents apparaîtront ici";
 
 // MARK: - Analytics
-"nutrition.analytics.title" = "Weekly Analysis";
-"nutrition.analytics.weeklyAnalysis" = "Weekly Analysis";
-"nutrition.analytics.dailyCalories" = "Daily Calories";
+"nutrition.analytics.title" = "Analyse hebdomadaire";
+"nutrition.analytics.weeklyAnalysis" = "Analyse hebdomadaire";
+"nutrition.analytics.dailyCalories" = "Calories quotidiennes";
 
 // Quick Status Cards
 "dashboard.quickStatus.weeklyVolume" = "weekly volume";
@@ -1162,40 +1162,40 @@
 "time.yesterday" = "yesterday %@";
 "time.hours_short" = "h";
 "time.minutes_short" = "min";
-"nutrition.analytics.weeklyAverage" = "Weekly Average";
+"nutrition.analytics.weeklyAverage" = "Moyenne hebdomadaire";
 
 // MARK: - Test & Debug
-"nutrition.test.addTestFood" = "Add Test Food";
-"nutrition.test.clear" = "Clear";
+"nutrition.test.addTestFood" = "Ajouter aliment de test";
+"nutrition.test.clear" = "Effacer";
 
 // MARK: - Units
 "nutrition.units.kcal" = "kcal";
-"nutrition.units.grams" = "grams";
+"nutrition.units.grams" = "grammes";
 "nutrition.units.g" = "g";
 "nutrition.units.oz" = "oz";
 
 // MARK: - Day Names (Short)
-"nutrition.days.sunday" = "Sun";
-"nutrition.days.monday" = "Mon";
-"nutrition.days.tuesday" = "Tue";
-"nutrition.days.wednesday" = "Wed";
-"nutrition.days.thursday" = "Thu";
-"nutrition.days.friday" = "Fri";
-"nutrition.days.saturday" = "Sat";
+"nutrition.days.sunday" = "Dim";
+"nutrition.days.monday" = "Lun";
+"nutrition.days.tuesday" = "Mar";
+"nutrition.days.wednesday" = "Mer";
+"nutrition.days.thursday" = "Jeu";
+"nutrition.days.friday" = "Ven";
+"nutrition.days.saturday" = "Sam";
 
 // MARK: - Measurements
-"measurements.title" = "Measurements";
-"measurements.body_measurements" = "Body Measurements";
+"measurements.title" = "Mesures";
+"measurements.body_measurements" = "Mesures Corporelles";
 "measurements.add_measurement" = "Add Measurement";
 "measurements.edit_measurement" = "Edit Measurement";
 "measurements.date" = "Date";
-"measurements.weight" = "Weight";
-"measurements.body_fat" = "Body Fat";
+"measurements.weight" = "Poids";
+"measurements.body_fat" = "Graisse Corporelle";
 "measurements.neck" = "Neck";
 "measurements.waist" = "Waist";
 "measurements.hips" = "Hips";
 "measurements.notes" = "Notes";
-"measurements.save" = "Save";
+"measurements.save" = "Enregistrer";
 "measurements.cancel" = "Cancel";
 "measurements.delete" = "Delete";
 "measurements.confirm_delete" = "Confirm Delete";
@@ -1207,23 +1207,23 @@
 "measurements.percent" = "%";
 
 // MARK: - Analytics
-"analytics.title" = "Analytics";
-"analytics.progress_analytics" = "Progress Analytics";
+"analytics.title" = "Analyses";
+"analytics.progress_analytics" = "Analyses de Progrès";
 "analytics.goals" = "Goals";
 "analytics.achievements" = "Achievements";
-"analytics.weekly_progress" = "Weekly Progress";
-"analytics.body_composition" = "Body Composition";
+"analytics.weekly_progress" = "Progrès Hebdomadaire";
+"analytics.body_composition" = "Composition Corporelle";
 "analytics.performance_metrics" = "Performance Metrics";
 "analytics.no_data" = "No data";
 "analytics.add_data_to_see_analytics" = "Add data to see analytics";
 "analytics.current_goals" = "Current Goals";
-"analytics.goal_progress" = "Goal Progress";
-"analytics.weight_goal" = "Weight Goal";
-"analytics.fitness_goal" = "Fitness Goal";
+"analytics.goal_progress" = "Progrès d'Objectifs";
+"analytics.weight_goal" = "Objectif de Poids";
+"analytics.fitness_goal" = "Objectif Fitness";
 "analytics.daily_calories" = "Daily Calories";
 "analytics.weekly_workouts" = "Weekly Workouts";
-"analytics.target_weight" = "Target Weight";
-"analytics.current_weight" = "Current Weight";
+"analytics.target_weight" = "Poids Cible";
+"analytics.current_weight" = "Poids Actuel";
 "analytics.total_workouts" = "Total Workouts";
 "analytics.total_duration" = "Total Duration";
 "analytics.average_workout" = "Average Workout";
@@ -1239,27 +1239,27 @@
 "calculators.title" = "Calculators";
 "calculators.fitness_calculators" = "Fitness Calculators";
 "calculators.navy_method" = "Navy Method";
-"calculators.ffmi_calculator" = "FFMI Calculator";
-"calculators.one_rm_calculator" = "1RM Calculator";
-"calculators.bmr_calculator" = "BMR Calculator";
-"calculators.tdee_calculator" = "TDEE Calculator";
-"calculators.body_fat_calculator" = "Body Fat Calculator";
-"calculators.body_fat_percentage" = "Body Fat Percentage";
+"calculators.ffmi_calculator" = "Calculateur FFMI";
+"calculators.one_rm_calculator" = "Calculateur 1RM";
+"calculators.bmr_calculator" = "Calculateur BMR";
+"calculators.tdee_calculator" = "Calculateur TDEE";
+"calculators.body_fat_calculator" = "Calculateur Graisse Corporelle";
+"calculators.body_fat_percentage" = "Pourcentage de Graisse Corporelle";
 "calculators.neck_circumference" = "Neck Circumference";
 "calculators.waist_circumference" = "Waist Circumference";
 "calculators.hip_circumference" = "Hip Circumference";
-"calculators.calculate" = "Calculate";
+"calculators.calculate" = "Calculer";
 "calculators.result" = "Result";
 "calculators.interpretation" = "Interpretation";
-"calculators.ffmi_title" = "Fat-Free Mass Index";
-"calculators.fat_free_mass_index" = "Fat-Free Mass Index";
+"calculators.ffmi_title" = "Indice de Masse Maigre";
+"calculators.fat_free_mass_index" = "Indice de Masse Maigre";
 "calculators.ffmi_score" = "FFMI Score";
-"calculators.ffmi_category" = "FFMI Category";
-"calculators.one_rep_max" = "One Rep Max";
-"calculators.weight" = "Weight";
+"calculators.ffmi_category" = "Catégorie FFMI";
+"calculators.one_rep_max" = "Une Répétition Maximum";
+"calculators.weight" = "Poids";
 "calculators.reps" = "Reps";
 "calculators.estimated_one_rm" = "Estimated 1RM";
-"calculators.exercise" = "Exercise";
+"calculators.exercise" = "Exercice";
 "calculators.basal_metabolic_rate" = "Basal Metabolic Rate";
 "calculators.total_daily_energy_expenditure" = "Total Daily Energy Expenditure";
 "calculators.calories_per_day" = "Calories/Day";
@@ -1267,7 +1267,7 @@
 "calculators.excellent" = "Excellent";
 "calculators.good" = "Good";
 "calculators.average" = "Average";
-"calculators.below_average" = "Below Average";
+"calculators.below_average" = "En Dessous de la Moyenne";
 "calculators.low" = "Low";
 "calculators.very_low" = "Very Low";
 "calculators.high" = "High";
@@ -1285,14 +1285,14 @@
 "achievements.all_achievements" = "All Achievements";
 "achievements.unlocked" = "Unlocked";
 "achievements.locked" = "Locked";
-"achievements.progress" = "Progress";
+"achievements.progress" = "Progrès";
 "achievements.points" = "Points";
 "achievements.level" = "Level";
 "achievements.next_level" = "Next Level";
 "achievements.total_points" = "Total Points";
 "achievements.category.all" = "All";
 "achievements.category.workout" = "Workout";
-"achievements.category.weight" = "Weight";
+"achievements.category.weight" = "Poids";
 "achievements.category.nutrition" = "Nutrition";
 "achievements.category.streak" = "Streak";
 "achievements.category.social" = "Social";
@@ -1308,10 +1308,10 @@
 "achievements.item.workout_100.desc" = "Complete 100 workouts";
 "achievements.item.weekend_warrior.title" = "Weekend Warrior";
 "achievements.item.weekend_warrior.desc" = "10 weekend workouts";
-"achievements.item.weight_hunter.title" = "Weight Hunter";
+"achievements.item.weight_hunter.title" = "Chasseur de Poids";
 "achievements.item.weight_hunter.desc" = "10,000 kg total volume";
 
-"achievements.item.first_weight.title" = "First Weight Log";
+"achievements.item.first_weight.title" = "Premier Enregistrement de Poids";
 "achievements.item.first_weight.desc" = "Add your first weight log";
 "achievements.item.tracker_30.title" = "Tracker";
 "achievements.item.tracker_30.desc" = "30 days of weight tracking";
@@ -1333,27 +1333,27 @@
 
 // MARK: - Common
 "common.completed" = "Completed";
-"common.category" = "Category";
-"common.category_stats" = "Category Statistics";
+"common.category" = "Catégorie";
+"common.category_stats" = "Statistiques de Catégorie";
 
 // MARK: - Goal Tracking
-"goal_tracking.title" = "Goal Tracking";
+"goal_tracking.title" = "Suivi d'Objectifs";
 "goal_tracking.subtitle" = "Set and track your fitness goals";
 "goal_tracking.current_goals" = "Current Goals";
 "goal_tracking.completed_goals" = "Completed Goals";
-"goal_tracking.add_goal" = "Add Goal";
-"goal_tracking.edit_goal" = "Edit Goal";
-"goal_tracking.delete_goal" = "Delete Goal";
-"goal_tracking.goal_type" = "Goal Type";
-"goal_tracking.goal_target" = "Goal Target";
-"goal_tracking.goal_deadline" = "Goal Deadline";
-"goal_tracking.goal_progress" = "Goal Progress";
-"goal_tracking.goal_completed" = "Goal Completed";
-"goal_tracking.goal_failed" = "Goal Failed";
-"goal_tracking.goal_in_progress" = "Goal In Progress";
+"goal_tracking.add_goal" = "Ajouter Objectif";
+"goal_tracking.edit_goal" = "Modifier Objectif";
+"goal_tracking.delete_goal" = "Supprimer Objectif";
+"goal_tracking.goal_type" = "Type d'Objectif";
+"goal_tracking.goal_target" = "Cible d'Objectif";
+"goal_tracking.goal_deadline" = "Deadline d'Objectif";
+"goal_tracking.goal_progress" = "Progrès d'Objectif";
+"goal_tracking.goal_completed" = "Objectif Atteint";
+"goal_tracking.goal_failed" = "Objectif Échoué";
+"goal_tracking.goal_in_progress" = "Objectif En Cours";
 
 // MARK: - Progress Charts
-"progress_charts.title" = "Progress Charts";
+"progress_charts.title" = "Graphiques de Progrès";
 "progress_charts.subtitle" = "Track your performance visually";
 "progress_charts.time_range" = "Time Range";
 "progress_charts.chart_type" = "Chart Type";
@@ -1362,23 +1362,23 @@
 "progress_charts.range_3m" = "3 Months";
 "progress_charts.range_6m" = "6 Months";
 "progress_charts.range_1y" = "1 Year";
-"progress_charts.type.weight_change" = "Weight Change";
+"progress_charts.type.weight_change" = "Changement de Poids";
 "progress_charts.type.workout_volume" = "Workout Volume";
 "progress_charts.type.workout_frequency" = "Workout Frequency";
-"progress_charts.type.body_measurements" = "Body Measurements";
+"progress_charts.type.body_measurements" = "Mesures Corporelles";
 "progress_charts.empty.weight_change" = "No weight records yet";
 "progress_charts.empty.workout_volume" = "No workout data yet";
 "progress_charts.empty.workout_frequency" = "No workout data yet";
 "progress_charts.empty.body_measurements" = "No body measurements yet";
 "progress_charts.axis.date" = "Date";
-"progress_charts.axis.weight" = "Weight";
+"progress_charts.axis.weight" = "Poids";
 "progress_charts.axis.week" = "Week";
 "progress_charts.axis.volume" = "Volume";
 "progress_charts.axis.frequency" = "Frequency";
 "progress_charts.fallback_requires_ios16" = "Charts require iOS 16+";
-"progress_charts.stats.title" = "Summary Statistics";
+"progress_charts.stats.title" = "Statistiques Résumé";
 "progress_charts.stats.weight_change" = "Total Change";
-"progress_charts.stats.average_weight" = "Average Weight";
+"progress_charts.stats.average_weight" = "Poids Moyen";
 "progress_charts.stats.entry_count" = "Entry Count";
 "progress_charts.stats.latest" = "Latest";
 "progress_charts.stats.total_workouts" = "Total Workouts";
@@ -1387,10 +1387,10 @@
 "progress_charts.stats.average_volume" = "Average Volume";
 "progress_charts.insights.title" = "Insights";
 "progress_charts.insights.insufficient_data" = "Insufficient data";
-"progress_charts.insights.trend_up" = "Weight trending up";
-"progress_charts.insights.trend_down" = "Weight trending down";
-"progress_charts.insights.trend_stable" = "Weight stable";
-"progress_charts.insights.weight_trend" = "Weight Trend";
+"progress_charts.insights.trend_up" = "Poids en hausse";
+"progress_charts.insights.trend_down" = "Poids en baisse";
+"progress_charts.insights.trend_stable" = "Poids stable";
+"progress_charts.insights.weight_trend" = "Tendance de Poids";
 "progress_charts.insights.workout_consistency" = "Workout Consistency";
 "progress_charts.insights.consistency.excellent" = "Excellent consistency!";
 "progress_charts.insights.consistency.good" = "Good consistency";
@@ -1406,12 +1406,12 @@
 "calculators.info.title" = "Info";
 "calculators.info.accuracy" = "Accuracy";
 "calculators.info.accuracy_desc" = "Calculations are based on scientific formulas";
-"calculators.info.estimated" = "Estimated Results";
-"calculators.info.estimated_desc" = "Results are approximate; individual differences may apply";
+"calculators.info.estimated" = "Résultats Estimés";
+"calculators.info.estimated_desc" = "Les résultats sont approximatifs; des différences individuelles peuvent s'appliquer";
 "calculators.info.health_warning" = "Health Warning";
 "calculators.info.health_warning_desc" = "Consult a doctor for serious health decisions";
 "progress_charts.subtitle" = "Visualize your fitness journey";
-"progress_charts.weight_chart" = "Weight Chart";
+"progress_charts.weight_chart" = "Graphique de Poids";
 "progress_charts.body_fat_chart" = "Body Fat Chart";
 "progress_charts.muscle_chart" = "Muscle Chart";
 "progress_charts.workout_chart" = "Workout Chart";
@@ -1708,24 +1708,23 @@
 // MARK: - Profile
 
 // MARK: - Common (missing)
-"common.save" = "Save";
-"common.cancel" = "Cancel";
+"common.save" = "Enregistrer";
+"common.cancel" = "Annuler";
 "common.delete" = "Delete";
-"common.edit" = "Edit";
-"common.add" = "Add";
+"common.edit" = "Modifier";
+"common.add" = "Ajouter";
 "common.reps" = "reps";
 "common.close" = "Close";
-"common.done" = "Done";
+"common.done" = "Terminé";
 "common.ok" = "OK";
 "common.yes" = "Yes";
 "common.no" = "No";
 "common.error" = "Error";
 "common.success" = "Success";
 "common.loading" = "Loading";
-"common.retry" = "Retry";
+"common.retry" = "Réessayer";
 "common.user" = "User";
 "common.search" = "Search";
-"common.all" = "All";
 "common.share" = "Share";
 "common.confirm_delete" = "Confirm Delete";
 
@@ -1842,14 +1841,14 @@
 "wod.completed_rx" = "This was completed RX";
 
 // MARK: - Training
-"training.set.complete_set" = "Complete Set";
-"training.set.cannot_delete_last" = "Cannot delete last set";
-"training.set.same_as_last" = "Same as Last Set";
-"training.quick_rep_selection" = "Quick Rep Selection";
+"training.set.complete_set" = "Terminer la Série";
+"training.set.cannot_delete_last" = "Impossible de supprimer la dernière série";
+"training.set.same_as_last" = "Identique à la dernière série";
+"training.quick_rep_selection" = "Sélection rapide de répétitions";
 
 // MARK: - Workout Completion
-"workout.completion.congratulations" = "Congratulations! 🎉";
-"workout.stats.total_sets" = "Total Sets";
+"workout.completion.congratulations" = "Félicitations! 🎉";
+"workout.stats.total_sets" = "Total Séries";
 "workout.stats.volume" = "Volume";
 
 // MARK: - Units
@@ -1874,19 +1873,19 @@
 "healthkit.permission_denied" = "HealthKit permission denied";
 
 // MARK: - Nutrition
-"nutrition.portion_input.grams" = "Grams";
-"nutrition.portion_input.serving" = "Serving";
-"nutrition.portion_input.count" = "Count";
-"nutrition.loading_product" = "Loading product...";
+"nutrition.portion_input.grams" = "Grammes";
+"nutrition.portion_input.serving" = "Portion";
+"nutrition.portion_input.count" = "Nombre";
+"nutrition.loading_product" = "Chargement du produit...";
 "nutrition.openfoodfacts_section" = "OpenFoodFacts";
 
 // MARK: - Analytics
-"analytics.change" = "Change";
-"analytics.calculating" = "Calculating";
-"analytics.average" = "Average";
+"analytics.change" = "Changement";
+"analytics.calculating" = "Calcul en cours";
+"analytics.average" = "Moyenne";
 
 // MARK: - Common Extensions
-"common.retry" = "Retry";
+"common.retry" = "Réessayer";
 "common.repeat" = "Repeat";
 "common.duplicate" = "Duplicate";
 "common.share" = "Share";
@@ -1966,28 +1965,28 @@
 "profile.messages.save_to_profile" = "Save to Profile";
 
 // MARK: - Training Cardio
-"training.cardio.templates" = "Templates";
+"training.cardio.templates" = "Modèles";
 "training.cardio.history" = "History";
 "training.cardio.type" = "Type";
-"training.cardio.activity" = "Activity";
-"training.cardio.flexibility" = "Flexibility";
-"training.cardio.anyDistanceTime" = "Any distance/time";
-"training.cardio.equipment" = "Equipment";
-"training.cardio.personalRecord" = "Personal Record";
-"training.cardio.statistics" = "Statistics";
-"training.cardio.recentSessions" = "Recent Sessions";
-"training.cardio.workoutDetails" = "Workout Details";
-"training.cardio.startWorkout" = "Start Workout";
-"training.cardio.duplicate" = "Duplicate";
-"training.cardio.delete" = "Delete";
-"training.cardio.newSession" = "New Session";
-"training.cardio.setGoal" = "Set your goal for this session";
-"training.cardio.sessionType" = "Session Type";
-"training.cardio.target" = "Target";
+"training.cardio.activity" = "Activité";
+"training.cardio.flexibility" = "Flexibilité";
+"training.cardio.anyDistanceTime" = "N'importe quelle distance/durée";
+"training.cardio.equipment" = "Équipement";
+"training.cardio.personalRecord" = "Record Personnel";
+"training.cardio.statistics" = "Statistiques";
+"training.cardio.recentSessions" = "Séances Récentes";
+"training.cardio.workoutDetails" = "Détails de la Séance";
+"training.cardio.startWorkout" = "Démarrer la Séance";
+"training.cardio.duplicate" = "Dupliquer";
+"training.cardio.delete" = "Supprimer";
+"training.cardio.newSession" = "Nouvelle Séance";
+"training.cardio.setGoal" = "Définissez votre objectif pour cette séance";
+"training.cardio.sessionType" = "Type de Séance";
+"training.cardio.target" = "Objectif";
 "training.cardio.notes" = "Notes";
-"training.cardio.notesPlaceholder" = "Optional notes for this session...";
-"training.cardio.equipmentOptions" = "Equipment Options";
-"training.cardio.startSession" = "Start Session";
+"training.cardio.notesPlaceholder" = "Notes optionnelles pour cette séance...";
+"training.cardio.equipmentOptions" = "Options d'Équipement";
+"training.cardio.startSession" = "Démarrer la Séance";
 "training.cardio.distanceGoal" = "Distance Goal";
 "training.cardio.timeGoal" = "Time Goal";
 "training.cardio.quickSelect" = "Quick Select";
@@ -2000,7 +1999,7 @@
 "training.cardio.distance" = "Distance";
 "training.cardio.performance" = "Performance";
 "training.cardio.additionalInfo" = "Additional Info";
-"training.cardio.heartRate" = "Heart Rate";
+"training.cardio.heartRate" = "Fréquence Cardiaque";
 "training.cardio.feeling" = "Feeling";
 "training.cardio.sessionNotes" = "Session Notes";
 "training.cardio.sessionNotesPlaceholder" = "How did this session go?";
@@ -2362,25 +2361,25 @@
 "dashboard.activities.unitSystemChanged" = "Unit system changed";
 
 // Meal Types
-"dashboard.meals.meal" = "Meal";
+"dashboard.meals.meal" = "Repas";
 
 // MARK: - Nutrition Error Messages
-"nutrition.error.noFoodSelected" = "Error: No food selected";
-"nutrition.error.noFoodSelectedDesc" = "Please try again";
-"nutrition.error.pleaseTryAgain" = "Too many requests, please try again";
-"nutrition.error.invalidBarcode" = "Invalid barcode";
-"nutrition.error.productNotFound" = "Product not found";
-"nutrition.error.networkUnavailable" = "Network connection unavailable";
-"nutrition.error.decodingFailed" = "Data could not be decoded";
-"nutrition.error.invalidResponse" = "Invalid response";
-"nutrition.error.serverError" = "Server error (%d)";
+"nutrition.error.noFoodSelected" = "Erreur : Aucun aliment sélectionné";
+"nutrition.error.noFoodSelectedDesc" = "Veuillez réessayer";
+"nutrition.error.pleaseTryAgain" = "Trop de requêtes, veuillez réessayer";
+"nutrition.error.invalidBarcode" = "Code-barres invalide";
+"nutrition.error.productNotFound" = "Produit introuvable";
+"nutrition.error.networkUnavailable" = "Connexion réseau indisponible";
+"nutrition.error.decodingFailed" = "Les données n'ont pas pu être décodées";
+"nutrition.error.invalidResponse" = "Réponse invalide";
+"nutrition.error.serverError" = "Erreur serveur (%d)";
 
 // MARK: - Nutrition Actions
-"nutrition.actions.close" = "Close";
-"nutrition.actions.retry" = "Retry";
-"nutrition.actions.tryAgain" = "Try Again";
-"nutrition.actions.cancel" = "Cancel";
-"nutrition.actions.scanAgain" = "Scan Again";
+"nutrition.actions.close" = "Fermer";
+"nutrition.actions.retry" = "Réessayer";
+"nutrition.actions.tryAgain" = "Réessayer";
+"nutrition.actions.cancel" = "Annuler";
+"nutrition.actions.scanAgain" = "Scanner à nouveau";
 
 // MARK: - Training Navigation
 "training.navigation.wodDetails" = "WOD Details";
@@ -2394,16 +2393,16 @@
 "training.navigation.getReady" = "Get Ready!";
 
 // MARK: - Training Common
-"training.common.cancel" = "Cancel";
-"training.common.done" = "Done";
-"training.common.create" = "Create";
-"training.common.startProgram" = "Start Program";
-"training.common.back" = "Back";
-"training.common.details" = "Details";
-"training.common.updateOneRMs" = "Update 1RMs";
-"training.common.congratulations" = "Congratulations!";
-"training.common.finishedProgram" = "Congratulations on finishing your program!";
-"training.common.scanAgain" = "Scan Again";
+"training.common.cancel" = "Annuler";
+"training.common.done" = "Terminé";
+"training.common.create" = "Créer";
+"training.common.startProgram" = "Démarrer le Programme";
+"training.common.back" = "Retour";
+"training.common.details" = "Détails";
+"training.common.updateOneRMs" = "Mettre à jour les 1RM";
+"training.common.congratulations" = "Félicitations!";
+"training.common.finishedProgram" = "Félicitations pour avoir terminé votre programme!";
+"training.common.scanAgain" = "Scanner à nouveau";
 
 // Dashboard Profile
 "dashboard.profile.height" = "Height";
@@ -2438,12 +2437,12 @@
 
 // Training Tests
 "training.tests.title" = "Tests";
-"training.tests.strength.title" = "Strength Tests";
-"training.tests.newTest" = "New Test";
-"training.tests.takeTest" = "Take Test";
-"training.tests.results" = "Test Results";
-"training.tests.noTests" = "No Tests Yet";
-"training.tests.noTestsDesc" = "Start with your first strength test";
+"training.tests.strength.title" = "Tests de Force";
+"training.tests.newTest" = "Nouveau Test";
+"training.tests.takeTest" = "Passer le Test";
+"training.tests.results" = "Résultats du Test";
+"training.tests.noTests" = "Aucun Test Encore";
+"training.tests.noTestsDesc" = "Commencez par votre premier test de force";
 "training.tests.lastTest" = "Last Test";
 "training.tests.overallScore" = "Overall Score";
 "training.tests.strengthLevel" = "Strength Level";
@@ -2471,10 +2470,10 @@
 "dashboard.general.sectionLabel" = "Section";
 
 // Dashboard Meals
-"dashboard.meals.breakfast" = "Breakfast";
-"dashboard.meals.lunch" = "Lunch";
-"dashboard.meals.dinner" = "Dinner";
-"dashboard.meals.snack" = "Snack";
+"dashboard.meals.breakfast" = "Petit-déjeuner";
+"dashboard.meals.lunch" = "Déjeuner";
+"dashboard.meals.dinner" = "Dîner";
+"dashboard.meals.snack" = "Collation";
 
 
 // MARK: - Training Additional Keys
@@ -2486,22 +2485,22 @@
 "training.analytics.weekly" = "Weekly";
 "training.analytics.monthly" = "Monthly";
 "training.analytics.noActivityData" = "No Activity Data";
-"training.analytics.noActivityDesc" = "Complete some workouts to see your weekly activity chart";
-"training.analytics.thisWeekActivity" = "This Week Activity";
-"training.analytics.day" = "Day";
-"training.analytics.liftSessions" = "Lift Sessions";
-"training.analytics.cardioSessions" = "Cardio Sessions";
+"training.analytics.noActivityDesc" = "Terminez quelques séances pour voir votre graphique d'activité hebdomadaire";
+"training.analytics.thisWeekActivity" = "Activité de cette semaine";
+"training.analytics.day" = "Jour";
+"training.analytics.liftSessions" = "Séances de Force";
+"training.analytics.cardioSessions" = "Séances de Cardio";
 
 // Training Cardio Live Tracking
-"training.cardio.finishAndSave" = "Finish and Save";
-"training.cardio.confirmFinishMessage" = "Are you sure you want to finish the workout?";
-"training.cardio.start" = "START!";
-"training.cardio.heartRate" = "Heart Rate";
-"training.cardio.connectHeartRate" = "Connect Heart Rate";
-"training.cardio.heartRateNotConnected" = "Heart rate monitor not connected";
-"training.cardio.intervals" = "Intervals";
-"training.cardio.searchingDevices" = "Searching for devices...";
-"training.cardio.steps" = "Steps";
+"training.cardio.finishAndSave" = "Terminer et Sauvegarder";
+"training.cardio.confirmFinishMessage" = "Êtes-vous sûr de vouloir terminer l'entraînement?";
+"training.cardio.start" = "DÉMARRER!";
+"training.cardio.heartRate" = "Fréquence Cardiaque";
+"training.cardio.connectHeartRate" = "Connecter Fréquence Cardiaque";
+"training.cardio.heartRateNotConnected" = "Moniteur de fréquence cardiaque non connecté";
+"training.cardio.intervals" = "Intervalles";
+"training.cardio.searchingDevices" = "Recherche d'appareils...";
+"training.cardio.steps" = "Pas";
 
 // Training Tests Results
 "training.tests.testCompleted" = "Strength Test Completed!";
@@ -2532,9 +2531,9 @@
 "profile.fitness.elite" = "Elite";
 
 // MARK: - Profile FFMI Categories
-"profile.ffmi.belowAverage" = "Below Average";
+"profile.ffmi.belowAverage" = "En Dessous de la Moyenne";
 "profile.ffmi.average" = "Average";
-"profile.ffmi.aboveAverage" = "Above Average";
+"profile.ffmi.aboveAverage" = "Au Dessus de la Moyenne";
 "profile.ffmi.excellent" = "Excellent";
 "profile.ffmi.superior" = "Superior";
 "profile.ffmi.suspicious" = "Suspicious";
@@ -2555,29 +2554,29 @@
 "empty_state.no_metcon_found.subtitle" = "Try different filters";
 
 // MARK: - Training Actions
-"training.edit_wod" = "Edit WOD";
-"training.next_deadline" = "Next Deadline";
-"training.days" = "days";
-"training.none" = "None";
-"training.background_content" = "Background Content";
+"training.edit_wod" = "Modifier WOD";
+"training.next_deadline" = "Prochaine Échéance";
+"training.days" = "jours";
+"training.none" = "Aucun";
+"training.background_content" = "Contenu d'arrière-plan";
 "training.normal_feeling" = "Normal";
-"training.sessions" = "Training Sessions";
-"training.save_goals" = "Save Goals";
-"training.weekly_goals" = "🎯 Weekly Goals";
-"training.dashboard_progress_targets" = "Dashboard progress targets";
-"training.notes_optional" = "Notes (optional)";
-"training.calculate_starting_weights" = "Calculate Starting Weights";
+"training.sessions" = "Séances d'Entraînement";
+"training.save_goals" = "Sauvegarder les Objectifs";
+"training.weekly_goals" = "🎯 Objectifs Hebdomadaires";
+"training.dashboard_progress_targets" = "Objectifs de progrès du tableau de bord";
+"training.notes_optional" = "Notes (optionnelles)";
+"training.calculate_starting_weights" = "Calculer les Poids de Départ";
 "training.timer.cancel" = "Cancel";
 
 // MARK: - Training Alerts
-"training.alerts.cancelWorkout" = "Cancel Workout";
-"training.alerts.cancelWorkoutMessage" = "Are you sure you want to cancel this workout?";
-"training.alerts.keepTraining" = "Keep Training";
-"training.alerts.cancelWorkoutAction" = "Cancel";
-"training.alerts.deleteSet" = "Delete Set";
-"training.alerts.deleteWorkout" = "Delete Workout";
-"training.alerts.resultSaved" = "Result Saved";
-"training.alerts.newPRCongrats" = "New PR! Congratulations!";
+"training.alerts.cancelWorkout" = "Annuler Séance";
+"training.alerts.cancelWorkoutMessage" = "Êtes-vous sûr de vouloir annuler cette séance?";
+"training.alerts.keepTraining" = "Continuer l'Entraînement";
+"training.alerts.cancelWorkoutAction" = "Annuler";
+"training.alerts.deleteSet" = "Supprimer la Série";
+"training.alerts.deleteWorkout" = "Supprimer la Séance";
+"training.alerts.resultSaved" = "Résultat Sauvegardé";
+"training.alerts.newPRCongrats" = "Nouveau RP! Félicitations!";
 "training.alerts.workoutRecorded" = "Workout Recorded";
 "training.alerts.finishWorkout" = "Finish Workout";
 "training.alerts.ok" = "OK";
@@ -2640,7 +2639,7 @@
 
 // MARK: - Training WOD Categories
 "training.wod.benchmark" = "Benchmark";
-"training.wod.custom" = "Custom";
+"training.wod.custom" = "Personnalisé";
 "training.wod.history" = "History";
 
 // Missing WOD Keys
@@ -2665,37 +2664,37 @@
 "training.charts.kg" = "kg";
 
 // MARK: - Nutrition Scan
-"nutrition.scan.invalidBarcode" = "Invalid barcode";
+"nutrition.scan.invalidBarcode" = "Code-barres invalide";
 
 // MARK: - Nutrition Categories
-"nutrition.categories.all" = "All";
-"nutrition.categories.meat" = "Meat";
-"nutrition.categories.dairy" = "Dairy";
-"nutrition.categories.grains" = "Grains";
-"nutrition.categories.vegetables" = "Vegetables";
+"nutrition.categories.all" = "Tous";
+"nutrition.categories.meat" = "Viande";
+"nutrition.categories.dairy" = "Produits laitiers";
+"nutrition.categories.grains" = "Céréales";
+"nutrition.categories.vegetables" = "Légumes";
 "nutrition.categories.fruits" = "Fruits";
-"nutrition.categories.nuts" = "Nuts";
-"nutrition.categories.beverages" = "Beverages";
-"nutrition.categories.snacks" = "Snacks";
-"nutrition.categories.other" = "Other";
+"nutrition.categories.nuts" = "Noix";
+"nutrition.categories.beverages" = "Boissons";
+"nutrition.categories.snacks" = "Collations";
+"nutrition.categories.other" = "Autre";
 
 // MARK: - Nutrition Labels
 "nutrition.labels.off" = "OpenFoodFacts";
-"nutrition.labels.serving" = "Serving";
-"nutrition.labels.servingSize" = "Serving Size";
-"nutrition.labels.portionEntry" = "Portion Entry";
+"nutrition.labels.serving" = "Portion";
+"nutrition.labels.servingSize" = "Taille de la portion";
+"nutrition.labels.portionEntry" = "Saisie de portion";
 
 // MARK: - Nutrition Camera
-"nutrition.camera.failedToStart" = "Failed to start camera";
-"nutrition.camera.permissionRequired" = "Camera permission required";
-"nutrition.camera.openSettings" = "Open Settings";
+"nutrition.camera.failedToStart" = "Échec du démarrage de la caméra";
+"nutrition.camera.permissionRequired" = "Autorisation caméra requise";
+"nutrition.camera.openSettings" = "Ouvrir réglages";
 
 // MARK: - Analytics Keys
 "analytics.time_range" = "Time Range";
 "analytics.chart_type" = "Chart Type";
 "analytics.statistics" = "Statistics";
 "analytics.insights" = "Insights";
-"analytics.weekly_progress" = "Weekly Progress";
+"analytics.weekly_progress" = "Progrès Hebdomadaire";
 "analytics.average_progress" = "Average Progress";
 "analytics.next_deadline" = "Next Deadline";
 "analytics.completed_this_month" = "Completed This Month";
@@ -2731,7 +2730,7 @@
 "analytics.low_consistency" = "Low consistency";
 "analytics.insufficient_data" = "Insufficient data for insights";
 "analytics.category_stats" = "Category Statistics";
-"analytics.calculating" = "Calculating";
+"analytics.calculating" = "Calcul en cours";
 "analytics.chart_type.weight_change" = "Weight Change";
 "analytics.chart_type.workout_volume" = "Workout Volume";
 "analytics.chart_type.workout_frequency" = "Workout Frequency";

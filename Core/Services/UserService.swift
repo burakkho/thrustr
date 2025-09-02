@@ -249,7 +249,7 @@ class UserService: ObservableObject {
         // Update user with HealthKit data
         user.updateHealthKitData(
             steps: healthKitService.todaySteps > 0 ? healthKitService.todaySteps : nil,
-            calories: healthKitService.todayCalories > 0 ? healthKitService.todayCalories : nil,
+            calories: healthKitService.todayActiveCalories > 0 ? healthKitService.todayActiveCalories : nil,
             weight: healthKitService.currentWeight
         )
         

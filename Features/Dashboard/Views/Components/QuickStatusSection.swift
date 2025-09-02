@@ -16,10 +16,13 @@ struct QuickStatusSection: View {
     
     // MARK: - Body
     var body: some View {
-        HStack(spacing: theme.spacing.m) {
-            liftCard
-            cardioCard  
-            nutritionCard
+        VStack(spacing: theme.spacing.m) {
+            HStack(spacing: theme.spacing.m) {
+                liftCard
+                cardioCard  
+                nutritionCard
+            }
+            
         }
         .accessibilityElement(children: .contain)
         .accessibilityLabel(DashboardKeys.QuickActions.quickStatus.localized)

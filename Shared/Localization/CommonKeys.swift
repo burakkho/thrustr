@@ -343,6 +343,8 @@ enum CommonKeys {
             static let add = "common.add"
             static let change = "common.change"
             static let continueAnyway = "common.continue_anyway"
+            static let search = "common.search"
+            static let all = "common.all"
         }
     }
     

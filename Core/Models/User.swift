@@ -63,7 +63,11 @@ final class User {
     var totalWorkouts: Int
     var totalWorkoutTime: TimeInterval // seconds
     var totalVolume: Double // kg
+    var totalVolumeLifted: Double // kg - alias for totalVolume for analytics
     var lastWorkoutDate: Date?
+    var maxSetsInSingleWorkout: Int // maximum sets completed in one session
+    var maxRepsInSingleSet: Int // maximum reps in a single set
+    var longestWorkoutDuration: TimeInterval // longest single workout duration
     
     // MARK: - Cardio Stats
     var totalCardioSessions: Int
@@ -71,6 +75,7 @@ final class User {
     var totalCardioDistance: Double // meters
     var lastCardioDate: Date?
     var totalCardioCalories: Int // estimated calories burned in cardio
+    var longestRun: Double // meters - longest single run distance
     
     // MARK: - Body Measurements (Optional)
     var chest: Double?
@@ -113,6 +118,7 @@ final class User {
     var weeklyLiftGoal: Int // weekly lift sessions target
     var weeklyCardioGoal: Int // weekly cardio sessions target
     var weeklyDistanceGoal: Double // meters per week
+    var weeklySessionGoal: Int // total weekly sessions target (lift + cardio)
     
     // MARK: - PR Tracking (8 Specific Exercises)
     var totalPRsThisMonth: Int
@@ -244,6 +250,10 @@ final class User {
         self.totalWorkouts = 0
         self.totalWorkoutTime = 0
         self.totalVolume = 0
+        self.totalVolumeLifted = 0
+        self.maxSetsInSingleWorkout = 0
+        self.maxRepsInSingleSet = 0
+        self.longestWorkoutDuration = 0
         
         // Initialize cardio stats
         self.totalCardioSessions = 0
@@ -251,6 +261,7 @@ final class User {
         self.totalCardioDistance = 0.0
         self.lastCardioDate = nil
         self.totalCardioCalories = 0
+        self.longestRun = 0
         
         // Initialize lift training data
         self.squatOneRM = nil
@@ -284,6 +295,7 @@ final class User {
         self.weeklyLiftGoal = 4 // 4 lift sessions per week
         self.weeklyCardioGoal = 3 // 3 cardio sessions per week
         self.weeklyDistanceGoal = 12500 // 12.5km per week (50km/4)
+        self.weeklySessionGoal = 4 // total weekly sessions target
         
         // Initialize PR tracking
         self.totalPRsThisMonth = 0
@@ -420,8 +432,23 @@ final class User {
         totalWorkouts += 1
         totalWorkoutTime += duration
         totalVolume += volume
+        totalVolumeLifted += volume // Keep both in sync
         lastWorkoutDate = Date()
         lastActiveDate = Date()
+        
+        // Update records if needed
+        if duration > longestWorkoutDuration {
+            longestWorkoutDuration = duration
+        }
+    }
+    
+    func updateWorkoutRecords(sets: Int, duration: TimeInterval) {
+        if sets > maxSetsInSingleWorkout {
+            maxSetsInSingleWorkout = sets
+        }
+        if duration > longestWorkoutDuration {
+            longestWorkoutDuration = duration
+        }
     }
     
     // MARK: - Cardio Stats Updates
@@ -433,6 +460,12 @@ final class User {
         if let calories = calories {
             totalCardioCalories += calories
         }
+        
+        // Update longest run record
+        if distance > longestRun {
+            longestRun = distance
+        }
+        
         lastActiveDate = Date()
     }
     
@@ -800,6 +833,11 @@ final class User {
         default:
             return "❓"
         }
+    }
+    
+    // MARK: - Computed Goal Properties
+    var totalWeeklyGoal: Int {
+        return weeklyLiftGoal + weeklyCardioGoal
     }
     
     // MARK: - Unit-aware formatting helpers

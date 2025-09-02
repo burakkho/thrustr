@@ -171,6 +171,22 @@ struct PersonalSettingsSection: View {
                 action: { showingPersonalInfo = true }
             )
             
+            NavigationLink(destination: HealthKitAuthorizationView()) {
+                SettingsRowContent(
+                    icon: "heart.fill",
+                    title: "HealthKit İzinleri",
+                    subtitle: "Sağlık verisi erişim durumu"
+                )
+            }
+            
+            NavigationLink(destination: HealthIntelligenceView()) {
+                SettingsRowContent(
+                    icon: "brain.head.profile",
+                    title: "Sağlık Zekası",
+                    subtitle: "AI destekli sağlık önerileri"
+                )
+            }
+            
             SettingsRow(
                 icon: "person.badge.key.fill",
                 title: "profile.account_management".localized,

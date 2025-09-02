@@ -241,6 +241,8 @@ enum LocalizationKeys {
         static let error = CommonKeys.Onboarding.Common.error
         static let success = CommonKeys.Onboarding.Common.success
         static let loading = CommonKeys.Onboarding.Common.loading
+        static let search = CommonKeys.Onboarding.Common.search
+        static let all = CommonKeys.Onboarding.Common.all
     }
     
 }

@@ -22,6 +22,8 @@ class LanguageManager: ObservableObject {
         case spanish = "es"
         case german = "de"
         case italian = "it"
+        case french = "fr"
+        case portuguese = "pt"
         
         var id: String { rawValue }
         
@@ -39,6 +41,10 @@ class LanguageManager: ObservableObject {
                 return "Deutsch"
             case .italian:
                 return "Italiano"
+            case .french:
+                return "Français"
+            case .portuguese:
+                return "Português"
             }
         }
         
@@ -56,6 +62,10 @@ class LanguageManager: ObservableObject {
                 return "🇩🇪"
             case .italian:
                 return "🇮🇹"
+            case .french:
+                return "🇫🇷"
+            case .portuguese:
+                return "🇵🇹"
             }
         }
     }
@@ -99,6 +109,10 @@ class LanguageManager: ObservableObject {
                 return .german
             case "it":
                 return .italian
+            case "fr":
+                return .french
+            case "pt":
+                return .portuguese
             default:
                 continue
             }
@@ -157,6 +171,24 @@ class LanguageManager: ObservableObject {
                 print("❌ Italian bundle not found")
             }
             UserDefaults.standard.set(["it"], forKey: "AppleLanguages")
+        case .french:
+            if let path = Bundle.main.path(forResource: "fr", ofType: "lproj"),
+               let bundle = Bundle(path: path) {
+                customBundle = bundle
+                print("✅ French bundle found at: \(path)")
+            } else {
+                print("❌ French bundle not found")
+            }
+            UserDefaults.standard.set(["fr"], forKey: "AppleLanguages")
+        case .portuguese:
+            if let path = Bundle.main.path(forResource: "pt", ofType: "lproj"),
+               let bundle = Bundle(path: path) {
+                customBundle = bundle
+                print("✅ Portuguese bundle found at: \(path)")
+            } else {
+                print("❌ Portuguese bundle not found")
+            }
+            UserDefaults.standard.set(["pt"], forKey: "AppleLanguages")
         }
         
         UserDefaults.standard.synchronize()

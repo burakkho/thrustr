@@ -5,6 +5,7 @@ import SwiftData
 struct ProgramDashboardView: View {
     @Environment(\.theme) private var theme
     @Environment(\.modelContext) private var modelContext
+    @Environment(TrainingCoordinator.self) private var coordinator
     @EnvironmentObject private var unitSettings: UnitSettings
     
     let execution: ProgramExecution?
@@ -298,7 +299,7 @@ struct ProgramDashboardView: View {
     }
     
     private var completedProgramButton: some View {
-        Button(action: { /* Navigate to program selection */ }) {
+        Button(action: { coordinator.navigateToProgramSelection() }) {
             HStack(spacing: theme.spacing.m) {
                 Image(systemName: "plus.circle.fill")
                     .font(.title2)

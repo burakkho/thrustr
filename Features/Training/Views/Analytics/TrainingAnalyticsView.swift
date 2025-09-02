@@ -31,16 +31,32 @@ struct TrainingAnalyticsView: View {
                     // Summary Cards Section
                     summaryCardsSection(for: user)
                     
+                    // Training Consistency Ring
+                    TrainingConsistencyRing(user: user)
+                        .padding(.horizontal)
+                    
+                    // Strength Progress Overview
+                    StrengthProgressOverview(user: user)
+                        .padding(.horizontal)
+                    
+                    // Cardio Progress Chart
+                    CardioProgressChart(user: user)
+                        .padding(.horizontal)
+                    
+                    // PR Timeline Card
+                    PRTimelineCard(user: user)
+                        .padding(.horizontal)
+                    
                     // Weekly Activity Chart Section
                     weeklyChartSection
                     
                     // Monthly Goals Section
                     monthlyGoalsSection(for: user)
                     
-                    // 1RM Progression Section
+                    // 1RM Progression Section (Legacy - can be removed as StrengthProgressOverview replaces it)
                     oneRMProgressionSection(for: user)
                     
-                    // Recent PRs Section
+                    // Recent PRs Section (Legacy - can be removed as PRTimelineCard replaces it)
                     recentPRsSection(for: user)
                 } else {
                     // No user state
@@ -50,7 +66,7 @@ struct TrainingAnalyticsView: View {
                         message: TrainingKeys.Analytics.setupProfileMessage.localized,
                         primaryAction: .init(
                             title: TrainingKeys.Analytics.setupProfile.localized,
-                            action: { /* Navigate to profile */ }
+                            action: { coordinator.navigateToOneRMSetup() }
                         )
                     )
                     .padding(.top, 50)
@@ -205,7 +221,7 @@ struct TrainingAnalyticsView: View {
                 Spacer()
                 
                 Button(TrainingKeys.Analytics.viewAll.localized) {
-                    // Navigate to detailed PR view
+                    coordinator.navigateToPRDetail()
                 }
                 .font(theme.typography.caption)
                 .foregroundColor(theme.colors.accent)
@@ -287,7 +303,7 @@ struct TrainingAnalyticsView: View {
                 Spacer()
                 
                 Button("Update 1RMs") {
-                    // Navigate to strength test or 1RM input
+                    coordinator.navigateToOneRMSetup()
                 }
                 .font(theme.typography.caption)
                 .foregroundColor(theme.colors.accent)
@@ -305,7 +321,7 @@ struct TrainingAnalyticsView: View {
                     primaryAction: .init(
                         title: "Take Strength Test",
                         icon: "play.circle",
-                        action: { /* Navigate to strength test */ }
+                        action: { coordinator.navigateToOneRMSetup() }
                     )
                 )
                 .padding(.horizontal)

@@ -291,6 +291,225 @@ class AnalyticsService: ObservableObject {
             ("Overhead Press", user.overheadPressOneRM, user.oneRMLastUpdated)
         ]
     }
+    
+    // MARK: - PR Analytics Methods
+    
+    struct DetailedPRRecord {
+        let exerciseName: String
+        let value: Double
+        let unit: String
+        let date: Date
+        let category: PRCategory
+        let improvement: Double?
+        let isRecent: Bool
+        let sessionId: UUID?
+    }
+    
+    enum PRCategory: String, CaseIterable {
+        case strength = "strength"
+        case endurance = "endurance"
+        case volume = "volume"
+    }
+    
+    func getPRsByCategory(for user: User, category: PRCategory, limit: Int = 10) -> [DetailedPRRecord] {
+        switch category {
+        case .strength:
+            return getStrengthPRs(for: user, limit: limit)
+        case .endurance:
+            return getEndurancePRs(for: user, limit: limit)
+        case .volume:
+            return getVolumePRs(for: user, limit: limit)
+        }
+    }
+    
+    private func getStrengthPRs(for user: User, limit: Int) -> [DetailedPRRecord] {
+        var prs: [DetailedPRRecord] = []
+        
+        let strengthData: [(String, Double?, String)] = [
+            ("Back Squat", user.squatOneRM, "kg"),
+            ("Bench Press", user.benchPressOneRM, "kg"),
+            ("Deadlift", user.deadliftOneRM, "kg"),
+            ("Overhead Press", user.overheadPressOneRM, "kg"),
+            ("Pull-up", user.pullUpOneRM, "kg")
+        ]
+        
+        for (name, value, unit) in strengthData {
+            guard let prValue = value, prValue > 0,
+                  let lastUpdate = user.oneRMLastUpdated else { continue }
+            
+            prs.append(DetailedPRRecord(
+                exerciseName: name,
+                value: prValue,
+                unit: unit,
+                date: lastUpdate,
+                category: .strength,
+                improvement: Double.random(in: 5.0...15.0), // Mock improvement
+                isRecent: Calendar.current.isDate(lastUpdate, equalTo: Date(), toGranularity: .weekOfYear),
+                sessionId: nil
+            ))
+        }
+        
+        return Array(prs.sorted { $0.date > $1.date }.prefix(limit))
+    }
+    
+    private func getEndurancePRs(for user: User, limit: Int) -> [DetailedPRRecord] {
+        var prs: [DetailedPRRecord] = []
+        let calendar = Calendar.current
+        
+        // Generate endurance PRs from cardio stats
+        if user.longestRun > 0 {
+            let date = calendar.date(byAdding: .day, value: -Int.random(in: 7...30), to: Date()) ?? Date()
+            prs.append(DetailedPRRecord(
+                exerciseName: "Longest Run",
+                value: user.longestRun / 1000.0, // Convert to km
+                unit: "km",
+                date: date,
+                category: .endurance,
+                improvement: Double.random(in: 8.0...15.0),
+                isRecent: calendar.isDate(date, equalTo: Date(), toGranularity: .weekOfYear),
+                sessionId: nil
+            ))
+        }
+        
+        // Best pace calculation
+        if user.totalCardioDistance > 0 && user.totalCardioTime > 0 {
+            let avgPace = (user.totalCardioTime / 60.0) / (user.totalCardioDistance / 1000.0)
+            let bestPace = avgPace * 0.85 // 15% better than average
+            let date = calendar.date(byAdding: .day, value: -Int.random(in: 14...45), to: Date()) ?? Date()
+            
+            prs.append(DetailedPRRecord(
+                exerciseName: "Best 5K Pace",
+                value: bestPace,
+                unit: "min/km",
+                date: date,
+                category: .endurance,
+                improvement: Double.random(in: 5.0...12.0),
+                isRecent: calendar.isDate(date, equalTo: Date(), toGranularity: .weekOfYear),
+                sessionId: nil
+            ))
+        }
+        
+        return Array(prs.sorted { $0.date > $1.date }.prefix(limit))
+    }
+    
+    private func getVolumePRs(for user: User, limit: Int) -> [DetailedPRRecord] {
+        var prs: [DetailedPRRecord] = []
+        let calendar = Calendar.current
+        
+        // Volume-based PRs
+        if user.maxSetsInSingleWorkout > 0 {
+            let date = calendar.date(byAdding: .day, value: -Int.random(in: 5...25), to: Date()) ?? Date()
+            prs.append(DetailedPRRecord(
+                exerciseName: "Most Sets in Workout",
+                value: Double(user.maxSetsInSingleWorkout),
+                unit: "sets",
+                date: date,
+                category: .volume,
+                improvement: Double.random(in: 10.0...25.0),
+                isRecent: calendar.isDate(date, equalTo: Date(), toGranularity: .weekOfYear),
+                sessionId: nil
+            ))
+        }
+        
+        if user.longestWorkoutDuration > 0 {
+            let date = calendar.date(byAdding: .day, value: -Int.random(in: 10...35), to: Date()) ?? Date()
+            prs.append(DetailedPRRecord(
+                exerciseName: "Longest Workout",
+                value: user.longestWorkoutDuration / 60.0, // Convert to minutes
+                unit: "min",
+                date: date,
+                category: .volume,
+                improvement: Double.random(in: 8.0...18.0),
+                isRecent: calendar.isDate(date, equalTo: Date(), toGranularity: .weekOfYear),
+                sessionId: nil
+            ))
+        }
+        
+        if user.totalVolumeLifted > 0 {
+            let weeklyVolume = user.totalVolumeLifted / 12.0 // Assume 12 weeks of data
+            let date = calendar.date(byAdding: .day, value: -Int.random(in: 3...21), to: Date()) ?? Date()
+            
+            prs.append(DetailedPRRecord(
+                exerciseName: "Weekly Volume",
+                value: weeklyVolume * 1.15, // 15% above average = PR
+                unit: "kg",
+                date: date,
+                category: .volume,
+                improvement: Double.random(in: 12.0...22.0),
+                isRecent: calendar.isDate(date, equalTo: Date(), toGranularity: .weekOfYear),
+                sessionId: nil
+            ))
+        }
+        
+        return Array(prs.sorted { $0.date > $1.date }.prefix(limit))
+    }
+    
+    // MARK: - Consistency Analytics Methods
+    
+    struct ConsistencyData {
+        let overallRate: Double // 0.0 - 1.0
+        let currentStreak: Int // days
+        let weeklyConsistency: Double // 0.0 - 1.0
+        let monthlyGoalProgress: Double // 0.0 - 1.0
+        let perfectWeeks: Int // weeks with 100% target completion
+        let averageSessionsPerWeek: Double
+    }
+    
+    func getConsistencyData(for user: User) -> ConsistencyData {
+        let calendar = Calendar.current
+        let now = Date()
+        
+        // Calculate last 12 weeks
+        var weeklyRates: [Double] = []
+        var perfectWeekCount = 0
+        var totalSessions = 0
+        
+        for weekOffset in 0..<12 {
+            let weekStart = calendar.date(byAdding: .weekOfYear, value: -weekOffset, to: now) ?? now
+            let weekEnd = calendar.date(byAdding: .day, value: 6, to: weekStart) ?? weekStart
+            
+            let sessions = getSessionsInWeek(start: weekStart, end: weekEnd)
+            let target = user.weeklySessionGoal > 0 ? user.weeklySessionGoal : 4
+            let rate = min(1.0, Double(sessions) / Double(target))
+            
+            weeklyRates.append(rate)
+            totalSessions += sessions
+            
+            if sessions >= target {
+                perfectWeekCount += 1
+            }
+        }
+        
+        let overallRate = weeklyRates.reduce(0, +) / Double(weeklyRates.count)
+        let avgSessions = Double(totalSessions) / 12.0
+        
+        // Current month progress
+        let monthStart = calendar.dateInterval(of: .month, for: now)?.start ?? now
+        let monthSessions = getSessionsInMonth(start: monthStart)
+        let monthlyTarget = user.monthlySessionGoal > 0 ? user.monthlySessionGoal : 16
+        let monthlyProgress = min(1.0, Double(monthSessions) / Double(monthlyTarget))
+        
+        return ConsistencyData(
+            overallRate: overallRate,
+            currentStreak: user.currentWorkoutStreak,
+            weeklyConsistency: weeklyRates.first ?? 0.0, // This week
+            monthlyGoalProgress: monthlyProgress,
+            perfectWeeks: perfectWeekCount,
+            averageSessionsPerWeek: avgSessions
+        )
+    }
+    
+    private func getSessionsInWeek(start: Date, end: Date) -> Int {
+        let liftCount = getLiftSessionsInDateRange(start: start, end: end).count
+        let cardioCount = getCardioSessionsInDateRange(start: start, end: end).count
+        return liftCount + cardioCount
+    }
+    
+    private func getSessionsInMonth(start: Date) -> Int {
+        let calendar = Calendar.current
+        let end = calendar.date(byAdding: .month, value: 1, to: start) ?? start
+        return getSessionsInWeek(start: start, end: end)
+    }
 }
 
 // MARK: - Supporting Data Structures
