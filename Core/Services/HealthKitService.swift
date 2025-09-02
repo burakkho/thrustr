@@ -79,8 +79,18 @@ class HealthKitService: ObservableObject {
             bodyMassType
         ]
         
+        let shareTypes: Set<HKSampleType> = [
+            bodyMassType,
+            HKWorkoutType.workoutType(),
+            HKQuantityType.quantityType(forIdentifier: .heartRate)!,
+            HKQuantityType.quantityType(forIdentifier: .dietaryEnergyConsumed)!,
+            HKQuantityType.quantityType(forIdentifier: .dietaryProtein)!,
+            HKQuantityType.quantityType(forIdentifier: .dietaryCarbohydrates)!,
+            HKQuantityType.quantityType(forIdentifier: .dietaryFatTotal)!
+        ]
+        
         do {
-            try await healthStore.requestAuthorization(toShare: [], read: readTypes)
+            try await healthStore.requestAuthorization(toShare: shareTypes, read: readTypes)
             
             let stepStatus = healthStore.authorizationStatus(for: stepCountType)
             let calorieStatus = healthStore.authorizationStatus(for: activeEnergyType)
@@ -290,6 +300,281 @@ class HealthKitService: ObservableObject {
             return true
         } catch {
             print("Error saving weight: \(error)")
+            self.error = error
+            return false
+        }
+    }
+    
+    // MARK: - Workout Writing
+    func saveCardioWorkout(
+        activityType: String,
+        duration: TimeInterval,
+        distance: Double? = nil,
+        caloriesBurned: Double? = nil,
+        averageHeartRate: Double? = nil,
+        maxHeartRate: Double? = nil,
+        startDate: Date,
+        endDate: Date
+    ) async -> Bool {
+        guard isAuthorized else { return false }
+        
+        // Map cardio activity to HKWorkoutActivityType
+        let hkActivityType = mapCardioActivityToHKType(activityType)
+        
+        // Create workout configuration
+        let configuration = HKWorkoutConfiguration()
+        configuration.activityType = hkActivityType
+        
+        // Create workout builder
+        let builder = HKWorkoutBuilder(healthStore: healthStore, configuration: configuration, device: .local())
+        
+        do {
+            // Start workout session
+            try await builder.beginCollection(at: startDate)
+            
+            // Add energy and distance if available
+            if let calories = caloriesBurned {
+                let energySample = HKQuantitySample(
+                    type: HKQuantityType.quantityType(forIdentifier: .activeEnergyBurned)!,
+                    quantity: HKQuantity(unit: .kilocalorie(), doubleValue: calories),
+                    start: startDate,
+                    end: endDate
+                )
+                try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+                    builder.add([energySample]) { success, error in
+                        if let error = error {
+                            continuation.resume(throwing: error)
+                        } else {
+                            continuation.resume(returning: ())
+                        }
+                    }
+                }
+            }
+            
+            if let dist = distance {
+                let distanceSample = HKQuantitySample(
+                    type: HKQuantityType.quantityType(forIdentifier: .distanceWalkingRunning)!,
+                    quantity: HKQuantity(unit: .meter(), doubleValue: dist),
+                    start: startDate,
+                    end: endDate
+                )
+                try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+                    builder.add([distanceSample]) { success, error in
+                        if let error = error {
+                            continuation.resume(throwing: error)
+                        } else {
+                            continuation.resume(returning: ())
+                        }
+                    }
+                }
+            }
+            
+            // Add heart rate if available
+            if let avgHR = averageHeartRate, avgHR > 0 {
+                let heartRateType = HKQuantityType.quantityType(forIdentifier: .heartRate)!
+                let heartRateQuantity = HKQuantity(unit: HKUnit.count().unitDivided(by: .minute()), doubleValue: avgHR)
+                let heartRateSample = HKQuantitySample(
+                    type: heartRateType,
+                    quantity: heartRateQuantity,
+                    start: startDate,
+                    end: endDate
+                )
+                try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+                    builder.add([heartRateSample]) { success, error in
+                        if let error = error {
+                            continuation.resume(throwing: error)
+                        } else {
+                            continuation.resume(returning: ())
+                        }
+                    }
+                }
+            }
+            
+            // Finish workout
+            try await builder.endCollection(at: endDate)
+            _ = try await builder.finishWorkout()
+            
+            Logger.info("Cardio workout saved to HealthKit successfully")
+            return true
+        } catch {
+            Logger.error("Failed to save cardio workout to HealthKit: \(error)")
+            self.error = error
+            return false
+        }
+    }
+    
+    func saveLiftWorkout(
+        duration: TimeInterval,
+        caloriesBurned: Double? = nil,
+        startDate: Date,
+        endDate: Date,
+        totalVolume: Double? = nil
+    ) async -> Bool {
+        guard isAuthorized else { return false }
+        
+        
+        let configuration = HKWorkoutConfiguration()
+        configuration.activityType = .traditionalStrengthTraining
+        
+        let builder = HKWorkoutBuilder(healthStore: healthStore, configuration: configuration, device: .local())
+        
+        do {
+            try await builder.beginCollection(at: startDate)
+            
+            if let calories = caloriesBurned {
+                let energySample = HKQuantitySample(
+                    type: HKQuantityType.quantityType(forIdentifier: .activeEnergyBurned)!,
+                    quantity: HKQuantity(unit: .kilocalorie(), doubleValue: calories),
+                    start: startDate,
+                    end: endDate
+                )
+                try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+                    builder.add([energySample]) { success, error in
+                        if let error = error {
+                            continuation.resume(throwing: error)
+                        } else {
+                            continuation.resume(returning: ())
+                        }
+                    }
+                }
+            }
+            
+            try await builder.endCollection(at: endDate)
+            _ = try await builder.finishWorkout()
+            
+            Logger.info("Lift workout saved to HealthKit successfully")
+            return true
+        } catch {
+            Logger.error("Failed to save lift workout to HealthKit: \(error)")
+            self.error = error
+            return false
+        }
+    }
+    
+    func saveWODWorkout(
+        duration: TimeInterval,
+        caloriesBurned: Double? = nil,
+        startDate: Date,
+        endDate: Date,
+        wodType: String? = nil
+    ) async -> Bool {
+        guard isAuthorized else { return false }
+        
+        
+        let configuration = HKWorkoutConfiguration()
+        configuration.activityType = .crossTraining
+        
+        let builder = HKWorkoutBuilder(healthStore: healthStore, configuration: configuration, device: .local())
+        
+        do {
+            try await builder.beginCollection(at: startDate)
+            
+            if let calories = caloriesBurned {
+                let energySample = HKQuantitySample(
+                    type: HKQuantityType.quantityType(forIdentifier: .activeEnergyBurned)!,
+                    quantity: HKQuantity(unit: .kilocalorie(), doubleValue: calories),
+                    start: startDate,
+                    end: endDate
+                )
+                try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+                    builder.add([energySample]) { success, error in
+                        if let error = error {
+                            continuation.resume(throwing: error)
+                        } else {
+                            continuation.resume(returning: ())
+                        }
+                    }
+                }
+            }
+            
+            try await builder.endCollection(at: endDate)
+            _ = try await builder.finishWorkout()
+            
+            Logger.info("WOD workout saved to HealthKit successfully")
+            return true
+        } catch {
+            Logger.error("Failed to save WOD workout to HealthKit: \(error)")
+            self.error = error
+            return false
+        }
+    }
+    
+    private func mapCardioActivityToHKType(_ activityType: String) -> HKWorkoutActivityType {
+        switch activityType.lowercased() {
+        case "running", "koşu":
+            return .running
+        case "cycling", "bisiklet":
+            return .cycling
+        case "swimming", "yüzme":
+            return .swimming
+        case "walking", "yürüyüş":
+            return .walking
+        case "rowing", "kürek":
+            return .rowing
+        case "elliptical":
+            return .elliptical
+        case "stairClimbing":
+            return .stairClimbing
+        default:
+            return .other
+        }
+    }
+    
+    // MARK: - Nutrition Writing
+    func saveNutritionData(
+        calories: Double,
+        protein: Double,
+        carbs: Double,
+        fat: Double,
+        date: Date = Date()
+    ) async -> Bool {
+        guard isAuthorized else { return false }
+        
+        let calorieType = HKQuantityType.quantityType(forIdentifier: .dietaryEnergyConsumed)!
+        let proteinType = HKQuantityType.quantityType(forIdentifier: .dietaryProtein)!
+        let carbsType = HKQuantityType.quantityType(forIdentifier: .dietaryCarbohydrates)!
+        let fatType = HKQuantityType.quantityType(forIdentifier: .dietaryFatTotal)!
+        
+        let calorieSample = HKQuantitySample(
+            type: calorieType,
+            quantity: HKQuantity(unit: .kilocalorie(), doubleValue: calories),
+            start: date,
+            end: date,
+            metadata: [HKMetadataKeyWasUserEntered: true]
+        )
+        
+        let proteinSample = HKQuantitySample(
+            type: proteinType,
+            quantity: HKQuantity(unit: .gram(), doubleValue: protein),
+            start: date,
+            end: date,
+            metadata: [HKMetadataKeyWasUserEntered: true]
+        )
+        
+        let carbsSample = HKQuantitySample(
+            type: carbsType,
+            quantity: HKQuantity(unit: .gram(), doubleValue: carbs),
+            start: date,
+            end: date,
+            metadata: [HKMetadataKeyWasUserEntered: true]
+        )
+        
+        let fatSample = HKQuantitySample(
+            type: fatType,
+            quantity: HKQuantity(unit: .gram(), doubleValue: fat),
+            start: date,
+            end: date,
+            metadata: [HKMetadataKeyWasUserEntered: true]
+        )
+        
+        let samples = [calorieSample, proteinSample, carbsSample, fatSample]
+        
+        do {
+            try await healthStore.save(samples)
+            Logger.info("Nutrition data saved to HealthKit successfully")
+            return true
+        } catch {
+            Logger.error("Failed to save nutrition data to HealthKit: \(error)")
             self.error = error
             return false
         }

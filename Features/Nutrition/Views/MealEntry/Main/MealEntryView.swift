@@ -7,6 +7,7 @@ struct MealEntryView: View {
     
     @Environment(\.modelContext) private var modelContext
     @EnvironmentObject private var unitSettings: UnitSettings
+    @EnvironmentObject private var healthKitService: HealthKitService
     @State private var gramsConsumed: Double = 100
     @State private var servingCount: Double = 1
     @State private var inputMode: PortionInputMode = .grams
@@ -97,9 +98,7 @@ struct MealEntryView: View {
                 Button {
                     food.toggleFavorite()
                     do { try food.modelContext?.save() } catch { saveErrorMessage = error.localizedDescription }
-                    #if canImport(UIKit)
-                    UIImpactFeedbackGenerator(style: .light).impactOccurred()
-                    #endif
+                    HapticManager.shared.impact(.light)
                 } label: {
                     Image(systemName: food.isFavorite ? "heart.fill" : "heart")
                         .foregroundColor(food.isFavorite ? .red : .gray)
@@ -150,7 +149,7 @@ struct MealEntryView: View {
                 VStack(spacing: 4) {
                     Text(NutritionKeys.MealEntry.total.localized(with: Int(nutrition.calories)))
                         .font(.headline)
-                    Text("Protein: \(Int(nutrition.protein))\(NutritionKeys.Units.g.localized) • Carbs: \(Int(nutrition.carbs))\(NutritionKeys.Units.g.localized) • Fat: \(Int(nutrition.fat))\(NutritionKeys.Units.g.localized)")
+                    Text("\(NutritionKeys.CustomFood.protein.localized): \(Int(nutrition.protein))\(NutritionKeys.Units.g.localized) • \(NutritionKeys.CustomFood.carbs.localized): \(Int(nutrition.carbs))\(NutritionKeys.Units.g.localized) • \(NutritionKeys.CustomFood.fat.localized): \(Int(nutrition.fat))\(NutritionKeys.Units.g.localized)")
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
@@ -210,9 +209,23 @@ struct MealEntryView: View {
                 )
             }
             
-            #if canImport(UIKit)
-            UINotificationFeedbackGenerator().notificationOccurred(.success)
-            #endif
+            // Save daily nutrition totals to HealthKit
+            Task {
+                let dailyTotals = calculateDailyTotals(for: Date())
+                let success = await healthKitService.saveNutritionData(
+                    calories: dailyTotals.calories,
+                    protein: dailyTotals.protein,
+                    carbs: dailyTotals.carbs,
+                    fat: dailyTotals.fat,
+                    date: Date()
+                )
+                
+                if success {
+                    Logger.info("Daily nutrition data successfully synced to HealthKit")
+                }
+            }
+            
+            HapticManager.shared.notification(.success)
             onDismiss()
         } catch {
             saveErrorMessage = error.localizedDescription
@@ -260,6 +273,36 @@ struct MealEntryView: View {
         } catch {
             print("Error calculating meal totals: \(error)")
             return (foodCount: 0, calories: 0, protein: 0, carbs: 0, fat: 0)
+        }
+    }
+    
+    // Calculate total nutrition for all meals on a given date
+    private func calculateDailyTotals(for date: Date) -> (calories: Double, protein: Double, carbs: Double, fat: Double) {
+        let startOfDay = Calendar.current.startOfDay(for: date)
+        let endOfDay = Calendar.current.date(byAdding: .day, value: 1, to: startOfDay) ?? date
+        
+        let predicate = #Predicate<NutritionEntry> { entry in
+            entry.date >= startOfDay && entry.date < endOfDay
+        }
+        
+        let descriptor = FetchDescriptor<NutritionEntry>(predicate: predicate)
+        
+        do {
+            let entries = try modelContext.fetch(descriptor)
+            let totalCalories = entries.reduce(0) { $0 + $1.calories }
+            let totalProtein = entries.reduce(0) { $0 + $1.protein }
+            let totalCarbs = entries.reduce(0) { $0 + $1.carbs }
+            let totalFat = entries.reduce(0) { $0 + $1.fat }
+            
+            return (
+                calories: totalCalories,
+                protein: totalProtein,
+                carbs: totalCarbs,
+                fat: totalFat
+            )
+        } catch {
+            print("Error calculating daily totals: \(error)")
+            return (calories: 0, protein: 0, carbs: 0, fat: 0)
         }
     }
     
@@ -321,8 +364,8 @@ extension MealEntryView {
         VStack(alignment: .leading, spacing: 12) {
             // Mode toggle
             Picker("", selection: $inputMode) {
-                Text("nutrition.portion_input.grams".localized).tag(PortionInputMode.grams)
-                Text("nutrition.portion_input.serving".localized).tag(PortionInputMode.serving)
+                Text(NutritionKeys.PortionInput.grams.localized).tag(PortionInputMode.grams)
+                Text(NutritionKeys.PortionInput.serving.localized).tag(PortionInputMode.serving)
             }
             .pickerStyle(.segmented)
             
@@ -334,7 +377,7 @@ extension MealEntryView {
                     TextField(
                         unitSettings.unitSystem == .metric ? 
                         NutritionKeys.MealEntry.portionGrams.localized :
-                        "nutrition.meal_entry.portion_ounces".localized, 
+                        NutritionKeys.MealEntry.portionOunces.localized, 
                         value: displayBinding,
                         format: .number
                     )

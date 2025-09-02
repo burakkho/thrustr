@@ -34,10 +34,22 @@ struct LiftWorkoutsSection: View {
                 // Recent Workouts
                 if !recentSessions.isEmpty {
                     recentWorkoutsSection
+                } else if activeProgramExecutions.isEmpty {
+                    // Empty state for first-time users
+                    EmptyStateView(
+                        systemImage: "dumbbell.fill",
+                        title: TrainingKeys.Lift.noWorkouts.localized,
+                        message: TrainingKeys.Lift.noWorkoutsDesc.localized,
+                        primaryTitle: TrainingKeys.Lift.startFirstWorkout.localized,
+                        primaryAction: { showingScratchBuilder = true },
+                        secondaryTitle: TrainingKeys.Lift.browsePrograms.localized,
+                        secondaryAction: { /* Navigate to programs */ }
+                    )
+                    .padding(.top, theme.spacing.xl)
                 }
                 
                 // Browse Programs CTA
-                if activeProgramExecutions.isEmpty {
+                if activeProgramExecutions.isEmpty && !recentSessions.isEmpty {
                     browseProgramsCTA
                 }
             }

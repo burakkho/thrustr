@@ -9,6 +9,7 @@ struct DashboardView: View {
     @EnvironmentObject private var unitSettings: UnitSettings
     
     @StateObject private var viewModel: DashboardViewModel
+    @StateObject private var errorHandler = ErrorHandlingService.shared
     
     init() {
         // Initialize with dependency injection
@@ -94,6 +95,7 @@ struct DashboardView: View {
                 await viewModel.loadData(with: modelContext)
             }
         }
+        .toast($errorHandler.toastMessage, type: errorHandler.toastType)
     }
 }
 

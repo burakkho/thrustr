@@ -6,6 +6,7 @@ struct ProfileView: View {
     @Environment(\.theme) private var theme
     @Query private var users: [User]
     @EnvironmentObject private var unitSettings: UnitSettings
+    @StateObject private var errorHandler = ErrorHandlingService.shared
     
     @State private var showingPersonalInfoSheet = false
     @State private var showingPreferencesSheet = false
@@ -88,6 +89,7 @@ struct ProfileView: View {
         .sheet(isPresented: $showingProgressPhotos) {
             ProgressPhotosView()
         }
+        .toast($errorHandler.toastMessage, type: errorHandler.toastType)
     }
 }
 

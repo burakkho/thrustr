@@ -88,6 +88,8 @@ class ErrorHandlingService: ObservableObject {
     @Published var currentError: ErrorContext?
     @Published var showErrorAlert = false
     @Published var errorHistory: [ErrorContext] = []
+    @Published var toastMessage: String?
+    @Published var toastType: ToastType = .info
     
     private let maxHistorySize = 50
     
@@ -114,10 +116,9 @@ class ErrorHandlingService: ObservableObject {
         
         switch severity {
         case .low:
-            // Just log, don't show UI
-            break
+            showToast(context.error.errorDescription ?? "Unknown error", type: .info)
         case .medium:
-            showUserError(context)
+            showToast(context.error.errorDescription ?? "Unknown error", type: .warning)
         case .high:
             showCriticalError(context)
         case .critical:
@@ -144,6 +145,27 @@ class ErrorHandlingService: ObservableObject {
         return .unknownError(underlying: error)
     }
     
+    // MARK: - Toast Methods
+    func showToast(_ message: String, type: ToastType) {
+        toastType = type
+        toastMessage = message
+        
+        // Auto-clear toast
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) {
+            self.toastMessage = nil
+        }
+    }
+    
+    func showSuccessToast(_ message: String) {
+        showToast(message, type: .success)
+        HapticManager.shared.notification(.success)
+    }
+    
+    func showErrorToast(_ message: String) {
+        showToast(message, type: .error)
+        HapticManager.shared.notification(.error)
+    }
+    
     // MARK: - UI Error Display
     private func showUserError(_ context: ErrorContext) {
         currentError = context
@@ -153,9 +175,7 @@ class ErrorHandlingService: ObservableObject {
     private func showCriticalError(_ context: ErrorContext) {
         currentError = context
         showErrorAlert = true
-        
-        // Additional critical error handling
-        HapticManager.shared.notification(.error)
+        showErrorToast(context.error.errorDescription ?? "Critical error occurred")
     }
     
     private func handleCriticalError(_ context: ErrorContext) {

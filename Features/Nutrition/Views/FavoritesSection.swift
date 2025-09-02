@@ -2,6 +2,7 @@ import SwiftUI
 import SwiftData
 
 struct FavoritesSection: View {
+    @Environment(\.theme) private var theme
     @EnvironmentObject private var unitSettings: UnitSettings
     let foods: [Food]
     let onFoodSelected: (Food) -> Void
@@ -65,18 +66,15 @@ struct FavoritesSection: View {
                         }
                     }
                 } else {
-                    // Favori boş state
-                    VStack(spacing: 8) {
-                        Image(systemName: "heart")
-                            .font(.largeTitle)
-                            .foregroundColor(.gray)
-                        Text(NutritionKeys.Favorites.emptyFavorites.localized)
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
-                            .multilineTextAlignment(.center)
-                    }
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 20)
+                    // Standardized empty state
+                    EmptyStateView(
+                        systemImage: "heart",
+                        title: NutritionKeys.Favorites.emptyFavorites.localized,
+                        message: NutritionKeys.Favorites.emptyFavoritesDesc.localized,
+                        primaryTitle: NutritionKeys.Common.addFood.localized,
+                        primaryAction: { /* Navigate to food search */ }
+                    )
+                    .padding(.vertical, theme.spacing.m)
                 }
             }
             
@@ -104,18 +102,15 @@ struct FavoritesSection: View {
                         }
                     }
                 } else {
-                    // Son kullanılan boş state
-                    VStack(spacing: 8) {
-                        Image(systemName: "clock")
-                            .font(.largeTitle)
-                            .foregroundColor(.gray)
-                        Text(NutritionKeys.Favorites.emptyRecent.localized)
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
-                            .multilineTextAlignment(.center)
-                    }
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 20)
+                    // Standardized empty state for recent foods
+                    EmptyStateView(
+                        systemImage: "clock",
+                        title: NutritionKeys.Favorites.emptyRecent.localized,
+                        message: NutritionKeys.Favorites.emptyRecentDesc.localized,
+                        primaryTitle: NutritionKeys.Common.addFood.localized,
+                        primaryAction: { /* Navigate to food search */ }
+                    )
+                    .padding(.vertical, theme.spacing.m)
                 }
             }
             

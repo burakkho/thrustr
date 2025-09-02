@@ -96,7 +96,7 @@ struct ProgramDashboardView: View {
             // Progress Bar
             VStack(spacing: theme.spacing.s) {
                 HStack {
-                    Text("Week \(execution.currentWeek) of \(execution.program.weeks)")
+                    Text("\(TrainingKeys.ProgramCompletion.weekOf.localized) \(execution.currentWeek) \(TrainingKeys.Charts.of.localized) \(execution.program.weeks)")
                         .font(theme.typography.body)
                         .fontWeight(.medium)
                         .foregroundColor(theme.colors.textPrimary)
@@ -225,12 +225,12 @@ struct ProgramDashboardView: View {
                 .foregroundColor(theme.colors.success)
             
             VStack(alignment: .leading, spacing: 4) {
-                Text("Program Completed!")
+                Text(TrainingKeys.ProgramCompletion.programCompleted.localized)
                     .font(theme.typography.headline)
                     .fontWeight(.semibold)
                     .foregroundColor(theme.colors.textPrimary)
                 
-                Text("Congratulations on finishing your program!")
+                Text(TrainingKeys.ProgramCompletion.congratulations.localized)
                     .font(theme.typography.caption)
                     .foregroundColor(theme.colors.textSecondary)
             }
@@ -360,12 +360,12 @@ struct ProgramDashboardView: View {
                 .foregroundColor(theme.colors.accent.opacity(0.6))
             
             VStack(spacing: theme.spacing.s) {
-                Text("Ready to Start a Program?")
+                Text(TrainingKeys.ProgramCompletion.readyToStart.localized)
                     .font(theme.typography.title2)
                     .fontWeight(.bold)
                     .foregroundColor(theme.colors.textPrimary)
                 
-                Text("Choose from proven strength and muscle building programs")
+                Text(TrainingKeys.ProgramCompletion.chooseFromPrograms.localized)
                     .font(theme.typography.body)
                     .foregroundColor(theme.colors.textSecondary)
                     .multilineTextAlignment(.center)
@@ -375,7 +375,7 @@ struct ProgramDashboardView: View {
                 HStack(spacing: theme.spacing.s) {
                     Image(systemName: "plus.circle.fill")
                         .font(.title3)
-                    Text("Browse Programs")
+                    Text(TrainingKeys.ProgramCompletion.browsePrograms.localized)
                         .font(theme.typography.headline)
                         .fontWeight(.medium)
                 }

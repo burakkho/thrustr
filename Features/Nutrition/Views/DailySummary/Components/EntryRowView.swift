@@ -91,9 +91,7 @@ struct EntryRowView: View {
                 context.delete(entry)
                 do {
                     try context.save()
-                    #if canImport(UIKit)
-                    UINotificationFeedbackGenerator().notificationOccurred(.success)
-                    #endif
+                    HapticManager.shared.notification(.success)
                 } catch {
                     onError(error.localizedDescription)
                 }

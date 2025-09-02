@@ -1195,7 +1195,7 @@
 "camera.permission_required" = "Permesso fotocamera richiesto per scansione codice a barre.";
 "error.food_not_selected" = "Errore: Nessun cibo selezionato";
 
-// MARK: - Goals & Analytics Extended
+// MARK: - Goals & Analytics Extended  
 "goal_status_completed" = "Completato";
 "goal_status_expired" = "Scaduto";
 "goal_status_days_remaining" = "%d giorni rimanenti";
@@ -2736,4 +2736,3 @@
 "training.cardio.startSession" = "Inizia Sessione";
 "training.cardio.clearSearch" = "Pulisci Ricerca";
 "training.cardio.neverAttempted" = "Mai Provato";
-

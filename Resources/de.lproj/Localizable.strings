@@ -113,6 +113,7 @@
 "nutrition.empty.first.message" = "Füge deine Mahlzeiten hinzu, um tägliche Kalorien und Makros zu verfolgen.";
 "nutrition.empty.addMeal" = "Mahlzeit hinzufügen";
 "nutrition.empty.addCustomFood" = "Eigenes Lebensmittel erstellen";
+"nutrition.empty.loadingFoods" = "Lebensmitteldatenbank wird geladen...";
 "nutrition.empty.today.title" = "Heute noch keine Mahlzeiten hinzugefügt";
 "nutrition.empty.today.message" = "Wähle aus der Liste oder erstelle ein eigenes Lebensmittel, um eine Mahlzeit hinzuzufügen.";
 
@@ -514,6 +515,30 @@
 "training.part.noExercise" = "Noch keine Übung hinzugefügt";
 "training.part.addExercise" = "Übung hinzufügen";
 "training.part.result" = "Ergebnis:";
+
+// MARK: - Cardio Training
+"training.cardio.outdoor" = "Draußen";
+"training.cardio.indoor" = "Drinnen";
+"training.cardio.effort" = "Anstrengung";
+"training.cardio.zone" = "Zone";
+"training.cardio.bpm" = "BPM";
+"training.cardio.rpe" = "RPE";
+"training.cardio.time" = "Zeit";
+"training.cardio.quickStart" = "Schnellstart";
+"training.cardio.activityType" = "Aktivitätstyp";
+"training.cardio.selectActivityToStart" = "Aktivitätstyp auswählen und starten";
+"training.cardio.location" = "Standort";
+"training.cardio.features" = "Funktionen";
+"training.cardio.start" = "Starten";
+"training.cardio.cancel" = "Abbrechen";
+"training.cardio.gpsRealTimeTracking" = "GPS-Echtzeit-Distanzverfolgung";
+"training.cardio.routeMapAfterWorkout" = "Routenkarte nach dem Training";
+"training.cardio.instantSpeedPace" = "Sofortige Geschwindigkeits- und Tempoanzeige";
+"training.cardio.elevationChanges" = "Höhenänderungsaufzeichnung";
+"training.cardio.timeTracking" = "Zeitverfolgung";
+"training.cardio.estimatedCalories" = "Geschätzte Kalorienberechnung";
+"training.cardio.heartRateSupport" = "Herzfrequenzband-Unterstützung";
+"training.cardio.manualDistanceInput" = "Manuelle Distanzeingabe nach dem Training";
 
 // MARK: - WOD / METCON
 "training.wod.title" = "WOD";
@@ -1967,6 +1992,14 @@
 "training.cardio.type.time" = "Zeit";
 "training.cardio.walking" = "Gehen";
 
+// MARK: - Cardio Preparation
+"cardio.preparation.selectHeartRateBand" = "Herzfrequenzband auswählen";
+"cardio.preparation.rescan" = "Erneut scannen";
+"cardio.preparation.signal" = "Signal";
+"cardio.preparation.waitingGps" = "Warte auf GPS-Signal...";
+"cardio.preparation.pleaseWait" = "Bitte warten...";
+"cardio.preparation.cancel" = "Abbrechen";
+
 // MARK: - Missing Lift Training Strings
 "training.lift.activeProgram" = "Aktives Programm";
 "training.lift.description" = "Beschreibung";
@@ -2056,6 +2089,9 @@
 "training.lift.delete" = "Löschen";
 "training.lift.edit" = "Bearbeiten";
 "training.lift.seeAll" = "Alle anzeigen";
+"training.lift.noWorkouts" = "Noch Keine Workouts";
+"training.lift.noWorkoutsDesc" = "Starten Sie Ihr erstes Workout, um Ihren Krafttraining-Fortschritt zu verfolgen";
+"training.lift.startFirstWorkout" = "Erstes Workout Starten";
 
 // MARK: - Loading View
 "loading.title" = "Thrustr wird vorbereitet";
@@ -2108,6 +2144,7 @@
 "training.dashboard.motivationalMessage" = "Großartig! Mach weiter so! 🔥";
 "training.dashboard.workouts" = "Trainings";
 "training.dashboard.dayStreak" = "Tägliche Serie";
+"training.dashboard.streak" = "Serie";
 "training.dashboard.duration" = "Dauer";
 "training.dashboard.when" = "Wann";
 "training.dashboard.quickLift" = "Schnelles Krafttraining";
@@ -2657,4 +2694,101 @@
 // MARK: - Nutrition Camera
 "nutrition.camera.failedToStart" = "Kamera konnte nicht gestartet werden";
 "nutrition.camera.permissionRequired" = "Kamera-Berechtigung erforderlich";
-"nutrition.camera.openSettings" = "Einstellungen öffnen";
+"nutrition.camera.openSettings" = "Einstellungen öffnen";"training.cardio.averagePace" = "Durchschnittliches Tempo";
+
+// MARK: - Nutrition Portion Input  
+"nutrition.mealEntry.portionOunces" = "Unzen";
+"nutrition.portionInput.grams" = "Gramm";
+"nutrition.portionInput.serving" = "Portionen";
+"nutrition.portionInput.title" = "Schnelle Portionen";
+"nutrition.portionInput.custom" = "Benutzerdefiniert";
+"nutrition.portionInput.customAmount" = "Benutzerdefinierte Menge";
+"nutrition.portionInput.set" = "Setzen";
+"training.cardio.elevation" = "Höhe";
+
+// MARK: - Status Messages
+"training.status.preparing" = "Vorbereitung";
+"training.status.ready" = "Bereit";
+"training.status.inProgress" = "In Bearbeitung";
+"training.status.paused" = "Pausiert";
+"training.status.completed" = "Abgeschlossen";
+"training.status.finishWorkout" = "Training beenden";
+"training.status.finishAndSave" = "Beenden und speichern";
+"training.status.confirmFinishMessage" = "Sind Sie sicher, dass Sie das Training beenden möchten?";
+"training.status.start" = "Starten";
+"training.status.resume" = "Fortsetzen";
+"training.status.pause" = "Pausieren";
+"training.status.stop" = "Stoppen";
+"training.status.finish" = "Beenden";
+"training.status.cancel" = "Abbrechen";
+
+// MARK: - Units and Measurements
+"training.units.sessions" = "Sitzungen";
+"training.units.minutes" = "Minuten";
+"training.units.seconds" = "Sekunden";
+"training.units.hours" = "Stunden";
+"training.units.days" = "Tage";
+"training.units.weeks" = "Wochen";
+"training.units.months" = "Monate";
+"training.units.rounds" = "Runden";
+"training.units.reps" = "Wiederholungen";
+"training.units.bpm" = "BPM";
+"training.units.kcal" = "kcal";
+"training.units.minCap" = "Min. Limit";
+"training.units.daysPerWeek" = "Tage/Woche";
+
+// MARK: - Heart Rate & Devices
+"training.heartRate.heartRate" = "Herzfrequenz";
+"training.heartRate.bpm" = "BPM";
+"training.heartRate.connect" = "Verbinden";
+"training.heartRate.notConnected" = "Herzfrequenzband nicht verbunden";
+"training.heartRate.searchingDevices" = "Suche nach Geräten...";
+"training.heartRate.selectDevice" = "Herzfrequenzband auswählen";
+"training.heartRate.rescan" = "Erneut scannen";
+"training.heartRate.signal" = "Signal";
+"training.heartRate.battery" = "Batterie";
+
+// MARK: - Search & Results
+"training.search.noResults" = "Keine Ergebnisse gefunden";
+"training.search.tryDifferentTerm" = "Versuchen Sie einen anderen Suchbegriff";
+"training.search.placeholder" = "Suchen...";
+
+// MARK: - Intervals & Splits
+"training.intervals.intervals" = "Intervalle";
+"training.intervals.splits" = "Splits";
+
+// MARK: - Program Completion
+"training.program.completed" = "Programm abgeschlossen!";
+"training.program.congratulations" = "Herzlichen Glückwunsch zum Abschluss Ihres Programms!";
+"training.program.readyToStart" = "Bereit, ein Programm zu starten?";
+"training.program.chooseFromPrograms" = "Wählen Sie aus bewährten Kraft- und Muskelaufbauprogrammen";
+"training.program.browsePrograms" = "Programme durchsuchen";
+"training.program.weekOf" = "Woche";
+
+// MARK: - Welcome Messages
+"training.welcome.welcomeBack" = "Willkommen zurück, %@!";
+"training.welcome.quickLift" = "Schnelles Krafttraining";
+"training.welcome.quickCardio" = "Schnelles Cardio";
+"training.welcome.dailyWOD" = "Tägliches WOD";
+"training.welcome.startStrengthTraining" = "Krafttraining starten";
+"training.welcome.startCardioSession" = "Cardio-Sitzung starten";
+"training.welcome.todaysWorkout" = "Heutiges Training";
+"training.welcome.findProgram" = "Programm finden";
+
+// MARK: - Warmup
+"training.warmup.lightCardio" = "5-10 Minuten leichtes Cardio";
+"training.warmup.dynamicStretching" = "Dynamisches Dehnen für große Muskelgruppen";
+"training.warmup.majorMuscleGroups" = "große Muskelgruppen";
+
+// MARK: - Goals Descriptions
+"training.goalsDesc.workoutSessionsPerMonth" = "Wie viele Trainingseinheiten pro Monat?";
+"training.goalsDesc.totalRunningCyclingDistance" = "Gesamte Lauf-/Raddistanz pro Monat";
+
+// MARK: - Workout Types
+"training.workoutTypes.forTime" = "Auf Zeit";
+"training.workoutTypes.amrap" = "AMRAP";
+"training.workoutTypes.emom" = "EMOM";
+"training.workoutTypes.customFormat" = "Benutzerdefiniertes Format";
+"training.workoutTypes.forTimeWithCap" = "Auf Zeit • %@ Min. Limit";
+"training.workoutTypes.amrapMinutes" = "AMRAP • %@ Minuten";
+"training.workoutTypes.emomMinutes" = "EMOM • %@ Minuten";

@@ -286,8 +286,7 @@ struct UserStatCard: View {
     // MARK: - Actions
     private func performAction(_ action: @escaping () -> Void) {
         // Haptic feedback
-        let impactFeedback = UIImpactFeedbackGenerator(style: .light)
-        impactFeedback.impactOccurred()
+        HapticManager.shared.impact(.light)
         
         action()
     }

@@ -105,9 +105,7 @@ struct BarcodeScanView: View {
         guard now.timeIntervalSince(lastScannedAt) > debounceInterval else { return }
         lastScannedAt = now
 
-        #if canImport(UIKit)
-        UINotificationFeedbackGenerator().notificationOccurred(.success)
-        #endif
+        HapticManager.shared.notification(.success)
         
         // Move state changes to async to avoid "Modifying state during view update"
         DispatchQueue.main.async {

@@ -67,6 +67,7 @@
 "training.dashboard.title" = "Gösterge Paneli";
 "training.dashboard.thisWeek" = "Bu Hafta";
 "training.dashboard.quickActions" = "Hızlı İşlemler";
+"training.dashboard.streak" = "Seri";
 "training.dashboard.noRecentActivity" = "Son etkinlik yok";
 
 // MARK: - Lift Training
@@ -174,6 +175,19 @@
 "training.cardio.running" = "Koşu";
 "training.cardio.walking" = "Yürüyüş";
 "training.cardio.cycling" = "Bisiklet";
+"training.cardio.train" = "Antrenman";
+"training.cardio.quickStart" = "Hızlı Başlat";
+"training.cardio.quickStartDesc" = "Kardio seansı başlat";
+"training.cardio.viewHistory" = "Geçmişi Gör";
+"training.cardio.viewHistoryDesc" = "Geçmiş seanslar";
+"training.cardio.recentSessions" = "Son Seanslar";
+"training.cardio.sessionInProgress" = "Seans devam ediyor";
+"training.cardio.distance" = "Mesafe";
+"training.cardio.avgSpeed" = "Ort. Hız";
+"training.cardio.pace" = "Tempo";
+"training.cardio.averagePace" = "Ortalama Tempo";
+"training.cardio.calories" = "Kalori";
+"training.cardio.personalRecord" = "KR";
 
 "training.lift.create" = "Ağırlık Oluştur";
 "training.cardio.create" = "Kardio Oluştur";
@@ -295,6 +309,7 @@
 "cardio.preparation.signal" = "Sinyal";
 "cardio.preparation.waitingGps" = "GPS sinyali bekleniyor...";
 "cardio.preparation.pleaseWait" = "Lütfen bekleyin...";
+"cardio.preparation.cancel" = "İptal";
 
 // MARK: - Training Conflict
 "training.conflict.title" = "Aktif Antrenman Var";
@@ -318,6 +333,7 @@
 "nutrition.empty.first.message" = "Öğünlerini ekleyerek günlük kalorini ve makrolarını takip et.";
 "nutrition.empty.addMeal" = "Yemek ekle";
 "nutrition.empty.addCustomFood" = "Özel yiyecek oluştur";
+"nutrition.empty.loadingFoods" = "Yemek veritabanı yükleniyor...";
 "nutrition.empty.today.title" = "Bugün henüz öğün eklenmedi";
 "nutrition.empty.today.message" = "Listeden seçerek veya özel yiyecek oluşturarak ekleyebilirsin.";
 "nutrition.empty.todayTitle" = "Bugün henüz bir şey yemedin";
@@ -809,6 +825,30 @@
 "training.part.addExercise" = "Egzersiz Ekle";
 "training.part.result" = "Sonuç:";
 
+// MARK: - Cardio Training
+"training.cardio.outdoor" = "Dış Mekan";
+"training.cardio.indoor" = "İç Mekan";
+"training.cardio.effort" = "Efor";
+"training.cardio.zone" = "Bölge";
+"training.cardio.bpm" = "BPM";
+"training.cardio.rpe" = "RPE";
+"training.cardio.time" = "Süre";
+"training.cardio.quickStart" = "Hızlı Başlat";
+"training.cardio.activityType" = "Aktivite Türü";
+"training.cardio.selectActivityToStart" = "Aktivite türünü seç ve başla";
+"training.cardio.location" = "Konum";
+"training.cardio.features" = "Özellikler";
+"training.cardio.start" = "Başla";
+"training.cardio.cancel" = "İptal";
+"training.cardio.gpsRealTimeTracking" = "GPS ile gerçek zamanlı mesafe takibi";
+"training.cardio.routeMapAfterWorkout" = "Antrenman sonunda rota haritası";
+"training.cardio.instantSpeedPace" = "Anlık hız ve tempo gösterimi";
+"training.cardio.elevationChanges" = "Yükseklik değişimi kaydı";
+"training.cardio.timeTracking" = "Süre takibi";
+"training.cardio.estimatedCalories" = "Tahmini kalori hesaplama";
+"training.cardio.heartRateSupport" = "Nabız bandı desteği";
+"training.cardio.manualDistanceInput" = "Antrenman sonrası manuel mesafe girişi";
+
 // MARK: - WOD / METCON
 "training.wod.title" = "METCON";
 "training.wod.movements" = "Hareketler";
@@ -1037,6 +1077,14 @@
 "nutrition.customFood.category" = "Kategori";
 "nutrition.customFood.nutritionValues" = "Besin Değerleri";
 "nutrition.customFood.per100g" = "100g başına";
+"nutrition.customFood.per100gImperial" = "3.5oz başına (100g)";
+
+// Nutrition - Meal Entry
+"nutrition.mealEntry.portionOz" = "Porsiyon (oz)";
+
+// Nutrition - Test
+"nutrition.test.addedSuccessfully" = "Test yiyecekleri başarıyla eklendi";
+"nutrition.test.clearedSuccessfully" = "Tüm veriler başarıyla temizlendi";
 "nutrition.customFood.caloriesRequired" = "Kalori *";
 "nutrition.customFood.protein" = "Protein";
 "nutrition.customFood.carbs" = "Karbonhidrat";
@@ -1052,8 +1100,11 @@
 "nutrition.favorites.recent" = "Son Kullanılanlar";
 "nutrition.favorites.popular" = "Popüler";
 "nutrition.favorites.timesUsed" = "%d kez kullanıldı";
-"nutrition.favorites.emptyFavorites" = "Henüz favori yiyecek yok\nBeğendiğin yiyecekleri kalp ikonuna tıklayarak favorilere ekle";
+"nutrition.favorites.emptyFavorites" = "Henüz favori yiyecek yok";
 "nutrition.favorites.emptyRecent" = "Henüz son kullanılan yok\nYiyecek ekledikçe burada görünecek";
+"nutrition.favorites.emptyFavoritesDesc" = "Favorilere eklemek için kalp ikonuna dokunun";
+"nutrition.common.addFood" = "Yiyecek Ekle";
+"nutrition.favorites.emptyRecentDesc" = "Yiyecek ekledikçe, son kullandıklarınız burada görünecek";
 
 // MARK: - Analytics
 "nutrition.analytics.title" = "Haftalık Analiz";
@@ -1069,6 +1120,7 @@
 "nutrition.units.kcal" = "kcal";
 "nutrition.units.grams" = "gram";
 "nutrition.units.g" = "g";
+"nutrition.units.oz" = "oz";
 
 // MARK: - Day Names (Short)
 "nutrition.days.sunday" = "Paz";
@@ -2012,6 +2064,12 @@
 "training.lift.delete" = "Sil";
 "training.lift.edit" = "Düzenle";
 "training.lift.seeAll" = "Tümünü Gör";
+"training.lift.noWorkouts" = "Henüz Antrenman Yok";
+"training.lift.noWorkoutsDesc" = "Güç antrenmanı ilerlemenizi takip etmeye başlamak için ilk antrenmanınızı başlatın";
+"training.lift.startFirstWorkout" = "İlk Antrenmanı Başlat";
+"training.lift.noWorkouts" = "Henüz Antrenman Yok";
+"training.lift.noWorkoutsDesc" = "Güç antrenmanı ilerlemenizi takip etmeye başlamak için ilk antrenmanınızı başlatın";
+"training.lift.startFirstWorkout" = "İlk Antrenmanı Başlat";
 
 // MARK: - Loading View
 "loading.title" = "Thrustr Hazırlanıyor";
@@ -2748,3 +2806,100 @@
 "analytics.time_range.month3" = "3 Ay";
 "analytics.time_range.month6" = "6 Ay";
 "analytics.time_range.year1" = "1 Yıl";
+
+// MARK: - Nutrition Portion Input  
+"nutrition.mealEntry.portionOunces" = "Ons";
+"nutrition.portionInput.grams" = "Gram";
+"nutrition.portionInput.serving" = "Porsiyon";
+"nutrition.portionInput.title" = "Hızlı Porsiyonlar";
+"nutrition.portionInput.custom" = "Özel";
+"nutrition.portionInput.customAmount" = "Özel Miktar";
+"nutrition.portionInput.set" = "Ayarla";
+"training.cardio.elevation" = "Yükseklik";
+
+// MARK: - Status Messages
+"training.status.preparing" = "Hazırlanıyor";
+"training.status.ready" = "Hazır";
+"training.status.inProgress" = "Devam Ediyor";
+"training.status.paused" = "Duraklatıldı";
+"training.status.completed" = "Tamamlandı";
+"training.status.finishWorkout" = "Antrenmanı Bitir";
+"training.status.finishAndSave" = "Bitir ve Kaydet";
+"training.status.confirmFinishMessage" = "Antrenmanı bitirmek istediğinize emin misiniz?";
+"training.status.start" = "Başla";
+"training.status.resume" = "Devam Et";
+"training.status.pause" = "Duraklat";
+"training.status.stop" = "Durdur";
+"training.status.finish" = "Bitir";
+"training.status.cancel" = "İptal";
+
+// MARK: - Units and Measurements
+"training.units.sessions" = "seans";
+"training.units.minutes" = "dakika";
+"training.units.seconds" = "saniye";
+"training.units.hours" = "saat";
+"training.units.days" = "gün";
+"training.units.weeks" = "hafta";
+"training.units.months" = "ay";
+"training.units.rounds" = "raund";
+"training.units.reps" = "tekrar";
+"training.units.bpm" = "BPM";
+"training.units.kcal" = "kcal";
+"training.units.minCap" = "dk limit";
+"training.units.daysPerWeek" = "gün/hafta";
+
+// MARK: - Heart Rate & Devices
+"training.heartRate.heartRate" = "Nabız";
+"training.heartRate.bpm" = "BPM";
+"training.heartRate.connect" = "Bağlan";
+"training.heartRate.notConnected" = "Nabız bandı bağlı değil";
+"training.heartRate.searchingDevices" = "Cihazlar aranıyor...";
+"training.heartRate.selectDevice" = "Nabız Bandı Seç";
+"training.heartRate.rescan" = "Yeniden Tara";
+"training.heartRate.signal" = "Sinyal";
+"training.heartRate.battery" = "Batarya";
+
+// MARK: - Search & Results
+"training.search.noResults" = "Sonuç bulunamadı";
+"training.search.tryDifferentTerm" = "Farklı bir arama terimi deneyin";
+"training.search.placeholder" = "Ara...";
+
+// MARK: - Intervals & Splits
+"training.intervals.intervals" = "Ara Süreler";
+"training.intervals.splits" = "Bölme Süreleri";
+
+// MARK: - Program Completion
+"training.program.completed" = "Program Tamamlandı!";
+"training.program.congratulations" = "Programınızı tamamladığınız için tebrikler!";
+"training.program.readyToStart" = "Programa Başlamaya Hazır mısın?";
+"training.program.chooseFromPrograms" = "Kanıtlanmış güç ve kas geliştirme programları arasından seç";
+"training.program.browsePrograms" = "Programlara Gözat";
+"training.program.weekOf" = "Hafta";
+
+// MARK: - Welcome Messages
+"training.welcome.welcomeBack" = "Tekrar hoş geldin, %@!";
+"training.welcome.quickLift" = "Hızlı Kuvvet";
+"training.welcome.quickCardio" = "Hızlı Kardiyo";
+"training.welcome.dailyWOD" = "Günlük WOD";
+"training.welcome.startStrengthTraining" = "Kuvvet antrenmanını başlat";
+"training.welcome.startCardioSession" = "Kardiyo seansını başlat";
+"training.welcome.todaysWorkout" = "Bugünün antrenmanı";
+"training.welcome.findProgram" = "Program bul";
+
+// MARK: - Warmup
+"training.warmup.lightCardio" = "5-10 dakika hafif kardiyo";
+"training.warmup.dynamicStretching" = "Ana kas grupları için dinamik germe";
+"training.warmup.majorMuscleGroups" = "ana kas grupları";
+
+// MARK: - Goals Descriptions
+"training.goalsDesc.workoutSessionsPerMonth" = "Ayda kaç antrenman seansı?";
+"training.goalsDesc.totalRunningCyclingDistance" = "Aylık toplam koşu/bisiklet mesafesi";
+
+// MARK: - Workout Types
+"training.workoutTypes.forTime" = "Zamana Karşı";
+"training.workoutTypes.amrap" = "AMRAP";
+"training.workoutTypes.emom" = "EMOM";
+"training.workoutTypes.customFormat" = "Özel Format";
+"training.workoutTypes.forTimeWithCap" = "Zamana Karşı • %@ dk limit";
+"training.workoutTypes.amrapMinutes" = "AMRAP • %@ dakika";
+"training.workoutTypes.emomMinutes" = "EMOM • %@ dakika";

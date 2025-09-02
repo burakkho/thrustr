@@ -76,22 +76,22 @@ enum SeedingProgress: CaseIterable, Identifiable, Equatable {
     var progressValue: Double {
         switch self {
         case .starting: return 0.0
-        case .exercises: return 0.1
-        case .foods: return 0.3
-        case .benchmarkWODs: return 0.4
-        case .crossFitMovements: return 0.5
-        case .cardioExercises: return 0.6
-        case .liftPrograms: return 0.7
-        case .routineTemplates: return 0.8
-        case .normalization: return 0.9
-        case .foodAliases: return 0.95
+        case .foods: return 0.25  // Foods first, highest priority for nutrition
+        case .exercises: return 0.4
+        case .benchmarkWODs: return 0.55
+        case .crossFitMovements: return 0.65
+        case .cardioExercises: return 0.75
+        case .liftPrograms: return 0.85
+        case .routineTemplates: return 0.90
+        case .normalization: return 0.95
+        case .foodAliases: return 0.98
         case .completed: return 1.0
         case .error(_): return 0.0
         }
     }
     
     static var allCases: [SeedingProgress] {
-        return [.starting, .exercises, .foods, .benchmarkWODs, .crossFitMovements, 
+        return [.starting, .foods, .exercises, .benchmarkWODs, .crossFitMovements, 
                 .cardioExercises, .liftPrograms, .routineTemplates, .normalization, 
                 .foodAliases, .completed]
     }

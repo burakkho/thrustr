@@ -64,14 +64,6 @@ extension LiftWorkout {
         return exercises.count
     }
     
-    var muscleGroups: Set<String> {
-        let groups = Set<String>()
-        for _ in exercises {
-            // This would map to actual muscle groups from Exercise model
-            // For now, returning empty
-        }
-        return groups
-    }
     
     var lastPerformed: Date? {
         return sessions
@@ -161,67 +153,3 @@ extension LiftWorkout {
     }
 }
 
-// MARK: - Workout Templates
-extension LiftWorkout {
-    static func createWorkoutA() -> LiftWorkout {
-        let workout = LiftWorkout(
-            name: "Workout A",
-            nameEN: "Workout A",
-            nameTR: "Antrenman A",
-            dayNumber: 1,
-            estimatedDuration: 45,
-            isTemplate: true,
-            isCustom: false
-        )
-        return workout
-    }
-    
-    static func createWorkoutB() -> LiftWorkout {
-        let workout = LiftWorkout(
-            name: "Workout B",
-            nameEN: "Workout B",
-            nameTR: "Antrenman B",
-            dayNumber: 2,
-            estimatedDuration: 45,
-            isTemplate: true,
-            isCustom: false
-        )
-        return workout
-    }
-    
-    static func createPushDay() -> LiftWorkout {
-        let workout = LiftWorkout(
-            name: "Push Day",
-            nameEN: "Push Day",
-            nameTR: "İtme Günü",
-            estimatedDuration: 60,
-            isTemplate: true,
-            isCustom: false
-        )
-        return workout
-    }
-    
-    static func createPullDay() -> LiftWorkout {
-        let workout = LiftWorkout(
-            name: "Pull Day",
-            nameEN: "Pull Day",
-            nameTR: "Çekme Günü",
-            estimatedDuration: 60,
-            isTemplate: true,
-            isCustom: false
-        )
-        return workout
-    }
-    
-    static func createLegDay() -> LiftWorkout {
-        let workout = LiftWorkout(
-            name: "Leg Day",
-            nameEN: "Leg Day",
-            nameTR: "Bacak Günü",
-            estimatedDuration: 75,
-            isTemplate: true,
-            isCustom: false
-        )
-        return workout
-    }
-}

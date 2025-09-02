@@ -121,7 +121,7 @@ struct CustomFoodEntryView: View {
                             
                             Spacer()
                             
-                            Text(unitSettings.unitSystem == .metric ? NutritionKeys.CustomFood.per100g.localized : "Per 3.5oz (100g)")
+                            Text(unitSettings.unitSystem == .metric ? NutritionKeys.CustomFood.per100g.localized : NutritionKeys.CustomFood.per100gImperial.localized)
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                         }
@@ -197,9 +197,7 @@ struct CustomFoodEntryView: View {
                     .frame(maxWidth: .infinity)
                      .onTapGesture {
                          if isValid {
-                             #if canImport(UIKit)
-                             UINotificationFeedbackGenerator().notificationOccurred(.success)
-                             #endif
+                             HapticManager.shared.notification(.success)
                          }
                      }
                     

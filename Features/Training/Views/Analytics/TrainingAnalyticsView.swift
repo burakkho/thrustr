@@ -183,8 +183,8 @@ struct TrainingAnalyticsView: View {
                 GoalProgressCard(
                     title: TrainingKeys.Analytics.distance.localized, 
                     progress: goalProgress.distanceProgress,
-                    current: "\(Int(goalProgress.currentDistance / 1000))km",
-                    target: "\(Int(goalProgress.targetDistance / 1000))km",
+                    current: UnitsFormatter.formatDistance(meters: goalProgress.currentDistance, system: unitSettings.unitSystem),
+                    target: UnitsFormatter.formatDistance(meters: goalProgress.targetDistance, system: unitSettings.unitSystem),
                     color: Color.cardioColor,
                     onTap: { showingGoalSettings = true }
                 )

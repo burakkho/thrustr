@@ -5,6 +5,7 @@ struct CardioLiveTrackingView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.theme) private var theme
     @Environment(\.modelContext) private var modelContext
+    @EnvironmentObject private var unitSettings: UnitSettings
     
     @State private var viewModel: CardioTimerViewModel
     @State private var showingStopConfirmation = false
@@ -77,13 +78,13 @@ struct CardioLiveTrackingView: View {
         .sheet(isPresented: $showingBluetoothSheet) {
             BluetoothDeviceSheet(viewModel: viewModel)
         }
-        .confirmationDialog("Antrenmanı Bitir", isPresented: $showingStopConfirmation) {
-            Button("Bitir ve Kaydet", role: .destructive) {
+        .confirmationDialog(TrainingKeys.Status.finishWorkout.localized, isPresented: $showingStopConfirmation) {
+            Button(TrainingKeys.Status.finishAndSave.localized, role: .destructive) {
                 completeSession()
             }
-            Button("İptal", role: .cancel) { }
+            Button(TrainingKeys.Status.cancel.localized, role: .cancel) { }
         } message: {
-            Text("Antrenmanı bitirmek istediğinize emin misiniz?")
+            Text(TrainingKeys.Status.confirmFinishMessage.localized)
         }
         .fullScreenCover(isPresented: $viewModel.showingCompletionView) {
             if let session = createSession() {
@@ -107,7 +108,7 @@ struct CardioLiveTrackingView: View {
                 .ignoresSafeArea()
             
             VStack(spacing: theme.spacing.xl) {
-                Text("HAZIRLANIYOR")
+                Text(TrainingKeys.Status.preparing.localized.uppercased())
                     .font(theme.typography.title2)
                     .fontWeight(.bold)
                     .foregroundColor(.white)
@@ -119,7 +120,7 @@ struct CardioLiveTrackingView: View {
                     .animation(.easeOut(duration: 0.3), value: viewModel.timerViewModel.countdownValue)
                 
                 if viewModel.timerViewModel.countdownValue == 0 {
-                    Text("BAŞLA!")
+                    Text(TrainingKeys.Status.start.localized.uppercased() + "!")
                         .font(theme.typography.title1)
                         .fontWeight(.bold)
                         .foregroundColor(theme.colors.accent)
@@ -142,7 +143,7 @@ struct CardioLiveTrackingView: View {
                 HStack(spacing: theme.spacing.s) {
                     Image(systemName: isOutdoor ? "location.fill" : "house.fill")
                         .font(.caption)
-                    Text(isOutdoor ? "Dış Mekan" : "İç Mekan")
+                    Text(isOutdoor ? TrainingKeys.Cardio.outdoor.localized : TrainingKeys.Cardio.indoor.localized)
                         .font(theme.typography.caption)
                     
                     if isOutdoor {
@@ -176,7 +177,7 @@ struct CardioLiveTrackingView: View {
             )
             
             if viewModel.timerViewModel.isPaused {
-                Text("DURAKLATILDI")
+                Text(TrainingKeys.Status.paused.localized.uppercased())
                     .font(theme.typography.caption)
                     .fontWeight(.semibold)
                     .foregroundColor(theme.colors.warning)
@@ -196,15 +197,15 @@ struct CardioLiveTrackingView: View {
                 // Outdoor metrics: GPS-based performance data
                 MetricCard(
                     icon: "speedometer",
-                    title: "Hız",
+                    title: TrainingKeys.Cardio.speed.localized,
                     value: viewModel.formattedSpeed,
-                    unit: "km/h",
+                    unit: UnitsFormatter.formatSpeedUnit(system: unitSettings.unitSystem),
                     color: theme.colors.accent
                 )
                 
                 MetricCard(
                     icon: "location.fill",
-                    title: "Mesafe",
+                    title: TrainingKeys.Cardio.distance.localized,
                     value: viewModel.formattedDistance,
                     unit: "",
                     color: theme.colors.success
@@ -212,7 +213,7 @@ struct CardioLiveTrackingView: View {
                 
                 MetricCard(
                     icon: "flame.fill",
-                    title: "Kalori",
+                    title: TrainingKeys.Cardio.calories.localized,
                     value: "\(viewModel.currentCalories)",
                     unit: "kcal",
                     color: theme.colors.warning
@@ -221,9 +222,9 @@ struct CardioLiveTrackingView: View {
                 
                 MetricCard(
                     icon: "gauge.medium",
-                    title: "Tempo",
+                    title: TrainingKeys.Cardio.pace.localized,
                     value: viewModel.formattedPace,
-                    unit: "min/km",
+                    unit: UnitsFormatter.formatPaceUnit(system: unitSettings.unitSystem),
                     color: theme.colors.accent.opacity(0.8)
                 )
                 .id("pace-\(viewModel.currentPace)")
@@ -231,7 +232,7 @@ struct CardioLiveTrackingView: View {
                 // Indoor metrics: Focus on effort and physiological data
                 MetricCard(
                     icon: "flame.fill",
-                    title: "Kalori",
+                    title: TrainingKeys.Cardio.calories.localized,
                     value: "\(viewModel.currentCalories)",
                     unit: "kcal",
                     color: theme.colors.warning
@@ -240,7 +241,7 @@ struct CardioLiveTrackingView: View {
                 
                 MetricCard(
                     icon: "heart.fill",
-                    title: "Nabız",
+                    title: TrainingKeys.Cardio.heartRate.localized,
                     value: viewModel.formattedHeartRate,
                     unit: "BPM",
                     color: theme.colors.error
@@ -248,15 +249,15 @@ struct CardioLiveTrackingView: View {
                 
                 MetricCard(
                     icon: "bolt.fill",
-                    title: "Effort",
+                    title: TrainingKeys.Cardio.effort.localized,
                     value: viewModel.perceivedEffortLevel,
-                    unit: "RPE",
+                    unit: TrainingKeys.Cardio.rpe.localized,
                     color: theme.colors.accent
                 )
                 
                 MetricCard(
                     icon: "target",
-                    title: "Zone",
+                    title: TrainingKeys.Cardio.zone.localized,
                     value: viewModel.heartRateZone,
                     unit: "",
                     color: viewModel.heartRateZoneColor
@@ -271,7 +272,7 @@ struct CardioLiveTrackingView: View {
             HStack {
                 Image(systemName: "heart.fill")
                     .foregroundColor(theme.colors.error)
-                Text("Nabız")
+                Text(TrainingKeys.HeartRate.heartRate.localized)
                     .font(theme.typography.headline)
                     .fontWeight(.semibold)
                     .foregroundColor(theme.colors.textPrimary)
@@ -280,7 +281,7 @@ struct CardioLiveTrackingView: View {
                 
                 if !viewModel.bluetoothManager.isConnected {
                     Button(action: { showingBluetoothSheet = true }) {
-                        Text("Bağlan")
+                        Text(TrainingKeys.HeartRate.connect.localized)
                             .font(theme.typography.caption)
                             .foregroundColor(theme.colors.accent)
                     }
@@ -328,7 +329,7 @@ struct CardioLiveTrackingView: View {
                     Spacer()
                 }
             } else {
-                Text("Nabız bandı bağlı değil")
+                Text(TrainingKeys.HeartRate.notConnected.localized)
                     .font(theme.typography.body)
                     .foregroundColor(theme.colors.textSecondary)
                     .frame(maxWidth: .infinity, alignment: .center)
@@ -346,7 +347,7 @@ struct CardioLiveTrackingView: View {
             HStack {
                 Image(systemName: "flag.checkered")
                     .foregroundColor(theme.colors.accent)
-                Text("Ara Süreler")
+                Text(TrainingKeys.Intervals.intervals.localized)
                     .font(theme.typography.headline)
                     .fontWeight(.semibold)
                     .foregroundColor(theme.colors.textPrimary)
@@ -356,7 +357,7 @@ struct CardioLiveTrackingView: View {
             VStack(spacing: theme.spacing.s) {
                 ForEach(Array(viewModel.splits.enumerated()), id: \.offset) { index, split in
                     HStack {
-                        Text("Km \(index + 1)")
+                        Text(UnitsFormatter.formatSplitDistance(splitNumber: index + 1, system: unitSettings.unitSystem))
                             .font(theme.typography.body)
                             .fontWeight(.medium)
                             .foregroundColor(theme.colors.textPrimary)
@@ -368,7 +369,7 @@ struct CardioLiveTrackingView: View {
                         
                         Spacer()
                         
-                        Text("\(formatPace(split.pace)) /km")
+                        Text("\(formatPace(split.pace)) /\(unitSettings.unitSystem == .metric ? "km" : "mi")")
                             .font(theme.typography.body)
                             .fontWeight(.medium)
                             .foregroundColor(theme.colors.accent)
@@ -398,7 +399,7 @@ struct CardioLiveTrackingView: View {
                     VStack(spacing: 4) {
                         Image(systemName: "play.fill")
                             .font(.title2)
-                        Text("Devam")
+                        Text(TrainingKeys.Status.resume.localized)
                             .font(theme.typography.caption)
                             .fontWeight(.medium)
                     }
@@ -413,7 +414,7 @@ struct CardioLiveTrackingView: View {
                     VStack(spacing: 4) {
                         Image(systemName: "pause.fill")
                             .font(.title2)
-                        Text("Duraklat")
+                        Text(TrainingKeys.Status.pause.localized)
                             .font(theme.typography.caption)
                             .fontWeight(.medium)
                     }
@@ -429,7 +430,7 @@ struct CardioLiveTrackingView: View {
                 VStack(spacing: 4) {
                     Image(systemName: "stop.fill")
                         .font(.title2)
-                    Text("Bitir")
+                    Text(TrainingKeys.Status.finish.localized)
                         .font(theme.typography.caption)
                         .fontWeight(.medium)
                 }
@@ -452,9 +453,7 @@ struct CardioLiveTrackingView: View {
     }
     
     private func formatPace(_ pace: Double) -> String {
-        let minutes = Int(pace)
-        let seconds = Int((pace - Double(minutes)) * 60)
-        return String(format: "%d:%02d", minutes, seconds)
+        return UnitsFormatter.formatDetailedPace(minPerKm: pace, system: unitSettings.unitSystem)
     }
     
     private func createSession() -> CardioSession? {
@@ -519,7 +518,7 @@ struct BluetoothDeviceSheet: View {
                     HStack {
                         ProgressView()
                             .scaleEffect(0.8)
-                        Text("Cihazlar aranıyor...")
+                        Text(TrainingKeys.HeartRate.searchingDevices.localized)
                             .font(theme.typography.body)
                             .foregroundColor(theme.colors.textSecondary)
                     }
@@ -537,7 +536,7 @@ struct BluetoothDeviceSheet: View {
                                 Text(device.name)
                                     .font(theme.typography.body)
                                     .foregroundColor(theme.colors.textPrimary)
-                                Text("Sinyal: \(device.signalStrength)")
+                                Text("\(TrainingKeys.HeartRate.signal.localized): \(device.signalStrength)")
                                     .font(theme.typography.caption)
                                     .foregroundColor(theme.colors.textSecondary)
                             }
@@ -548,16 +547,16 @@ struct BluetoothDeviceSheet: View {
                     }
                 }
             }
-            .navigationTitle("Nabız Bandı Seç")
+            .navigationTitle(TrainingKeys.HeartRate.selectDevice.localized)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button("İptal") { dismiss() }
+                    Button(TrainingKeys.Status.cancel.localized) { dismiss() }
                 }
                 
                 ToolbarItem(placement: .navigationBarTrailing) {
                     if !viewModel.bluetoothManager.isScanning {
-                        Button("Yeniden Tara") {
+                        Button(TrainingKeys.HeartRate.rescan.localized) {
                             viewModel.bluetoothManager.startScanning()
                         }
                     }
@@ -582,4 +581,5 @@ struct BluetoothDeviceSheet: View {
             selectedLanguage: "tr"
         )
     )
+    .environmentObject(UnitSettings.shared)
 }

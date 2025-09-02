@@ -92,8 +92,18 @@ extension CardioSession {
         return totalDuration
     }
     
+    func formattedDistance(using unitSystem: UnitSystem) -> String {
+        return UnitsFormatter.formatDistance(meters: totalDistance, system: unitSystem)
+    }
+    
     var formattedDistance: String {
         return UnitsFormatter.formatDistance(meters: totalDistance, system: UnitSettings.shared.unitSystem)
+    }
+    
+    func formattedAveragePace(using unitSystem: UnitSystem) -> String? {
+        guard totalDistance > 0 && totalDuration > 0 else { return nil }
+        let paceMinPerKm = Double(totalDuration) / 60.0 / (totalDistance / 1000.0)
+        return UnitsFormatter.formatPace(minPerKm: paceMinPerKm, system: unitSystem)
     }
     
     var formattedAveragePace: String? {
@@ -128,6 +138,11 @@ extension CardioSession {
     var averagePace: Double? {
         guard totalDistance > 0 && totalDuration > 0 else { return nil }
         return Double(totalDuration) / (totalDistance / 1000.0) // seconds per km
+    }
+    
+    func formattedSpeed(using unitSystem: UnitSystem) -> String? {
+        guard let speed = averageSpeed else { return nil }
+        return UnitsFormatter.formatSpeed(kmh: speed, system: unitSystem)
     }
     
     var formattedSpeed: String? {

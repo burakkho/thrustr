@@ -42,7 +42,7 @@ struct NutritionEntryEditSheet: View {
         Section(header: Text(NutritionKeys.MealEntry.portion.localized)) {
             HStack {
                 TextField(
-                    unitSettings.unitSystem == .metric ? NutritionKeys.MealEntry.portionGrams.localized : "Portion (oz)",
+                    unitSettings.unitSystem == .metric ? NutritionKeys.MealEntry.portionGrams.localized : NutritionKeys.MealEntry.portionOz.localized,
                     value: Binding(
                         get: { 
                             unitSettings.unitSystem == .metric ? grams : UnitsConverter.gramToOz(grams)
@@ -113,9 +113,7 @@ struct NutritionEntryEditSheet: View {
         
         do {
             try modelContext.save()
-            #if canImport(UIKit)
-            UINotificationFeedbackGenerator().notificationOccurred(.success)
-            #endif
+            HapticManager.shared.notification(.success)
             dismiss()
         } catch {
             saveErrorMessage = error.localizedDescription

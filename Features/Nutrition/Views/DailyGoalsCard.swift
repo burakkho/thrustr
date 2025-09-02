@@ -4,6 +4,7 @@ import SwiftData
 struct DailyGoalsCard: View {
     let nutritionEntries: [NutritionEntry]
     @Query private var users: [User]
+    @EnvironmentObject private var unitSettings: UnitSettings
     
     private var currentUser: User? {
         users.first
@@ -47,7 +48,7 @@ struct DailyGoalsCard: View {
                             current: todaysNutrition.protein,
                             goal: user.dailyProteinGoal,
                             title: NutritionKeys.DailySummary.protein.localized,
-                            unit: NutritionKeys.Units.g.localized,
+                            unit: unitSettings.unitSystem == .metric ? NutritionKeys.Units.g.localized : NutritionKeys.Units.oz.localized,
                             color: .red
                         )
                         
@@ -56,7 +57,7 @@ struct DailyGoalsCard: View {
                             current: todaysNutrition.carbs,
                             goal: user.dailyCarbGoal,
                             title: NutritionKeys.DailySummary.carbs.localized,
-                            unit: NutritionKeys.Units.g.localized,
+                            unit: unitSettings.unitSystem == .metric ? NutritionKeys.Units.g.localized : NutritionKeys.Units.oz.localized,
                             color: .blue
                         )
                         
@@ -65,7 +66,7 @@ struct DailyGoalsCard: View {
                             current: todaysNutrition.fat,
                             goal: user.dailyFatGoal,
                             title: NutritionKeys.DailySummary.fat.localized,
-                            unit: NutritionKeys.Units.g.localized,
+                            unit: unitSettings.unitSystem == .metric ? NutritionKeys.Units.g.localized : NutritionKeys.Units.oz.localized,
                             color: .yellow
                         )
                     }

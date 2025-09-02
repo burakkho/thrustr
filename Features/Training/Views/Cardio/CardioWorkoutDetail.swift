@@ -5,10 +5,10 @@ struct CardioWorkoutDetail: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.theme) private var theme
     @Environment(\.modelContext) private var modelContext
+    @EnvironmentObject private var unitSettings: UnitSettings
     @Query private var user: [User]
     
     let workout: CardioWorkout
-    @State private var showingSessionStart = false
     @State private var showingDeleteConfirmation = false
     
     private var currentUser: User? {
@@ -34,11 +34,6 @@ struct CardioWorkoutDetail: View {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Done") { dismiss() }
                 }
-            }
-        }
-        .fullScreenCover(isPresented: $showingSessionStart) {
-            if let user = currentUser {
-                CardioSessionInputView(exerciseType: workout, user: user)
             }
         }
         .confirmationDialog("Delete Workout", isPresented: $showingDeleteConfirmation) {
@@ -176,21 +171,8 @@ struct CardioWorkoutDetail: View {
     
     private var actionButtonsSection: some View {
         VStack(spacing: theme.spacing.m) {
-            // Start Workout Button
-            Button(action: { showingSessionStart = true }) {
-                HStack {
-                    Image(systemName: "play.fill")
-                        .font(.title3)
-                    Text(TrainingKeys.Cardio.startWorkout.localized)
-                        .font(theme.typography.headline)
-                        .fontWeight(.semibold)
-                }
-                .foregroundColor(.white)
-                .frame(maxWidth: .infinity)
-                .padding(theme.spacing.m)
-                .background(theme.colors.accent)
-                .cornerRadius(theme.radius.m)
-            }
+            // Note: Start workout functionality removed
+            // Use CardioQuickStartView from main cardio screen instead
             
             // Secondary Actions
             HStack(spacing: theme.spacing.m) {
@@ -326,15 +308,15 @@ struct PersonalRecordCard: View {
             
             HStack(spacing: theme.spacing.xl) {
                 if let time = result.formattedTime {
-                    StatItem(title: "Time", value: time)
+                    StatItem(title: TrainingKeys.Cardio.time.localized, value: time)
                 }
                 
                 if let distance = result.formattedDistance {
-                    StatItem(title: "Distance", value: distance)
+                    StatItem(title: TrainingKeys.Cardio.distance.localized, value: distance)
                 }
                 
                 if let pace = result.formattedPace {
-                    StatItem(title: "Pace", value: pace)
+                    StatItem(title: TrainingKeys.Cardio.pace.localized, value: pace)
                 }
                 
                 Spacer()
@@ -358,6 +340,7 @@ struct PersonalRecordCard: View {
 
 struct StatisticsCard: View {
     @Environment(\.theme) private var theme
+    @EnvironmentObject private var unitSettings: UnitSettings
     let workout: CardioWorkout
     
     var body: some View {
@@ -390,11 +373,7 @@ struct StatisticsCard: View {
     }
     
     private func formatDistance(_ meters: Double) -> String {
-        if meters >= 1000 {
-            let km = meters / 1000.0
-            return String(format: "%.2f km", km)
-        }
-        return String(format: "%.0f m", meters)
+        return UnitsFormatter.formatDistance(meters: meters, system: unitSettings.unitSystem)
     }
 }
 
@@ -488,5 +467,6 @@ struct RecentSessionsSection: View {
     )
     
     return CardioWorkoutDetail(workout: workout)
+        .environmentObject(UnitSettings.shared)
         .modelContainer(for: [CardioWorkout.self, CardioSession.self, User.self], inMemory: true)
 }

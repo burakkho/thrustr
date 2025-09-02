@@ -360,7 +360,13 @@ struct RecentEntriesSection: View {
                 }
                 
                 if measurements.isEmpty && weightEntries.isEmpty {
-                    MeasurementsEmptyStateView()
+                    EmptyStateView(
+                        systemImage: "ruler.circle",
+                        title: "body_measurements.no_measurements".localized,
+                        message: "body_measurements.first_tip".localized,
+                        primaryTitle: "body_measurements.add_measurement".localized,
+                        primaryAction: { /* Show measurement entry */ }
+                    )
                 }
             }
         }

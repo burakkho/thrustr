@@ -146,23 +146,7 @@ struct LifetimeAchievementsSection: View {
     }
     
     private func formatDistance(_ distance: Double) -> String {
-        let kmUnit = ProfileKeys.Units.km.localized
-        let miUnit = ProfileKeys.Units.mi.localized
-        
-        if unitSettings.unitSystem == .metric {
-            if distance >= 1000 {
-                return String(format: "%.0fk %@", distance / 1000, kmUnit)
-            } else {
-                return String(format: "%.0f%@", distance, kmUnit)
-            }
-        } else {
-            let miles = distance * 0.621371
-            if miles >= 1000 {
-                return String(format: "%.0fk %@", miles / 1000, miUnit)
-            } else {
-                return String(format: "%.0f%@", miles, miUnit)
-            }
-        }
+        return UnitsFormatter.formatDistance(meters: distance, system: unitSettings.unitSystem)
     }
 }
 

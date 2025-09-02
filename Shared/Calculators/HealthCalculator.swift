@@ -129,6 +129,41 @@ struct HealthCalculator {
             return max(8.0, min(50.0, result))  // Female essential fat starts ~8%
         }
     }
+    
+    // MARK: - Workout Calorie Estimation
+    
+    enum WorkoutIntensity {
+        case low, moderate, high, veryHigh
+        
+        var metValue: Double {
+            switch self {
+            case .low: return 3.0
+            case .moderate: return 5.0
+            case .high: return 8.0
+            case .veryHigh: return 12.0
+            }
+        }
+    }
+    
+    static func estimateStrengthTrainingCalories(duration: TimeInterval, bodyWeight: Double, intensity: WorkoutIntensity) -> Double {
+        guard duration > 0 && bodyWeight > 0 else { return 0 }
+        
+        let hours = duration / 3600.0
+        let metValue = intensity.metValue
+        let calories = metValue * bodyWeight * hours
+        
+        return max(0, min(2000, calories)) // Reasonable range 0-2000 kcal
+    }
+    
+    static func estimateMetconCalories(duration: TimeInterval, bodyWeight: Double, intensity: WorkoutIntensity) -> Double {
+        guard duration > 0 && bodyWeight > 0 else { return 0 }
+        
+        let hours = duration / 3600.0
+        let metValue = intensity.metValue
+        let calories = metValue * bodyWeight * hours
+        
+        return max(0, min(2000, calories)) // Reasonable range 0-2000 kcal
+    }
 }
 
 

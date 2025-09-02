@@ -100,11 +100,11 @@ extension Food {
     }
     
     var servingDisplayText: String {
-        let grams = Int(servingSizeGramsOrDefault.rounded())
+        let weightDisplay = UnitsFormatter.formatFoodWeight(grams: servingSizeGramsOrDefault, system: UnitSettings.shared.unitSystem)
         if let servingName, !servingName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-            return "1 \(servingName) ≈ \(grams) g"
+            return "1 \(servingName) ≈ \(weightDisplay)"
         }
-        return "1 \(NutritionKeys.Labels.serving.localized) ≈ \(grams) g"
+        return "1 \(NutritionKeys.Labels.serving.localized) ≈ \(weightDisplay)"
     }
     
     var isRecentlyUsed: Bool {

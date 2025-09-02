@@ -159,9 +159,7 @@ struct FoodSelectionView: View {
                                 ForEach(mergedLocalFoods(), id: \.id) { food in
                                     FoodRowView(food: food) {
                                         onFoodSelected(food)
-                                        #if canImport(UIKit)
-                                        UIImpactFeedbackGenerator(style: .light).impactOccurred()
-                                        #endif
+                                        HapticManager.shared.impact(.light)
                                     }
                                 }
                             }
@@ -228,7 +226,7 @@ struct FoodSelectionView: View {
             }
             .ignoresSafeArea()
         }
-        .background(ToastPresenter(message: $toastMessage, icon: "checkmark.circle.fill") { EmptyView() })
+        .background(ToastPresenter(message: $toastMessage, icon: "checkmark.circle.fill", type: .success) { EmptyView() })
         .onAppear {
             if startWithScanner && !showingScanner {
                 showingScanner = true
@@ -354,9 +352,7 @@ extension FoodSelectionView {
         do {
             // Check existing by barcode
             if let existing = try? fetchFood(byBarcode: normalized) {
-                #if canImport(UIKit)
-                UINotificationFeedbackGenerator().notificationOccurred(.success)
-                #endif
+                HapticManager.shared.notification(.success)
                 toastMessage = NutritionKeys.Scan.existing.localized
                 onFoodSelected(existing)
                 showingScanner = false
@@ -371,9 +367,7 @@ extension FoodSelectionView {
                     offErrorMessage = error.localizedDescription
                     return
                 }
-                #if canImport(UIKit)
-                UINotificationFeedbackGenerator().notificationOccurred(.success)
-                #endif
+                HapticManager.shared.notification(.success)
                 toastMessage = NutritionKeys.Scan.cached.localized
                 onFoodSelected(food)
                 showingScanner = false
@@ -402,9 +396,7 @@ extension FoodSelectionView {
             onFoodSelected(result.food)
             showingScanner = false
         } catch {
-            #if canImport(UIKit)
-            UINotificationFeedbackGenerator().notificationOccurred(.error)
-            #endif
+            HapticManager.shared.notification(.error)
             if let offError = error as? OpenFoodFactsError {
                 offErrorMessage = offError.localizedDescription
                 // Product not found -> offer manual creation flow
@@ -448,9 +440,7 @@ extension FoodSelectionView {
             offErrorMessage = error.localizedDescription
             return
         }
-        #if canImport(UIKit)
-        UINotificationFeedbackGenerator().notificationOccurred(.success)
-        #endif
+        HapticManager.shared.notification(.success)
         toastMessage = NutritionKeys.Scan.scanned.localized
         onFoodSelected(food)
     }

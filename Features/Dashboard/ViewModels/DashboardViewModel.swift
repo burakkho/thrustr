@@ -1,5 +1,6 @@
 import SwiftUI
 import SwiftData
+import Foundation
 
 @MainActor
 class DashboardViewModel: ObservableObject {
@@ -22,6 +23,9 @@ class DashboardViewModel: ObservableObject {
     
     // MARK: - Unit Settings
     var unitSettings: UnitSettings
+    
+    // MARK: - Formatting Service
+    private let metricsFormatter: DashboardMetricsFormatter
     
     // MARK: - Private Properties  
     private var todayNutritionEntriesCount: Int = 0
@@ -52,6 +56,7 @@ class DashboardViewModel: ObservableObject {
     init(healthKitService: HealthKitService, unitSettings: UnitSettings = UnitSettings.shared) {
         self.healthKitService = healthKitService
         self.unitSettings = unitSettings
+        self.metricsFormatter = DashboardMetricsFormatter(unitSettings: unitSettings)
     }
     
     // MARK: - Public Methods
@@ -100,6 +105,9 @@ class DashboardViewModel: ObservableObject {
                 // Tasks are completing progressively
             }
         }
+        
+        // Clear temporal cache to ensure fresh data after reload
+        clearTemporalCache()
         
         // Pre-calculate temporal metrics for performance
         preCalculateTemporalMetrics()
@@ -338,10 +346,10 @@ class DashboardViewModel: ObservableObject {
         let weeklyAverage = weeklyStats.totalVolume / 7.0
         let monthlyAverage = monthlyLiftVolume / 30.0
         
-        return (
-            daily: formatVolumePerDay(todayLiftVolume),
-            weekly: formatVolumePerDay(weeklyAverage),
-            monthly: formatVolumePerDay(monthlyAverage)
+        return metricsFormatter.formatTemporalLiftMetrics(
+            daily: todayLiftVolume,
+            weeklyAverage: weeklyAverage,
+            monthlyAverage: monthlyAverage
         )
     }
     
@@ -349,38 +357,28 @@ class DashboardViewModel: ObservableObject {
         let weeklyAverage = weeklyCardioStats.totalDistance / 7.0
         let monthlyAverage = monthlyCardioDistance / 30.0
         
-        return (
-            daily: formatDistancePerDay(todayCardioDistance),
-            weekly: formatDistancePerDay(weeklyAverage),
-            monthly: formatDistancePerDay(monthlyAverage)
+        return metricsFormatter.formatTemporalCardioMetrics(
+            daily: todayCardioDistance,
+            weeklyAverage: weeklyAverage,
+            monthlyAverage: monthlyAverage
         )
     }
     
     private func calculateCalorieMetrics() -> (daily: String, weekly: String, monthly: String) {
-        return (
-            daily: formatCaloriesPerDay(todayCalorieCount),
-            weekly: formatCaloriesPerDay(weeklyCalorieAverage),
-            monthly: formatCaloriesPerDay(monthlyCalorieAverage)
+        return metricsFormatter.formatTemporalCalorieMetrics(
+            daily: todayCalorieCount,
+            weekly: weeklyCalorieAverage,
+            monthly: monthlyCalorieAverage
         )
     }
     
-    // MARK: - Private Formatting Helpers
+    // MARK: - Progress Calculations
     
-    private func formatCaloriesPerDay(_ calories: Double) -> String {
-        return String(format: "%.0f", calories)
-    }
-    
-    private func formatVolumePerDay(_ volume: Double) -> String {
-        return UnitsFormatter.formatVolume(kg: volume, system: unitSettings.unitSystem)
-    }
-    
-    private func formatDistancePerDay(_ distance: Double) -> String {
-        return UnitsFormatter.formatDistance(meters: distance, system: unitSettings.unitSystem)
-    }
-    
-    private func calculateDailyCalorieProgress() -> Double {
-        guard let user = currentUser, user.dailyCalorieGoal > 0 else { return 0.0 }
-        return todayCalorieCount / user.dailyCalorieGoal
+    var dailyCalorieProgress: Double {
+        return metricsFormatter.calculateDailyCalorieProgress(
+            currentCalories: todayCalorieCount,
+            user: currentUser
+        )
     }
     
     // MARK: - Activity Logger Integration
@@ -417,6 +415,69 @@ struct WeeklyCardioStats {
         self.sessionCount = sessionCount
         self.totalDistance = totalDistance
         self.totalDuration = totalDuration
+    }
+}
+
+// MARK: - Dashboard Metrics Formatter
+@MainActor
+struct DashboardMetricsFormatter {
+    private let unitSettings: UnitSettings
+    
+    init(unitSettings: UnitSettings = UnitSettings.shared) {
+        self.unitSettings = unitSettings
+    }
+    
+    func formatCaloriesPerDay(_ calories: Double) -> String {
+        return String(format: "%.0f", calories)
+    }
+    
+    func formatVolumePerDay(_ volume: Double) -> String {
+        return UnitsFormatter.formatVolume(kg: volume, system: unitSettings.unitSystem)
+    }
+    
+    func formatDistancePerDay(_ distance: Double) -> String {
+        return UnitsFormatter.formatDistance(meters: distance, system: unitSettings.unitSystem)
+    }
+    
+    func calculateDailyCalorieProgress(currentCalories: Double, user: User?) -> Double {
+        guard let user = user, user.dailyCalorieGoal > 0 else { return 0.0 }
+        return currentCalories / user.dailyCalorieGoal
+    }
+    
+    func formatTemporalLiftMetrics(
+        daily: Double,
+        weeklyAverage: Double, 
+        monthlyAverage: Double
+    ) -> (daily: String, weekly: String, monthly: String) {
+        return (
+            daily: formatVolumePerDay(daily),
+            weekly: formatVolumePerDay(weeklyAverage),
+            monthly: formatVolumePerDay(monthlyAverage)
+        )
+    }
+    
+    func formatTemporalCardioMetrics(
+        daily: Double,
+        weeklyAverage: Double,
+        monthlyAverage: Double
+    ) -> (daily: String, weekly: String, monthly: String) {
+        return (
+            daily: formatDistancePerDay(daily),
+            weekly: formatDistancePerDay(weeklyAverage), 
+            monthly: formatDistancePerDay(monthlyAverage)
+        )
+    }
+    
+    func formatTemporalCalorieMetrics(
+        daily: Double,
+        weekly: Double,
+        monthly: Double
+    ) -> (daily: String, weekly: String, monthly: String) {
+        return (
+            daily: formatCaloriesPerDay(daily),
+            weekly: formatCaloriesPerDay(weekly),
+            monthly: formatCaloriesPerDay(monthly)
+        )
     }
 }
 

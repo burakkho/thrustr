@@ -8,6 +8,7 @@ struct EnhancedWODTimerView: View {
     @Environment(\.theme) private var theme
     @Environment(\.modelContext) private var modelContext
     @EnvironmentObject private var unitSettings: UnitSettings
+    @EnvironmentObject private var healthKitService: HealthKitService
     @Query private var user: [User]
     
     let wod: WOD
@@ -252,7 +253,7 @@ struct EnhancedWODTimerView: View {
                     rounds: viewModel.completedRounds,
                     splits: viewModel.roundSplits,
                     onSave: { result in
-                        viewModel.saveWODResult(result, modelContext: modelContext, currentUser: currentUser)
+                        viewModel.saveWODResult(result, modelContext: modelContext, currentUser: currentUser, healthKitService: healthKitService)
                         dismiss()
                     }
                 )

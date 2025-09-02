@@ -275,6 +275,10 @@ class FoodSeeder {
         let dataRows = Array(rows.dropFirst())
         var seededCount = 0
         
+        // OPTIMIZED: Process foods in smaller batches for faster UI feedback
+        var batchCount = 0
+        let batchSize = 25 // Smaller batches for faster initial response
+        
         for (index, row) in dataRows.enumerated() {
             guard row.count >= 10 else {
                 Logger.warning("Skipping invalid food row \(index): insufficient columns (\(row.count))")
@@ -341,14 +345,27 @@ class FoodSeeder {
             
             modelContext.insert(food)
             seededCount += 1
+            batchCount += 1
             
-            // Yield control periodically
+            // PERFORMANCE: Save in smaller batches for faster UI updates
+            if batchCount >= batchSize {
+                try modelContext.save()
+                batchCount = 0
+                await Task.yield() // Allow UI to update
+                Logger.info("Seeded \(seededCount) foods so far...")
+            }
+            
+            // Yield control periodically for responsiveness
             if seededCount % SeedingConfig.yieldInterval == 0 {
                 await Task.yield()
             }
         }
         
-        try modelContext.save()
+        // Save remaining items
+        if batchCount > 0 {
+            try modelContext.save()
+        }
+        
         Logger.success("✅ Seeded \(seededCount) foods")
     }
     
@@ -858,17 +875,7 @@ class DataSeeder {
                 // Sequential seeding for SwiftData compatibility
                 Logger.info("Starting sequential database seeding...")
                 
-                // Core data seeding - sequential with individual error handling
-                do {
-                    await progressCallback?(.exercises)
-                    try await ExerciseSeeder.seedExercises(modelContext: modelContext)
-                    await Task.yield() // Keep UI responsive
-                } catch {
-                    Logger.error("Failed to seed exercises: \(error)")
-                    await progressCallback?(.error("Failed to load exercises: \(error.localizedDescription)"))
-                    throw error
-                }
-                
+                // PRIORITY: Seed foods first for immediate nutrition functionality
                 do {
                     await progressCallback?(.foods)
                     try await FoodSeeder.seedFoods(modelContext: modelContext)
@@ -876,6 +883,17 @@ class DataSeeder {
                 } catch {
                     Logger.error("Failed to seed foods: \(error)")
                     await progressCallback?(.error("Failed to load foods: \(error.localizedDescription)"))
+                    throw error
+                }
+                
+                // Then seed exercises
+                do {
+                    await progressCallback?(.exercises)
+                    try await ExerciseSeeder.seedExercises(modelContext: modelContext)
+                    await Task.yield() // Keep UI responsive
+                } catch {
+                    Logger.error("Failed to seed exercises: \(error)")
+                    await progressCallback?(.error("Failed to load exercises: \(error.localizedDescription)"))
                     throw error
                 }
                 

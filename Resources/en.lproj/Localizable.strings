@@ -67,6 +67,7 @@
 "training.dashboard.title" = "Dashboard";
 "training.dashboard.thisWeek" = "This Week";
 "training.dashboard.quickActions" = "Quick Actions";
+"training.dashboard.streak" = "Streak";
 "training.dashboard.noRecentActivity" = "No recent activity";
 
 // MARK: - Notifications
@@ -295,6 +296,7 @@
 "cardio.preparation.signal" = "Signal";
 "cardio.preparation.waitingGps" = "Waiting for GPS signal...";
 "cardio.preparation.pleaseWait" = "Please wait...";
+"cardio.preparation.cancel" = "Cancel";
 
 // MARK: - Lift Sections
 "training.lift.recentWorkouts" = "Recent Workouts";
@@ -338,6 +340,19 @@
 "training.cardio.running" = "Running";
 "training.cardio.walking" = "Walking";
 "training.cardio.cycling" = "Cycling";
+"training.cardio.train" = "Train";
+"training.cardio.quickStart" = "Quick Start";
+"training.cardio.quickStartDesc" = "Start cardio session";
+"training.cardio.viewHistory" = "View History";
+"training.cardio.viewHistoryDesc" = "Past sessions";
+"training.cardio.recentSessions" = "Recent Sessions";
+"training.cardio.sessionInProgress" = "Session in progress";
+"training.cardio.distance" = "Distance";
+"training.cardio.avgSpeed" = "Avg Speed";
+"training.cardio.pace" = "Pace";
+"training.cardio.averagePace" = "Average Pace";
+"training.cardio.calories" = "Calories";
+"training.cardio.personalRecord" = "PR";
 "training.lift.create" = "Create Lift";
 "training.cardio.create" = "Create Cardio";
 "training.lift.name" = "Lift Name";
@@ -421,6 +436,7 @@
 "nutrition.empty.first.message" = "Add your meals to track daily calories and macros.";
 "nutrition.empty.addMeal" = "Add Meal";
 "nutrition.empty.addCustomFood" = "Create Custom Food";
+"nutrition.empty.loadingFoods" = "Loading food database...";
 "nutrition.empty.today.title" = "No meals added today";
 "nutrition.empty.today.message" = "Pick from the list or create a custom food to add a meal.";
 "nutrition.empty.todayTitle" = "You haven't eaten anything today";
@@ -834,6 +850,30 @@
 "training.part.addExercise" = "Add Exercise";
 "training.part.result" = "Result:";
 
+// MARK: - Cardio Training
+"training.cardio.outdoor" = "Outdoor";
+"training.cardio.indoor" = "Indoor";
+"training.cardio.effort" = "Effort";
+"training.cardio.zone" = "Zone";
+"training.cardio.bpm" = "BPM";
+"training.cardio.rpe" = "RPE";
+"training.cardio.time" = "Time";
+"training.cardio.quickStart" = "Quick Start";
+"training.cardio.activityType" = "Activity Type";
+"training.cardio.selectActivityToStart" = "Select activity type and start";
+"training.cardio.location" = "Location";
+"training.cardio.features" = "Features";
+"training.cardio.start" = "Start";
+"training.cardio.cancel" = "Cancel";
+"training.cardio.gpsRealTimeTracking" = "Real-time GPS distance tracking";
+"training.cardio.routeMapAfterWorkout" = "Route map after workout";
+"training.cardio.instantSpeedPace" = "Instant speed and pace display";
+"training.cardio.elevationChanges" = "Elevation change recording";
+"training.cardio.timeTracking" = "Time tracking";
+"training.cardio.estimatedCalories" = "Estimated calorie calculation";
+"training.cardio.heartRateSupport" = "Heart rate band support";
+"training.cardio.manualDistanceInput" = "Manual distance input after workout";
+
 // MARK: - WOD / METCON
 "training.wod.title" = "METCON";
 "training.wod.movements" = "Movements";
@@ -1040,6 +1080,23 @@
 "nutrition.mealEntry.meal" = "Meal";
 "nutrition.mealEntry.total" = "Total: %d kcal";
 "nutrition.mealEntry.per100gCalories" = "per 100g: %d kcal";
+"nutrition.mealEntry.portionOz" = "Portion (oz)";
+"nutrition.mealEntry.portionOunces" = "Ounces";
+
+// MARK: - Portion Input
+"nutrition.portionInput.grams" = "Grams";
+"nutrition.portionInput.serving" = "Servings";
+"nutrition.portionInput.title" = "Quick Portions";
+"nutrition.portionInput.custom" = "Custom";
+"nutrition.portionInput.customAmount" = "Custom Amount";
+"nutrition.portionInput.set" = "Set";
+
+// Nutrition - Custom Food
+"nutrition.customFood.per100gImperial" = "Per 3.5oz (100g)";
+
+// Nutrition - Test
+"nutrition.test.addedSuccessfully" = "Test foods added successfully";
+"nutrition.test.clearedSuccessfully" = "All data cleared successfully";
 
 // MARK: - Meal Types
 "nutrition.mealEntry.mealTypes.breakfast" = "Breakfast";
@@ -1077,8 +1134,11 @@
 "nutrition.favorites.recent" = "Recently Used";
 "nutrition.favorites.popular" = "Popular";
 "nutrition.favorites.timesUsed" = "used %d times";
-"nutrition.favorites.emptyFavorites" = "No favorite foods yet\nTap the heart icon on foods you like to add them to favorites";
+"nutrition.favorites.emptyFavorites" = "No favorite foods yet";
 "nutrition.favorites.emptyRecent" = "No recent foods yet\nAs you add foods, they'll appear here";
+"nutrition.favorites.emptyFavoritesDesc" = "Tap the heart icon to add favorites";
+"nutrition.common.addFood" = "Add Food";
+"nutrition.favorites.emptyRecentDesc" = "As you add foods, your recent items will appear here";
 
 // MARK: - Analytics
 "nutrition.analytics.title" = "Weekly Analysis";
@@ -1112,6 +1172,7 @@
 "nutrition.units.kcal" = "kcal";
 "nutrition.units.grams" = "grams";
 "nutrition.units.g" = "g";
+"nutrition.units.oz" = "oz";
 
 // MARK: - Day Names (Short)
 "nutrition.days.sunday" = "Sun";
@@ -2037,6 +2098,9 @@
 "training.lift.delete" = "Delete";
 "training.lift.edit" = "Edit";
 "training.lift.seeAll" = "See All";
+"training.lift.noWorkouts" = "No Workouts Yet";
+"training.lift.noWorkoutsDesc" = "Start your first workout to begin tracking your strength training progress";
+"training.lift.startFirstWorkout" = "Start First Workout";
 
 // MARK: - Loading View
 "loading.title" = "Thrustr is Preparing";
@@ -2676,3 +2740,91 @@
 "analytics.time_range.month3" = "3 Months";
 "analytics.time_range.month6" = "6 Months";
 "analytics.time_range.year1" = "1 Year";
+"training.cardio.elevation" = "Elevation";
+
+// MARK: - Status Messages
+"training.status.preparing" = "Preparing";
+"training.status.ready" = "Ready";
+"training.status.inProgress" = "In Progress";
+"training.status.paused" = "Paused";
+"training.status.completed" = "Completed";
+"training.status.finishWorkout" = "Finish Workout";
+"training.status.finishAndSave" = "Finish and Save";
+"training.status.confirmFinishMessage" = "Are you sure you want to finish the workout?";
+"training.status.start" = "Start";
+"training.status.resume" = "Resume";
+"training.status.pause" = "Pause";
+"training.status.stop" = "Stop";
+"training.status.finish" = "Finish";
+"training.status.cancel" = "Cancel";
+
+// MARK: - Units and Measurements
+"training.units.sessions" = "sessions";
+"training.units.minutes" = "minutes";
+"training.units.seconds" = "seconds";
+"training.units.hours" = "hours";
+"training.units.days" = "days";
+"training.units.weeks" = "weeks";
+"training.units.months" = "months";
+"training.units.rounds" = "rounds";
+"training.units.reps" = "reps";
+"training.units.bpm" = "BPM";
+"training.units.kcal" = "kcal";
+"training.units.minCap" = "min cap";
+"training.units.daysPerWeek" = "days/week";
+
+// MARK: - Heart Rate & Devices
+"training.heartRate.heartRate" = "Heart Rate";
+"training.heartRate.bpm" = "BPM";
+"training.heartRate.connect" = "Connect";
+"training.heartRate.notConnected" = "Heart rate band not connected";
+"training.heartRate.searchingDevices" = "Searching for devices...";
+"training.heartRate.selectDevice" = "Select Heart Rate Band";
+"training.heartRate.rescan" = "Rescan";
+"training.heartRate.signal" = "Signal";
+"training.heartRate.battery" = "Battery";
+
+// MARK: - Search & Results
+"training.search.noResults" = "No results found";
+"training.search.tryDifferentTerm" = "Try a different search term";
+"training.search.placeholder" = "Search...";
+
+// MARK: - Intervals & Splits
+"training.intervals.intervals" = "Intervals";
+"training.intervals.splits" = "Splits";
+
+// MARK: - Program Completion
+"training.program.completed" = "Program Completed!";
+"training.program.congratulations" = "Congratulations on finishing your program!";
+"training.program.readyToStart" = "Ready to Start a Program?";
+"training.program.chooseFromPrograms" = "Choose from proven strength and muscle building programs";
+"training.program.browsePrograms" = "Browse Programs";
+"training.program.weekOf" = "Week";
+
+// MARK: - Welcome Messages
+"training.welcome.welcomeBack" = "Welcome back, %@!";
+"training.welcome.quickLift" = "Quick Lift";
+"training.welcome.quickCardio" = "Quick Cardio";
+"training.welcome.dailyWOD" = "Daily WOD";
+"training.welcome.startStrengthTraining" = "Start strength training";
+"training.welcome.startCardioSession" = "Start cardio session";
+"training.welcome.todaysWorkout" = "Today's workout";
+"training.welcome.findProgram" = "Find a program";
+
+// MARK: - Warmup
+"training.warmup.lightCardio" = "5-10 minutes light cardio";
+"training.warmup.dynamicStretching" = "Dynamic stretching for major muscle groups";
+"training.warmup.majorMuscleGroups" = "major muscle groups";
+
+// MARK: - Goals Descriptions
+"training.goalsDesc.workoutSessionsPerMonth" = "How many workout sessions per month?";
+"training.goalsDesc.totalRunningCyclingDistance" = "Total running/cycling distance per month";
+
+// MARK: - Workout Types
+"training.workoutTypes.forTime" = "For Time";
+"training.workoutTypes.amrap" = "AMRAP";
+"training.workoutTypes.emom" = "EMOM";
+"training.workoutTypes.customFormat" = "Custom Format";
+"training.workoutTypes.forTimeWithCap" = "For Time • %@ min cap";
+"training.workoutTypes.amrapMinutes" = "AMRAP • %@ minutes";
+"training.workoutTypes.emomMinutes" = "EMOM • %@ minutes";

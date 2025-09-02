@@ -7,6 +7,7 @@ struct LiftSessionView: View {
     @Environment(\.theme) private var theme
     @Environment(\.modelContext) private var modelContext
     @EnvironmentObject private var unitSettings: UnitSettings
+    @EnvironmentObject private var healthKitService: HealthKitService
     @Query private var user: [User]
     
     let workout: LiftWorkout
@@ -333,6 +334,27 @@ struct LiftSessionView: View {
             
             // Check for PRs in completed exercises
             checkAndLogPersonalRecords(session: completedSession, user: user)
+            
+            // Save to HealthKit
+            Task {
+                let estimatedCalories = HealthCalculator.estimateStrengthTrainingCalories(
+                    duration: completedSession.duration,
+                    bodyWeight: user.currentWeight,
+                    intensity: .moderate
+                )
+                
+                let success = await healthKitService.saveLiftWorkout(
+                    duration: completedSession.duration,
+                    caloriesBurned: estimatedCalories,
+                    startDate: completedSession.startDate,
+                    endDate: completedSession.endDate ?? Date(),
+                    totalVolume: completedSession.totalVolume
+                )
+                
+                if success {
+                    Logger.info("Lift workout successfully synced to HealthKit")
+                }
+            }
         }
         
         showingCompletion = true

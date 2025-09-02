@@ -232,8 +232,8 @@ struct WorkoutPreviewView: View {
     
     private var warmupTipsContent: some View {
         VStack(alignment: .leading, spacing: theme.spacing.s) {
-            warmupTip(icon: "heart.fill", text: "5-10 minutes light cardio")
-            warmupTip(icon: "figure.flexibility", text: "Dynamic stretching for major muscle groups")
+            warmupTip(icon: "heart.fill", text: TrainingKeys.Warmup.lightCardio.localized)
+            warmupTip(icon: "figure.flexibility", text: TrainingKeys.Warmup.dynamicStretching.localized)
             warmupTip(icon: "arrow.up.circle", text: "Practice movement patterns with bodyweight")
             warmupTip(icon: "dumbbell", text: "Warm-up sets with lighter weights")
         }

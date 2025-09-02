@@ -53,24 +53,24 @@ struct GoalSettingsView: View {
                     
                     goalSettingCard(
                         title: TrainingKeys.Goals.trainingSessions.localized,
-                        description: "How many workout sessions per month?",
+                        description: TrainingKeys.GoalsDesc.workoutSessionsPerMonth.localized,
                         icon: "calendar",
                         color: theme.colors.accent,
                         value: $monthlySessionGoal,
                         range: 4...40,
                         step: 2,
-                        suffix: " sessions"
+                        suffix: " " + TrainingKeys.Units.sessions.localized
                     )
                     
                     goalSettingCardDouble(
                         title: TrainingKeys.Goals.cardioDistance.localized,
-                        description: "Total running/cycling distance per month",
+                        description: TrainingKeys.GoalsDesc.totalRunningCyclingDistance.localized,
                         icon: "figure.run",
                         color: Color.cardioColor,
                         value: $monthlyDistanceGoal,
                         range: unitSettings.unitSystem == .metric ? 10.0...200.0 : 6.0...124.0, // 10-200km = 6-124mi
                         step: unitSettings.unitSystem == .metric ? 5.0 : 3.0, // 5km = 3mi
-                        suffix: unitSettings.unitSystem == .metric ? " km" : " mi"
+                        suffix: " " + UnitsFormatter.distanceUnitShort(system: unitSettings.unitSystem)
                     )
                     
                     Divider()
@@ -87,7 +87,7 @@ struct GoalSettingsView: View {
                         value: $weeklyLiftGoal,
                         range: 1...7,
                         step: 1,
-                        suffix: " sessions"
+                        suffix: " " + TrainingKeys.Units.sessions.localized
                     )
                     
                     goalSettingCard(
@@ -98,7 +98,7 @@ struct GoalSettingsView: View {
                         value: $weeklyCardioGoal,
                         range: 1...7,
                         step: 1,
-                        suffix: " sessions"
+                        suffix: " " + TrainingKeys.Units.sessions.localized
                     )
                     
                     goalSettingCardDouble(
@@ -109,7 +109,7 @@ struct GoalSettingsView: View {
                         value: $weeklyDistanceGoal,
                         range: unitSettings.unitSystem == .metric ? 2.0...50.0 : 1.2...31.0, // 2-50km = 1.2-31mi
                         step: unitSettings.unitSystem == .metric ? 2.5 : 1.5, // 2.5km = 1.5mi
-                        suffix: unitSettings.unitSystem == .metric ? " km" : " mi"
+                        suffix: " " + UnitsFormatter.distanceUnitShort(system: unitSettings.unitSystem)
                     )
                 }
                 

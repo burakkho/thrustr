@@ -345,15 +345,15 @@ struct WODMainView: View {
         switch wod.wodType {
         case .forTime:
             if let timeCap = wod.timeCap {
-                return "For Time • \(timeCap) min cap"
+                return String(format: TrainingKeys.WorkoutTypes.forTimeWithCap.localized, "\(timeCap)")
             }
-            return "For Time"
+            return TrainingKeys.WorkoutTypes.forTime.localized
         case .amrap:
-            return "AMRAP • \(wod.timeCap ?? 20) minutes"
+            return String(format: TrainingKeys.WorkoutTypes.amrapMinutes.localized, "\(wod.timeCap ?? 20)")
         case .emom:
-            return "EMOM • \(wod.timeCap ?? 10) minutes"
+            return String(format: TrainingKeys.WorkoutTypes.emomMinutes.localized, "\(wod.timeCap ?? 10)")
         case .custom:
-            return "Custom Format"
+            return TrainingKeys.WorkoutTypes.customFormat.localized
         }
     }
     

@@ -6,6 +6,7 @@ struct TrainingView: View {
     @Environment(\.modelContext) private var modelContext
     @EnvironmentObject private var tabRouter: TabRouter
     @State private var coordinator = TrainingCoordinator()
+    @StateObject private var errorHandler = ErrorHandlingService.shared
     
     var body: some View {
         NavigationStack {
@@ -53,6 +54,7 @@ struct TrainingView: View {
             .navigationTitle(TrainingKeys.title.localized)
             .navigationBarTitleDisplayMode(.large)
         }
+        .toast($errorHandler.toastMessage, type: errorHandler.toastType)
     }
 }
 

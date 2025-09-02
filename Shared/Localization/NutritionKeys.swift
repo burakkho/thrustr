@@ -14,6 +14,7 @@ enum NutritionKeys {
         static let addCustomFood = "nutrition.empty.addCustomFood"
         static let todayTitle = "nutrition.empty.todayTitle"
         static let todayMessage = "nutrition.empty.todayMessage"
+        static let loadingFoods = "nutrition.empty.loadingFoods"
         // Legacy support - keeping existing ones for backward compatibility
         static let oldTodayTitle = "nutrition.empty.today.title"
         static let oldTodayMessage = "nutrition.empty.today.message"
@@ -38,6 +39,8 @@ enum NutritionKeys {
         static let testCategory = "nutrition.test.testCategory"
         static let testFood = "nutrition.test.testFood"
         static let clear = "nutrition.test.clear"
+        static let addedSuccessfully = "nutrition.test.addedSuccessfully"
+        static let clearedSuccessfully = "nutrition.test.clearedSuccessfully"
     }
     
     enum FoodSelection {
@@ -69,9 +72,12 @@ enum NutritionKeys {
         static let cancel = "nutrition.mealEntry.cancel"
         static let portion = "nutrition.mealEntry.portion"
         static let portionGrams = "nutrition.mealEntry.portionGrams"
+        static let portionOz = "nutrition.mealEntry.portionOz"
+        static let portionOunces = "nutrition.mealEntry.portionOunces"
         static let meal = "nutrition.mealEntry.meal"
         static let total = "nutrition.mealEntry.total"
         static let per100gCalories = "nutrition.mealEntry.per100gCalories"
+        static let macroInfo = "nutrition.mealEntry.macroInfo"
         
         enum MealTypes {
             static let breakfast = "nutrition.mealEntry.mealTypes.breakfast"
@@ -96,6 +102,7 @@ enum NutritionKeys {
         static let category = "nutrition.customFood.category"
         static let nutritionValues = "nutrition.customFood.nutritionValues"
         static let per100g = "nutrition.customFood.per100g"
+        static let per100gImperial = "nutrition.customFood.per100gImperial"
         static let caloriesRequired = "nutrition.customFood.caloriesRequired"
         static let protein = "nutrition.customFood.protein"
         static let carbs = "nutrition.customFood.carbs"
@@ -113,7 +120,22 @@ enum NutritionKeys {
         static let popular = "nutrition.favorites.popular"
         static let timesUsed = "nutrition.favorites.timesUsed"
         static let emptyFavorites = "nutrition.favorites.emptyFavorites"
+        static let emptyFavoritesDesc = "nutrition.favorites.emptyFavoritesDesc"
         static let emptyRecent = "nutrition.favorites.emptyRecent"
+        static let emptyRecentDesc = "nutrition.favorites.emptyRecentDesc"
+    }
+    
+    enum Common {
+        static let addFood = "nutrition.common.addFood"
+    }
+    
+    enum PortionInput {
+        static let grams = "nutrition.portionInput.grams"
+        static let serving = "nutrition.portionInput.serving"
+        static let title = "nutrition.portionInput.title"
+        static let custom = "nutrition.portionInput.custom"
+        static let customAmount = "nutrition.portionInput.customAmount"
+        static let set = "nutrition.portionInput.set"
     }
     
     enum Analytics {
@@ -127,6 +149,7 @@ enum NutritionKeys {
         static let kcal = "nutrition.units.kcal"
         static let grams = "nutrition.units.grams"
         static let g = "nutrition.units.g"
+        static let oz = "nutrition.units.oz"
     }
     
     enum Days {

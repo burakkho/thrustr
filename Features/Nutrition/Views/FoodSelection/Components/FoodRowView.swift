@@ -109,7 +109,8 @@ struct FoodRowView: View {
         } else {
             scope = " / 1 \(NutritionKeys.Labels.serving.localized) (\(UnitsFormatter.formatFoodWeight(grams: Double(grams), system: unitSettings.unitSystem)))"
         }
-        return "\(Int(food.calories)) \(NutritionKeys.Units.kcal.localized) • P: \(Int(food.protein))\(NutritionKeys.Units.g.localized) • C: \(Int(food.carbs))\(NutritionKeys.Units.g.localized) • F: \(Int(food.fat))\(NutritionKeys.Units.g.localized)" + scope
+        let macroUnit = unitSettings.unitSystem == .metric ? NutritionKeys.Units.g.localized : NutritionKeys.Units.g.localized
+        return "\(Int(food.calories)) \(NutritionKeys.Units.kcal.localized) • P: \(Int(food.protein))\(macroUnit) • C: \(Int(food.carbs))\(macroUnit) • F: \(Int(food.fat))\(macroUnit)" + scope
     }
 }
 

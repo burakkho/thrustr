@@ -5,10 +5,12 @@ struct CardioQuickStartView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.theme) private var theme
     @Environment(\.modelContext) private var modelContext
+    @EnvironmentObject private var unitSettings: UnitSettings
     @Query private var user: [User]
     
     @State private var selectedActivity: CardioTimerViewModel.CardioActivityType = .running
     @State private var isOutdoor = true
+    @State private var selectedPreset: DistancePreset?
     @State private var showingPreparation = false
     
     private var currentUser: User? {
@@ -26,12 +28,12 @@ struct CardioQuickStartView: View {
                             .foregroundColor(theme.colors.accent)
                             .symbolRenderingMode(.hierarchical)
                         
-                        Text("Hızlı Başlat")
+                        Text(TrainingKeys.Cardio.quickStart.localized)
                             .font(theme.typography.title2)
                             .fontWeight(.bold)
                             .foregroundColor(theme.colors.textPrimary)
                         
-                        Text("Aktivite türünü seç ve başla")
+                        Text(TrainingKeys.Cardio.selectActivityToStart.localized)
                             .font(theme.typography.body)
                             .foregroundColor(theme.colors.textSecondary)
                     }
@@ -39,7 +41,7 @@ struct CardioQuickStartView: View {
                     
                     // Activity Selection
                     VStack(alignment: .leading, spacing: theme.spacing.m) {
-                        Text("Aktivite Türü")
+                        Text(TrainingKeys.Cardio.activityType.localized)
                             .font(theme.typography.headline)
                             .fontWeight(.semibold)
                             .foregroundColor(theme.colors.textPrimary)
@@ -59,7 +61,7 @@ struct CardioQuickStartView: View {
                     
                     // Indoor/Outdoor Toggle
                     VStack(alignment: .leading, spacing: theme.spacing.m) {
-                        Text("Konum")
+                        Text(TrainingKeys.Cardio.modalLocation.localized)
                             .font(theme.typography.headline)
                             .fontWeight(.semibold)
                             .foregroundColor(theme.colors.textPrimary)
@@ -67,23 +69,26 @@ struct CardioQuickStartView: View {
                         
                         HStack(spacing: theme.spacing.m) {
                             LocationCard(
-                                title: "Dış Mekan",
+                                title: TrainingKeys.Cardio.outdoor.localized,
                                 icon: "sun.max.fill",
-                                description: "GPS ile rota takibi",
+                                description: TrainingKeys.Cardio.gpsRealTimeTracking.localized,
                                 isSelected: isOutdoor,
                                 action: { isOutdoor = true }
                             )
                             
                             LocationCard(
-                                title: "İç Mekan",
+                                title: TrainingKeys.Cardio.indoor.localized,
                                 icon: "house.fill",
-                                description: "Manuel mesafe girişi",
+                                description: TrainingKeys.Cardio.manualDistanceInput.localized,
                                 isSelected: !isOutdoor,
                                 action: { isOutdoor = false }
                             )
                         }
                         .padding(.horizontal)
                     }
+                    
+                    // Quick Distance Presets
+                    quickPresetsSection
                     
                     // Features Info
                     FeaturesInfoCard(isOutdoor: isOutdoor)
@@ -94,7 +99,7 @@ struct CardioQuickStartView: View {
                         HStack {
                             Image(systemName: "play.fill")
                                 .font(.title3)
-                            Text("Başla")
+                            Text(TrainingKeys.Cardio.start.localized)
                                 .font(theme.typography.headline)
                                 .fontWeight(.semibold)
                         }
@@ -112,7 +117,7 @@ struct CardioQuickStartView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button("İptal") { dismiss() }
+                    Button(TrainingKeys.Cardio.cancel.localized) { dismiss() }
                 }
             }
             .fullScreenCover(isPresented: $showingPreparation) {
@@ -127,7 +132,30 @@ struct CardioQuickStartView: View {
         }
     }
     
+    private var quickPresetsSection: some View {
+        VStack(alignment: .leading, spacing: theme.spacing.m) {
+            Text("Quick Distance")
+                .font(theme.typography.headline)
+                .fontWeight(.semibold)
+                .foregroundColor(theme.colors.textPrimary)
+                .padding(.horizontal)
+            
+            LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 3), spacing: theme.spacing.s) {
+                ForEach(DistancePreset.allCases, id: \.self) { preset in
+                    PresetCard(
+                        preset: preset,
+                        isSelected: selectedPreset == preset,
+                        unitSystem: unitSettings.unitSystem,
+                        action: { selectedPreset = preset }
+                    )
+                }
+            }
+            .padding(.horizontal)
+        }
+    }
+    
     private func startActivity() {
+        guard currentUser != nil else { return }
         showingPreparation = true
     }
 }
@@ -229,17 +257,17 @@ struct FeaturesInfoCard: View {
     private var features: [(icon: String, text: String)] {
         if isOutdoor {
             return [
-                ("location.fill", "GPS ile gerçek zamanlı mesafe takibi"),
-                ("map.fill", "Antrenman sonunda rota haritası"),
-                ("speedometer", "Anlık hız ve tempo gösterimi"),
-                ("arrow.up.arrow.down", "Yükseklik değişimi kaydı")
+                ("location.fill", TrainingKeys.Cardio.gpsRealTimeTracking.localized),
+                ("map.fill", TrainingKeys.Cardio.routeMapAfterWorkout.localized),
+                ("speedometer", TrainingKeys.Cardio.instantSpeedPace.localized),
+                ("arrow.up.arrow.down", TrainingKeys.Cardio.elevationChanges.localized)
             ]
         } else {
             return [
-                ("timer", "Süre takibi"),
-                ("flame.fill", "Tahmini kalori hesaplama"),
-                ("heart.fill", "Nabız bandı desteği"),
-                ("pencil", "Antrenman sonrası manuel mesafe girişi")
+                ("timer", TrainingKeys.Cardio.timeTracking.localized),
+                ("flame.fill", TrainingKeys.Cardio.estimatedCalories.localized),
+                ("heart.fill", TrainingKeys.Cardio.heartRateSupport.localized),
+                ("pencil", TrainingKeys.Cardio.manualDistanceInput.localized)
             ]
         }
     }
@@ -249,7 +277,7 @@ struct FeaturesInfoCard: View {
             HStack {
                 Image(systemName: "info.circle.fill")
                     .foregroundColor(theme.colors.accent)
-                Text("Özellikler")
+                Text(TrainingKeys.Cardio.modalFeatures.localized)
                     .font(theme.typography.headline)
                     .fontWeight(.semibold)
                     .foregroundColor(theme.colors.textPrimary)
@@ -280,7 +308,69 @@ struct FeaturesInfoCard: View {
     }
 }
 
+// MARK: - Distance Presets
+enum DistancePreset: CaseIterable {
+    case oneK, fiveK, tenK, halfMarathon, marathon, custom
+    
+    var distanceMeters: Double {
+        switch self {
+        case .oneK: return 1000
+        case .fiveK: return 5000
+        case .tenK: return 10000
+        case .halfMarathon: return 21097
+        case .marathon: return 42195
+        case .custom: return 0
+        }
+    }
+    
+    func displayText(for unitSystem: UnitSystem) -> String {
+        switch self {
+        case .oneK: return unitSystem == .metric ? "1K" : "0.6mi"
+        case .fiveK: return unitSystem == .metric ? "5K" : "3.1mi"
+        case .tenK: return unitSystem == .metric ? "10K" : "6.2mi"
+        case .halfMarathon: return unitSystem == .metric ? "Half" : "13.1mi"
+        case .marathon: return unitSystem == .metric ? "Marathon" : "26.2mi"
+        case .custom: return "Custom"
+        }
+    }
+}
+
+// MARK: - Preset Card Component
+struct PresetCard: View {
+    @Environment(\.theme) private var theme
+    
+    let preset: DistancePreset
+    let isSelected: Bool
+    let unitSystem: UnitSystem
+    let action: () -> Void
+    
+    var body: some View {
+        Button(action: action) {
+            VStack(spacing: theme.spacing.xs) {
+                Text(preset.displayText(for: unitSystem))
+                    .font(theme.typography.body)
+                    .fontWeight(.semibold)
+                    .foregroundColor(isSelected ? .white : theme.colors.textPrimary)
+                
+                if preset != .custom {
+                    Text(UnitsFormatter.formatDistance(meters: preset.distanceMeters, system: unitSystem))
+                        .font(theme.typography.caption)
+                        .foregroundColor(isSelected ? .white.opacity(0.8) : theme.colors.textSecondary)
+                }
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, theme.spacing.s)
+            .background(
+                RoundedRectangle(cornerRadius: theme.radius.s)
+                    .fill(isSelected ? theme.colors.accent : theme.colors.backgroundSecondary)
+            )
+        }
+        .buttonStyle(PlainButtonStyle())
+    }
+}
+
 #Preview {
     CardioQuickStartView()
+        .environmentObject(UnitSettings.shared)
         .modelContainer(for: User.self, inMemory: true)
 }

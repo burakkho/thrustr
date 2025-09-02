@@ -140,11 +140,11 @@ struct WODHistoryView: View {
                             .font(.system(size: 40))
                             .foregroundColor(theme.colors.textSecondary)
                         
-                        Text("Sonuç bulunamadı")
+                        Text(TrainingKeys.Search.noResults.localized)
                             .font(.headline)
                             .foregroundColor(theme.colors.textPrimary)
                         
-                        Text("Farklı bir arama terimi deneyin")
+                        Text(TrainingKeys.Search.tryDifferentTerm.localized)
                             .font(.subheadline)
                             .foregroundColor(theme.colors.textSecondary)
                     }

@@ -166,6 +166,15 @@ enum UnitsFormatter {
         }
     }
     
+    static func distanceUnitShort(system: UnitSystem) -> String {
+        switch system {
+        case .metric:
+            return "km"
+        case .imperial:
+            return "mi"
+        }
+    }
+    
     static func formatSpeed(kmh: Double, system: UnitSystem) -> String {
         switch system {
         case .metric:
@@ -201,6 +210,16 @@ enum UnitsFormatter {
             } else {
                 return String(format: "%.2f oz", oz)
             }
+        }
+    }
+    
+    static func formatMacroWeight(grams: Double, system: UnitSystem) -> String {
+        switch system {
+        case .metric:
+            return String(format: "%.0f g", grams)
+        case .imperial:
+            // For macros, keep grams since they're small amounts, but add "g" notation
+            return String(format: "%.0f g", grams)
         }
     }
     

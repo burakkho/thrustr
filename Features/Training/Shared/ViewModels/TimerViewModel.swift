@@ -46,6 +46,8 @@ class TimerViewModel {
     func startTimer() {
         guard timerState == .stopped else { return }
         
+        HapticManager.shared.impact(.medium)
+        
         timerState = .running
         isRunning = true
         isPaused = false
@@ -58,6 +60,8 @@ class TimerViewModel {
     
     func pauseTimer() {
         guard timerState == .running else { return }
+        
+        HapticManager.shared.impact(.light)
         
         timer?.invalidate()
         timer = nil
@@ -79,6 +83,8 @@ class TimerViewModel {
     }
     
     func stopTimer() {
+        HapticManager.shared.notification(.success)
+        
         timer?.invalidate()
         timer = nil
         timerState = .completed

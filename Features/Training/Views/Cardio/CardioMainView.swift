@@ -5,6 +5,7 @@ struct CardioMainView: View {
     @Environment(\.theme) private var theme
     @Environment(\.modelContext) private var modelContext
     @Environment(TrainingCoordinator.self) private var coordinator
+    @EnvironmentObject private var unitSettings: UnitSettings
     
     @Query private var cardioWorkouts: [CardioWorkout]
     @Query private var cardioSessions: [CardioSession]
@@ -12,7 +13,6 @@ struct CardioMainView: View {
     
     @State private var selectedTab = 0
     @State private var selectedWorkout: CardioWorkout?
-    @State private var selectedWorkoutForSession: CardioWorkout?
     @State private var showingQuickStart = false
     
     private var currentUser: User? {
@@ -20,8 +20,8 @@ struct CardioMainView: View {
     }
     
     private let tabs = [
-        TrainingTab(title: "Train", icon: "heart.fill"),
-        TrainingTab(title: "History", icon: "clock.arrow.circlepath")
+        TrainingTab(title: TrainingKeys.Cardio.train.localized, icon: "heart.fill"),
+        TrainingTab(title: TrainingKeys.Cardio.history.localized, icon: "clock.arrow.circlepath")
     ]
     
     var body: some View {
@@ -41,7 +41,6 @@ struct CardioMainView: View {
                 case 0:
                     CardioTrainSection(
                         selectedWorkout: $selectedWorkout,
-                        selectedWorkoutForSession: $selectedWorkoutForSession,
                         showingQuickStart: $showingQuickStart,
                         currentUser: currentUser,
                         onNavigateToHistory: { selectedTab = 1 }
@@ -59,11 +58,6 @@ struct CardioMainView: View {
         .sheet(item: $selectedWorkout) { workout in
             CardioWorkoutDetail(workout: workout)
         }
-        .sheet(item: $selectedWorkoutForSession) { workout in
-            if let user = currentUser {
-                CardioSessionInputView(exerciseType: workout, user: user)
-            }
-        }
         .sheet(isPresented: $showingQuickStart) {
             CardioQuickStartView()
         }
@@ -78,7 +72,7 @@ struct CardioMainView: View {
                     .foregroundColor(theme.colors.textPrimary)
                 
                 if coordinator.hasActiveSession && coordinator.activeSessionType == .cardio {
-                    Label("Session in progress", systemImage: "circle.fill")
+                    Label(TrainingKeys.Cardio.sessionInProgress.localized, systemImage: "circle.fill")
                         .font(theme.typography.caption)
                         .foregroundColor(theme.colors.success)
                 }
@@ -89,11 +83,11 @@ struct CardioMainView: View {
             // Quick Actions Menu
             Menu {
                 Button(action: { showingQuickStart = true }) {
-                    Label("Quick Start", systemImage: "play.circle")
+                    Label(TrainingKeys.Cardio.quickStart.localized, systemImage: "play.circle")
                 }
                 
                 Button(action: { selectedTab = 1 }) {
-                    Label("View History", systemImage: "clock.arrow.circlepath")
+                    Label(TrainingKeys.Cardio.viewHistory.localized, systemImage: "clock.arrow.circlepath")
                 }
             } label: {
                 Image(systemName: "ellipsis.circle")
@@ -110,11 +104,11 @@ struct CardioMainView: View {
 struct CardioTrainSection: View {
     @Environment(\.theme) private var theme
     @Environment(\.modelContext) private var modelContext
+    @EnvironmentObject private var unitSettings: UnitSettings
     
     @Query private var cardioSessions: [CardioSession]
     
     @Binding var selectedWorkout: CardioWorkout?
-    @Binding var selectedWorkoutForSession: CardioWorkout?
     @Binding var showingQuickStart: Bool
     let currentUser: User?
     let onNavigateToHistory: () -> Void
@@ -130,6 +124,9 @@ struct CardioTrainSection: View {
     var body: some View {
         ScrollView {
             VStack(spacing: theme.spacing.xl) {
+                // Weekly Analytics
+                CardioAnalyticsCard(sessions: cardioSessions, currentUser: currentUser)
+                
                 // Quick Start Section
                 quickStartSection
                 
@@ -143,15 +140,11 @@ struct CardioTrainSection: View {
     }
     
     
-    private func startCurrentWorkout(_ workout: CardioWorkout?) {
-        guard let workout = workout else { return }
-        selectedWorkoutForSession = workout
-    }
     
     // MARK: - Quick Start Section
     private var quickStartSection: some View {
         VStack(alignment: .leading, spacing: theme.spacing.m) {
-            Text("Quick Start")
+            Text(TrainingKeys.Cardio.quickStart.localized)
                 .font(theme.typography.headline)
                 .foregroundColor(theme.colors.textPrimary)
                 .padding(.horizontal)
@@ -159,16 +152,16 @@ struct CardioTrainSection: View {
             HStack(spacing: theme.spacing.m) {
                 quickActionCard(
                     icon: "plus.circle.fill",
-                    title: "Quick Start",
-                    subtitle: "Start cardio session",
+                    title: TrainingKeys.Cardio.quickStart.localized,
+                    subtitle: TrainingKeys.Cardio.quickStartDesc.localized,
                     color: theme.colors.accent,
                     action: { showingQuickStart = true }
                 )
                 
                 quickActionCard(
                     icon: "clock.arrow.circlepath",
-                    title: "View History",
-                    subtitle: "Past sessions",
+                    title: TrainingKeys.Cardio.viewHistory.localized,
+                    subtitle: TrainingKeys.Cardio.viewHistoryDesc.localized,
                     color: theme.colors.success,
                     action: { onNavigateToHistory() }
                 )
@@ -221,7 +214,7 @@ struct CardioTrainSection: View {
     private var recentSessionsSection: some View {
         VStack(alignment: .leading, spacing: theme.spacing.m) {
             HStack {
-                Text("Recent Sessions")
+                Text(TrainingKeys.Cardio.recentSessions.localized)
                     .font(theme.typography.headline)
                     .fontWeight(.semibold)
                     .foregroundColor(theme.colors.textPrimary)
@@ -260,16 +253,16 @@ struct CardioTrainSection: View {
         
         if session.totalDistance > 0 {
             stats.append(WorkoutStat(
-                label: "Distance",
-                value: String(format: "%.1f km", session.totalDistance / 1000),
+                label: TrainingKeys.Cardio.distance.localized,
+                value: UnitsFormatter.formatDistance(meters: session.totalDistance, system: unitSettings.unitSystem),
                 icon: "ruler"
             ))
         }
         
         if let averageSpeed = session.averageSpeed, averageSpeed > 0 {
             stats.append(WorkoutStat(
-                label: "Avg Speed",
-                value: String(format: "%.1f km/h", averageSpeed * 3.6),
+                label: TrainingKeys.Cardio.avgSpeed.localized,
+                value: UnitsFormatter.formatSpeed(kmh: averageSpeed, system: unitSettings.unitSystem),
                 icon: "speedometer"
             ))
         }
@@ -301,8 +294,11 @@ struct CardioTrainSection: View {
 // MARK: - Cardio History Section
 struct CardioHistorySection: View {
     @Environment(\.theme) private var theme
+    @EnvironmentObject private var unitSettings: UnitSettings
     let sessions: [CardioSession]
     let currentUser: User?
+    
+    @State private var selectedSession: CardioSession?
     
     private var completedSessions: [CardioSession] {
         sessions
@@ -326,23 +322,26 @@ struct CardioHistorySection: View {
             } else {
                 LazyVStack(spacing: theme.spacing.m) {
                     ForEach(completedSessions, id: \.id) { session in
+                        let sessionMetrics = buildSessionMetrics(for: session, theme: theme)
+                        let sessionAchievements = buildAchievements(for: session, unitSystem: unitSettings.unitSystem)
+                        
                         SessionHistoryCard(
                             workoutName: session.workoutName,
                             date: session.completedAt ?? session.startDate,
-                            duration: TimeInterval(session.duration),
+                            duration: TimeInterval(session.totalDuration),
                             primaryMetric: SessionMetric(
-                                label: "Distance",
+                                label: TrainingKeys.Cardio.distance.localized,
                                 value: session.formattedDistance
                             ),
-                            secondaryMetrics: buildSessionMetrics(for: session),
-                            achievements: buildAchievements(for: session),
+                            secondaryMetrics: sessionMetrics,
+                            achievements: sessionAchievements,
                             feeling: session.feeling != nil ? 
                                 WorkoutFeeling(
                                     emoji: session.feelingEmoji,
                                     description: session.feeling!.capitalized,
                                     note: nil
                                 ) : nil,
-                            onTap: { viewSessionDetail(session) }
+                            onTap: { selectedSession = session }
                         )
                         .padding(.horizontal)
                     }
@@ -350,44 +349,45 @@ struct CardioHistorySection: View {
                 .padding(.vertical, theme.spacing.m)
             }
         }
+        .sheet(item: $selectedSession) { session in
+            CardioSessionDetailView(session: session)
+        }
     }
     
-    private func buildSessionMetrics(for session: CardioSession) -> [SessionMetric] {
+    private func buildSessionMetrics(for session: CardioSession, theme: Theme) -> [SessionMetric] {
         var metrics: [SessionMetric] = []
         
         if let pace = session.formattedAveragePace {
-            metrics.append(SessionMetric(label: "Pace", value: pace))
+            metrics.append(SessionMetric(label: TrainingKeys.Cardio.pace.localized, value: pace))
         }
         
         if let calories = session.totalCaloriesBurned, calories > 0 {
-            metrics.append(SessionMetric(label: "Calories", value: "\(calories)"))
+            metrics.append(SessionMetric(label: TrainingKeys.Cardio.calories.localized, value: "\(calories)"))
         }
         
         return metrics
     }
     
-    private func buildAchievements(for session: CardioSession) -> [String] {
+    private func buildAchievements(for session: CardioSession, unitSystem: UnitSystem) -> [String] {
         var achievements: [String] = []
         
         if !session.personalRecordsHit.isEmpty {
-            achievements.append("PR")
+            achievements.append(TrainingKeys.Cardio.personalRecord.localized)
         }
         
         if session.duration > 3600 {
             achievements.append("1h+")
         }
         
-        if session.totalDistance > 10000 {
-            achievements.append("10K+")
+        let achievementDistance = unitSystem == .metric ? 10000.0 : 16093.4 // 10K or 10 miles
+        if session.totalDistance > achievementDistance {
+            let label = unitSystem == .metric ? "10K+" : "10mi+"
+            achievements.append(label)
         }
         
         return achievements
     }
     
-    private func viewSessionDetail(_ session: CardioSession) {
-        // Navigate to session detail
-        Logger.info("View cardio session detail: \(session.id)")
-    }
 }
 
 
@@ -396,6 +396,7 @@ struct CardioHistorySection: View {
 #Preview {
     CardioMainView()
         .environment(TrainingCoordinator())
+        .environmentObject(UnitSettings.shared)
         .modelContainer(for: [
             CardioWorkout.self,
             CardioSession.self,

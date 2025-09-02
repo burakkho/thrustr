@@ -84,8 +84,8 @@ struct ProgressRingView: View {
         ProgressRingView(
             progress: 0.6,
             title: TrainingKeys.Analytics.monthly.localized,
-            current: "30km",
-            target: "50km",
+            current: "30",
+            target: "50",
             color: .green
         )
     }

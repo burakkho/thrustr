@@ -9,6 +9,9 @@ class CardioTimerViewModel {
     let locationManager = LocationManager.shared
     let bluetoothManager = BluetoothManager()
     
+    // MARK: - Unit Settings
+    private var unitSettings: UnitSettings { UnitSettings.shared }
+    
     // MARK: - Cardio Properties
     let activityType: CardioActivityType
     let isOutdoor: Bool
@@ -241,14 +244,15 @@ class CardioTimerViewModel {
     }
     
     private func checkForSplit() {
-        let kmCompleted = Int(locationManager.totalDistance / 1000)
+        let splitDistance = UnitsConverter.getSplitDistance(system: unitSettings.unitSystem)
+        let splitsCompleted = UnitsConverter.calculateSplitNumber(totalMeters: locationManager.totalDistance, system: unitSettings.unitSystem)
         
-        if kmCompleted > splits.count && kmCompleted > 0 {
+        if splitsCompleted > splits.count && splitsCompleted > 0 {
             let splitTime = timerViewModel.elapsedTime - splits.reduce(0) { $0 + $1.time }
-            let splitPace = splitTime / 60 // min/km
+            let splitPace = splitTime / 60 // min per unit distance
             
             let split = SplitData(
-                distance: 1000,
+                distance: splitDistance,
                 time: splitTime,
                 pace: splitPace,
                 heartRate: bluetoothManager.currentHeartRate > 0 ? bluetoothManager.currentHeartRate : nil
@@ -257,7 +261,8 @@ class CardioTimerViewModel {
             splits.append(split)
             
             // TODO: Audio feedback for split
-            Logger.info("Split \(kmCompleted): \(formatPace(splitPace))")
+            let splitLabel = UnitsFormatter.formatSplitDistance(splitNumber: splitsCompleted, system: unitSettings.unitSystem)
+            Logger.info("\(splitLabel): \(formatPace(splitPace))")
         }
     }
     
@@ -280,11 +285,7 @@ class CardioTimerViewModel {
     
     var formattedDistance: String {
         let distance = isOutdoor ? locationManager.totalDistance : 0
-        
-        if distance >= 1000 {
-            return String(format: "%.2f km", distance / 1000)
-        }
-        return String(format: "%.0f m", distance)
+        return UnitsFormatter.formatDistance(meters: distance, system: unitSettings.unitSystem)
     }
     
     var formattedPace: String {
@@ -294,7 +295,7 @@ class CardioTimerViewModel {
     
     var formattedSpeed: String {
         let speed = isOutdoor ? locationManager.currentSpeed * 3.6 : 0
-        return String(format: "%.1f km/h", speed)
+        return UnitsFormatter.formatSpeed(kmh: speed, system: unitSettings.unitSystem)
     }
     
     var formattedHeartRate: String {
@@ -323,17 +324,12 @@ class CardioTimerViewModel {
     }
     
     var formattedManualDistance: String {
-        if manualDistance >= 1000 {
-            return String(format: "%.2f km", manualDistance / 1000)
-        }
-        return String(format: "%.0f m", manualDistance)
+        return UnitsFormatter.formatDistance(meters: manualDistance, system: unitSettings.unitSystem)
     }
     
     // MARK: - Helper Methods
     private func formatPace(_ pace: Double) -> String {
-        let minutes = Int(pace)
-        let seconds = Int((pace - Double(minutes)) * 60)
-        return String(format: "%d:%02d", minutes, seconds)
+        return UnitsFormatter.formatDetailedPace(minPerKm: pace, system: unitSettings.unitSystem)
     }
     
     // MARK: - Session Completion

@@ -9,13 +9,19 @@
 /* Begin PBXBuildFile section */
 		411001332E665DE500F30AE2 /* icf5x5.json in Resources */ = {isa = PBXBuildFile; fileRef = 411001322E665DE500F30AE2 /* icf5x5.json */; };
 		411001502E6661C500F30AE2 /* CardioWorkoutDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4110014E2E6661C500F30AE2 /* CardioWorkoutDetail.swift */; };
-		411001512E6661C500F30AE2 /* CardioSessionTrackingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4110014D2E6661C500F30AE2 /* CardioSessionTrackingView.swift */; };
-		411001532E6661C500F30AE2 /* CardioSessionInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4110014B2E6661C500F30AE2 /* CardioSessionInputView.swift */; };
 		411001542E6661C500F30AE2 /* CardioSessionSummaryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4110014C2E6661C500F30AE2 /* CardioSessionSummaryView.swift */; };
 		411001552E6661C500F30AE2 /* CardioMainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 411001452E6661C500F30AE2 /* CardioMainView.swift */; };
 		411001562E6661C500F30AE2 /* CardioQuickStartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 411001482E6661C500F30AE2 /* CardioQuickStartView.swift */; };
 		411001572E6661C500F30AE2 /* CardioLiveTrackingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 411001442E6661C500F30AE2 /* CardioLiveTrackingView.swift */; };
 		4110015A2E6661C500F30AE2 /* CardioPreparationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 411001462E6661C500F30AE2 /* CardioPreparationView.swift */; };
+		4110015C2E6706BD00F30AE2 /* CardioAnalyticsCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4110015B2E6706BD00F30AE2 /* CardioAnalyticsCard.swift */; };
+		4110015E2E6706D100F30AE2 /* CardioSessionDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4110015D2E6706D100F30AE2 /* CardioSessionDetailView.swift */; };
+		411001602E67129300F30AE2 /* SeedingState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4110015F2E67129300F30AE2 /* SeedingState.swift */; };
+		411001742E671FD600F30AE2 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 411001682E671FD600F30AE2 /* Localizable.strings */; };
+		411001752E671FD600F30AE2 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 411001652E671FD600F30AE2 /* Localizable.strings */; };
+		411001762E671FD600F30AE2 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 4110016B2E671FD600F30AE2 /* Localizable.strings */; };
+		4110017A2E671FED00F30AE2 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 411001782E671FED00F30AE2 /* Localizable.strings */; };
+		411001812E67203800F30AE2 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 4110017E2E67203800F30AE2 /* Localizable.strings */; };
 		412659D12E5FA5C000FAB9E8 /* UnitsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 412659C92E5FA5C000FAB9E8 /* UnitsTests.swift */; };
 		412659D22E5FA5C000FAB9E8 /* DashboardViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 412659CB2E5FA5C000FAB9E8 /* DashboardViewModelTests.swift */; };
 		412659D32E5FA5C000FAB9E8 /* UserModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 412659C42E5FA5C000FAB9E8 /* UserModelTests.swift */; };
@@ -119,7 +125,6 @@
 		4151B7722E5A59C100A4E11E /* GuideSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4151B70E2E5A59C100A4E11E /* GuideSection.swift */; };
 		4151B7732E5A59C100A4E11E /* Units.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4151B7252E5A59C100A4E11E /* Units.swift */; };
 		4151B7742E5A59C100A4E11E /* metcon_exercises.csv in Resources */ = {isa = PBXBuildFile; fileRef = 4151B6F12E5A59C100A4E11E /* metcon_exercises.csv */; };
-		4151B7772E5A59C100A4E11E /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 4151B7062E5A59C100A4E11E /* Localizable.strings */; };
 		4151B77A2E5A59C100A4E11E /* lift_exercises.csv in Resources */ = {isa = PBXBuildFile; fileRef = 4151B6F02E5A59C100A4E11E /* lift_exercises.csv */; };
 		4151B77B2E5A59C100A4E11E /* privacy_en.html in Resources */ = {isa = PBXBuildFile; fileRef = 4151B6EC2E5A59C100A4E11E /* privacy_en.html */; };
 		4151B77D2E5A59C100A4E11E /* stronglifts5x5.json in Resources */ = {isa = PBXBuildFile; fileRef = 4151B6F82E5A59C100A4E11E /* stronglifts5x5.json */; };
@@ -286,10 +291,16 @@
 		411001452E6661C500F30AE2 /* CardioMainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardioMainView.swift; sourceTree = "<group>"; };
 		411001462E6661C500F30AE2 /* CardioPreparationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardioPreparationView.swift; sourceTree = "<group>"; };
 		411001482E6661C500F30AE2 /* CardioQuickStartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardioQuickStartView.swift; sourceTree = "<group>"; };
-		4110014B2E6661C500F30AE2 /* CardioSessionInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardioSessionInputView.swift; sourceTree = "<group>"; };
 		4110014C2E6661C500F30AE2 /* CardioSessionSummaryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardioSessionSummaryView.swift; sourceTree = "<group>"; };
-		4110014D2E6661C500F30AE2 /* CardioSessionTrackingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardioSessionTrackingView.swift; sourceTree = "<group>"; };
 		4110014E2E6661C500F30AE2 /* CardioWorkoutDetail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardioWorkoutDetail.swift; sourceTree = "<group>"; };
+		4110015B2E6706BD00F30AE2 /* CardioAnalyticsCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardioAnalyticsCard.swift; sourceTree = "<group>"; };
+		4110015D2E6706D100F30AE2 /* CardioSessionDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardioSessionDetailView.swift; sourceTree = "<group>"; };
+		4110015F2E67129300F30AE2 /* SeedingState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeedingState.swift; sourceTree = "<group>"; };
+		411001642E671FD600F30AE2 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = Localizable.strings; sourceTree = "<group>"; };
+		411001672E671FD600F30AE2 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = Localizable.strings; sourceTree = "<group>"; };
+		4110016A2E671FD600F30AE2 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = Localizable.strings; sourceTree = "<group>"; };
+		411001772E671FED00F30AE2 /* tr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = tr; path = Localizable.strings; sourceTree = "<group>"; };
+		4110017D2E67203800F30AE2 /* it */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it; path = Localizable.strings; sourceTree = "<group>"; };
 		412659BE2E5FA5C000FAB9E8 /* HealthCalculatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthCalculatorTests.swift; sourceTree = "<group>"; };
 		412659C02E5FA5C000FAB9E8 /* MockHealthKitService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockHealthKitService.swift; sourceTree = "<group>"; };
 		412659C12E5FA5C000FAB9E8 /* MockUserService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockUserService.swift; sourceTree = "<group>"; };
@@ -376,10 +387,6 @@
 		4151B6F82E5A59C100A4E11E /* stronglifts5x5.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = stronglifts5x5.json; sourceTree = "<group>"; };
 		4151B6FB2E5A59C100A4E11E /* benchmark_wods.csv */ = {isa = PBXFileReference; lastKnownFileType = text; path = benchmark_wods.csv; sourceTree = "<group>"; };
 		4151B6FD2E5A59C100A4E11E /* lift_routines.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = lift_routines.json; sourceTree = "<group>"; };
-		4151B7022E5A59C100A4E11E /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
-		4151B7032E5A59C100A4E11E /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Localizable.strings; sourceTree = "<group>"; };
-		4151B7042E5A59C100A4E11E /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/Localizable.strings; sourceTree = "<group>"; };
-		4151B7052E5A59C100A4E11E /* tr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = tr; path = tr.lproj/Localizable.strings; sourceTree = "<group>"; };
 		4151B70A2E5A59C100A4E11E /* FitnessLevelCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FitnessLevelCalculator.swift; sourceTree = "<group>"; };
 		4151B70B2E5A59C100A4E11E /* HealthCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthCalculator.swift; sourceTree = "<group>"; };
 		4151B70D2E5A59C100A4E11E /* EmptyStateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyStateView.swift; sourceTree = "<group>"; };
@@ -544,7 +551,6 @@
 		4151B9212E5E1C2600A4E11E /* CardStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardStyle.swift; sourceTree = "<group>"; };
 		419B889A2E65887000EB3FD5 /* 531-beginner.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "531-beginner.json"; sourceTree = "<group>"; };
 		419B889B2E65887000EB3FD5 /* starting-strength.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "starting-strength.json"; sourceTree = "<group>"; };
-		41F588B52E648B9C00124531 /* it */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it; path = it.lproj/Localizable.strings; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -575,16 +581,63 @@
 		4110014F2E6661C500F30AE2 /* Cardio */ = {
 			isa = PBXGroup;
 			children = (
+				4110015D2E6706D100F30AE2 /* CardioSessionDetailView.swift */,
+				4110015B2E6706BD00F30AE2 /* CardioAnalyticsCard.swift */,
 				411001442E6661C500F30AE2 /* CardioLiveTrackingView.swift */,
 				411001452E6661C500F30AE2 /* CardioMainView.swift */,
 				411001462E6661C500F30AE2 /* CardioPreparationView.swift */,
 				411001482E6661C500F30AE2 /* CardioQuickStartView.swift */,
-				4110014B2E6661C500F30AE2 /* CardioSessionInputView.swift */,
 				4110014C2E6661C500F30AE2 /* CardioSessionSummaryView.swift */,
-				4110014D2E6661C500F30AE2 /* CardioSessionTrackingView.swift */,
 				4110014E2E6661C500F30AE2 /* CardioWorkoutDetail.swift */,
 			);
 			path = Cardio;
+			sourceTree = "<group>";
+		};
+		411001662E671FD600F30AE2 /* de.lproj */ = {
+			isa = PBXGroup;
+			children = (
+				411001652E671FD600F30AE2 /* Localizable.strings */,
+			);
+			path = de.lproj;
+			sourceTree = "<group>";
+		};
+		411001692E671FD600F30AE2 /* en.lproj */ = {
+			isa = PBXGroup;
+			children = (
+				411001682E671FD600F30AE2 /* Localizable.strings */,
+			);
+			path = en.lproj;
+			sourceTree = "<group>";
+		};
+		4110016C2E671FD600F30AE2 /* es.lproj */ = {
+			isa = PBXGroup;
+			children = (
+				4110016B2E671FD600F30AE2 /* Localizable.strings */,
+			);
+			path = es.lproj;
+			sourceTree = "<group>";
+		};
+		411001712E671FD600F30AE2 /* it.lproj */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = it.lproj;
+			sourceTree = "<group>";
+		};
+		411001792E671FED00F30AE2 /* tr.lproj */ = {
+			isa = PBXGroup;
+			children = (
+				411001782E671FED00F30AE2 /* Localizable.strings */,
+			);
+			path = tr.lproj;
+			sourceTree = "<group>";
+		};
+		4110017F2E67203800F30AE2 /* it.lproj */ = {
+			isa = PBXGroup;
+			children = (
+				4110017E2E67203800F30AE2 /* Localizable.strings */,
+			);
+			path = it.lproj;
 			sourceTree = "<group>";
 		};
 		412659BF2E5FA5C000FAB9E8 /* Calculators */ = {
@@ -707,6 +760,7 @@
 		41265A202E61E20700FAB9E8 /* DataSeeding */ = {
 			isa = PBXGroup;
 			children = (
+				4110015F2E67129300F30AE2 /* SeedingState.swift */,
 				41265A1C2E61E20700FAB9E8 /* CSVParser.swift */,
 				41265A1D2E61E20700FAB9E8 /* DataSeeder.swift */,
 				41265A1F2E61E20700FAB9E8 /* SeedingModels.swift */,
@@ -893,13 +947,18 @@
 		4151B7072E5A59C100A4E11E /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				4110017F2E67203800F30AE2 /* it.lproj */,
+				411001792E671FED00F30AE2 /* tr.lproj */,
+				411001662E671FD600F30AE2 /* de.lproj */,
+				411001692E671FD600F30AE2 /* en.lproj */,
+				4110016C2E671FD600F30AE2 /* es.lproj */,
+				411001712E671FD600F30AE2 /* it.lproj */,
 				4151B8B72E5AFC2000A4E11E /* outdoor_cardio.csv */,
 				4151B6EF2E5A59C100A4E11E /* indoor_cardio.csv */,
 				4151B8B52E5AFB1600A4E11E /* ergo_cardio.csv */,
 				4151B8AC2E5A655600A4E11E /* foods.csv */,
 				4151B6EE2E5A59C100A4E11E /* Legal */,
 				4151B7002E5A59C100A4E11E /* Training */,
-				4151B7062E5A59C100A4E11E /* Localizable.strings */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -1584,11 +1643,15 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4110017A2E671FED00F30AE2 /* Localizable.strings in Resources */,
+				411001742E671FD600F30AE2 /* Localizable.strings in Resources */,
+				411001752E671FD600F30AE2 /* Localizable.strings in Resources */,
+				411001762E671FD600F30AE2 /* Localizable.strings in Resources */,
 				41265A282E63818D00FAB9E8 /* Assets.xcassets in Resources */,
 				4151B7742E5A59C100A4E11E /* metcon_exercises.csv in Resources */,
 				4151B8B82E5AFC2000A4E11E /* outdoor_cardio.csv in Resources */,
-				4151B7772E5A59C100A4E11E /* Localizable.strings in Resources */,
 				4151B77A2E5A59C100A4E11E /* lift_exercises.csv in Resources */,
+				411001812E67203800F30AE2 /* Localizable.strings in Resources */,
 				4151B77B2E5A59C100A4E11E /* privacy_en.html in Resources */,
 				41265A1A2E60F36D00FAB9E8 /* privacy_tr.html in Resources */,
 				41265A1B2E60F36D00FAB9E8 /* terms_tr.html in Resources */,
@@ -1630,6 +1693,7 @@
 				4151B72D2E5A59C100A4E11E /* WODResult.swift in Sources */,
 				4151B72E2E5A59C100A4E11E /* WODQRData.swift in Sources */,
 				4151B72F2E5A59C100A4E11E /* ThemeManager.swift in Sources */,
+				4110015C2E6706BD00F30AE2 /* CardioAnalyticsCard.swift in Sources */,
 				4151B7302E5A59C100A4E11E /* BarcodeValidator.swift in Sources */,
 				4151B7312E5A59C100A4E11E /* WOD.swift in Sources */,
 				4151B7322E5A59C100A4E11E /* LiftProgram.swift in Sources */,
@@ -1645,6 +1709,8 @@
 				4151B73D2E5A59C100A4E11E /* ToastView.swift in Sources */,
 				4151B8E52E5B866F00A4E11E /* WeightInputField.swift in Sources */,
 				4151B8E62E5B866F00A4E11E /* LevelProgressRing.swift in Sources */,
+				4110015E2E6706D100F30AE2 /* CardioSessionDetailView.swift in Sources */,
+				411001602E67129300F30AE2 /* SeedingState.swift in Sources */,
 				4151B8E72E5B866F00A4E11E /* TestHistoryRow.swift in Sources */,
 				4151B73E2E5A59C100A4E11E /* Theme.swift in Sources */,
 				4151B73F2E5A59C100A4E11E /* Logger.swift in Sources */,
@@ -1666,8 +1732,6 @@
 				4151B8C62E5B2A1600A4E11E /* MesafeValidator.swift in Sources */,
 				4151B8C72E5B2A1600A4E11E /* ValidationRule.swift in Sources */,
 				411001502E6661C500F30AE2 /* CardioWorkoutDetail.swift in Sources */,
-				411001512E6661C500F30AE2 /* CardioSessionTrackingView.swift in Sources */,
-				411001532E6661C500F30AE2 /* CardioSessionInputView.swift in Sources */,
 				411001542E6661C500F30AE2 /* CardioSessionSummaryView.swift in Sources */,
 				411001552E6661C500F30AE2 /* CardioMainView.swift in Sources */,
 				411001562E6661C500F30AE2 /* CardioQuickStartView.swift in Sources */,
@@ -1895,14 +1959,42 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
-		4151B7062E5A59C100A4E11E /* Localizable.strings */ = {
+		411001652E671FD600F30AE2 /* Localizable.strings */ = {
 			isa = PBXVariantGroup;
 			children = (
-				4151B7022E5A59C100A4E11E /* en */,
-				4151B7032E5A59C100A4E11E /* de */,
-				4151B7042E5A59C100A4E11E /* es */,
-				4151B7052E5A59C100A4E11E /* tr */,
-				41F588B52E648B9C00124531 /* it */,
+				411001642E671FD600F30AE2 /* de */,
+			);
+			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
+		411001682E671FD600F30AE2 /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				411001672E671FD600F30AE2 /* en */,
+			);
+			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
+		4110016B2E671FD600F30AE2 /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				4110016A2E671FD600F30AE2 /* es */,
+			);
+			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
+		411001782E671FED00F30AE2 /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				411001772E671FED00F30AE2 /* tr */,
+			);
+			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
+		4110017E2E67203800F30AE2 /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				4110017D2E67203800F30AE2 /* it */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";

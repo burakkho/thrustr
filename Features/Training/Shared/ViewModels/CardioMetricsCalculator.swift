@@ -16,6 +16,9 @@ class CardioMetricsCalculator {
     private var lastUpdateTime: Date = Date()
     private let updateThrottle: TimeInterval = 1.0 // 1 second throttling
     
+    // MARK: - Unit Settings
+    private var unitSettings: UnitSettings { UnitSettings.shared }
+    
     // MARK: - Internal State
     private var totalPausedTime: TimeInterval = 0
     private var sessionStartTime: Date?
@@ -159,21 +162,23 @@ class CardioMetricsCalculator {
     }
     
     private func checkForNewSplits(totalDistance: Double, elapsedTime: TimeInterval, currentHeartRate: Int) -> [SplitData]? {
-        let kmCompleted = Int(totalDistance / 1000)
+        let splitsCompleted = UnitsConverter.calculateSplitNumber(totalMeters: totalDistance, system: unitSettings.unitSystem)
         
-        guard kmCompleted > splits.count && kmCompleted > 0 else { return nil }
+        guard splitsCompleted > splits.count && splitsCompleted > 0 else { return nil }
         
         let splitTime = elapsedTime - splits.reduce(0) { $0 + $1.time }
-        let splitPace = splitTime / 60 // min/km
+        let splitPace = splitTime / 60 // min per unit distance
+        let splitDistance = UnitsConverter.getSplitDistance(system: unitSettings.unitSystem)
         
         let newSplit = SplitData(
-            distance: 1000,
+            distance: splitDistance,
             time: splitTime,
             pace: splitPace,
             heartRate: currentHeartRate > 0 ? currentHeartRate : nil
         )
         
-        Logger.info("New split detected - Km \(kmCompleted): \(formatPace(splitPace))")
+        let splitLabel = UnitsFormatter.formatSplitDistance(splitNumber: splitsCompleted, system: unitSettings.unitSystem)
+        Logger.info("New split detected - \(splitLabel): \(formatPace(splitPace))")
         return [newSplit]
     }
     
@@ -181,22 +186,20 @@ class CardioMetricsCalculator {
     
     var formattedCurrentPace: String {
         guard currentPace > 0 && currentPace.isFinite else { return "--:--" }
-        return formatPace(currentPace)
+        return UnitsFormatter.formatDetailedPace(minPerKm: currentPace, system: unitSettings.unitSystem)
     }
     
     var formattedAveragePace: String {
         guard averagePace > 0 && averagePace.isFinite else { return "--:--" }
-        return formatPace(averagePace)
+        return UnitsFormatter.formatDetailedPace(minPerKm: averagePace, system: unitSettings.unitSystem)
     }
     
     var formattedSpeed: String {
-        return String(format: "%.1f", currentSpeed)
+        return UnitsFormatter.formatSpeed(kmh: currentSpeed, system: unitSettings.unitSystem)
     }
     
     private func formatPace(_ pace: Double) -> String {
-        let minutes = Int(pace)
-        let seconds = Int((pace - Double(minutes)) * 60)
-        return String(format: "%d:%02d", minutes, seconds)
+        return UnitsFormatter.formatDetailedPace(minPerKm: pace, system: unitSettings.unitSystem)
     }
     
     // MARK: - Reset & Cleanup

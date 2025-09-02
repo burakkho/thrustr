@@ -106,7 +106,7 @@ class WODTimerViewModel {
         HapticManager.shared.notification(.success)
     }
     
-    func saveWODResult(_ result: WODResult, modelContext: ModelContext, currentUser: User?) {
+    func saveWODResult(_ result: WODResult, modelContext: ModelContext, currentUser: User?, healthKitService: HealthKitService? = nil) {
         modelContext.insert(result)
         result.wod = wod
         result.user = currentUser
@@ -139,6 +139,30 @@ class WODTimerViewModel {
                     isPR: isPR,
                     user: currentUser
                 )
+            }
+            
+            // Save to HealthKit
+            if let healthKitService = healthKitService {
+                Task {
+                    let duration = timerViewModel.elapsedTime
+                    let estimatedCalories = HealthCalculator.estimateMetconCalories(
+                        duration: duration,
+                        bodyWeight: currentUser?.currentWeight ?? 70,
+                        intensity: .high
+                    )
+                    
+                    let success = await healthKitService.saveWODWorkout(
+                        duration: duration,
+                        caloriesBurned: estimatedCalories,
+                        startDate: Date().addingTimeInterval(-timerViewModel.elapsedTime),
+                        endDate: Date(),
+                        wodType: wod.wodType.rawValue
+                    )
+                    
+                    if success {
+                        Logger.info("WOD workout successfully synced to HealthKit")
+                    }
+                }
             }
             
             HapticManager.shared.notification(.success)

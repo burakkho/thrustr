@@ -110,6 +110,7 @@ enum TrainingKeys {
         static let signal = "cardio.preparation.signal"
         static let waitingGps = "cardio.preparation.waitingGps"
         static let pleaseWait = "cardio.preparation.pleaseWait"
+        static let cancel = "cardio.preparation.cancel"
     }
     
     
@@ -372,7 +373,22 @@ enum TrainingKeys {
         static let completeSession = "training.cardio.completeSession"
         static let targetProgress = "training.cardio.targetProgress"
         static let duration = "training.cardio.duration"
+        
+        // Main view keys
+        static let train = "training.cardio.train"
+        static let quickStart = "training.cardio.quickStart"
+        static let quickStartDesc = "training.cardio.quickStartDesc"
+        static let viewHistory = "training.cardio.viewHistory"
+        static let viewHistoryDesc = "training.cardio.viewHistoryDesc"
+        static let recentSessions = "training.cardio.recentSessions"
+        static let sessionInProgress = "training.cardio.sessionInProgress"
         static let distance = "training.cardio.distance"
+        static let avgSpeed = "training.cardio.avgSpeed"
+        static let pace = "training.cardio.pace"
+        static let averagePace = "training.cardio.averagePace"
+        static let elevation = "training.cardio.elevation"
+        static let calories = "training.cardio.calories"
+        static let personalRecord = "training.cardio.personalRecord"
         static let performance = "training.cardio.performance"
         static let additionalInfo = "training.cardio.additionalInfo"
         static let quickSelect = "training.cardio.quickSelect"
@@ -388,9 +404,7 @@ enum TrainingKeys {
         static let intervals = "training.cardio.intervals"
         static let searchingDevices = "training.cardio.searchingDevices"
         static let steps = "training.cardio.steps"
-        static let pace = "training.cardio.pace"
         static let speed = "training.cardio.speed"
-        static let calories = "training.cardio.calories"
         static let heartRate = "training.cardio.heartRate"
         static let feeling = "training.cardio.feeling"
         static let sessionNotes = "training.cardio.sessionNotes"
@@ -420,11 +434,9 @@ enum TrainingKeys {
         static let flexibility = "training.cardio.flexibility"
         static let anyDistanceTime = "training.cardio.anyDistanceTime"
         static let equipment = "training.cardio.equipment"
-        static let personalRecord = "training.cardio.personalRecord"
         static let statistics = "training.cardio.statistics"
         static let totalSessions = "training.cardio.totalSessions"
         static let lastPerformed = "training.cardio.lastPerformed"
-        static let recentSessions = "training.cardio.recentSessions"
         static let startWorkout = "training.cardio.startWorkout"
         static let duplicate = "training.cardio.duplicate"
         static let delete = "training.cardio.delete"
@@ -433,8 +445,36 @@ enum TrainingKeys {
         static let noHistory = "training.cardio.noHistory"
         static let noHistoryMessage = "training.cardio.noHistoryMessage"
         static let browseTemplates = "training.cardio.browseTemplates"
+        
+        // Environment and tracking
+        static let outdoor = "training.cardio.outdoor"
+        static let indoor = "training.cardio.indoor"
+        
+        // Metric labels for live tracking
+        static let effort = "training.cardio.effort"
+        static let zone = "training.cardio.zone"
+        static let bpm = "training.cardio.bpm"
+        static let rpe = "training.cardio.rpe"
+        static let time = "training.cardio.time"
         static let personalRecordBadge = "training.cardio.personalRecordBadge"
         static let lastSession = "training.cardio.lastSession"
+        
+        // Quick start modal
+        static let quickStartModal = "training.cardio.quickStartModal"
+        static let activityType = "training.cardio.activityType"
+        static let selectActivityToStart = "training.cardio.selectActivityToStart"
+        static let modalLocation = "training.cardio.modalLocation"
+        static let modalFeatures = "training.cardio.modalFeatures"
+        static let modalStart = "training.cardio.modalStart"
+        static let cancel = "training.cardio.cancel"
+        static let gpsRealTimeTracking = "training.cardio.gpsRealTimeTracking"
+        static let routeMapAfterWorkout = "training.cardio.routeMapAfterWorkout"
+        static let instantSpeedPace = "training.cardio.instantSpeedPace"
+        static let elevationChanges = "training.cardio.elevationChanges"
+        static let timeTracking = "training.cardio.timeTracking"
+        static let estimatedCalories = "training.cardio.estimatedCalories"
+        static let heartRateSupport = "training.cardio.heartRateSupport"
+        static let manualDistanceInput = "training.cardio.manualDistanceInput"
         
         // Categories
         static let exerciseTypes = "training.cardio.exerciseTypes"
@@ -446,8 +486,7 @@ enum TrainingKeys {
         static let clearSearch = "training.cardio.clearSearch"
         static let neverAttempted = "training.cardio.neverAttempted"
         
-        // Equipment types
-        static let outdoor = "training.cardio.outdoor"
+        // Equipment types (moved from duplicate section below)
         static let treadmill = "training.cardio.treadmill"
         static let rowErg = "training.cardio.rowErg"
         static let bikeErg = "training.cardio.bikeErg"
@@ -466,15 +505,13 @@ enum TrainingKeys {
         static let minutes = "training.cardio.minutes"
         
         // Quick Start and UI
-        static let quickStart = "training.cardio.quickStart"
         static let selectActivityAndStart = "training.cardio.selectActivityAndStart"
-        static let location = "training.cardio.location"
-        static let indoor = "training.cardio.indoor"
+        static let uiLocation = "training.cardio.uiLocation"
         static let ergometer = "training.cardio.ergometer"
         static let selectActivity = "training.cardio.selectActivity"
         static let noActivities = "training.cardio.noActivities"
         static let noActivitiesDescription = "training.cardio.noActivitiesDescription"
-        static let features = "training.cardio.features"
+        static let uiFeatures = "training.cardio.uiFeatures"
         
         // Feature descriptions
         static let gpsTracking = "training.cardio.gpsTracking"
@@ -489,7 +526,6 @@ enum TrainingKeys {
         static let splitTracking = "training.cardio.splitTracking"
         static let seconds = "training.cardio.seconds"
         static let hours = "training.cardio.hours"
-        static let bpm = "training.cardio.bpm"
         static let kcal = "training.cardio.kcal"
         static let minPerKm = "training.cardio.minPerKm"
         static let kmPerHour = "training.cardio.kmPerHour"
@@ -727,6 +763,11 @@ enum TrainingKeys {
         // Status messages
         static let sessionInProgress = "training.lift.sessionInProgress"
         
+        // Empty state messages
+        static let noWorkouts = "training.lift.noWorkouts"
+        static let noWorkoutsDesc = "training.lift.noWorkoutsDesc"
+        static let startFirstWorkout = "training.lift.startFirstWorkout"
+        
         // Menu actions
         static let newWorkout = "training.lift.newWorkout"
         static let browsePrograms = "training.lift.browsePrograms"
@@ -806,6 +847,15 @@ enum TrainingKeys {
         static let inProgress = "training.status.inProgress"
         static let paused = "training.status.paused"
         static let completed = "training.status.completed"
+        static let finishWorkout = "training.status.finishWorkout"
+        static let finishAndSave = "training.status.finishAndSave"
+        static let confirmFinishMessage = "training.status.confirmFinishMessage"
+        static let start = "training.status.start"
+        static let resume = "training.status.resume"
+        static let pause = "training.status.pause"
+        static let stop = "training.status.stop"
+        static let finish = "training.status.finish"
+        static let cancel = "training.status.cancel"
     }
     
     enum OneRM {
@@ -830,5 +880,94 @@ enum TrainingKeys {
         static let oneRMProgression = "training.charts.oneRMProgression"
         static let weightChange = "training.charts.weightChange"
         static let kg = "training.charts.kg"
+    }
+    
+    // MARK: - Units and Measurements
+    enum Units {
+        static let sessions = "training.units.sessions"
+        static let minutes = "training.units.minutes"
+        static let seconds = "training.units.seconds"
+        static let hours = "training.units.hours"
+        static let days = "training.units.days"
+        static let weeks = "training.units.weeks"
+        static let months = "training.units.months"
+        static let rounds = "training.units.rounds"
+        static let reps = "training.units.reps"
+        static let bpm = "training.units.bpm"
+        static let kcal = "training.units.kcal"
+        static let minCap = "training.units.minCap"
+        static let daysPerWeek = "training.units.daysPerWeek"
+    }
+    
+    // MARK: - Heart Rate & Devices
+    enum HeartRate {
+        static let heartRate = "training.heartRate.heartRate"
+        static let bpm = "training.heartRate.bpm"
+        static let connect = "training.heartRate.connect"
+        static let notConnected = "training.heartRate.notConnected"
+        static let searchingDevices = "training.heartRate.searchingDevices"
+        static let selectDevice = "training.heartRate.selectDevice"
+        static let rescan = "training.heartRate.rescan"
+        static let signal = "training.heartRate.signal"
+        static let battery = "training.heartRate.battery"
+    }
+    
+    // MARK: - Search & Results
+    enum Search {
+        static let noResults = "training.search.noResults"
+        static let tryDifferentTerm = "training.search.tryDifferentTerm"
+        static let searchPlaceholder = "training.search.placeholder"
+    }
+    
+    // MARK: - Intervals & Splits
+    enum Intervals {
+        static let intervals = "training.intervals.intervals"
+        static let splits = "training.intervals.splits"
+    }
+    
+    // MARK: - Program Completion
+    enum ProgramCompletion {
+        static let programCompleted = "training.program.completed"
+        static let congratulations = "training.program.congratulations"
+        static let readyToStart = "training.program.readyToStart"
+        static let chooseFromPrograms = "training.program.chooseFromPrograms"
+        static let browsePrograms = "training.program.browsePrograms"
+        static let weekOf = "training.program.weekOf"
+    }
+    
+    // MARK: - Welcome Messages
+    enum Welcome {
+        static let welcomeBack = "training.welcome.welcomeBack"
+        static let quickLift = "training.welcome.quickLift"
+        static let quickCardio = "training.welcome.quickCardio"
+        static let dailyWOD = "training.welcome.dailyWOD"
+        static let startStrengthTraining = "training.welcome.startStrengthTraining"
+        static let startCardioSession = "training.welcome.startCardioSession"
+        static let todaysWorkout = "training.welcome.todaysWorkout"
+        static let findProgram = "training.welcome.findProgram"
+    }
+    
+    // MARK: - Warmup
+    enum Warmup {
+        static let lightCardio = "training.warmup.lightCardio"
+        static let dynamicStretching = "training.warmup.dynamicStretching"
+        static let majorMuscleGroups = "training.warmup.majorMuscleGroups"
+    }
+    
+    // MARK: - Goals Descriptions
+    enum GoalsDesc {
+        static let workoutSessionsPerMonth = "training.goalsDesc.workoutSessionsPerMonth"
+        static let totalRunningCyclingDistance = "training.goalsDesc.totalRunningCyclingDistance"
+    }
+    
+    // MARK: - Workout Types
+    enum WorkoutTypes {
+        static let forTime = "training.workoutTypes.forTime"
+        static let amrap = "training.workoutTypes.amrap"
+        static let emom = "training.workoutTypes.emom"
+        static let customFormat = "training.workoutTypes.customFormat"
+        static let forTimeWithCap = "training.workoutTypes.forTimeWithCap"
+        static let amrapMinutes = "training.workoutTypes.amrapMinutes"
+        static let emomMinutes = "training.workoutTypes.emomMinutes"
     }
 }

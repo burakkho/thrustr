@@ -200,7 +200,7 @@ Multi-language Support
 ├── LocalizationKeys Enum
 ├── .localized String Extension
 ├── Fallback to System Language
-└── 4 Supported Languages (TR/EN/DE/ES)
+└── 5 Supported Languages (TR/EN/DE/ES/IT)
 ```
 
 ## ⚡ Performance Optimizations

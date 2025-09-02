@@ -42,7 +42,7 @@ struct OnboardingView: View {
             Color(.systemBackground)
                 .ignoresSafeArea()
             
-            ToastPresenter(message: $toastMessage, icon: "exclamationmark.triangle.fill") {
+            ToastPresenter(message: $toastMessage, icon: "exclamationmark.triangle.fill", type: .error) {
             VStack {
                 if currentStep > 0 {
                     InteractiveProgressBar(currentStep: currentStep, totalSteps: 6, style: .compact)

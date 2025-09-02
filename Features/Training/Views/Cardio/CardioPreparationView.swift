@@ -77,9 +77,9 @@ struct CardioPreparationView: View {
         
         var message: String {
             switch self {
-            case .notConnected: return "Nabız bandı bağlı değil"
-            case .scanning: return "Cihaz aranıyor..."
-            case .connected: return "Nabız bandı bağlı"
+            case .notConnected: return TrainingKeys.CardioPreparation.heartRateBandNotConnected.localized
+            case .scanning: return TrainingKeys.CardioPreparation.heartRateBandScanning.localized
+            case .connected: return TrainingKeys.CardioPreparation.heartRateBandConnected.localized
             }
         }
     }
@@ -138,12 +138,12 @@ struct CardioPreparationView: View {
     private var headerView: some View {
         HStack {
             VStack(alignment: .leading, spacing: 4) {
-                Text("Hazırlık")
+                Text(TrainingKeys.CardioPreparation.preparation.localized)
                     .font(theme.typography.title2)
                     .fontWeight(.bold)
                     .foregroundColor(theme.colors.textPrimary)
                 
-                Text("Antrenman başlamadan önce hazırlanıyor")
+                Text(TrainingKeys.CardioPreparation.preparingWorkout.localized)
                     .font(theme.typography.caption)
                     .foregroundColor(theme.colors.textSecondary)
             }
@@ -270,7 +270,7 @@ struct CardioPreparationView: View {
             
             if bluetoothStatus == .notConnected {
                 Button(action: { showingBluetoothSheet = true }) {
-                    Text("Bağlan")
+                    Text(TrainingKeys.CardioPreparation.connect.localized)
                         .font(theme.typography.caption)
                         .fontWeight(.medium)
                         .foregroundColor(theme.colors.accent)
@@ -299,12 +299,12 @@ struct CardioPreparationView: View {
                     .foregroundColor(.green)
                     .symbolRenderingMode(.hierarchical)
                 
-                Text("Her Şey Hazır!")
+                Text(TrainingKeys.CardioPreparation.allReady.localized)
                     .font(theme.typography.headline)
                     .fontWeight(.semibold)
                     .foregroundColor(theme.colors.textPrimary)
                 
-                Text("Antrenmanınızı başlatabilirsiniz")
+                Text(TrainingKeys.CardioPreparation.canStartWorkout.localized)
                     .font(theme.typography.body)
                     .foregroundColor(theme.colors.textSecondary)
             } else {
@@ -313,7 +313,7 @@ struct CardioPreparationView: View {
                     .foregroundColor(theme.colors.textSecondary)
                     .symbolRenderingMode(.hierarchical)
                 
-                Text("Hazırlanıyor...")
+                Text(TrainingKeys.CardioPreparation.preparing.localized)
                     .font(theme.typography.headline)
                     .fontWeight(.semibold)
                     .foregroundColor(theme.colors.textPrimary)
@@ -338,7 +338,7 @@ struct CardioPreparationView: View {
             HStack {
                 Image(systemName: "play.fill")
                     .font(.title3)
-                Text("Başla")
+                Text(TrainingKeys.CardioPreparation.start.localized)
                     .font(theme.typography.headline)
                     .fontWeight(.semibold)
             }
@@ -512,11 +512,11 @@ struct BluetoothDeviceSelectionSheet: View {
                             .font(.system(size: 48))
                             .foregroundColor(theme.colors.textSecondary)
                         
-                        Text("Cihaz bulunamadı")
+                        Text(TrainingKeys.CardioPreparation.deviceNotFound.localized)
                             .font(theme.typography.headline)
                             .foregroundColor(theme.colors.textPrimary)
                         
-                        Text("Nabız bandınızın açık olduğundan emin olun")
+                        Text(TrainingKeys.CardioPreparation.ensureDeviceOn.localized)
                             .font(theme.typography.caption)
                             .foregroundColor(theme.colors.textSecondary)
                             .multilineTextAlignment(.center)
@@ -525,11 +525,11 @@ struct BluetoothDeviceSelectionSheet: View {
                     .padding(.vertical, 40)
                 }
             }
-            .navigationTitle("Nabız Bandı Seç")
+            .navigationTitle(TrainingKeys.CardioPreparation.selectHeartRateBand.localized)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button("İptal") { dismiss() }
+                    Button(TrainingKeys.CardioPreparation.cancel.localized) { dismiss() }
                 }
                 
                 ToolbarItem(placement: .navigationBarTrailing) {

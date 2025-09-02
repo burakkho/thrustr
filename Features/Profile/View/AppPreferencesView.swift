@@ -89,8 +89,7 @@ struct LanguageSelector: View {
             Button {
                 guard languageManager.currentLanguage != language else { return }
                 
-                let impact = UIImpactFeedbackGenerator(style: .light)
-                impact.impactOccurred()
+                HapticManager.shared.impact(.light)
                 
                 selectedLanguage = language
                 showingRestartAlert = true
@@ -158,8 +157,7 @@ struct UnitSystemSelector: View {
                     unitSystem = system
                 }
                 
-                let impact = UIImpactFeedbackGenerator(style: .light)
-                impact.impactOccurred()
+                HapticManager.shared.impact(.light)
             } label: {
                 HStack {
                     VStack(alignment: .leading, spacing: 2) {
@@ -206,8 +204,7 @@ struct AppearanceSettings: View {
                     themeManager.setTheme(theme)
                 }
                 
-                let impact = UIImpactFeedbackGenerator(style: .light)
-                impact.impactOccurred()
+                HapticManager.shared.impact(.light)
             } label: {
                 HStack {
                     Image(systemName: theme.icon)

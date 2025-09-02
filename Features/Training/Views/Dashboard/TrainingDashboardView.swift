@@ -95,7 +95,7 @@ struct TrainingDashboardView: View {
                     .foregroundColor(theme.colors.textPrimary)
                 
                 if let user = currentUser {
-                    Text("Welcome back, \(user.name)!")
+                    Text(String(format: TrainingKeys.Welcome.welcomeBack.localized, user.name))
                         .font(theme.typography.body)
                         .foregroundColor(theme.colors.textSecondary)
                 }
@@ -182,25 +182,25 @@ struct TrainingDashboardView: View {
             HStack(spacing: theme.spacing.m) {
                 QuickStatCard(
                     icon: "dumbbell.fill",
-                    title: "Workouts",
+                    title: TrainingKeys.Dashboard.workouts.localized,
                     value: "\(thisWeekStats.workouts)",
-                    subtitle: "This week",
+                    subtitle: TrainingKeys.Dashboard.thisWeek.localized,
                     color: theme.colors.accent
                 )
                 
                 QuickStatCard(
                     icon: "clock.fill",
-                    title: "Total Time",
+                    title: TrainingKeys.Dashboard.totalTime.localized,
                     value: formatDuration(thisWeekStats.totalTime),
-                    subtitle: "This week",
+                    subtitle: TrainingKeys.Dashboard.thisWeek.localized,
                     color: theme.colors.accent
                 )
                 
                 QuickStatCard(
                     icon: "flame.fill",
-                    title: "Streak",
+                    title: TrainingKeys.Dashboard.streak.localized,
                     value: "\(thisWeekStats.streak)",
-                    subtitle: "Days",
+                    subtitle: TrainingKeys.Analytics.days.localized,
                     color: theme.colors.warning
                 )
             }
@@ -224,8 +224,8 @@ struct TrainingDashboardView: View {
                 GridItem(.flexible())
             ], spacing: theme.spacing.m) {
                 QuickActionCard(
-                    title: "Quick Lift",
-                    subtitle: "Start strength training",
+                    title: TrainingKeys.Welcome.quickLift.localized,
+                    subtitle: TrainingKeys.Welcome.startStrengthTraining.localized,
                     icon: "dumbbell.fill",
                     color: .strengthColor,
                     action: {
@@ -234,8 +234,8 @@ struct TrainingDashboardView: View {
                 )
                 
                 QuickActionCard(
-                    title: "Quick Cardio",
-                    subtitle: "Start cardio session",
+                    title: TrainingKeys.Welcome.quickCardio.localized,
+                    subtitle: TrainingKeys.Welcome.startCardioSession.localized,
                     icon: "heart.fill",
                     color: .cardioColor,
                     action: {
@@ -244,8 +244,8 @@ struct TrainingDashboardView: View {
                 )
                 
                 QuickActionCard(
-                    title: "Daily WOD",
-                    subtitle: "Today's workout",
+                    title: TrainingKeys.Welcome.dailyWOD.localized,
+                    subtitle: TrainingKeys.Welcome.todaysWorkout.localized,
                     icon: "flame.fill",
                     color: .wodColor,
                     action: {
@@ -254,8 +254,8 @@ struct TrainingDashboardView: View {
                 )
                 
                 QuickActionCard(
-                    title: "Browse Programs",
-                    subtitle: "Find a program",
+                    title: TrainingKeys.ProgramCompletion.browsePrograms.localized,
+                    subtitle: TrainingKeys.Welcome.findProgram.localized,
                     icon: "rectangle.3.group",
                     color: theme.colors.accent,
                     action: {

@@ -19,7 +19,7 @@ struct PortionQuickSelect: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("quick_portions.title".localized)
+            Text(NutritionKeys.PortionInput.title.localized)
                 .font(.subheadline)
                 .foregroundColor(.secondary)
             
@@ -29,9 +29,7 @@ struct PortionQuickSelect: View {
                     ForEach(Array(amounts.enumerated()), id: \.offset) { _, amount in
                         Button {
                             quantity = amount
-                            #if canImport(UIKit)
-                            UIImpactFeedbackGenerator(style: .light).impactOccurred()
-                            #endif
+                            HapticManager.shared.impact(.light)
                         } label: {
                             VStack(spacing: 4) {
                                 Text(formatAmountDisplay(amount))
@@ -54,7 +52,7 @@ struct PortionQuickSelect: View {
                         VStack(spacing: 4) {
                             Image(systemName: "plus.circle")
                                 .font(.headline)
-                            Text("quick_portions.custom".localized)
+                            Text(NutritionKeys.PortionInput.custom.localized)
                                 .font(.caption2)
                         }
                         .foregroundColor(.blue)
@@ -67,7 +65,7 @@ struct PortionQuickSelect: View {
                     .sheet(isPresented: $showingCustomInput) {
                         NavigationStack {
                             VStack(spacing: 16) {
-                                Text("quick_portions.custom_amount".localized)
+                                Text(NutritionKeys.PortionInput.customAmount.localized)
                                     .font(.headline)
                                 TextField("0", text: $customText)
                                     .textFieldStyle(.roundedBorder)
@@ -77,7 +75,7 @@ struct PortionQuickSelect: View {
                             .padding()
                             .toolbar {
                                 ToolbarItem(placement: .confirmationAction) {
-                                    Button("quick_portions.set".localized) {
+                                    Button(NutritionKeys.PortionInput.set.localized) {
                                         if let value = Double(customText), value > 0 {
                                             // Convert input to grams for storage
                                             let grams = unitSettings.unitSystem == .metric ? value : UnitsConverter.ozToGram(value)
