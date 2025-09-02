@@ -71,7 +71,48 @@ struct FoodSelectionView: View {
     }
     
     var body: some View {
-        NavigationStack {
+        VStack(spacing: 0) {
+            // Native iOS Sheet Header
+            HStack {
+                Button(NutritionKeys.FoodSelection.cancel.localized) {
+                    dismiss()
+                }
+                .font(.body)
+                .foregroundColor(.blue)
+                
+                Spacer()
+                
+                Text(NutritionKeys.FoodSelection.title.localized)
+                    .font(.headline)
+                    .fontWeight(.semibold)
+                    .foregroundColor(.primary)
+                
+                Spacer()
+                
+                HStack(spacing: 16) {
+                    Button {
+                        showingScanner = true
+                    } label: {
+                        Image(systemName: "barcode.viewfinder")
+                            .font(.title3)
+                            .foregroundColor(.blue)
+                    }
+                    
+                    Button(NutritionKeys.FoodSelection.addNew.localized) {
+                        showingCustomFoodEntry = true
+                    }
+                    .font(.body)
+                    .foregroundColor(.blue)
+                }
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)
+            .background(
+                Color(.systemBackground)
+                    .shadow(color: Color.black.opacity(0.1), radius: 1, x: 0, y: 1)
+            )
+            
+            // Content
             VStack(spacing: 0) {
                 // Arama çubuğu
                 FoodSearchBar(
@@ -92,41 +133,62 @@ struct FoodSelectionView: View {
                 // Kategori filtreleri
                 FoodCategoryFilter(selectedCategory: $selectedCategory)
                 
-                // Yiyecek listesi
+                // Progressive food list - show local results immediately, OFF results as they load
                 let hasLocalResults = !filteredFoods.isEmpty
                 let hasOffResults = !offResults.isEmpty
-                if !hasLocalResults && !hasOffResults {
+                let isSearching = !debouncedSearchText.isEmpty
+                
+                if !hasLocalResults && !hasOffResults && !isSearching {
+                    // Empty state when not searching
+                    FoodSelectionEmptyStateView(
+                        searchText: searchText,
+                        onAddNew: { showingCustomFoodEntry = true }
+                    )
+                } else if !hasLocalResults && !hasOffResults && isSearching && !isLoadingOFF {
+                    // No results for search
                     FoodSelectionEmptyStateView(
                         searchText: searchText,
                         onAddNew: { showingCustomFoodEntry = true }
                     )
                 } else {
-                    resultsList(hasLocalResults: hasLocalResults, hasOffResults: hasOffResults)
-                }
-            }
-            .navigationTitle(LocalizationKeys.Nutrition.FoodSelection.title.localized)
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button(LocalizationKeys.Nutrition.FoodSelection.cancel.localized) {
-                        dismiss()
-                    }
-                }
-                
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    HStack(spacing: 12) {
-                        Button {
-                            showingScanner = true
-                        } label: {
-                            Image(systemName: "barcode.viewfinder")
-                                .font(.title3)
+                    // Progressive results - show what we have
+                    List {
+                        // Always show local results first (immediate)
+                        if hasLocalResults {
+                            Section(header: Text(NutritionKeys.FoodSelection.localResults.localized)) {
+                                ForEach(mergedLocalFoods(), id: \.id) { food in
+                                    FoodRowView(food: food) {
+                                        onFoodSelected(food)
+                                        #if canImport(UIKit)
+                                        UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                                        #endif
+                                    }
+                                }
+                            }
                         }
                         
-                        Button(LocalizationKeys.Nutrition.FoodSelection.addNew.localized) {
-                            showingCustomFoodEntry = true
+                        // Show OFF results as they load
+                        if hasOffResults {
+                            Section(header: Text("nutrition.openfoodfacts_section".localized)) {
+                                ForEach(offResults, id: \.id) { food in
+                                    FoodRowView(food: food) {
+                                        handleOFFResultSelection(food)
+                                    }
+                                }
+                            }
                         }
-                        .foregroundColor(.blue)
+                        
+                        // Show loading skeleton while OFF search is in progress
+                        if isLoadingOFF && isSearching {
+                            Section(header: Text("nutrition.openfoodfacts_section".localized)) {
+                                ForEach(0..<3, id: \.self) { _ in
+                                    FoodSkeletonRow()
+                                }
+                            }
+                        }
                     }
+                    .listStyle(.plain)
+                    .transition(.opacity.combined(with: .scale(scale: 0.98)))
                 }
             }
         }
@@ -135,8 +197,8 @@ struct FoodSelectionView: View {
                 LoadingOverlay()
             }
         }
-        .alert(LocalizationKeys.Common.error.localized, isPresented: .constant(offErrorMessage != nil)) {
-            Button(LocalizationKeys.Common.ok.localized) { offErrorMessage = nil }
+        .alert(CommonKeys.Onboarding.Common.error.localized, isPresented: .constant(offErrorMessage != nil)) {
+            Button(CommonKeys.Onboarding.Common.ok.localized) { offErrorMessage = nil }
         } message: {
             Text(offErrorMessage ?? "")
         }
@@ -172,6 +234,14 @@ struct FoodSelectionView: View {
                 showingScanner = true
             }
         }
+        .onDisappear {
+            // Performance optimization - cancel ongoing tasks to prevent memory leaks
+            searchTask?.cancel()
+            offSearchTask?.cancel()
+            aliasSearchTask?.cancel()
+        }
+        .animation(.easeInOut(duration: 0.3), value: isLoadingOFF)
+        .animation(.easeInOut(duration: 0.3), value: offResults.count)
     }
 }
 
@@ -187,18 +257,18 @@ private struct FoodSelectionEmptyStateView: View {
                 .foregroundColor(.gray)
             
             Text(searchText.isEmpty ?
-                 LocalizationKeys.Nutrition.FoodSelection.noResults.localized :
-                 LocalizationKeys.Nutrition.FoodSelection.noResultsForSearch.localized(with: searchText))
+                 NutritionKeys.FoodSelection.noResults.localized :
+                 NutritionKeys.FoodSelection.noResultsForSearch.localized(with: searchText))
                 .font(.headline)
                 .foregroundColor(.gray)
             
             if !searchText.isEmpty {
-                Text(LocalizationKeys.Nutrition.FoodSelection.tryDifferentTerms.localized)
+                Text(NutritionKeys.FoodSelection.tryDifferentTerms.localized)
                     .font(.caption)
                     .foregroundColor(.secondary)
             }
 
-            Button(LocalizationKeys.Nutrition.FoodSelection.addNew.localized) {
+            Button(NutritionKeys.FoodSelection.addNew.localized) {
                 onAddNew()
             }
             .buttonStyle(.bordered)
@@ -257,9 +327,9 @@ extension FoodSelectionView {
             if let offError = error as? OpenFoodFactsError {
                 switch offError {
                 case .rateLimited:
-                    offErrorMessage = LocalizationKeys.Nutrition.Scan.rateLimited.localized
+                    offErrorMessage = NutritionKeys.Scan.rateLimited.localized
                 case .networkUnavailable:
-                    offErrorMessage = LocalizationKeys.Nutrition.Scan.networkError.localized
+                    offErrorMessage = NutritionKeys.Scan.networkError.localized
                 case .productNotFound:
                     offErrorMessage = OpenFoodFactsError.productNotFound.localizedDescription
                 default:
@@ -274,7 +344,7 @@ extension FoodSelectionView {
     @MainActor
     private func handleScannedBarcode(_ code: String) async {
         guard let normalized = BarcodeValidator.normalizeAndValidate(code) else {
-            offErrorMessage = LocalizationKeys.Common.error.localized + ": Geçersiz barkod"
+            offErrorMessage = NutritionKeys.Scan.invalidBarcode.localized
             return
         }
         isLoadingOFF = true
@@ -287,7 +357,7 @@ extension FoodSelectionView {
                 #if canImport(UIKit)
                 UINotificationFeedbackGenerator().notificationOccurred(.success)
                 #endif
-                toastMessage = LocalizationKeys.Nutrition.Scan.existing.localized
+                toastMessage = NutritionKeys.Scan.existing.localized
                 onFoodSelected(existing)
                 showingScanner = false
                 return
@@ -304,7 +374,7 @@ extension FoodSelectionView {
                 #if canImport(UIKit)
                 UINotificationFeedbackGenerator().notificationOccurred(.success)
                 #endif
-                toastMessage = LocalizationKeys.Nutrition.Scan.cached.localized
+                toastMessage = NutritionKeys.Scan.cached.localized
                 onFoodSelected(food)
                 showingScanner = false
                 return
@@ -328,7 +398,7 @@ extension FoodSelectionView {
             #if canImport(UIKit)
             UINotificationFeedbackGenerator().notificationOccurred(.success)
             #endif
-            toastMessage = LocalizationKeys.Nutrition.Scan.scanned.localized
+            toastMessage = NutritionKeys.Scan.scanned.localized
             onFoodSelected(result.food)
             showingScanner = false
         } catch {
@@ -342,71 +412,47 @@ extension FoodSelectionView {
                     showingScanner = false
                     // Show custom food entry prefilled with barcode
                     showingCustomFoodEntry = true
-                    toastMessage = LocalizationKeys.Nutrition.Scan.notFound.localized
+                    toastMessage = NutritionKeys.Scan.notFound.localized
                 } else if offError == .rateLimited {
-                    toastMessage = LocalizationKeys.Nutrition.Scan.rateLimited.localized
+                    toastMessage = NutritionKeys.Scan.rateLimited.localized
                 }
             } else {
                 offErrorMessage = error.localizedDescription
-                toastMessage = LocalizationKeys.Nutrition.Scan.networkError.localized
+                toastMessage = NutritionKeys.Scan.networkError.localized
             }
         }
     }
 
-    @ViewBuilder
-    private func resultsList(hasLocalResults: Bool, hasOffResults: Bool) -> some View {
-        List {
-            if hasLocalResults {
-                Section(header: Text(LocalizationKeys.Nutrition.FoodSelection.localResults.localized)) {
-                    ForEach(mergedLocalFoods(), id: \.id) { food in
-                        FoodRowView(food: food) {
-                            onFoodSelected(food)
-                            #if canImport(UIKit)
-                            UIImpactFeedbackGenerator(style: .light).impactOccurred()
-                            #endif
-                        }
-                    }
+    private func handleOFFResultSelection(_ food: Food) {
+        // Prevent duplicates by barcode if exists
+        if let code = food.barcode {
+            do {
+                if let existing = try fetchFood(byBarcode: code) {
+                    #if canImport(UIKit)
+                    UINotificationFeedbackGenerator().notificationOccurred(.success)
+                    #endif
+                    toastMessage = NutritionKeys.Scan.existing.localized
+                    onFoodSelected(existing)
+                    return
                 }
-            }
-            if hasOffResults {
-                Section(header: Text("nutrition.openfoodfacts_section".localized)) {
-                    ForEach(offResults, id: \.id) { food in
-                        FoodRowView(food: food) {
-                            // Prevent duplicates by barcode if exists
-                            if let code = food.barcode {
-                                do {
-                                    if let existing = try fetchFood(byBarcode: code) {
-                                        #if canImport(UIKit)
-                                        UINotificationFeedbackGenerator().notificationOccurred(.success)
-                                        #endif
-                                        toastMessage = LocalizationKeys.Nutrition.Scan.existing.localized
-                                        onFoodSelected(existing)
-                                        return
-                                    }
-                                } catch {
-                                    offErrorMessage = error.localizedDescription
-                                }
-                            }
-
-                            if food.nameTR.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                                food.nameTR = food.nameEN
-                            }
-                            modelContext.insert(food)
-                            do { try modelContext.save() } catch {
-                                offErrorMessage = error.localizedDescription
-                                return
-                            }
-                            #if canImport(UIKit)
-                            UINotificationFeedbackGenerator().notificationOccurred(.success)
-                            #endif
-                            toastMessage = LocalizationKeys.Nutrition.Scan.scanned.localized
-                            onFoodSelected(food)
-                        }
-                    }
-                }
+            } catch {
+                offErrorMessage = error.localizedDescription
             }
         }
-        .listStyle(.plain)
+
+        if food.nameTR.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            food.nameTR = food.nameEN
+        }
+        modelContext.insert(food)
+        do { try modelContext.save() } catch {
+            offErrorMessage = error.localizedDescription
+            return
+        }
+        #if canImport(UIKit)
+        UINotificationFeedbackGenerator().notificationOccurred(.success)
+        #endif
+        toastMessage = NutritionKeys.Scan.scanned.localized
+        onFoodSelected(food)
     }
 
     private func fetchFood(byBarcode code: String) throws -> Food? {
@@ -428,7 +474,8 @@ extension FoodSelectionView {
     private func updateAliasMatches(query: String) async {
         let q = SearchUtilities.normalizeForSearch(query)
         guard !q.isEmpty else { aliasMatches = []; return }
-        let descriptor = FetchDescriptor<FoodAlias>()
+        var descriptor = FetchDescriptor<FoodAlias>()
+        descriptor.fetchLimit = 500 // Performance optimization - limit alias search
         let aliases = (try? modelContext.fetch(descriptor)) ?? []
         let matchedFoods: [Food] = aliases.compactMap { alias in
             let term = SearchUtilities.normalizeForSearch(alias.term)

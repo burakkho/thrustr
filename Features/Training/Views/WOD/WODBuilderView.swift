@@ -5,6 +5,7 @@ struct WODBuilderView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.theme) private var theme
     @Environment(\.modelContext) private var modelContext
+    @EnvironmentObject private var unitSettings: UnitSettings
     @Query private var exercises: [Exercise]
     
     @State private var wodName = ""
@@ -14,6 +15,8 @@ struct WODBuilderView: View {
     @State private var movements: [WODMovementData] = []
     @State private var showingMovementPicker = false
     @State private var editingMovement: WODMovementData?
+    @State private var errorMessage: String?
+    @State private var successMessage: String?
     
     // Temporary data structure for building
     struct WODMovementData: Identifiable {
@@ -22,12 +25,34 @@ struct WODBuilderView: View {
         var reps: String = ""
         var rxWeightMale: String = ""
         var rxWeightFemale: String = ""
+        var scaledWeightMale: String = ""
+        var scaledWeightFemale: String = ""
         var notes: String = ""
     }
     
     private var isValid: Bool {
+        isNameValid && hasMovements && isTimeCapValid && isRepSchemeValid
+    }
+    
+    private var isNameValid: Bool {
         !wodName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty &&
+        wodName.trimmingCharacters(in: .whitespacesAndNewlines).count >= 2
+    }
+    
+    private var hasMovements: Bool {
         !movements.isEmpty
+    }
+    
+    private var isTimeCapValid: Bool {
+        guard (wodType == .amrap || wodType == .emom) && !timeCap.isEmpty else { return true }
+        guard let minutes = Int(timeCap), minutes > 0, minutes <= 60 else { return false }
+        return true
+    }
+    
+    private var isRepSchemeValid: Bool {
+        guard wodType == .forTime && !repScheme.isEmpty else { return true }
+        let components = repScheme.split(separator: "-")
+        return components.allSatisfy { Int($0.trimmingCharacters(in: .whitespaces)) != nil }
     }
     
     private var suggestedMovements: [String] {
@@ -56,7 +81,20 @@ struct WODBuilderView: View {
                             .font(theme.typography.body)
                             .padding()
                             .background(theme.colors.backgroundSecondary)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: theme.radius.m)
+                                    .stroke(
+                                        !wodName.isEmpty && !isNameValid ? theme.colors.error : Color.clear,
+                                        lineWidth: 1
+                                    )
+                            )
                             .cornerRadius(theme.radius.m)
+                        
+                        if !wodName.isEmpty && !isNameValid {
+                            Text("Name must be at least 2 characters")
+                                .font(theme.typography.caption2)
+                                .foregroundColor(theme.colors.error)
+                        }
                     }
                     
                     // WOD Type
@@ -85,11 +123,24 @@ struct WODBuilderView: View {
                                 .font(theme.typography.body)
                                 .padding()
                                 .background(theme.colors.backgroundSecondary)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: theme.radius.m)
+                                        .stroke(
+                                            !repScheme.isEmpty && !isRepSchemeValid ? theme.colors.error : Color.clear,
+                                            lineWidth: 1
+                                        )
+                                )
                                 .cornerRadius(theme.radius.m)
                             
-                            Text("wod.rep_scheme_examples".localized)
-                                .font(theme.typography.caption2)
-                                .foregroundColor(theme.colors.textSecondary)
+                            if !repScheme.isEmpty && !isRepSchemeValid {
+                                Text("Rep scheme must contain valid numbers (e.g., 21-15-9)")
+                                    .font(theme.typography.caption2)
+                                    .foregroundColor(theme.colors.error)
+                            } else {
+                                Text("wod.rep_scheme_examples".localized)
+                                    .font(theme.typography.caption2)
+                                    .foregroundColor(theme.colors.textSecondary)
+                            }
                         }
                     }
                     
@@ -106,7 +157,20 @@ struct WODBuilderView: View {
                                 .keyboardType(.numberPad)
                                 .padding()
                                 .background(theme.colors.backgroundSecondary)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: theme.radius.m)
+                                        .stroke(
+                                            !timeCap.isEmpty && !isTimeCapValid ? theme.colors.error : Color.clear,
+                                            lineWidth: 1
+                                        )
+                                )
                                 .cornerRadius(theme.radius.m)
+                            
+                            if !timeCap.isEmpty && !isTimeCapValid {
+                                Text("Time must be between 1-60 minutes")
+                                    .font(theme.typography.caption2)
+                                    .foregroundColor(theme.colors.error)
+                            }
                         }
                     }
                     
@@ -126,13 +190,19 @@ struct WODBuilderView: View {
                         }
                         
                         if movements.isEmpty {
-                            Text("wod.add_movements".localized)
-                                .font(theme.typography.caption)
-                                .foregroundColor(theme.colors.textSecondary)
-                                .frame(maxWidth: .infinity)
-                                .padding()
-                                .background(theme.colors.backgroundSecondary.opacity(0.5))
-                                .cornerRadius(theme.radius.m)
+                            VStack(spacing: theme.spacing.s) {
+                                Text("wod.add_movements".localized)
+                                    .font(theme.typography.caption)
+                                    .foregroundColor(theme.colors.textSecondary)
+                                    .frame(maxWidth: .infinity)
+                                    .padding()
+                                    .background(theme.colors.backgroundSecondary.opacity(0.5))
+                                    .cornerRadius(theme.radius.m)
+                                
+                                Text("At least one movement is required")
+                                    .font(theme.typography.caption2)
+                                    .foregroundColor(theme.colors.error)
+                            }
                         } else {
                             ForEach(Array(movements.enumerated()), id: \.element.id) { index, movement in
                                 MovementRow(
@@ -178,8 +248,8 @@ struct WODBuilderView: View {
                 }
             }
             .sheet(isPresented: $showingMovementPicker) {
-                MovementPickerView { movement in
-                    movements.append(movement)
+                EnhancedMovementPicker { movementData in
+                    movements.append(movementData)
                 }
             }
             .sheet(item: $editingMovement) { movement in
@@ -190,6 +260,33 @@ struct WODBuilderView: View {
                 }
             }
         }
+        .overlay(alignment: .bottom) {
+            // Error Toast
+            if let errorMessage = errorMessage {
+                ToastView(text: errorMessage, icon: "exclamationmark.triangle.fill")
+                    .padding(.bottom, 24)
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+                    .onAppear {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
+                            withAnimation { self.errorMessage = nil }
+                        }
+                    }
+            }
+            
+            // Success Toast
+            if let successMessage = successMessage {
+                ToastView(text: successMessage, icon: "checkmark.circle.fill")
+                    .padding(.bottom, 24)
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+                    .onAppear {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                            withAnimation { self.successMessage = nil }
+                        }
+                    }
+            }
+        }
+        .animation(.easeInOut, value: errorMessage)
+        .animation(.easeInOut, value: successMessage)
     }
     
     private func addQuickMovement(_ name: String) {
@@ -198,6 +295,13 @@ struct WODBuilderView: View {
     }
     
     private func saveWOD() {
+        // Pre-save validation
+        guard isValid else {
+            HapticManager.shared.notification(.error)
+            errorMessage = "wod.fix_validation_errors".localized
+            return
+        }
+        
         // Parse rep scheme
         let reps: [Int] = {
             if wodType == .forTime {
@@ -231,7 +335,10 @@ struct WODBuilderView: View {
                 rxWeightMale: movementData.rxWeightMale.isEmpty ? nil : movementData.rxWeightMale,
                 rxWeightFemale: movementData.rxWeightFemale.isEmpty ? nil : movementData.rxWeightFemale,
                 reps: movementData.reps.isEmpty ? nil : Int(movementData.reps),
-                orderIndex: index
+                orderIndex: index,
+                scaledWeightMale: movementData.scaledWeightMale.isEmpty ? nil : movementData.scaledWeightMale,
+                scaledWeightFemale: movementData.scaledWeightFemale.isEmpty ? nil : movementData.scaledWeightFemale,
+                notes: movementData.notes.isEmpty ? nil : movementData.notes
             )
             movement.wod = wod
             wod.movements.append(movement)
@@ -243,9 +350,15 @@ struct WODBuilderView: View {
         do {
             try modelContext.save()
             HapticManager.shared.notification(.success)
-            dismiss()
+            successMessage = "wod.metcon_created_successfully".localized
+            
+            // Dismiss after short delay to show success message
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                dismiss()
+            }
         } catch {
-            print("Error saving WOD: \(error)")
+            HapticManager.shared.notification(.error)
+            errorMessage = "wod.failed_to_save_metcon".localized + ": \(error.localizedDescription)"
         }
     }
 }
@@ -282,6 +395,13 @@ private struct MovementRow: View {
                             .font(theme.typography.caption)
                             .foregroundColor(theme.colors.accent)
                     }
+                    
+                    if !movement.notes.isEmpty {
+                        Text("• \(movement.notes)")
+                            .font(theme.typography.caption)
+                            .foregroundColor(theme.colors.textSecondary)
+                            .lineLimit(1)
+                    }
                 }
             }
             
@@ -303,62 +423,11 @@ private struct MovementRow: View {
     }
 }
 
-// MARK: - Movement Picker
-private struct MovementPickerView: View {
-    @Environment(\.dismiss) private var dismiss
-    @Environment(\.theme) private var theme
-    let onSelect: (WODBuilderView.WODMovementData) -> Void
-    
-    @State private var movementName = ""
-    @State private var reps = ""
-    @State private var rxWeightMale = ""
-    @State private var rxWeightFemale = ""
-    
-    var body: some View {
-        NavigationStack {
-            Form {
-                Section("wod.movement_section".localized) {
-                    TextField("wod.movement_name_placeholder".localized, text: $movementName)
-                }
-                
-                Section("wod.reps_optional_section".localized) {
-                    TextField("wod.number_of_reps_placeholder".localized, text: $reps)
-                        .keyboardType(.numberPad)
-                }
-                
-                Section("wod.rx_weight_optional_section".localized) {
-                    TextField("wod.male_weight_placeholder".localized, text: $rxWeightMale)
-                    TextField("wod.female_weight_placeholder".localized, text: $rxWeightFemale)
-                }
-            }
-            .navigationTitle("wod.add_movement_title".localized)
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button("common.cancel".localized) { dismiss() }
-                }
-                
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("common.add".localized) {
-                        let movement = WODBuilderView.WODMovementData(
-                            name: movementName,
-                            reps: reps,
-                            rxWeightMale: rxWeightMale,
-                            rxWeightFemale: rxWeightFemale
-                        )
-                        onSelect(movement)
-                        dismiss()
-                    }
-                    .disabled(movementName.isEmpty)
-                }
-            }
-        }
-    }
-}
 
 // MARK: - Movement Edit
 private struct MovementEditView: View {
     @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject private var unitSettings: UnitSettings
     let movement: WODBuilderView.WODMovementData
     let onSave: (WODBuilderView.WODMovementData) -> Void
     
@@ -366,6 +435,9 @@ private struct MovementEditView: View {
     @State private var reps: String
     @State private var rxWeightMale: String
     @State private var rxWeightFemale: String
+    @State private var scaledWeightMale: String
+    @State private var scaledWeightFemale: String
+    @State private var notes: String
     
     init(movement: WODBuilderView.WODMovementData, onSave: @escaping (WODBuilderView.WODMovementData) -> Void) {
         self.movement = movement
@@ -374,6 +446,21 @@ private struct MovementEditView: View {
         _reps = State(initialValue: movement.reps)
         _rxWeightMale = State(initialValue: movement.rxWeightMale)
         _rxWeightFemale = State(initialValue: movement.rxWeightFemale)
+        _scaledWeightMale = State(initialValue: movement.scaledWeightMale)
+        _scaledWeightFemale = State(initialValue: movement.scaledWeightFemale)
+        _notes = State(initialValue: movement.notes)
+    }
+    
+    private var weightUnit: String {
+        unitSettings.unitSystem == .metric ? "kg" : "lb"
+    }
+    
+    private var malePlaceholder: String {
+        "Male (e.g., \(unitSettings.unitSystem == .metric ? "43" : "95")\(weightUnit))"
+    }
+    
+    private var femalePlaceholder: String {
+        "Female (e.g., \(unitSettings.unitSystem == .metric ? "30" : "65")\(weightUnit))"
     }
     
     var body: some View {
@@ -389,8 +476,17 @@ private struct MovementEditView: View {
                 }
                 
                 Section("wod.rx_weight_optional_section".localized) {
-                    TextField("wod.male_weight_placeholder".localized, text: $rxWeightMale)
-                    TextField("wod.female_weight_placeholder".localized, text: $rxWeightFemale)
+                    TextField(malePlaceholder, text: $rxWeightMale)
+                    TextField(femalePlaceholder, text: $rxWeightFemale)
+                }
+                
+                Section("Scaled Weight (Optional)") {
+                    TextField("Male scaled weight", text: $scaledWeightMale)
+                    TextField("Female scaled weight", text: $scaledWeightFemale)
+                }
+                
+                Section("Notes (Optional)") {
+                    TextField("Movement notes or variations", text: $notes)
                 }
             }
             .navigationTitle("wod.edit_movement_title".localized)
@@ -407,6 +503,9 @@ private struct MovementEditView: View {
                         updated.reps = reps
                         updated.rxWeightMale = rxWeightMale
                         updated.rxWeightFemale = rxWeightFemale
+                        updated.scaledWeightMale = scaledWeightMale
+                        updated.scaledWeightFemale = scaledWeightFemale
+                        updated.notes = notes
                         onSave(updated)
                         dismiss()
                     }

@@ -42,15 +42,15 @@ extension Date {
         return formatter.string(from: self)
     }
     
-    /// Relatif tarih: "Bugün", "Dün", "2 gün önce"
+    /// Relatif tarih: localized today/yesterday or date string
     var relativeString: String {
         let calendar = Calendar.current
         let now = Date()
         
         if calendar.isDateInToday(self) {
-            return "Bugün"
+            return DashboardKeys.Activities.today.localized
         } else if calendar.isDateInYesterday(self) {
-            return "Dün"
+            return DashboardKeys.Activities.yesterday.localized
         } else if calendar.isDate(self, equalTo: now, toGranularity: .year) {
             // Bu yıl içinde
             let formatter = DateFormatter()
@@ -129,12 +129,12 @@ extension Date {
     
     // MARK: - Workout Specific
     
-    /// Antrenman için tarih formatı: "Bugün" veya "Dün" veya "Paz, 12 Ağu"
+    /// Antrenman için tarih formatı: localized Today/Yesterday or weekday+date
     var workoutDateString: String {
         if isToday {
-            return "Bugün"
+            return DashboardKeys.Activities.today.localized
         } else if Calendar.current.isDateInYesterday(self) {
-            return "Dün"
+            return DashboardKeys.Activities.yesterday.localized
         } else {
             let formatter = DateFormatter()
             formatter.locale = Locale(identifier: "tr_TR")

@@ -27,7 +27,7 @@ struct FoodCategoryFilter: View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 12) {
                 FoodCategoryChip(
-                    title: LocalizationKeys.Nutrition.FoodSelection.all.localized,
+                    title: NutritionKeys.FoodSelection.all.localized,
                     isSelected: selectedCategory == nil,
                     color: .gray
                 ) {
@@ -53,13 +53,13 @@ struct FoodCategoryFilter: View {
 #Preview {
     VStack(spacing: 20) {
         FoodCategoryChip(
-            title: "Tümü",
+            title: NutritionKeys.Categories.all.localized,
             isSelected: true,
             color: .blue
         ) {}
         
         FoodCategoryChip(
-            title: "Et",
+            title: NutritionKeys.Categories.meat.localized,
             isSelected: false,
             color: .red
         ) {}

@@ -51,7 +51,7 @@ struct GoalTrackingView: View {
             }
             .padding()
         }
-        .navigationTitle(LocalizationKeys.GoalTracking.title.localized)
+        .navigationTitle(ProfileKeys.goalTracking.localized)
         .navigationBarTitleDisplayMode(.inline)
         .background(Color(.systemGroupedBackground))
         .sheet(isPresented: $showingAddGoal) {
@@ -72,11 +72,11 @@ struct GoalTrackingHeaderSection: View {
                 .foregroundColor(.blue)
             
             VStack(spacing: 8) {
-                Text(LocalizationKeys.GoalTracking.title.localized)
+                Text(ProfileKeys.goalTracking.localized)
                     .font(.title2)
                     .fontWeight(.semibold)
                 
-                Text(LocalizationKeys.GoalTracking.subtitle.localized)
+                Text(ProfileKeys.goalsSubtitle.localized)
                     .font(.subheadline)
                     .foregroundColor(.secondary)
                     .multilineTextAlignment(.center)
@@ -89,7 +89,7 @@ struct GoalTrackingHeaderSection: View {
                         .fontWeight(.bold)
                         .foregroundColor(.blue)
                     
-                    Text("\(LocalizationKeys.Common.completed.localized)") // placeholder, could have separate key for Active
+                    Text("common.active".localized)
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
@@ -100,7 +100,7 @@ struct GoalTrackingHeaderSection: View {
                         .fontWeight(.bold)
                         .foregroundColor(.green)
                     
-                    Text(LocalizationKeys.GoalTracking.completedGoals.localized)
+                    Text(ProfileKeys.Analytics.completedGoals.localized)
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
@@ -132,14 +132,14 @@ struct QuickGoalStats: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text(LocalizationKeys.Analytics.weeklyProgress.localized) // reuse better key later
+            Text(ProfileKeys.Analytics.weeklyProgress.localized)
                 .font(.headline)
                 .fontWeight(.semibold)
             
             LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 2), spacing: 12) {
                 QuickStatCard(
                     icon: "chart.line.uptrend.xyaxis",
-                    title: "Average Progress".localized,
+                    title: ProfileKeys.Analytics.averageProgress.localized,
                     value: "\(Int(averageProgress))%",
                     subtitle: "progress".localized,
                     color: .blue
@@ -147,7 +147,7 @@ struct QuickGoalStats: View {
                 
                 QuickStatCard(
                     icon: "clock.fill",
-                    title: "Next Deadline".localized,
+                    title: ProfileKeys.Analytics.nextDeadline.localized,
                     value: daysUntilNextDeadline > 0 ? String(format: "%d %@", daysUntilNextDeadline, "days".localized) : "None".localized,
                     subtitle: "remaining".localized,
                     color: .orange
@@ -155,7 +155,7 @@ struct QuickGoalStats: View {
                 
                 QuickStatCard(
                     icon: "checkmark.circle.fill",
-                    title: "Completed This Month".localized,
+                    title: ProfileKeys.Analytics.completedThisMonth.localized,
                     value: "\(goalsCompletedThisMonth)",
                     subtitle: "goals".localized,
                     color: .green
@@ -163,7 +163,7 @@ struct QuickGoalStats: View {
                 
                 QuickStatCard(
                     icon: "target",
-                    title: "Success Rate".localized,
+                    title: ProfileKeys.Analytics.successRate.localized,
                     value: "\(Int(successRate))%",
                     subtitle: "success".localized,
                     color: .purple
@@ -194,7 +194,7 @@ struct ActiveGoalsSection: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text(LocalizationKeys.GoalTracking.currentGoals.localized)
+            Text(ProfileKeys.Analytics.currentGoals.localized)
                 .font(.headline)
                 .fontWeight(.semibold)
             
@@ -268,7 +268,7 @@ struct GoalCard: View {
             // Progress Section
             VStack(alignment: .leading, spacing: 8) {
                 HStack {
-                    Text(LocalizationKeys.Achievements.progress.localized)
+                    Text("progress".localized)
                         .font(.subheadline)
                         .fontWeight(.medium)
                     
@@ -292,7 +292,7 @@ struct GoalCard: View {
                     Spacer()
                     
                     if goal.progressPercentage >= 1.0 {
-                        Text(LocalizationKeys.Common.completed.localized + " 🎉")
+                        Text("common.completed".localized + " 🎉")
                             .font(.caption)
                             .fontWeight(.semibold)
                             .foregroundColor(.green)
@@ -362,7 +362,7 @@ struct CompletedGoalsSection: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text(LocalizationKeys.GoalTracking.completedGoals.localized)
+            Text(ProfileKeys.Analytics.completedGoals.localized)
                 .font(.headline)
                 .fontWeight(.semibold)
             
@@ -403,7 +403,7 @@ struct CompletedGoalRow: View {
                     .foregroundColor(.secondary)
                 
                 if let completedDate = goal.completedDate {
-                    Text("\(LocalizationKeys.Common.completed.localized): \(formatDate(completedDate))")
+                    Text("Completed: \(formatDate(completedDate))")
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
@@ -429,33 +429,33 @@ struct CompletedGoalRow: View {
 struct GoalTipsSection: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("Goal Setting Tips".localized)
+            Text(ProfileKeys.Analytics.goalSettingTips.localized)
                 .font(.headline)
                 .fontWeight(.semibold)
             
             VStack(spacing: 12) {
                 GoalTipRow(
                     icon: "target",
-                    title: "SMART Goals".localized,
-                    description: "Set Specific, Measurable, Achievable, Realistic and Time-bound goals".localized
+                    title: ProfileKeys.Analytics.smartGoals.localized,
+                    description: ProfileKeys.Analytics.smartGoalsDesc.localized
                 )
                 
                 GoalTipRow(
                     icon: "chart.line.uptrend.xyaxis",
-                    title: "Small Steps".localized,
-                    description: "Break big goals into smaller, manageable parts".localized
+                    title: ProfileKeys.Analytics.smallSteps.localized,
+                    description: ProfileKeys.Analytics.smallStepsDesc.localized
                 )
                 
                 GoalTipRow(
                     icon: "calendar.badge.checkmark",
-                    title: "Regular Tracking".localized,
-                    description: "Review progress regularly and adjust when needed".localized
+                    title: ProfileKeys.Analytics.regularTracking.localized,
+                    description: ProfileKeys.Analytics.regularTrackingDesc.localized
                 )
                 
                 GoalTipRow(
                     icon: "heart.fill",
-                    title: "Motivation".localized,
-                    description: "Celebrate achievements and reward yourself".localized
+                    title: ProfileKeys.Analytics.motivation.localized,
+                    description: ProfileKeys.Analytics.motivationDesc.localized
                 )
             }
             .padding()
@@ -522,7 +522,7 @@ struct AddGoalView: View {
                     
                     // Goal Type Selection
                     VStack(alignment: .leading, spacing: 12) {
-                        Text(LocalizationKeys.GoalTracking.goalType.localized)
+                        Text("goal.type".localized)
                             .font(.headline)
                             .fontWeight(.semibold)
                         

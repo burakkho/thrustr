@@ -2,6 +2,7 @@ import SwiftUI
 import SwiftData
 
 struct FavoritesSection: View {
+    @EnvironmentObject private var unitSettings: UnitSettings
     let foods: [Food]
     let onFoodSelected: (Food) -> Void
     
@@ -33,58 +34,88 @@ struct FavoritesSection: View {
         VStack(alignment: .leading, spacing: 16) {
             // Segment kontrol
             Picker("", selection: $selectedList) {
-                Text(LocalizationKeys.Nutrition.Favorites.favorites.localized).tag(ListType.favorites)
-                Text(LocalizationKeys.Nutrition.Favorites.recent.localized).tag(ListType.recent)
+                Text(NutritionKeys.Favorites.favorites.localized).tag(ListType.favorites)
+                Text(NutritionKeys.Favorites.recent.localized).tag(ListType.recent)
             }
             .pickerStyle(.segmented)
             .padding(.horizontal)
             
             // İçerik: Favoriler veya Son Kullanılanlar
-            if selectedList == .favorites, !favoriteFoods.isEmpty {
-                VStack(alignment: .leading, spacing: 8) {
-                    HStack {
-                        Image(systemName: "heart.fill")
-                            .foregroundColor(.red)
-                        Text(LocalizationKeys.Nutrition.Favorites.favorites.localized)
-                            .font(.headline)
-                            .fontWeight(.semibold)
-                    }
-                    .padding(.horizontal)
-                    
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: 12) {
-                            ForEach(favoriteFoods, id: \.id) { food in
-                                QuickFoodCard(food: food, type: .favorite) {
-                                    onFoodSelected(food)
-                                }
-                            }
+            if selectedList == .favorites {
+                if !favoriteFoods.isEmpty {
+                    VStack(alignment: .leading, spacing: 8) {
+                        HStack {
+                            Image(systemName: "heart.fill")
+                                .foregroundColor(.red)
+                            Text(NutritionKeys.Favorites.favorites.localized)
+                                .font(.headline)
+                                .fontWeight(.semibold)
                         }
                         .padding(.horizontal)
+                        
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack(spacing: 12) {
+                                ForEach(favoriteFoods, id: \.id) { food in
+                                    QuickFoodCard(food: food, type: .favorite) {
+                                        onFoodSelected(food)
+                                    }
+                                }
+                            }
+                            .padding(.horizontal)
+                        }
                     }
+                } else {
+                    // Favori boş state
+                    VStack(spacing: 8) {
+                        Image(systemName: "heart")
+                            .font(.largeTitle)
+                            .foregroundColor(.gray)
+                        Text(NutritionKeys.Favorites.emptyFavorites.localized)
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                            .multilineTextAlignment(.center)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 20)
                 }
             }
             
-            if selectedList == .recent, !recentFoods.isEmpty {
-                VStack(alignment: .leading, spacing: 8) {
-                    HStack {
-                        Image(systemName: "clock.fill")
-                            .foregroundColor(.blue)
-                        Text(LocalizationKeys.Nutrition.Favorites.recent.localized)
-                            .font(.headline)
-                            .fontWeight(.semibold)
-                    }
-                    .padding(.horizontal)
-                    
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: 12) {
-                            ForEach(recentFoods, id: \.id) { food in
-                                QuickFoodCard(food: food, type: .recent) {
-                                    onFoodSelected(food)
-                                }
-                            }
+            if selectedList == .recent {
+                if !recentFoods.isEmpty {
+                    VStack(alignment: .leading, spacing: 8) {
+                        HStack {
+                            Image(systemName: "clock.fill")
+                                .foregroundColor(.blue)
+                            Text(NutritionKeys.Favorites.recent.localized)
+                                .font(.headline)
+                                .fontWeight(.semibold)
                         }
                         .padding(.horizontal)
+                        
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack(spacing: 12) {
+                                ForEach(recentFoods, id: \.id) { food in
+                                    QuickFoodCard(food: food, type: .recent) {
+                                        onFoodSelected(food)
+                                    }
+                                }
+                            }
+                            .padding(.horizontal)
+                        }
                     }
+                } else {
+                    // Son kullanılan boş state
+                    VStack(spacing: 8) {
+                        Image(systemName: "clock")
+                            .font(.largeTitle)
+                            .foregroundColor(.gray)
+                        Text(NutritionKeys.Favorites.emptyRecent.localized)
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                            .multilineTextAlignment(.center)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 20)
                 }
             }
             
@@ -94,7 +125,7 @@ struct FavoritesSection: View {
                     HStack {
                         Image(systemName: "flame.fill")
                             .foregroundColor(.orange)
-                        Text(LocalizationKeys.Nutrition.Favorites.popular.localized)
+                        Text(NutritionKeys.Favorites.popular.localized)
                             .font(.headline)
                             .fontWeight(.semibold)
                     }
@@ -122,9 +153,20 @@ private enum ListType: Hashable {
 }
 
 struct QuickFoodCard: View {
+    @EnvironmentObject private var unitSettings: UnitSettings
     let food: Food
     let type: QuickFoodType
     let action: () -> Void
+    
+    private var servingLineText: String {
+        let grams = Int(food.servingSizeGramsOrDefault.rounded())
+        let base = "\(Int(food.calories)) \(NutritionKeys.Units.kcal.localized)"
+        let weightDisplay = UnitsFormatter.formatFoodWeight(grams: Double(grams), system: unitSettings.unitSystem)
+        if let name = food.servingName, !name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            return base + " / 1 \(name) (\(weightDisplay))"
+        }
+        return base + " / 1 \(NutritionKeys.Labels.serving.localized) (\(weightDisplay))"
+    }
     
     var body: some View {
         Button(action: action) {
@@ -148,12 +190,12 @@ struct QuickFoodCard: View {
                     .lineLimit(2)
                     .multilineTextAlignment(.leading)
                 
-                Text(servingLine(for: food))
+                Text(servingLineText)
                     .font(.caption)
                     .foregroundColor(.secondary)
                 
                 if type == .popular {
-                    Text(LocalizationKeys.Nutrition.Favorites.timesUsed.localized(with: food.usageCount))
+                    Text(NutritionKeys.Favorites.timesUsed.localized(with: food.usageCount))
                         .font(.caption2)
                         .foregroundColor(.orange)
                 }
@@ -165,15 +207,6 @@ struct QuickFoodCard: View {
         }
         .buttonStyle(.plain)
     }
-}
-
-private func servingLine(for food: Food) -> String {
-    let grams = Int(food.servingSizeGramsOrDefault.rounded())
-    let base = "\(Int(food.calories)) \(LocalizationKeys.Nutrition.Units.kcal.localized)"
-    if let name = food.servingName, !name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-        return base + " / 1 \(name) (\(grams)g)"
-    }
-    return base + " / 1 porsiyon (\(grams)g)"
 }
 
 enum QuickFoodType {

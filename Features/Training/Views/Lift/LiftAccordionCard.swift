@@ -4,6 +4,7 @@ import SwiftData
 // MARK: - Lift Accordion Card
 struct LiftAccordionCard: View {
     @Environment(\.theme) private var theme
+    @EnvironmentObject private var unitSettings: UnitSettings
     @Binding var exerciseResult: LiftExerciseResult
     let isExpanded: Bool
     let previousSets: [SetData]?
@@ -84,7 +85,7 @@ struct LiftAccordionCard: View {
                     
                     // Volume indicator
                     if exerciseResult.totalVolume > 0 {
-                        Text("\(Int(exerciseResult.totalVolume))kg")
+                        Text(UnitsFormatter.formatVolume(kg: exerciseResult.totalVolume, system: unitSettings.unitSystem))
                             .font(theme.typography.caption)
                             .fontWeight(.semibold)
                             .foregroundColor(theme.colors.accent)
@@ -109,22 +110,22 @@ struct LiftAccordionCard: View {
                 VStack(spacing: 0) {
                     
                     // Set Header
-                    HStack {
+                    HStack(spacing: 4) {
                         Text("SET")
-                            .frame(width: 40, alignment: .leading)
+                            .frame(width: 24, alignment: .leading)
                         Text("PREVIOUS")
-                            .frame(maxWidth: .infinity, alignment: .center)
-                        Text("KG")
                             .frame(width: 60, alignment: .center)
+                        Text(unitSettings.unitSystem == .metric ? "KG" : "LB")
+                            .frame(width: 118, alignment: .center)
                         Text("REPS")
-                            .frame(width: 60, alignment: .center)
+                            .frame(width: 110, alignment: .center)
                         Image(systemName: "checkmark")
-                            .frame(width: 30)
+                            .frame(width: 24)
                     }
                     .font(theme.typography.caption)
                     .foregroundColor(theme.colors.textSecondary)
-                    .padding(.horizontal)
-                    .padding(.vertical, theme.spacing.s)
+                    .padding(.horizontal, theme.spacing.xs)
+                    .padding(.vertical, 6)
                     
                     // Sets
                     ForEach(exerciseResult.sets.indices, id: \.self) { index in
@@ -163,27 +164,28 @@ struct LiftAccordionCard: View {
                             
                             if index < exerciseResult.sets.count - 1 {
                                 Divider()
-                                    .padding(.horizontal)
+                                    .padding(.horizontal, theme.spacing.m)
                             }
                         }
                     }
                     
                     // Action Buttons
-                    HStack(spacing: theme.spacing.m) {
+                    HStack(spacing: theme.spacing.s) {
                         
                         // Add Set Button
                         Button(action: {
                             exerciseResult.addSet()
                             onSetUpdate()
                         }) {
-                            HStack {
+                            HStack(spacing: 4) {
                                 Image(systemName: "plus.circle")
+                                    .font(.caption)
                                 Text("Add Set")
+                                    .font(theme.typography.caption)
                             }
-                            .font(theme.typography.body)
                             .foregroundColor(theme.colors.accent)
                             .frame(maxWidth: .infinity)
-                            .padding(.vertical, theme.spacing.s)
+                            .padding(.vertical, 8)
                             .background(theme.colors.backgroundSecondary)
                             .cornerRadius(theme.radius.s)
                         }
@@ -192,30 +194,31 @@ struct LiftAccordionCard: View {
                         Button(action: {
                             completeAllSets()
                         }) {
-                            HStack {
+                            HStack(spacing: 4) {
                                 Image(systemName: "checkmark.circle.fill")
+                                    .font(.caption)
                                 Text("Complete All")
+                                    .font(theme.typography.caption)
                             }
-                            .font(theme.typography.body)
                             .foregroundColor(.white)
                             .frame(maxWidth: .infinity)
-                            .padding(.vertical, theme.spacing.s)
+                            .padding(.vertical, 8)
                             .background(theme.colors.success)
                             .cornerRadius(theme.radius.s)
                         }
                         .disabled(exerciseResult.sets.allSatisfy { $0.isCompleted })
                     }
                     .padding(.horizontal)
-                    .padding(.vertical, theme.spacing.s)
+                    .padding(.vertical, 8)
                 }
             }
         }
         .background(theme.colors.cardBackground)
         .cornerRadius(theme.radius.m)
         .padding(.horizontal)
-        .alert("Delete Set?", isPresented: $showingDeleteAlert) {
-            Button("Cancel", role: .cancel) { }
-            Button("Delete", role: .destructive) {
+        .alert(TrainingKeys.Alerts.deleteSet.localized, isPresented: $showingDeleteAlert) {
+            Button(TrainingKeys.Common.cancel.localized, role: .cancel) { }
+            Button(TrainingKeys.Alerts.delete.localized, role: .destructive) {
                 if let index = setToDelete {
                     exerciseResult.removeSet(at: index)
                     onSetUpdate()

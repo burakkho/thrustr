@@ -26,9 +26,9 @@ struct PersonalInfoStepView: View {
     var body: some View {
         VStack(spacing: 24) {
             VStack(spacing: 8) {
-                Text(LocalizationKeys.Onboarding.PersonalInfo.title.localized)
+                Text(CommonKeys.Onboarding.personalInfoTitle.localized)
                     .font(.system(size: 28, weight: .semibold, design: .rounded))
-                Text(LocalizationKeys.Onboarding.PersonalInfo.subtitle.localized)
+                Text(CommonKeys.Onboarding.personalInfoSubtitle.localized)
                     .font(.system(size: 14, weight: .regular, design: .rounded))
                     .foregroundColor(.secondary)
             }
@@ -37,16 +37,16 @@ struct PersonalInfoStepView: View {
             ScrollView {
                 VStack(spacing: 20) {
                     VStack(alignment: .leading, spacing: 8) {
-                        Text(LocalizationKeys.Onboarding.PersonalInfo.name.localized)
+                        Text(CommonKeys.Onboarding.nameLabel.localized)
                             .font(.headline)
-                        TextField(LocalizationKeys.Onboarding.PersonalInfo.namePlaceholder.localized, text: $data.name)
+                        TextField(CommonKeys.Onboarding.namePlaceholder.localized, text: $data.name)
                             .textFieldStyle(RoundedBorderTextFieldStyle())
                             .textInputAutocapitalization(.words)
                             .textContentType(.name)
                             .disableAutocorrection(true)
                             .focused($focusedField, equals: .name)
                             .submitLabel(.next)
-                            .accessibilityLabel(Text(LocalizationKeys.Onboarding.PersonalInfo.name.localized))
+                            .accessibilityLabel(Text(CommonKeys.Onboarding.nameLabel.localized))
                             .accessibilityHint(Text("İsminizi girin"))
                             .onChange(of: data.name) { _, _ in
                                 // Debounce validation to avoid stutter while typing
@@ -63,16 +63,16 @@ struct PersonalInfoStepView: View {
                     }
                     
                     VStack(alignment: .leading, spacing: 8) {
-                        Text(LocalizationKeys.Onboarding.PersonalInfo.age.localized)
+                        Text(CommonKeys.Onboarding.ageLabel.localized)
                             .font(.headline)
                         Stepper(value: $data.age, in: 15...80) {
-                            Text(String(format: LocalizationKeys.Onboarding.PersonalInfo.ageYears.localized, data.age))
+                            Text(String(format: CommonKeys.Onboarding.ageYears.localized, data.age))
                                 .font(.system(size: 20, weight: .semibold, design: .rounded))
                         }
                         .padding()
                         .background(Color(.systemGray6))
                         .cornerRadius(12)
-                        .accessibilityLabel(Text(LocalizationKeys.Onboarding.PersonalInfo.age.localized))
+                        .accessibilityLabel(Text(CommonKeys.Onboarding.ageLabel.localized))
                         .accessibilityValue(Text("\(data.age)"))
                         .onChange(of: data.age) { _, _ in validateAndUpdateErrors() }
                         if let ageError = ageError {
@@ -121,18 +121,18 @@ struct PersonalInfoStepView: View {
                     }
                     
                     VStack(alignment: .leading, spacing: 8) {
-                        Text(LocalizationKeys.Onboarding.PersonalInfo.gender.localized)
+                        Text(CommonKeys.Onboarding.genderLabel.localized)
                             .font(.headline)
                         HStack(spacing: 12) {
                             GenderButton(
-                                title: LocalizationKeys.Onboarding.PersonalInfo.genderMale.localized,
+                                title: CommonKeys.Onboarding.genderMale.localized,
                                 icon: "figure.stand",
                                 isSelected: data.gender == "male"
                             ) {
                                 data.gender = "male"
                             }
                             GenderButton(
-                                title: LocalizationKeys.Onboarding.PersonalInfo.genderFemale.localized,
+                                title: CommonKeys.Onboarding.genderFemale.localized,
                                 icon: "figure.stand.dress",
                                 isSelected: data.gender == "female"
                             ) {
@@ -146,14 +146,14 @@ struct PersonalInfoStepView: View {
                     Group {
                         if data.unitSystem == "metric" {
                             VStack(alignment: .leading, spacing: 8) {
-                                Text(LocalizationKeys.Onboarding.PersonalInfo.height.localized)
+                                Text(CommonKeys.Onboarding.heightLabel.localized)
                                     .font(.headline)
                                 HStack {
                                     Text("\(Int(data.height)) cm")
                                         .font(.system(size: 20, weight: .semibold, design: .rounded))
                                         .frame(width: 80, alignment: .leading)
                                     Slider(value: $data.height, in: 140...220, step: 1)
-                                        .accessibilityLabel(Text(LocalizationKeys.Onboarding.PersonalInfo.height.localized))
+                                        .accessibilityLabel(Text(CommonKeys.Onboarding.heightLabel.localized))
                                         .accessibilityValue(Text("\(Int(data.height)) cm"))
                                         .onChange(of: data.height) { _, _ in validateAndUpdateErrors() }
                                 }
@@ -169,7 +169,7 @@ struct PersonalInfoStepView: View {
                             .transition(.opacity)
                         } else {
                             VStack(alignment: .leading, spacing: 8) {
-                                Text(LocalizationKeys.Onboarding.PersonalInfo.height.localized)
+                                Text(CommonKeys.Onboarding.heightLabel.localized)
                                     .font(.headline)
                                 HStack(spacing: 12) {
                                     VStack(alignment: .leading, spacing: 4) {
@@ -209,15 +209,15 @@ struct PersonalInfoStepView: View {
                     Group {
                         if data.unitSystem == "metric" {
                             VStack(alignment: .leading, spacing: 8) {
-                                Text(LocalizationKeys.Onboarding.PersonalInfo.weight.localized)
+                                Text(CommonKeys.Onboarding.weightLabel.localized)
                                     .font(.headline)
                                 HStack {
-                                    Text("\(Int(data.weight)) kg")
+                                    Text(UnitsFormatter.formatWeight(kg: data.weight, system: unitSettings.unitSystem))
                                         .font(.system(size: 20, weight: .semibold, design: .rounded))
                                         .frame(width: 80, alignment: .leading)
                                     Slider(value: $data.weight, in: 40...150, step: 0.5)
-                                        .accessibilityLabel(Text(LocalizationKeys.Onboarding.PersonalInfo.weight.localized))
-                                        .accessibilityValue(Text("\(Int(data.weight)) kg"))
+                                        .accessibilityLabel(Text(CommonKeys.Onboarding.weightLabel.localized))
+                                        .accessibilityValue(Text(UnitsFormatter.formatWeight(kg: data.weight, system: unitSettings.unitSystem)))
                                         .onChange(of: data.weight) { _, _ in validateAndUpdateErrors() }
                                 }
                                 .padding()
@@ -232,7 +232,7 @@ struct PersonalInfoStepView: View {
                             .transition(.opacity)
                         } else {
                             VStack(alignment: .leading, spacing: 8) {
-                                Text(LocalizationKeys.Onboarding.PersonalInfo.weight.localized)
+                                Text(CommonKeys.Onboarding.weightLabel.localized)
                                     .font(.headline)
                                 HStack {
                                     TextField("units.lbs".localized, text: $weightLbsText)
@@ -247,7 +247,7 @@ struct PersonalInfoStepView: View {
                                 .padding(8)
                                 .background(Color(.systemGray6))
                                 .cornerRadius(12)
-                                Text("\(String(format: "%.1f", data.weight)) kg")
+                                Text(UnitsFormatter.formatWeight(kg: data.weight, system: unitSettings.unitSystem))
                                     .font(.caption)
                                     .foregroundColor(.secondary)
                             }
@@ -259,7 +259,7 @@ struct PersonalInfoStepView: View {
             }
 			.scrollDismissesKeyboard(.immediately) // ✅ Daha güvenli keyboard handling
             
-            PrimaryButton(title: LocalizationKeys.Onboarding.continueAction.localized, icon: "arrow.right", isEnabled: isFormValid) {
+            PrimaryButton(title: CommonKeys.Onboarding.continueAction.localized, icon: "arrow.right", isEnabled: isFormValid) {
                 validateAndUpdateErrors()
                 if validationErrors.isEmpty { onNext() }
             }
@@ -337,7 +337,11 @@ struct PersonalInfoStepView: View {
     private func handleUnitSystemChange(_ newValue: String) {
         data.unitSystem = newValue
         preferredUnitSystem = newValue // persist globally
-        unitSettings.unitSystem = UnitSystem(rawValue: newValue) ?? .metric
+        
+        // Update UnitSettings with selected system
+        let selectedSystem = UnitSystem(rawValue: newValue) ?? .metric
+        unitSettings.updateUnitSystem(selectedSystem)
+        
         if newValue == "imperial" {
             // derive imperial states from current metric values
             syncImperialStatesFromMetric()

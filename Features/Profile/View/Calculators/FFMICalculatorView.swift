@@ -26,7 +26,7 @@ struct FFMICalculatorView: View {
                 Button {
                     calculateFFMI()
                 } label: {
-                    Text("Hesapla")
+                    Text(ProfileKeys.FFMICalculator.calculate.localized)
                         .font(.headline)
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
@@ -39,7 +39,7 @@ struct FFMICalculatorView: View {
                 
                 // Results Section
                 if let ffmi = calculatedFFMI, let leanMass = leanMass {
-                    FFMIResultsSection(ffmi: ffmi, leanMass: leanMass)
+                    FFMIResultsSection(ffmi: ffmi, leanMass: leanMass, unitSystem: unitSettings.unitSystem)
                 }
                 
                 // FFMI Scale Section
@@ -50,7 +50,7 @@ struct FFMICalculatorView: View {
             }
             .padding()
         }
-        .navigationTitle("FFMI Hesaplayıcı")
+        .navigationTitle(ProfileKeys.FFMICalculator.title.localized)
         .navigationBarTitleDisplayMode(.inline)
         .background(Color(.systemGroupedBackground))
     }
@@ -96,11 +96,11 @@ struct FFMIHeaderSection: View {
                 .foregroundColor(.green)
             
             VStack(spacing: 8) {
-                Text("FFMI Hesaplayıcı")
+                Text(ProfileKeys.FFMICalculator.title.localized)
                     .font(.title2)
                     .fontWeight(.semibold)
                 
-                Text("Yağsız Kas Kütlesi İndeksinizi hesaplayın")
+                Text(ProfileKeys.FFMICalculator.subtitle.localized)
                     .font(.subheadline)
                     .foregroundColor(.secondary)
                     .multilineTextAlignment(.center)
@@ -122,7 +122,7 @@ struct FFMIInputSection: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
-            Text("Vücut Ölçümleri")
+            Text(ProfileKeys.FFMICalculator.measurements.localized)
                 .font(.headline)
                 .fontWeight(.semibold)
             
@@ -132,7 +132,7 @@ struct FFMIInputSection: View {
                     HStack {
                         Image(systemName: "scalemass.fill")
                             .foregroundColor(.green)
-                        Text(unitSystem == .metric ? "Vücut Ağırlığı (kg)" : "Vücut Ağırlığı (lb)")
+                        Text(unitSystem == .metric ? ProfileKeys.FFMICalculator.weightLabel.localized : ProfileKeys.FFMICalculator.weight.localized)
                             .fontWeight(.medium)
                     }
                     
@@ -147,7 +147,7 @@ struct FFMIInputSection: View {
                     HStack {
                         Image(systemName: "ruler.fill")
                             .foregroundColor(.blue)
-                        Text("Boy (cm)")
+                        Text(ProfileKeys.FFMICalculator.heightLabel.localized)
                             .fontWeight(.medium)
                     }
                     
@@ -162,7 +162,7 @@ struct FFMIInputSection: View {
                     HStack {
                         Image(systemName: "percent")
                             .foregroundColor(.orange)
-                        Text("Vücut Yağ Oranı (%)")
+                        Text(ProfileKeys.FFMICalculator.bodyFatLabel.localized)
                             .fontWeight(.medium)
                     }
                     
@@ -184,6 +184,7 @@ struct FFMIInputSection: View {
 struct FFMIResultsSection: View {
     let ffmi: Double
     let leanMass: Double
+    let unitSystem: UnitSystem
     
     private var ffmiCategory: FFMICategory {
         FFMICategory.category(for: ffmi)
@@ -191,14 +192,14 @@ struct FFMIResultsSection: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
-            Text("Sonuçlar")
+            Text(ProfileKeys.FFMICalculator.results.localized)
                 .font(.headline)
                 .fontWeight(.semibold)
             
             VStack(spacing: 16) {
                 // FFMI Result
                 VStack(spacing: 8) {
-                    Text("FFMI Değeriniz")
+                    Text(ProfileKeys.FFMICalculator.ffmiValue.localized)
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                     
@@ -223,11 +224,11 @@ struct FFMIResultsSection: View {
                 
                 // Lean Mass
                 VStack(spacing: 8) {
-                    Text("Yağsız Kas Kütlesi")
+                    Text(ProfileKeys.FFMICalculator.leanMass.localized)
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                     
-                    Text("\(String(format: "%.1f", leanMass)) kg")
+                    Text(UnitsFormatter.formatWeight(kg: leanMass, system: unitSystem))
                         .font(.title)
                         .fontWeight(.bold)
                         .foregroundColor(.blue)
@@ -248,7 +249,7 @@ struct FFMIResultsSection: View {
 struct FFMIScaleSection: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("FFMI Skalası")
+            Text(ProfileKeys.FFMICalculator.scale.localized)
                 .font(.headline)
                 .fontWeight(.semibold)
             
@@ -292,33 +293,33 @@ struct FFMIScaleRow: View {
 struct FFMIInfoSection: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("FFMI Hakkında")
+            Text(ProfileKeys.FFMICalculator.about.localized)
                 .font(.headline)
                 .fontWeight(.semibold)
             
             VStack(spacing: 12) {
                 InfoRowFFMI(
                     icon: "info.circle.fill",
-                    title: "FFMI Nedir?",
-                    description: "Yağsız Kas Kütlesi İndeksi, vücut kompozisyonunuzu değerlendiren bir ölçüttür"
+                    title: ProfileKeys.FFMICalculator.whatIsFFMI.localized,
+                    description: ProfileKeys.FFMICalculator.whatIsFFMIDesc.localized
                 )
                 
                 InfoRowFFMI(
                     icon: "chart.bar.fill",
-                    title: "Doğal Sınır",
-                    description: "25 üzeri değerler genellikle steroid kullanımını işaret eder"
+                    title: ProfileKeys.FFMICalculator.naturalLimit.localized,
+                    description: ProfileKeys.FFMICalculator.naturalLimitDesc.localized
                 )
                 
                 InfoRowFFMI(
                     icon: "target",
-                    title: "Hedefler",
-                    description: "Erkekler için 18-22, kadınlar için 14-17 ideal kabul edilir"
+                    title: ProfileKeys.FFMICalculator.targets.localized,
+                    description: ProfileKeys.FFMICalculator.targetsDesc.localized
                 )
                 
                 InfoRowFFMI(
                     icon: "exclamationmark.triangle.fill",
-                    title: "Not",
-                    description: "Vücut yağ oranı doğruluğu sonucu önemli ölçüde etkiler"
+                    title: ProfileKeys.FFMICalculator.note.localized,
+                    description: ProfileKeys.FFMICalculator.noteDesc.localized
                 )
             }
             .padding()
@@ -367,12 +368,12 @@ enum FFMICategory: CaseIterable {
     
     var description: String {
         switch self {
-        case .belowAverage: return "Ortalamanın Altı"
-        case .average: return "Ortalama"
-        case .aboveAverage: return "Ortalamanın Üstü"
-        case .excellent: return "Mükemmel"
-        case .superior: return "Üstün"
-        case .suspicious: return "Şüpheli"
+        case .belowAverage: return ProfileKeys.FFMICalculator.belowAverage.localized
+        case .average: return ProfileKeys.FFMICalculator.average.localized
+        case .aboveAverage: return ProfileKeys.FFMICalculator.aboveAverage.localized
+        case .excellent: return ProfileKeys.FFMICalculator.excellent.localized
+        case .superior: return ProfileKeys.FFMICalculator.superior.localized
+        case .suspicious: return ProfileKeys.FFMICalculator.suspicious.localized
         }
     }
     
@@ -389,12 +390,12 @@ enum FFMICategory: CaseIterable {
     
     var interpretation: String {
         switch self {
-        case .belowAverage: return "Kas kütlesi geliştirmek için çalışın"
-        case .average: return "Normal kas kütlesi"
-        case .aboveAverage: return "İyi kas gelişimi"
-        case .excellent: return "Çok iyi kas kütlesi"
-        case .superior: return "Doğal maksimuma yakın"
-        case .suspicious: return "Doğal sınırları aşıyor olabilir"
+        case .belowAverage: return "ffmi_calculator.below_average_desc".localized
+        case .average: return "ffmi_calculator.average_desc".localized
+        case .aboveAverage: return "ffmi_calculator.above_average_desc".localized
+        case .excellent: return "ffmi_calculator.excellent_desc".localized
+        case .superior: return "ffmi_calculator.superior_desc".localized
+        case .suspicious: return "ffmi_calculator.suspicious_desc".localized
         }
     }
     

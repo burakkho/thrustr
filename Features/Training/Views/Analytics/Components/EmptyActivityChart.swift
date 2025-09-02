@@ -18,12 +18,12 @@ struct EmptyActivityChart: View {
             
             // Text Content
             VStack(spacing: theme.spacing.s) {
-                Text("No Activity Data")
+                Text(TrainingKeys.Analytics.noActivityData.localized)
                     .font(theme.typography.headline)
                     .fontWeight(.semibold)
                     .foregroundColor(theme.colors.textPrimary)
                 
-                Text("Complete some workouts to see your weekly activity chart")
+                Text(TrainingKeys.Analytics.noActivityDesc.localized)
                     .font(theme.typography.body)
                     .foregroundColor(theme.colors.textSecondary)
                     .multilineTextAlignment(.center)

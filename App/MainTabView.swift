@@ -43,6 +43,7 @@ struct MainTabView: View {
                 .tag(3)
         }
         .tint(Color.appPrimary)
+        .onAppear(perform: setupTabBarAppearance)
         .onAppear {
             if users.isEmpty {
                 let defaultUser = createDefaultUser()
@@ -61,6 +62,15 @@ struct MainTabView: View {
             fitnessGoal: .maintain,
             activityLevel: .moderate
         )
+    }
+    
+    private func setupTabBarAppearance() {
+        let appearance = UITabBarAppearance()
+        appearance.configureWithOpaqueBackground()
+        appearance.backgroundColor = UIColor.systemBackground
+        
+        UITabBar.appearance().standardAppearance = appearance
+        UITabBar.appearance().scrollEdgeAppearance = appearance
     }
 }
 

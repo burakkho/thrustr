@@ -1,0 +1,183 @@
+{
+  "metadata": {
+    "id": "starting-strength",
+    "name": {
+      "en": "Starting Strength",
+      "tr": "Başlangıç Güç Programı",
+      "de": "Starting Strength",
+      "es": "Fuerza Inicial",
+      "it": "Forza Iniziale"
+    },
+    "description": {
+      "en": "Mark Rippetoe's fundamental strength program. Linear progression with core compound movements. Focus on proper form and technique.",
+      "tr": "Mark Rippetoe'nun temel güç programı. Ana bileşik hareketlerle doğrusal ilerleme. Doğru form ve tekniğe odaklanır.",
+      "de": "Mark Rippetoes grundlegendes Kraftprogramm. Lineare Progression mit zusammengesetzten Grundübungen. Fokus auf richtige Form und Technik.",
+      "es": "Programa de fuerza fundamental de Mark Rippetoe. Progresión lineal con movimientos compuestos básicos. Enfoque en la forma y técnica correctas.",
+      "it": "Programma di forza fondamentale di Mark Rippetoe. Progressione lineare con movimenti composti di base. Focus su forma e tecnica corrette."
+    },
+    "weeks": 4,
+    "daysPerWeek": 3,
+    "level": "beginner",
+    "category": "strength",
+    "isCustom": false,
+    "author": "Mark Rippetoe",
+    "version": "1.0"
+  },
+  "progression": {
+    "type": "linear",
+    "increment": 2.5,
+    "unit": "kg",
+    "deloadThreshold": 3,
+    "deloadPercentage": 10,
+    "notes": {
+      "en": "Add weight every successful workout. Focus on form over numbers.",
+      "tr": "Her başarılı antrenmanda ağırlık ekleyin. Sayılardan çok forma odaklanın."
+    }
+  },
+  "workouts": [
+    {
+      "id": "workout-a",
+      "name": {
+        "en": "Workout A",
+        "tr": "Antrenman A"
+      },
+      "dayNumber": 1,
+      "estimatedDuration": 45,
+      "exercises": [
+        {
+          "id": "squat-a",
+          "exerciseName": "Back Squat",
+          "exerciseNameTR": "Back Squat",
+          "orderIndex": 0,
+          "targetSets": 3,
+          "targetReps": 5,
+          "targetWeight": null,
+          "restTime": 180,
+          "isWarmup": false,
+          "notes": {
+            "en": "Hip width stance. Break at hips and knees simultaneously.",
+            "tr": "Kalça genişliğinde duruş. Kalça ve dizleri aynı anda bükün."
+          },
+          "progression": {
+            "type": "weight",
+            "increment": 2.5
+          }
+        },
+        {
+          "id": "bench-a",
+          "exerciseName": "Bench Press",
+          "exerciseNameTR": "Bench Press",
+          "orderIndex": 1,
+          "targetSets": 3,
+          "targetReps": 5,
+          "targetWeight": null,
+          "restTime": 180,
+          "isWarmup": false,
+          "notes": {
+            "en": "Retract shoulder blades. Touch chest lightly.",
+            "tr": "Kürek kemiklerini geriye çekin. Göğse hafifçe dokunun."
+          },
+          "progression": {
+            "type": "weight",
+            "increment": 2.5
+          }
+        },
+        {
+          "id": "deadlift-a",
+          "exerciseName": "Deadlift",
+          "exerciseNameTR": "Deadlift",
+          "orderIndex": 2,
+          "targetSets": 1,
+          "targetReps": 5,
+          "targetWeight": null,
+          "restTime": 0,
+          "isWarmup": false,
+          "notes": {
+            "en": "Hip hinge movement. Keep bar close to body.",
+            "tr": "Kalça menteşe hareketi. Barı vücuda yakın tutun."
+          },
+          "progression": {
+            "type": "weight",
+            "increment": 5.0
+          }
+        }
+      ]
+    },
+    {
+      "id": "workout-b",
+      "name": {
+        "en": "Workout B",
+        "tr": "Antrenman B"
+      },
+      "dayNumber": 2,
+      "estimatedDuration": 45,
+      "exercises": [
+        {
+          "id": "squat-b",
+          "exerciseName": "Back Squat",
+          "exerciseNameTR": "Back Squat",
+          "orderIndex": 0,
+          "targetSets": 3,
+          "targetReps": 5,
+          "targetWeight": null,
+          "restTime": 180,
+          "isWarmup": false,
+          "notes": {
+            "en": "Hip width stance. Break at hips and knees simultaneously.",
+            "tr": "Kalça genişliğinde duruş. Kalça ve dizleri aynı anda bükün."
+          },
+          "progression": {
+            "type": "weight",
+            "increment": 2.5
+          }
+        },
+        {
+          "id": "ohp-b",
+          "exerciseName": "Overhead Press",
+          "exerciseNameTR": "Overhead Press",
+          "orderIndex": 1,
+          "targetSets": 3,
+          "targetReps": 5,
+          "targetWeight": null,
+          "restTime": 180,
+          "isWarmup": false,
+          "notes": {
+            "en": "Press straight up. Engage glutes and core.",
+            "tr": "Düz yukarı basın. Kalça ve core kaslarını aktif edin."
+          },
+          "progression": {
+            "type": "weight",
+            "increment": 1.25
+          }
+        },
+        {
+          "id": "power-clean-b",
+          "exerciseName": "Power Clean",
+          "exerciseNameTR": "Power Clean",
+          "orderIndex": 2,
+          "targetSets": 5,
+          "targetReps": 3,
+          "targetWeight": null,
+          "restTime": 180,
+          "isWarmup": false,
+          "notes": {
+            "en": "Explosive movement. Catch at shoulder height.",
+            "tr": "Patlayıcı hareket. Omuz hizasında yakalayın."
+          },
+          "progression": {
+            "type": "weight",
+            "increment": 2.5
+          }
+        }
+      ]
+    }
+  ],
+  "schedule": {
+    "pattern": "A-B-A-B",
+    "restDays": 1,
+    "notes": {
+      "en": "Alternate between Workout A and B with at least one rest day between sessions.",
+      "tr": "Antrenman A ve B arasında geçiş yapın, seanslar arasında en az bir dinlenme günü bırakın."
+    }
+  }
+}

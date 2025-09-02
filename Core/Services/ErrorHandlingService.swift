@@ -19,30 +19,30 @@ enum AppError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .databaseError(let error):
-            return "Veritabanı hatası: \(error.localizedDescription)"
+            return "\(CommonKeys.ErrorHandling.databaseError.localized): \(error.localizedDescription)"
         case .networkError(let error):
-            return "Bağlantı hatası: \(error.localizedDescription)"
+            return "\(CommonKeys.ErrorHandling.networkError.localized): \(error.localizedDescription)"
         case .healthKitError(let error):
-            return "HealthKit hatası: \(error.localizedDescription)"
+            return "\(CommonKeys.ErrorHandling.healthKitError.localized): \(error.localizedDescription)"
         case .dataCorruption(let description):
-            return "Veri bozulması: \(description)"
+            return "\(CommonKeys.ErrorHandling.dataCorruption.localized): \(description)"
         case .unknownError(let error):
-            return "Bilinmeyen hata: \(error.localizedDescription)"
+            return "\(CommonKeys.ErrorHandling.unknownError.localized): \(error.localizedDescription)"
         }
     }
     
     var recoverySuggestion: String? {
         switch self {
         case .databaseError:
-            return "Uygulamayı yeniden başlatmayı deneyin. Sorun devam ederse, uygulamayı yeniden yükleyin."
+            return CommonKeys.ErrorHandling.databaseRecovery.localized
         case .networkError:
-            return "İnternet bağlantınızı kontrol edin ve tekrar deneyin."
+            return CommonKeys.ErrorHandling.networkRecovery.localized
         case .healthKitError:
-            return "HealthKit izinlerini kontrol edin ve tekrar deneyin."
+            return CommonKeys.ErrorHandling.healthKitRecovery.localized
         case .dataCorruption:
-            return "Veri yeniden yüklenecek. Bu işlem birkaç dakika sürebilir."
+            return CommonKeys.ErrorHandling.dataCorruptionRecovery.localized
         case .unknownError:
-            return "Lütfen tekrar deneyin. Sorun devam ederse destek ile iletişime geçin."
+            return CommonKeys.ErrorHandling.unknownRecovery.localized
         }
     }
 }
@@ -229,16 +229,16 @@ struct ErrorAlertView: View {
     var body: some View {
         EmptyView()
             .alert(
-                "Hata",
+                CommonKeys.Onboarding.Common.error.localized,
                 isPresented: $errorService.showErrorAlert,
                 presenting: errorService.currentError
             ) { context in
-                Button("Tamam") {
+                Button(CommonKeys.ErrorHandling.okButton.localized) {
                     errorService.dismissCurrentError()
                 }
                 
                 if context.severity == .high || context.severity == .critical {
-                    Button("Tekrar Dene") {
+                    Button(CommonKeys.ErrorHandling.retryButton.localized) {
                         errorService.retryLastAction()
                     }
                 }

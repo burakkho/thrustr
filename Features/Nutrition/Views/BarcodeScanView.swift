@@ -41,7 +41,7 @@ struct BarcodeScanView: View {
                         ProgressView()
                             .progressViewStyle(.circular)
                     }
-                    Text(LocalizationKeys.Nutrition.FoodSelection.title.localized)
+                    Text(NutritionKeys.FoodSelection.title.localized)
                         .font(.headline)
                         .foregroundColor(.white)
                         .shadow(radius: 3)
@@ -58,8 +58,8 @@ struct BarcodeScanView: View {
         }
         .background(Color.black.ignoresSafeArea())
         .onAppear { checkPermission() }
-        .alert(LocalizationKeys.Common.error.localized, isPresented: $permissionDenied) {
-            Button(LocalizationKeys.Common.close.localized, role: .cancel) { dismiss() }
+        .alert(CommonKeys.Onboarding.Common.error.localized, isPresented: $permissionDenied) {
+            Button(CommonKeys.Onboarding.Common.close.localized, role: .cancel) { dismiss() }
             Button("camera.settings".localized) {
                 if let url = URL(string: UIApplication.openSettingsURLString) {
                     UIApplication.shared.open(url)
@@ -68,8 +68,8 @@ struct BarcodeScanView: View {
         } message: {
             Text("camera.permission_required".localized)
         }
-        .alert(LocalizationKeys.Common.error.localized, isPresented: .constant(errorMessage != nil)) {
-            Button(LocalizationKeys.Common.ok.localized) { errorMessage = nil }
+        .alert(CommonKeys.Onboarding.Common.error.localized, isPresented: .constant(errorMessage != nil)) {
+            Button(CommonKeys.Onboarding.Common.ok.localized) { errorMessage = nil }
         } message: {
             Text(errorMessage ?? "")
         }
@@ -218,7 +218,7 @@ private struct AVScannerContainer: UIViewControllerRepresentable {
 
         private func setupSession() {
             guard let device = AVCaptureDevice.default(for: .video), let input = try? AVCaptureDeviceInput(device: device) else {
-                onError("Kamera başlatılamadı")
+                onError(NutritionKeys.Camera.failedToStart.localized)
                 return
             }
             session.beginConfiguration()

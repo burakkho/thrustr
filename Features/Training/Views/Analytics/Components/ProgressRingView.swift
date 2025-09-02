@@ -75,7 +75,7 @@ struct ProgressRingView: View {
     VStack(spacing: 20) {
         ProgressRingView(
             progress: 0.85,
-            title: "Weekly",
+            title: TrainingKeys.Analytics.weekly.localized,
             current: "17",
             target: "20",
             color: .orange
@@ -83,7 +83,7 @@ struct ProgressRingView: View {
         
         ProgressRingView(
             progress: 0.6,
-            title: "Monthly",
+            title: TrainingKeys.Analytics.monthly.localized,
             current: "30km",
             target: "50km",
             color: .green

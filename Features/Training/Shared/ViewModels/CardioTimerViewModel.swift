@@ -25,6 +25,11 @@ class CardioTimerViewModel {
     var currentCalories: Int = 0
     var splits: [SplitData] = []
     
+    // Indoor-specific metrics
+    var currentPerceivedEffort: Int = 5 // 1-10 RPE scale
+    var manualDistance: Double = 0 // manually entered distance for indoor
+    var manualSpeed: Double = 0 // manually entered speed for indoor
+    
     // MARK: - UI State
     var showingBluetoothSheet = false
     var showingCompletionView = false
@@ -38,9 +43,9 @@ class CardioTimerViewModel {
         
         var displayName: String {
             switch self {
-            case .running: return LocalizationKeys.Training.Cardio.running.localized
-            case .walking: return LocalizationKeys.Training.Cardio.walking.localized
-            case .cycling: return LocalizationKeys.Training.Cardio.cycling.localized
+            case .running: return TrainingKeys.Cardio.running.localized
+            case .walking: return TrainingKeys.Cardio.walking.localized
+            case .cycling: return TrainingKeys.Cardio.cycling.localized
             }
         }
         
@@ -311,6 +316,17 @@ class CardioTimerViewModel {
     
     var gpsAccuracyColor: Color {
         return locationManager.locationAccuracy.color
+    }
+    
+    var perceivedEffortLevel: String {
+        return "\(currentPerceivedEffort)"
+    }
+    
+    var formattedManualDistance: String {
+        if manualDistance >= 1000 {
+            return String(format: "%.2f km", manualDistance / 1000)
+        }
+        return String(format: "%.0f m", manualDistance)
     }
     
     // MARK: - Helper Methods

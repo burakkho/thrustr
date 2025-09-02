@@ -245,6 +245,52 @@ class AnalyticsService: ObservableObject {
             print("Failed to update user analytics: \(error)")
         }
     }
+    
+    // MARK: - 1RM Analytics Methods
+    
+    struct OneRMDataPoint {
+        let date: Date
+        let value: Double
+        let exerciseName: String
+    }
+    
+    func getOneRMProgressionData(for user: User) -> [String: [OneRMDataPoint]] {
+        var data: [String: [OneRMDataPoint]] = [:]
+        
+        // Get current 1RM values if available
+        let exercises = [
+            ("Back Squat", user.squatOneRM),
+            ("Bench Press", user.benchPressOneRM), 
+            ("Deadlift", user.deadliftOneRM),
+            ("Overhead Press", user.overheadPressOneRM)
+        ]
+        
+        for (exerciseName, oneRM) in exercises {
+            if let rm = oneRM, let lastUpdate = user.oneRMLastUpdated {
+                data[exerciseName] = [OneRMDataPoint(
+                    date: lastUpdate,
+                    value: rm,
+                    exerciseName: exerciseName
+                )]
+            } else {
+                data[exerciseName] = []
+            }
+        }
+        
+        // TODO: In future, add historical 1RM data from strength tests
+        // This would require tracking 1RM changes over time
+        
+        return data
+    }
+    
+    func getLatestOneRMs(for user: User) -> [(name: String, value: Double?, date: Date?)] {
+        return [
+            ("Back Squat", user.squatOneRM, user.oneRMLastUpdated),
+            ("Bench Press", user.benchPressOneRM, user.oneRMLastUpdated),
+            ("Deadlift", user.deadliftOneRM, user.oneRMLastUpdated),
+            ("Overhead Press", user.overheadPressOneRM, user.oneRMLastUpdated)
+        ]
+    }
 }
 
 // MARK: - Supporting Data Structures

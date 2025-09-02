@@ -5,6 +5,7 @@ struct LiftResultEntryView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.theme) private var theme
     @Environment(\.modelContext) private var modelContext
+    @EnvironmentObject private var unitSettings: UnitSettings
     @Query private var user: [User]
     
     let lift: Lift
@@ -50,7 +51,7 @@ struct LiftResultEntryView: View {
                             HStack {
                                 Image(systemName: "trophy.fill")
                                     .foregroundColor(theme.colors.warning)
-                                Text("Current PR: \(Int(pr.bestSet ?? 0))kg")
+                                Text("Current PR: \(UnitsFormatter.formatWeight(kg: pr.bestSet ?? 0, system: unitSettings.unitSystem))")
                                     .font(theme.typography.caption)
                                     .foregroundColor(theme.colors.textSecondary)
                             }
@@ -97,7 +98,7 @@ struct LiftResultEntryView: View {
                                 Text("Total Volume")
                                     .font(theme.typography.caption)
                                     .foregroundColor(theme.colors.textSecondary)
-                                Text("\(Int(totalWeight))kg")
+                                Text(UnitsFormatter.formatVolume(kg: totalWeight, system: unitSettings.unitSystem))
                                     .font(theme.typography.headline)
                                     .fontWeight(.semibold)
                                     .foregroundColor(theme.colors.textPrimary)
@@ -109,7 +110,7 @@ struct LiftResultEntryView: View {
                                 Text("Best Set")
                                     .font(theme.typography.caption)
                                     .foregroundColor(theme.colors.textSecondary)
-                                Text("\(Int(bestSetWeight))kg")
+                                Text(UnitsFormatter.formatWeight(kg: bestSetWeight, system: unitSettings.unitSystem))
                                     .font(theme.typography.headline)
                                     .fontWeight(.semibold)
                                     .foregroundColor(theme.colors.textPrimary)
@@ -137,20 +138,20 @@ struct LiftResultEntryView: View {
                     .padding()
                 }
             }
-            .navigationTitle("Log Lift Result")
+            .navigationTitle(CommonKeys.Navigation.logLiftResult.localized)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Cancel") { dismiss() }
+                    Button(CommonKeys.Onboarding.Common.cancel.localized) { dismiss() }
                 }
             }
-            .alert("Result Saved!", isPresented: $showingSaveConfirmation) {
-                Button("OK") { dismiss() }
+            .alert(TrainingKeys.Alerts.resultSaved.localized, isPresented: $showingSaveConfirmation) {
+                Button(TrainingKeys.Alerts.ok.localized) { dismiss() }
             } message: {
                 if bestSetWeight > (lift.personalRecord?.bestSet ?? 0) {
-                    Text("Congratulations! You've set a new PR: \(Int(bestSetWeight))kg! 🎉")
+                    Text(TrainingKeys.Alerts.newPRCongrats.localized + " \(Int(bestSetWeight))kg! 🎉")
                 } else {
-                    Text("Your workout has been recorded successfully.")
+                    Text(TrainingKeys.Alerts.workoutRecorded.localized)
                 }
             }
         }

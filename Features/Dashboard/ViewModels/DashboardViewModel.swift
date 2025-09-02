@@ -5,45 +5,107 @@ import SwiftData
 class DashboardViewModel: ObservableObject {
     // MARK: - Published Properties
     @Published var currentUser: User?
-    @Published var todayNutritionEntries: [NutritionEntry] = []
     @Published var weeklyStats: WeeklyStats = WeeklyStats()
+    @Published var weeklyCardioStats: WeeklyCardioStats = WeeklyCardioStats()
     @Published var isLoading = true
-    @Published var showingWeightEntry = false
+    
+    // Progressive loading states - Performance Enhancement
+    @Published var isUserDataLoaded = false
+    @Published var isHealthDataLoaded = false
+    @Published var isWorkoutDataLoaded = false
+    @Published var isNutritionDataLoaded = false
     
     // MARK: - Services
     private let healthKitService: HealthKitService
     private let userService = UserService()
-    // WorkoutService removed - using LiftSession directly
+    private let activityLogger = ActivityLoggerService.shared
     
-    // MARK: - Cache Management
-    private var cacheManager = DashboardCacheManager()
+    // MARK: - Unit Settings
+    var unitSettings: UnitSettings
     
-    // MARK: - Constants
-    private struct Constants {
-        static let cacheValidityDuration: TimeInterval = 60 // 1 minute
-    }
+    // MARK: - Private Properties  
+    private var todayNutritionEntriesCount: Int = 0
+    private var todayCalorieCount: Double = 0
+    private var todayLiftVolume: Double = 0
+    private var todayCardioDistance: Double = 0
     
-    init(healthKitService: HealthKitService) {
+    // Weekly stats
+    private var weeklyCalorieAverage: Double = 0
+    
+    // Monthly stats
+    private var monthlyLiftVolume: Double = 0
+    private var monthlyCardioDistance: Double = 0
+    private var monthlyCalorieAverage: Double = 0
+    
+    // Caching for computed metrics  
+    private var cachedMetrics: (lift: String, cardio: String, calories: String)?
+    
+    // Temporal metrics cache - Performance optimization
+    @Published private var cachedTemporalMetrics: (
+        lift: (daily: String, weekly: String, monthly: String),
+        cardio: (daily: String, weekly: String, monthly: String),
+        calories: (daily: String, weekly: String, monthly: String)
+    )?
+    private var temporalCacheTimestamp: Date?
+    private let temporalCacheTimeout: TimeInterval = 300 // 5 minutes
+    
+    init(healthKitService: HealthKitService, unitSettings: UnitSettings = UnitSettings.shared) {
         self.healthKitService = healthKitService
+        self.unitSettings = unitSettings
     }
     
     // MARK: - Public Methods
     func loadData(with modelContext: ModelContext) async {
         isLoading = true
         
-        // Load user data
-        await loadUserData(modelContext: modelContext)
+        // Progressive loading - show content as it becomes available
+        await withTaskGroup(of: Void.self) { group in
+            // Load user data first (required for other operations) - Show immediately
+            await loadUserData(modelContext: modelContext)
+            isUserDataLoaded = true
+            
+            // Request HealthKit permissions and load health data
+            group.addTask {
+                _ = await self.healthKitService.requestPermissions()
+                await self.refreshHealthData(modelContext: modelContext)
+                await MainActor.run {
+                    self.isHealthDataLoaded = true
+                }
+            }
+            
+            // Load workout and cardio data in parallel
+            group.addTask {
+                await self.loadWorkoutData(modelContext: modelContext)
+                await self.loadCardioData(modelContext: modelContext)
+                await MainActor.run {
+                    self.isWorkoutDataLoaded = true
+                }
+            }
+            
+            // Load nutrition data
+            group.addTask {
+                await self.loadNutritionData(modelContext: modelContext)
+                await MainActor.run {
+                    self.isNutritionDataLoaded = true
+                }
+            }
+            
+            // Setup activity logger (background task)
+            group.addTask {
+                await self.setupActivityLogger(modelContext: modelContext)
+            }
+            
+            // Wait for all tasks to complete
+            for await _ in group {
+                // Tasks are completing progressively
+            }
+        }
         
-        // Request HealthKit permissions and sync
-        _ = await healthKitService.requestPermissions()
-        await refreshHealthData(modelContext: modelContext)
+        // Pre-calculate temporal metrics for performance
+        preCalculateTemporalMetrics()
         
-        // Load workout data
-        await loadWorkoutData(modelContext: modelContext)
-        
-        // Load nutrition data
-        await loadNutritionData(modelContext: modelContext)
-        
+        // Clear old cache after loading new data
+        clearCache()
         isLoading = false
     }
     
@@ -51,11 +113,32 @@ class DashboardViewModel: ObservableObject {
         guard let user = currentUser else { return }
         userService.setModelContext(modelContext)
         await userService.syncWithHealthKit(user: user)
+        
+        // Recalculate temporal metrics after health data refresh
+        preCalculateTemporalMetrics()
+        
+        // Clear old cache after refreshing health data
+        clearCache()
     }
     
-    func invalidateCache() {
-        cacheManager.invalidateAll()
+    // MARK: - Cache Management
+    private func clearCache() {
+        cachedMetrics = nil
     }
+    
+    private func clearTemporalCache() {
+        cachedTemporalMetrics = nil
+        temporalCacheTimestamp = nil
+    }
+    
+    func updateUnitSettings(_ settings: UnitSettings) {
+        unitSettings = settings
+        clearCache()
+        clearTemporalCache()
+        // Recalculate with new unit settings
+        preCalculateTemporalMetrics()
+    }
+    
     
     // MARK: - Private Methods
     private func loadUserData(modelContext: ModelContext) async {
@@ -85,9 +168,22 @@ class DashboardViewModel: ObservableObject {
         
         do {
             let allWorkouts = try modelContext.fetch(descriptor)
+            let calendar = Calendar.current
+            let today = calendar.startOfDay(for: Date())
+            let weekAgo = calendar.date(byAdding: .day, value: -7, to: Date()) ?? Date()
             
-            // Calculate weekly stats directly
-            let weekAgo = Calendar.current.date(byAdding: .day, value: -7, to: Date()) ?? Date()
+            // Calculate today's stats
+            let todayWorkouts = allWorkouts.filter { 
+                calendar.isDate($0.startDate, inSameDayAs: today)
+            }
+            todayLiftVolume = todayWorkouts.reduce(0) { $0 + $1.totalVolume }
+            
+            // Calculate monthly stats
+            let monthAgo = calendar.date(byAdding: .month, value: -1, to: Date()) ?? Date()
+            let monthlyWorkouts = allWorkouts.filter { $0.startDate >= monthAgo }
+            monthlyLiftVolume = monthlyWorkouts.reduce(0) { $0 + $1.totalVolume }
+            
+            // Calculate weekly stats
             let weeklyWorkouts = allWorkouts.filter { $0.startDate >= weekAgo }
             
             weeklyStats = WeeklyStats(
@@ -111,12 +207,190 @@ class DashboardViewModel: ObservableObject {
             let allEntries = try modelContext.fetch(descriptor)
             let calendar = Calendar.current
             let today = calendar.startOfDay(for: Date())
+            let weekAgo = calendar.date(byAdding: .day, value: -7, to: Date()) ?? Date()
+            let monthAgo = calendar.date(byAdding: .month, value: -1, to: Date()) ?? Date()
             
-            todayNutritionEntries = allEntries.filter { 
+            // Today's nutrition
+            let todayEntries = allEntries.filter { 
                 calendar.isDate($0.date, inSameDayAs: today) 
+            }
+            todayNutritionEntriesCount = todayEntries.count
+            todayCalorieCount = todayEntries.reduce(0.0) { $0 + $1.calories }
+            
+            // Weekly nutrition average
+            let weeklyEntries = allEntries.filter { $0.date >= weekAgo }
+            let weeklyDays = Set(weeklyEntries.map { calendar.startOfDay(for: $0.date) }).count
+            if weeklyDays > 0 {
+                let weeklyTotal = weeklyEntries.reduce(0.0) { $0 + $1.calories }
+                weeklyCalorieAverage = weeklyTotal / Double(weeklyDays)
+            }
+            
+            // Monthly nutrition average  
+            let monthlyEntries = allEntries.filter { $0.date >= monthAgo }
+            let monthlyDays = Set(monthlyEntries.map { calendar.startOfDay(for: $0.date) }).count
+            if monthlyDays > 0 {
+                let monthlyTotal = monthlyEntries.reduce(0.0) { $0 + $1.calories }
+                monthlyCalorieAverage = monthlyTotal / Double(monthlyDays)
             }
         } catch {
             print("Error loading nutrition data: \(error)")
+        }
+    }
+    
+    private func loadCardioData(modelContext: ModelContext) async {
+        let descriptor = FetchDescriptor<CardioSession>(
+            sortBy: [SortDescriptor(\CardioSession.startDate, order: .reverse)]
+        )
+        
+        do {
+            let allSessions = try modelContext.fetch(descriptor)
+            let calendar = Calendar.current
+            let today = calendar.startOfDay(for: Date())
+            let weekAgo = calendar.date(byAdding: .day, value: -7, to: Date()) ?? Date()
+            
+            // Calculate today's cardio stats
+            let todaySessions = allSessions.filter { 
+                calendar.isDate($0.startDate, inSameDayAs: today) && $0.isCompleted
+            }
+            todayCardioDistance = todaySessions.reduce(0.0) { $0 + $1.totalDistance }
+            
+            // Calculate monthly cardio stats
+            let monthAgo = calendar.date(byAdding: .month, value: -1, to: Date()) ?? Date()
+            let monthlySessions = allSessions.filter { 
+                $0.startDate >= monthAgo && $0.isCompleted
+            }
+            monthlyCardioDistance = monthlySessions.reduce(0.0) { $0 + $1.totalDistance }
+            
+            // Calculate weekly cardio stats
+            let weeklySessions = allSessions.filter { 
+                $0.startDate >= weekAgo && $0.isCompleted 
+            }
+            
+            weeklyCardioStats = WeeklyCardioStats(
+                sessionCount: weeklySessions.count,
+                totalDistance: weeklySessions.reduce(0.0) { $0 + $1.totalDistance },
+                totalDuration: weeklySessions.reduce(0.0) { result, session in
+                    result + TimeInterval(session.totalDuration)
+                }
+            )
+        } catch {
+            print("Error loading cardio data: \(error)")
+        }
+    }
+    
+    // MARK: - Dashboard Helpers
+    
+    
+    /**
+     * Whether user has completed any strength tests.
+     */
+    var hasStrengthTestData: Bool {
+        return currentUser?.strengthTestCompletionCount ?? 0 > 0
+    }
+    
+    /**
+     * Temporal metrics for cycling cards with performance cache.
+     */
+    var temporalMetrics: (
+        lift: (daily: String, weekly: String, monthly: String),
+        cardio: (daily: String, weekly: String, monthly: String), 
+        calories: (daily: String, weekly: String, monthly: String)
+    ) {
+        // Check cache validity (5 minutes) - Performance optimization
+        if let cached = cachedTemporalMetrics,
+           let timestamp = temporalCacheTimestamp,
+           Date().timeIntervalSince(timestamp) < temporalCacheTimeout {
+            return cached
+        }
+        
+        // Fallback: Calculate live (existing logic)
+        return calculateTemporalMetricsLive()
+    }
+    
+    
+    // MARK: - Temporal Metric Calculations
+    
+    /**
+     * Live calculation of temporal metrics (fallback for cache miss).
+     */
+    private func calculateTemporalMetricsLive() -> (
+        lift: (daily: String, weekly: String, monthly: String),
+        cardio: (daily: String, weekly: String, monthly: String),
+        calories: (daily: String, weekly: String, monthly: String)
+    ) {
+        return (
+            lift: calculateLiftMetrics(),
+            cardio: calculateCardioMetrics(),
+            calories: calculateCalorieMetrics()
+        )
+    }
+    
+    /**
+     * Pre-calculate and cache temporal metrics for performance.
+     */
+    private func preCalculateTemporalMetrics() {
+        let metrics = calculateTemporalMetricsLive()
+        cachedTemporalMetrics = metrics
+        temporalCacheTimestamp = Date()
+    }
+    
+    private func calculateLiftMetrics() -> (daily: String, weekly: String, monthly: String) {
+        let weeklyAverage = weeklyStats.totalVolume / 7.0
+        let monthlyAverage = monthlyLiftVolume / 30.0
+        
+        return (
+            daily: formatVolumePerDay(todayLiftVolume),
+            weekly: formatVolumePerDay(weeklyAverage),
+            monthly: formatVolumePerDay(monthlyAverage)
+        )
+    }
+    
+    private func calculateCardioMetrics() -> (daily: String, weekly: String, monthly: String) {
+        let weeklyAverage = weeklyCardioStats.totalDistance / 7.0
+        let monthlyAverage = monthlyCardioDistance / 30.0
+        
+        return (
+            daily: formatDistancePerDay(todayCardioDistance),
+            weekly: formatDistancePerDay(weeklyAverage),
+            monthly: formatDistancePerDay(monthlyAverage)
+        )
+    }
+    
+    private func calculateCalorieMetrics() -> (daily: String, weekly: String, monthly: String) {
+        return (
+            daily: formatCaloriesPerDay(todayCalorieCount),
+            weekly: formatCaloriesPerDay(weeklyCalorieAverage),
+            monthly: formatCaloriesPerDay(monthlyCalorieAverage)
+        )
+    }
+    
+    // MARK: - Private Formatting Helpers
+    
+    private func formatCaloriesPerDay(_ calories: Double) -> String {
+        return String(format: "%.0f", calories)
+    }
+    
+    private func formatVolumePerDay(_ volume: Double) -> String {
+        return UnitsFormatter.formatVolume(kg: volume, system: unitSettings.unitSystem)
+    }
+    
+    private func formatDistancePerDay(_ distance: Double) -> String {
+        return UnitsFormatter.formatDistance(meters: distance, system: unitSettings.unitSystem)
+    }
+    
+    private func calculateDailyCalorieProgress() -> Double {
+        guard let user = currentUser, user.dailyCalorieGoal > 0 else { return 0.0 }
+        return todayCalorieCount / user.dailyCalorieGoal
+    }
+    
+    // MARK: - Activity Logger Integration
+    
+    private func setupActivityLogger(modelContext: ModelContext) async {
+        activityLogger.setModelContext(modelContext)
+        
+        // Perform background cleanup
+        Task.detached(priority: .background) {
+            await self.activityLogger.performCleanup()
         }
     }
 }
@@ -134,20 +408,15 @@ struct WeeklyStats {
     }
 }
 
-// MARK: - Cache Manager
-class DashboardCacheManager {
-    private var lastUpdate: Date = Date.distantPast
-    private let validityDuration: TimeInterval = 60
+struct WeeklyCardioStats {
+    let sessionCount: Int
+    let totalDistance: Double // meters
+    let totalDuration: TimeInterval
     
-    var isValid: Bool {
-        Date().timeIntervalSince(lastUpdate) < validityDuration
-    }
-    
-    func markUpdated() {
-        lastUpdate = Date()
-    }
-    
-    func invalidateAll() {
-        lastUpdate = Date.distantPast
+    init(sessionCount: Int = 0, totalDistance: Double = 0, totalDuration: TimeInterval = 0) {
+        self.sessionCount = sessionCount
+        self.totalDistance = totalDistance
+        self.totalDuration = totalDuration
     }
 }
+

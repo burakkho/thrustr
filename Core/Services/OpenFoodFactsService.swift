@@ -13,13 +13,13 @@ enum OpenFoodFactsError: Error, LocalizedError, Equatable {
 
     var errorDescription: String? {
         switch self {
-        case .invalidBarcode: return "Geçersiz barkod"
-        case .productNotFound: return "Ürün bulunamadı"
-        case .networkUnavailable: return "Ağ bağlantısı yok"
-        case .rateLimited: return "Çok fazla istek, lütfen tekrar deneyin"
-        case .serverError(let status): return "Sunucu hatası (\(status))"
-        case .decodingFailed: return "Veri çözümlenemedi"
-        case .invalidResponse: return "Geçersiz yanıt"
+        case .invalidBarcode: return NutritionKeys.Errors.invalidBarcode.localized
+        case .productNotFound: return NutritionKeys.Errors.productNotFound.localized
+        case .networkUnavailable: return NutritionKeys.Errors.networkUnavailable.localized
+        case .rateLimited: return NutritionKeys.Errors.pleaseTryAgain.localized
+        case .serverError(let status): return String(format: NutritionKeys.Errors.serverError.localized, status)
+        case .decodingFailed: return NutritionKeys.Errors.decodingFailed.localized
+        case .invalidResponse: return NutritionKeys.Errors.invalidResponse.localized
         }
     }
 }

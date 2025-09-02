@@ -5,8 +5,14 @@ struct ProgramDetailView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.theme) private var theme
     @Environment(\.modelContext) private var modelContext
+    @Query private var users: [User]
     
     let program: LiftProgram
+    @State private var showingOneRMSetup = false
+    
+    private var currentUser: User? {
+        users.first
+    }
     
     var body: some View {
         NavigationStack {
@@ -59,28 +65,68 @@ struct ProgramDetailView: View {
                 }
                 .padding()
             }
-            .navigationTitle("Program Details")
+            .navigationTitle(CommonKeys.Navigation.programDetails.localized)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Close") { dismiss() }
+                    Button(CommonKeys.Onboarding.Common.close.localized) { dismiss() }
                 }
                 
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Start Program") {
-                        startProgram()
+                    Button(TrainingKeys.Common.startProgram.localized) {
+                        checkAndStartProgram()
                     }
                     .foregroundColor(theme.colors.accent)
                 }
             }
         }
+        .sheet(isPresented: $showingOneRMSetup) {
+            OneRMSetupView(program: program) { user in
+                // After 1RM setup completion, start the program
+                startProgramWithUser(user)
+            }
+        }
     }
     
-    private func startProgram() {
-        let execution = ProgramExecution(program: program)
+    private func checkAndStartProgram() {
+        guard let user = currentUser else {
+            Logger.error("No user found")
+            return
+        }
+        
+        // Check if user has 1RM data for StrongLifts exercises
+        let hasRequiredOneRMs = user.squatOneRM != nil && 
+                                user.benchPressOneRM != nil && 
+                                user.deadliftOneRM != nil && 
+                                user.overheadPressOneRM != nil
+        
+        if hasRequiredOneRMs {
+            // User has 1RM data, start program directly
+            startProgramWithUser(user)
+        } else {
+            // User needs 1RM setup first
+            showingOneRMSetup = true
+        }
+    }
+    
+    private func startProgramWithUser(_ user: User) {
+        let execution = ProgramExecution(program: program, user: user)
         modelContext.insert(execution)
         do {
             try modelContext.save()
+            
+            // Log program start activity
+            Task { @MainActor in
+                ActivityLoggerService.shared.setModelContext(modelContext)
+                ActivityLoggerService.shared.logProgramStarted(
+                    programName: program.localizedName,
+                    weeks: program.weeks,
+                    daysPerWeek: program.daysPerWeek,
+                    user: user
+                )
+            }
+            
+            Logger.success("Program started successfully")
             dismiss()
         } catch {
             Logger.error("Failed to start program: \(error)")

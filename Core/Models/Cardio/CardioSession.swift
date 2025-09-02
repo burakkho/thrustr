@@ -93,19 +93,13 @@ extension CardioSession {
     }
     
     var formattedDistance: String {
-        if totalDistance >= 1000 {
-            let km = totalDistance / 1000.0
-            return String(format: "%.2fkm", km)
-        }
-        return String(format: "%.0fm", totalDistance)
+        return UnitsFormatter.formatDistance(meters: totalDistance, system: UnitSettings.shared.unitSystem)
     }
     
     var formattedAveragePace: String? {
         guard totalDistance > 0 && totalDuration > 0 else { return nil }
-        let paceSecondsPerKm = Double(totalDuration) / (totalDistance / 1000.0)
-        let minutes = Int(paceSecondsPerKm / 60)
-        let seconds = Int(paceSecondsPerKm.truncatingRemainder(dividingBy: 60))
-        return "\(minutes):\(String(format: "%02d", seconds))/km"
+        let paceMinPerKm = Double(totalDuration) / 60.0 / (totalDistance / 1000.0)
+        return UnitsFormatter.formatPace(minPerKm: paceMinPerKm, system: UnitSettings.shared.unitSystem)
     }
     
     var workoutName: String {
@@ -138,7 +132,7 @@ extension CardioSession {
     
     var formattedSpeed: String? {
         guard let speed = averageSpeed else { return nil }
-        return String(format: "%.1f km/h", speed)
+        return UnitsFormatter.formatSpeed(kmh: speed, system: UnitSettings.shared.unitSystem)
     }
     
     var completionPercentage: Double {

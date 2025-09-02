@@ -9,7 +9,7 @@ struct CardioSessionTrackingView: View {
     
     let exerciseType: CardioWorkout
     let user: User
-    let sessionType: SessionType
+    let sessionType: CardioSessionType
     let targetDistance: Double? // meters
     let targetTime: Int? // seconds
     let notes: String?
@@ -96,7 +96,7 @@ struct CardioSessionTrackingView: View {
                             .fontWeight(.bold)
                             .foregroundColor(theme.colors.textPrimary)
                         
-                        Text(LocalizationKeys.Training.Cardio.logResults.localized)
+                        Text(TrainingKeys.Cardio.logResults.localized)
                             .font(theme.typography.body)
                             .foregroundColor(theme.colors.textSecondary)
                     }
@@ -149,7 +149,7 @@ struct CardioSessionTrackingView: View {
                         HStack {
                             Image(systemName: "checkmark.circle.fill")
                                 .font(.title3)
-                            Text(LocalizationKeys.Training.Cardio.completeSession.localized)
+                            Text(TrainingKeys.Cardio.completeSession.localized)
                                 .font(theme.typography.headline)
                                 .fontWeight(.semibold)
                         }
@@ -167,7 +167,7 @@ struct CardioSessionTrackingView: View {
                 }
                 .padding(theme.spacing.m)
             }
-            .navigationTitle(LocalizationKeys.Training.Cardio.sessionTracking.localized)
+            .navigationTitle(TrainingKeys.Cardio.sessionTracking.localized)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
@@ -175,13 +175,13 @@ struct CardioSessionTrackingView: View {
                 }
             }
         }
-        .confirmationDialog(LocalizationKeys.Training.Cardio.completeSession.localized, isPresented: $showingCompleteConfirmation) {
+        .confirmationDialog(TrainingKeys.Cardio.completeSession.localized, isPresented: $showingCompleteConfirmation) {
             Button("Complete") {
                 completeSession()
             }
             Button("Cancel", role: .cancel) { }
         } message: {
-            Text(LocalizationKeys.Training.Cardio.saveSession.localized)
+            Text(TrainingKeys.Cardio.saveSession.localized)
         }
     }
     
@@ -239,7 +239,7 @@ struct CardioSessionTrackingView: View {
 // MARK: - Target Progress Card
 struct TargetProgressCard: View {
     @Environment(\.theme) private var theme
-    let sessionType: SessionType
+    let sessionType: CardioSessionType
     let targetDistance: Double?
     let targetTime: Int?
     let actualDistance: Double
@@ -249,7 +249,7 @@ struct TargetProgressCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: theme.spacing.s) {
             HStack {
-                Text(LocalizationKeys.Training.Cardio.targetProgress.localized)
+                Text(TrainingKeys.Cardio.targetProgress.localized)
                     .font(theme.typography.headline)
                     .fontWeight(.semibold)
                     .foregroundColor(theme.colors.textPrimary)
@@ -319,7 +319,7 @@ struct TimeInputCard: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: theme.spacing.m) {
-            Text(LocalizationKeys.Training.Cardio.duration.localized)
+            Text(TrainingKeys.Cardio.duration.localized)
                 .font(theme.typography.headline)
                 .fontWeight(.semibold)
                 .foregroundColor(theme.colors.textPrimary)
@@ -380,7 +380,7 @@ struct DistanceInputCard: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: theme.spacing.m) {
-            Text(LocalizationKeys.Training.Cardio.distance.localized)
+            Text(TrainingKeys.Cardio.distance.localized)
                 .font(theme.typography.headline)
                 .fontWeight(.semibold)
                 .foregroundColor(theme.colors.textPrimary)
@@ -450,7 +450,7 @@ struct CalculationsCard: View {
             HStack {
                 Image(systemName: "chart.line.uptrend.xyaxis")
                     .foregroundColor(theme.colors.accent)
-                Text(LocalizationKeys.Training.Cardio.performance.localized)
+                Text(TrainingKeys.Cardio.performance.localized)
                     .font(theme.typography.headline)
                     .fontWeight(.semibold)
                     .foregroundColor(theme.colors.textPrimary)
@@ -507,14 +507,14 @@ struct OptionalFieldsCard: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: theme.spacing.m) {
-            Text(LocalizationKeys.Training.Cardio.additionalInfo.localized)
+            Text(TrainingKeys.Cardio.additionalInfo.localized)
                 .font(theme.typography.headline)
                 .fontWeight(.semibold)
                 .foregroundColor(theme.colors.textPrimary)
             
             // Heart Rate
             VStack(alignment: .leading, spacing: theme.spacing.s) {
-                Text(LocalizationKeys.Training.Cardio.heartRate.localized)
+                Text(TrainingKeys.Cardio.heartRate.localized)
                     .font(theme.typography.body)
                     .foregroundColor(theme.colors.textPrimary)
                 
@@ -537,7 +537,7 @@ struct OptionalFieldsCard: View {
             
             // Feeling
             VStack(alignment: .leading, spacing: theme.spacing.s) {
-                Text(LocalizationKeys.Training.Cardio.feeling.localized)
+                Text(TrainingKeys.Cardio.feeling.localized)
                     .font(theme.typography.body)
                     .foregroundColor(theme.colors.textPrimary)
                 
@@ -564,11 +564,11 @@ struct OptionalFieldsCard: View {
             
             // Notes
             VStack(alignment: .leading, spacing: theme.spacing.s) {
-                Text(LocalizationKeys.Training.Cardio.sessionNotes.localized)
+                Text(TrainingKeys.Cardio.sessionNotes.localized)
                     .font(theme.typography.body)
                     .foregroundColor(theme.colors.textPrimary)
                 
-                TextField(LocalizationKeys.Training.Cardio.sessionNotesPlaceholder.localized, text: $notes, axis: .vertical)
+                TextField(TrainingKeys.Cardio.sessionNotesPlaceholder.localized, text: $notes, axis: .vertical)
                     .textFieldStyle(.plain)
                     .padding(theme.spacing.s)
                     .background(theme.colors.backgroundSecondary)
@@ -609,10 +609,10 @@ struct OptionalFieldsCard: View {
     CardioSessionTrackingView(
         exerciseType: workout,
         user: user,
-        sessionType: .distance,
+        sessionType: CardioSessionType.distance,
         targetDistance: 5000,
-        targetTime: nil,
-        notes: nil
+        targetTime: nil as Int?,
+        notes: nil as String?
     )
     .modelContainer(for: [CardioWorkout.self], inMemory: true)
 }

@@ -17,9 +17,9 @@ struct SummaryStepView: View {
     var body: some View {
         VStack(spacing: 24) {
             VStack(spacing: 8) {
-                Text(LocalizationKeys.Onboarding.Summary.title.localized)
+                Text(CommonKeys.Onboarding.summaryTitle.localized)
                     .font(.system(size: 28, weight: .semibold, design: .rounded))
-                Text(LocalizationKeys.Onboarding.Summary.subtitle.localized)
+                Text(CommonKeys.Onboarding.summarySubtitle.localized)
                     .font(.system(size: 14, weight: .regular, design: .rounded))
                     .foregroundColor(.secondary)
                     .multilineTextAlignment(.center)
@@ -30,7 +30,7 @@ struct SummaryStepView: View {
                 VStack(spacing: 20) {
                     VStack(alignment: .leading, spacing: 12) {
                         HStack {
-                            Text(LocalizationKeys.Onboarding.Summary.profile.localized)
+                            Text(CommonKeys.Onboarding.profileSummary.localized)
                                 .font(.headline)
                             Spacer()
                             Image(systemName: "person.crop.circle.fill")
@@ -39,28 +39,28 @@ struct SummaryStepView: View {
                         }
                         VStack(spacing: 8) {
                             SummaryRow(
-                                label: LocalizationKeys.Onboarding.Summary.Label.name.localized,
+                                label: CommonKeys.Onboarding.labelName.localized,
                                 value: data.name
                             )
                             SummaryRow(
-                                label: LocalizationKeys.Onboarding.Summary.Label.age.localized,
+                                label: CommonKeys.Onboarding.labelAge.localized,
                                 value: "\(data.age) yaş"
                             )
                             SummaryRow(
-                                label: LocalizationKeys.Onboarding.Summary.Label.gender.localized,
-                                value: data.gender == "male" ? LocalizationKeys.Onboarding.PersonalInfo.genderMale.localized : LocalizationKeys.Onboarding.PersonalInfo.genderFemale.localized
+                                label: CommonKeys.Onboarding.labelGender.localized,
+                                value: data.gender == "male" ? CommonKeys.Onboarding.genderMale.localized : CommonKeys.Onboarding.genderFemale.localized
                             )
                             SummaryRow(
-                                label: LocalizationKeys.Onboarding.Summary.Label.height.localized,
+                                label: CommonKeys.Onboarding.labelHeight.localized,
                                 value: UnitsFormatter.formatHeight(cm: data.height, system: unitSettings.unitSystem)
                             )
                             SummaryRow(
-                                label: LocalizationKeys.Onboarding.Summary.Label.weight.localized,
+                                label: CommonKeys.Onboarding.labelWeight.localized,
                                 value: UnitsFormatter.formatWeight(kg: data.weight, system: unitSettings.unitSystem)
                             )
                             if let targetWeight = data.targetWeight {
                                 SummaryRow(
-                                    label: LocalizationKeys.Onboarding.Summary.Label.targetWeight.localized,
+                                    label: CommonKeys.Onboarding.labelTargetWeight.localized,
                                     value: UnitsFormatter.formatWeight(kg: targetWeight, system: unitSettings.unitSystem)
                                 )
                             }
@@ -72,7 +72,7 @@ struct SummaryStepView: View {
                     
                     VStack(alignment: .leading, spacing: 12) {
                         HStack {
-                            Text(LocalizationKeys.Onboarding.Summary.goals.localized)
+                            Text(CommonKeys.Onboarding.goals.localized)
                                 .font(.headline)
                             Spacer()
                             Image(systemName: "target")
@@ -81,11 +81,11 @@ struct SummaryStepView: View {
                         }
                         VStack(spacing: 8) {
                             SummaryRow(
-                                label: LocalizationKeys.Onboarding.Summary.Label.mainGoal.localized,
+                                label: CommonKeys.Onboarding.labelMainGoal.localized,
                                 value: goalDisplayName(data.fitnessGoal)
                             )
                             SummaryRow(
-                                label: LocalizationKeys.Onboarding.Summary.Label.activity.localized,
+                                label: CommonKeys.Onboarding.labelActivity.localized,
                                 value: activityDisplayName(data.activityLevel)
                             )
                         }
@@ -96,7 +96,7 @@ struct SummaryStepView: View {
                     
                     VStack(alignment: .leading, spacing: 12) {
                         HStack {
-                            Text(LocalizationKeys.Onboarding.Summary.calculatedValues.localized)
+                            Text(CommonKeys.Onboarding.calculatedValues.localized)
                                 .font(.headline)
                             Spacer()
                             Image(systemName: "chart.line.uptrend.xyaxis")
@@ -108,7 +108,7 @@ struct SummaryStepView: View {
                             let usesNavy = canCalculateNavyMethod()
                             
                             SummaryRow(
-                                label: usesNavy ? LocalizationKeys.Onboarding.Summary.Label.bmrKatch.localized : LocalizationKeys.Onboarding.Summary.Label.bmrMifflin.localized,
+                                label: usesNavy ? CommonKeys.Onboarding.labelBMRKatch.localized : CommonKeys.Onboarding.labelBMRMifflin.localized,
                                 value: "\(Int(bmr)) kcal"
                             )
                             
@@ -116,43 +116,43 @@ struct SummaryStepView: View {
                                 let bf = calculateNavyMethod()
                                 let lbm = data.weight * (1 - bf / 100.0)
                                 SummaryRow(
-                                    label: LocalizationKeys.Onboarding.Summary.Label.lbm.localized,
-                                    value: "\(String(format: "%.1f", lbm)) kg"
+                                    label: CommonKeys.Onboarding.labelLBM.localized,
+                                    value: UnitsFormatter.formatWeight(kg: lbm, system: unitSettings.unitSystem)
                                 )
                                 SummaryRow(
-                                    label: LocalizationKeys.Onboarding.Summary.Label.bodyFat.localized,
+                                    label: CommonKeys.Onboarding.labelBodyFat.localized,
                                     value: "%\(String(format: "%.1f", bf))"
                                 )
                             }
                             
                             SummaryRow(
-                                label: LocalizationKeys.Onboarding.Summary.Label.tdee.localized,
+                                label: CommonKeys.Onboarding.labelTDEE.localized,
                                 value: "\(Int(calculateTDEE())) kcal"
                             )
                             SummaryRow(
-                                label: LocalizationKeys.Onboarding.Summary.Label.dailyCalorie.localized,
+                                label: CommonKeys.Onboarding.labelDailyCalorie.localized,
                                 value: "\(Int(calculateCalorieGoal())) kcal"
                             )
                         }
                         
                         Divider()
                         
-                        Text(LocalizationKeys.Onboarding.Summary.macroGoals.localized)
+                        Text(CommonKeys.Onboarding.macroGoals.localized)
                             .font(.subheadline)
                             .fontWeight(.semibold)
                         
                         let macros = calculateMacros()
                         VStack(spacing: 8) {
                             SummaryRow(
-                                label: LocalizationKeys.Onboarding.Summary.Label.protein.localized,
+                                label: CommonKeys.Onboarding.labelProtein.localized,
                                 value: "\(Int(macros.protein))g"
                             )
                             SummaryRow(
-                                label: LocalizationKeys.Onboarding.Summary.Label.carbs.localized,
+                                label: CommonKeys.Onboarding.labelCarbs.localized,
                                 value: "\(Int(macros.carbs))g"
                             )
                             SummaryRow(
-                                label: LocalizationKeys.Onboarding.Summary.Label.fat.localized,
+                                label: CommonKeys.Onboarding.labelFat.localized,
                                 value: "\(Int(macros.fat))g"
                             )
                         }
@@ -165,13 +165,13 @@ struct SummaryStepView: View {
                         HStack {
                             Image(systemName: "info.circle.fill")
                                 .foregroundColor(.blue)
-                            Text(LocalizationKeys.Onboarding.Summary.Info.title.localized)
+                            Text(CommonKeys.Onboarding.infoTitle.localized)
                                 .font(.headline)
                             Spacer()
                         }
                         Text(canCalculateNavyMethod() ?
-                             LocalizationKeys.Onboarding.Summary.Info.withNavy.localized :
-                             LocalizationKeys.Onboarding.Summary.Info.withoutNavy.localized)
+                             CommonKeys.Onboarding.infoWithNavy.localized :
+                             CommonKeys.Onboarding.infoWithoutNavy.localized)
                         .font(.caption)
                         .foregroundColor(.secondary)
                         .multilineTextAlignment(.leading)
@@ -183,7 +183,7 @@ struct SummaryStepView: View {
                 .padding(.horizontal)
             }
             
-            PrimaryButton(title: LocalizationKeys.Onboarding.Summary.startApp.localized, icon: "arrow.right") {
+            PrimaryButton(title: CommonKeys.Onboarding.startApp.localized, icon: "arrow.right") {
                 onComplete()
             }
             .padding(.horizontal)
@@ -244,20 +244,20 @@ struct SummaryStepView: View {
     
     private func goalDisplayName(_ g: String) -> String {
         switch g {
-        case "cut": return LocalizationKeys.Onboarding.Goals.Cut.title.localized
-        case "bulk": return LocalizationKeys.Onboarding.Goals.Bulk.title.localized
-        case "maintain": return LocalizationKeys.Onboarding.Goals.Maintain.title.localized
+        case "cut": return CommonKeys.Onboarding.goalCutTitle.localized
+        case "bulk": return CommonKeys.Onboarding.goalBulkTitle.localized
+        case "maintain": return CommonKeys.Onboarding.goalMaintainTitle.localized
         default: return "Unknown"
         }
     }
     
     private func activityDisplayName(_ a: String) -> String {
         switch a {
-        case "sedentary": return LocalizationKeys.Onboarding.Activity.sedentary.localized
-        case "light": return LocalizationKeys.Onboarding.Activity.light.localized
-        case "moderate": return LocalizationKeys.Onboarding.Activity.moderate.localized
-        case "active": return LocalizationKeys.Onboarding.Activity.active.localized
-        case "very_active": return LocalizationKeys.Onboarding.Activity.veryActive.localized
+        case "sedentary": return CommonKeys.Onboarding.activitySedentary.localized
+        case "light": return CommonKeys.Onboarding.activityLight.localized
+        case "moderate": return CommonKeys.Onboarding.activityModerate.localized
+        case "active": return CommonKeys.Onboarding.activityActive.localized
+        case "very_active": return CommonKeys.Onboarding.activityVeryActive.localized
         default: return "Unknown"
         }
     }

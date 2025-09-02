@@ -104,9 +104,9 @@ struct DailyNutritionSummary: View {
             }
             .alert(isPresented: errorAlertBinding) {
                 Alert(
-                    title: Text(LocalizationKeys.Common.error.localized),
+                    title: Text(CommonKeys.Onboarding.Common.error.localized),
                     message: Text(saveErrorMessage ?? ""),
-                    dismissButton: .default(Text(LocalizationKeys.Common.ok.localized))
+                    dismissButton: .default(Text(CommonKeys.Onboarding.Common.ok.localized))
                 )
             }
     }
@@ -131,7 +131,7 @@ struct DailyNutritionSummary: View {
     }
     
     private var summaryHeader: some View {
-        Text(LocalizationKeys.Nutrition.DailySummary.title.localized)
+        Text(NutritionKeys.DailySummary.title.localized)
             .font(.title2)
             .fontWeight(.semibold)
             .padding(.horizontal, horizontalPadding)

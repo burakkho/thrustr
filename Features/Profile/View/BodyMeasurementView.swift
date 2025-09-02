@@ -114,6 +114,19 @@ struct BodyMeasurementsView: View {
         
         do {
             try modelContext.save()
+            
+            // Log activity for dashboard
+            ActivityLoggerService.shared.setModelContext(modelContext)
+            
+            // Regular measurement update
+            ActivityLoggerService.shared.logMeasurementUpdate(
+                measurementType: selectedMeasurement.displayName,
+                value: value,
+                previousValue: nil,
+                unit: "cm",
+                user: user
+            )
+            
             showingSuccessAlert = true
             
             // Reset form

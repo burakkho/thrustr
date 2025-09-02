@@ -1,0 +1,297 @@
+{
+  "metadata": {
+    "id": "icf-5x5",
+    "name": {
+      "en": "ICF 5x5",
+      "tr": "ICF 5x5",
+      "de": "ICF 5x5",
+      "es": "ICF 5x5",
+      "it": "ICF 5x5"
+    },
+    "description": {
+      "en": "Ice Cream Fitness 5x5 by Jason Blaha. StrongLifts foundation with accessory work for aesthetics and balanced development.",
+      "tr": "Jason Blaha'nın Ice Cream Fitness 5x5 programı. StrongLifts temeli üzerine estetik ve dengeli gelişim için yardımcı egzersizler.",
+      "de": "Ice Cream Fitness 5x5 von Jason Blaha. StrongLifts-Grundlage mit Zusatzübungen für Ästhetik und ausgewogene Entwicklung.",
+      "es": "Ice Cream Fitness 5x5 de Jason Blaha. Base de StrongLifts con trabajo accesorio para estética y desarrollo equilibrado.",
+      "it": "Ice Cream Fitness 5x5 di Jason Blaha. Base StrongLifts con lavoro accessorio per estetica e sviluppo equilibrato."
+    },
+    "weeks": 4,
+    "daysPerWeek": 3,
+    "level": "beginner",
+    "category": "strength",
+    "isCustom": false,
+    "author": "Jason Blaha",
+    "version": "1.0"
+  },
+  "progression": {
+    "type": "linear",
+    "increment": 2.5,
+    "unit": "kg",
+    "deloadThreshold": 3,
+    "deloadPercentage": 10,
+    "notes": {
+      "en": "Add weight every successful workout. Focus on main lifts, keep accessories lighter.",
+      "tr": "Her başarılı antrenmanda ağırlık ekleyin. Ana hareketlere odaklanın, yardımcıları hafif tutun."
+    }
+  },
+  "workouts": [
+    {
+      "id": "workout-a",
+      "name": {
+        "en": "Workout A",
+        "tr": "Antrenman A"
+      },
+      "dayNumber": 1,
+      "estimatedDuration": 60,
+      "exercises": [
+        {
+          "id": "squat-a",
+          "exerciseName": "Back Squat",
+          "exerciseNameTR": "Back Squat",
+          "orderIndex": 0,
+          "targetSets": 5,
+          "targetReps": 5,
+          "targetWeight": null,
+          "restTime": 180,
+          "isWarmup": false,
+          "notes": {
+            "en": "Main movement. Focus on depth and form.",
+            "tr": "Ana hareket. Derinlik ve forma odaklanın."
+          },
+          "progression": {
+            "type": "weight",
+            "increment": 2.5
+          }
+        },
+        {
+          "id": "bench-a",
+          "exerciseName": "Bench Press",
+          "exerciseNameTR": "Bench Press",
+          "orderIndex": 1,
+          "targetSets": 5,
+          "targetReps": 5,
+          "targetWeight": null,
+          "restTime": 180,
+          "isWarmup": false,
+          "notes": {
+            "en": "Keep shoulder blades retracted.",
+            "tr": "Kürek kemiklerini geriye çekin."
+          },
+          "progression": {
+            "type": "weight",
+            "increment": 2.5
+          }
+        },
+        {
+          "id": "row-a",
+          "exerciseName": "Barbell Row",
+          "exerciseNameTR": "Barbell Row",
+          "orderIndex": 2,
+          "targetSets": 5,
+          "targetReps": 5,
+          "targetWeight": null,
+          "restTime": 180,
+          "isWarmup": false,
+          "notes": {
+            "en": "Pull to sternum, control the negative.",
+            "tr": "Göğse çekin, negatif hareketi kontrol edin."
+          },
+          "progression": {
+            "type": "weight",
+            "increment": 2.5
+          }
+        },
+        {
+          "id": "curl-a",
+          "exerciseName": "Barbell Curls",
+          "exerciseNameTR": "Barbell Curls",
+          "orderIndex": 3,
+          "targetSets": 3,
+          "targetReps": 8,
+          "targetWeight": null,
+          "restTime": 90,
+          "isWarmup": false,
+          "notes": {
+            "en": "Accessory movement. Control the weight.",
+            "tr": "Yardımcı hareket. Ağırlığı kontrol edin."
+          },
+          "progression": {
+            "type": "weight",
+            "increment": 1.25
+          }
+        },
+        {
+          "id": "tricep-a",
+          "exerciseName": "Tricep Extension",
+          "exerciseNameTR": "Tricep Extension",
+          "orderIndex": 4,
+          "targetSets": 3,
+          "targetReps": 8,
+          "targetWeight": null,
+          "restTime": 90,
+          "isWarmup": false,
+          "notes": {
+            "en": "Focus on tricep isolation.",
+            "tr": "Triceps izolasyonuna odaklanın."
+          },
+          "progression": {
+            "type": "weight",
+            "increment": 1.25
+          }
+        },
+        {
+          "id": "calf-a",
+          "exerciseName": "Calf Raises",
+          "exerciseNameTR": "Calf Raises",
+          "orderIndex": 5,
+          "targetSets": 3,
+          "targetReps": 15,
+          "targetWeight": null,
+          "restTime": 60,
+          "isWarmup": false,
+          "notes": {
+            "en": "Full range of motion.",
+            "tr": "Tam hareket aralığı."
+          },
+          "progression": {
+            "type": "weight",
+            "increment": 1.25
+          }
+        }
+      ]
+    },
+    {
+      "id": "workout-b",
+      "name": {
+        "en": "Workout B",
+        "tr": "Antrenman B"
+      },
+      "dayNumber": 2,
+      "estimatedDuration": 60,
+      "exercises": [
+        {
+          "id": "squat-b",
+          "exerciseName": "Back Squat",
+          "exerciseNameTR": "Back Squat",
+          "orderIndex": 0,
+          "targetSets": 5,
+          "targetReps": 5,
+          "targetWeight": null,
+          "restTime": 180,
+          "isWarmup": false,
+          "notes": {
+            "en": "Main movement. Focus on depth and form.",
+            "tr": "Ana hareket. Derinlik ve forma odaklanın."
+          },
+          "progression": {
+            "type": "weight",
+            "increment": 2.5
+          }
+        },
+        {
+          "id": "ohp-b",
+          "exerciseName": "Overhead Press",
+          "exerciseNameTR": "Overhead Press",
+          "orderIndex": 1,
+          "targetSets": 5,
+          "targetReps": 5,
+          "targetWeight": null,
+          "restTime": 180,
+          "isWarmup": false,
+          "notes": {
+            "en": "Press straight up, engage core.",
+            "tr": "Düz yukarı basın, core'u aktif edin."
+          },
+          "progression": {
+            "type": "weight",
+            "increment": 2.5
+          }
+        },
+        {
+          "id": "deadlift-b",
+          "exerciseName": "Deadlift",
+          "exerciseNameTR": "Deadlift",
+          "orderIndex": 2,
+          "targetSets": 1,
+          "targetReps": 5,
+          "targetWeight": null,
+          "restTime": 0,
+          "isWarmup": false,
+          "notes": {
+            "en": "Last exercise. Focus on hip hinge pattern.",
+            "tr": "Son egzersiz. Kalça menteşe hareketine odaklanın."
+          },
+          "progression": {
+            "type": "weight",
+            "increment": 2.5
+          }
+        },
+        {
+          "id": "cgbp-b",
+          "exerciseName": "Close Grip Bench Press",
+          "exerciseNameTR": "Close Grip Bench Press",
+          "orderIndex": 3,
+          "targetSets": 3,
+          "targetReps": 8,
+          "targetWeight": null,
+          "restTime": 120,
+          "isWarmup": false,
+          "notes": {
+            "en": "Tricep focused bench variation.",
+            "tr": "Triceps odaklı bench varyasyonu."
+          },
+          "progression": {
+            "type": "weight",
+            "increment": 1.25
+          }
+        },
+        {
+          "id": "curl-b",
+          "exerciseName": "Barbell Curls",
+          "exerciseNameTR": "Barbell Curls",
+          "orderIndex": 4,
+          "targetSets": 3,
+          "targetReps": 8,
+          "targetWeight": null,
+          "restTime": 90,
+          "isWarmup": false,
+          "notes": {
+            "en": "Accessory movement. Control the weight.",
+            "tr": "Yardımcı hareket. Ağırlığı kontrol edin."
+          },
+          "progression": {
+            "type": "weight",
+            "increment": 1.25
+          }
+        },
+        {
+          "id": "shrug-b",
+          "exerciseName": "Shrugs",
+          "exerciseNameTR": "Shrugs",
+          "orderIndex": 5,
+          "targetSets": 3,
+          "targetReps": 10,
+          "targetWeight": null,
+          "restTime": 90,
+          "isWarmup": false,
+          "notes": {
+            "en": "Trap development. Control the movement.",
+            "tr": "Trapez geliştirme. Hareketi kontrol edin."
+          },
+          "progression": {
+            "type": "weight",
+            "increment": 2.5
+          }
+        }
+      ]
+    }
+  ],
+  "schedule": {
+    "pattern": "A-B-A-B",
+    "restDays": 1,
+    "notes": {
+      "en": "Alternate between Workout A and B with at least one rest day between sessions.",
+      "tr": "Antrenman A ve B arasında geçiş yapın, seanslar arasında en az bir dinlenme günü bırakın."
+    }
+  }
+}

@@ -152,11 +152,11 @@ struct WODShareView: View {
                 }
                 .padding(.bottom)
             }
-            .navigationTitle("Share WOD")
+            .navigationTitle(TrainingKeys.Navigation.shareWOD.localized)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Done") { dismiss() }
+                    Button(TrainingKeys.Common.done.localized) { dismiss() }
                 }
             }
             .sheet(isPresented: $isSharing) {

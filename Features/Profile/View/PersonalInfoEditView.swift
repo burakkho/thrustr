@@ -277,7 +277,7 @@ struct CalculatedValuesPreview: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            SectionHeader(title: "personal_info.calculated_values".localized, icon: "calculator")
+            SectionHeader(title: "personal_info.calculated_values".localized, icon: "function")
             
             LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 2), spacing: 12) {
                 CalculatedValueCard(

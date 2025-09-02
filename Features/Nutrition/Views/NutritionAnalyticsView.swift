@@ -44,13 +44,13 @@ struct NutritionAnalyticsView: View {
             
             // Localized day names
             let dayNames = ["",
-                            LocalizationKeys.Nutrition.Days.sunday.localized,
-                            LocalizationKeys.Nutrition.Days.monday.localized,
-                            LocalizationKeys.Nutrition.Days.tuesday.localized,
-                            LocalizationKeys.Nutrition.Days.wednesday.localized,
-                            LocalizationKeys.Nutrition.Days.thursday.localized,
-                            LocalizationKeys.Nutrition.Days.friday.localized,
-                            LocalizationKeys.Nutrition.Days.saturday.localized]
+                            NutritionKeys.Days.sunday.localized,
+                            NutritionKeys.Days.monday.localized,
+                            NutritionKeys.Days.tuesday.localized,
+                            NutritionKeys.Days.wednesday.localized,
+                            NutritionKeys.Days.thursday.localized,
+                            NutritionKeys.Days.friday.localized,
+                            NutritionKeys.Days.saturday.localized]
             
             if let data = dailyTotals[dayStart] {
                 weekData.append(DayData(
@@ -82,14 +82,14 @@ struct NutritionAnalyticsView: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text(LocalizationKeys.Nutrition.Analytics.title.localized)
+            Text(NutritionKeys.Analytics.title.localized)
                 .font(.title2)
                 .fontWeight(.semibold)
                 .padding(.horizontal)
             
             // Kalori chart
             VStack(alignment: .leading, spacing: 8) {
-                Text(LocalizationKeys.Nutrition.Analytics.dailyCalories.localized)
+                Text(NutritionKeys.Analytics.dailyCalories.localized)
                     .font(.headline)
                     .padding(.horizontal)
                 
@@ -119,7 +119,7 @@ struct NutritionAnalyticsView: View {
             
             // Macro özeti
             VStack(alignment: .leading, spacing: 12) {
-                Text(LocalizationKeys.Nutrition.Analytics.weeklyAverage.localized)
+                Text(NutritionKeys.Analytics.weeklyAverage.localized)
                     .font(.headline)
                     .padding(.horizontal)
                 
@@ -131,27 +131,27 @@ struct NutritionAnalyticsView: View {
                 HStack(spacing: 20) {
                     MacroSummaryView(
                         value: Int(avgCalories),
-                        label: LocalizationKeys.Nutrition.calories.localized,
+                        label: NutritionKeys.calories.localized,
                         color: .orange,
-                        unit: LocalizationKeys.Nutrition.Units.kcal.localized
+                        unit: NutritionKeys.Units.kcal.localized
                     )
                     MacroSummaryView(
                         value: Int(avgProtein),
-                        label: LocalizationKeys.Nutrition.DailySummary.protein.localized,
+                        label: NutritionKeys.DailySummary.protein.localized,
                         color: .red,
-                        unit: LocalizationKeys.Nutrition.Units.g.localized
+                        unit: NutritionKeys.Units.g.localized
                     )
                     MacroSummaryView(
                         value: Int(avgCarbs),
-                        label: LocalizationKeys.Nutrition.DailySummary.carbs.localized,
+                        label: NutritionKeys.DailySummary.carbs.localized,
                         color: .blue,
-                        unit: LocalizationKeys.Nutrition.Units.g.localized
+                        unit: NutritionKeys.Units.g.localized
                     )
                     MacroSummaryView(
                         value: Int(avgFat),
-                        label: LocalizationKeys.Nutrition.DailySummary.fat.localized,
+                        label: NutritionKeys.DailySummary.fat.localized,
                         color: .yellow,
-                        unit: LocalizationKeys.Nutrition.Units.g.localized
+                        unit: NutritionKeys.Units.g.localized
                     )
                 }
                 .padding(.horizontal)

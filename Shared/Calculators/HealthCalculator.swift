@@ -1,8 +1,35 @@
 import Foundation
 
-// MARK: - HealthCalculator
+/**
+ * Health and fitness calculation utilities with comprehensive input validation.
+ * 
+ * This utility struct provides scientifically-backed calculations for fitness metrics
+ * including BMR, TDEE, body composition, and strength assessments. All calculations
+ * include proper input validation and reasonable bounds checking.
+ * 
+ * Supported calculations:
+ * - Basal Metabolic Rate (Mifflin-St Jeor and Katch-McArdle equations)
+ * - Total Daily Energy Expenditure with activity level adjustments
+ * - Body composition metrics (BMI, body fat percentage)
+ * - Fitness level assessments and strength ratings
+ */
 struct HealthCalculator {
-    // FIXED: BMR calculation with input validation
+    
+    /**
+     * Calculates Basal Metabolic Rate using scientifically validated equations.
+     * 
+     * Uses Katch-McArdle equation when body fat percentage is available (more accurate),
+     * otherwise falls back to Mifflin-St Jeor equation. Includes comprehensive input
+     * validation and reasonable bounds checking.
+     * 
+     * - Parameters:
+     *   - gender: User's biological gender (affects metabolic rate)
+     *   - age: Age in years (10-120 valid range)
+     *   - heightCm: Height in centimeters (100-250 valid range)  
+     *   - weightKg: Weight in kilograms (30-300 valid range)
+     *   - bodyFatPercentage: Optional body fat percentage (3-50% valid range)
+     * - Returns: BMR in calories per day, clamped to 800-4000 reasonable range
+     */
     static func calculateBMR(gender: Gender, age: Int, heightCm: Double, weightKg: Double, bodyFatPercentage: Double?) -> Double {
         // VALIDATION: Reasonable parameter ranges
         guard age >= 10 && age <= 120,           // 10-120 years

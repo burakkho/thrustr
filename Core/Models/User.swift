@@ -1,6 +1,20 @@
 import SwiftData
 import Foundation
 
+/**
+ * Central user profile model that stores personal information, fitness goals, health data, and workout statistics.
+ * 
+ * This model serves as the primary data store for user-related information and integrates with HealthKit
+ * for seamless health data synchronization. All metrics are stored in metric units internally and converted
+ * for display based on user preferences.
+ * 
+ * Key features:
+ * - Personal information and fitness goals
+ * - HealthKit integration for steps, calories, and weight
+ * - Calculated metrics (BMR, TDEE, daily goals)
+ * - Comprehensive workout and performance tracking
+ * - Body measurements and equipment preferences
+ */
 @Model
 final class User {
     // MARK: - Personal Information
@@ -27,6 +41,9 @@ final class User {
     // MARK: - Account Information
     var createdAt: Date // MISSING PROPERTY ADDED
     var lastActiveDate: Date
+    
+    // MARK: - Notification Settings
+    @Relationship(deleteRule: .cascade) var notificationSettings: UserNotificationSettings?
     
     // MARK: - Health Data Integration
     var lastHealthKitSync: Date?
@@ -68,7 +85,14 @@ final class User {
     var benchPressOneRM: Double?
     var deadliftOneRM: Double?
     var overheadPressOneRM: Double?
+    var pullUpOneRM: Double?
     var oneRMLastUpdated: Date?
+    
+    // MARK: - Strength Test Data
+    var strengthTestLastCompleted: Date?
+    var strengthTestCompletionCount: Int
+    var strengthProfile: String? // "balanced", "upper_dominant", "lower_dominant"
+    var lastStrengthScore: Double // 0.0 - 1.0 overall test score
     
     // MARK: - Equipment Setup
     var availablePlates: [Double] // Available weight plates in kg
@@ -85,6 +109,11 @@ final class User {
     var monthlyDistanceGoal: Double // meters
     var goalCompletionRate: Double
     
+    // MARK: - Weekly Goals (Dashboard)
+    var weeklyLiftGoal: Int // weekly lift sessions target
+    var weeklyCardioGoal: Int // weekly cardio sessions target
+    var weeklyDistanceGoal: Double // meters per week
+    
     // MARK: - PR Tracking (8 Specific Exercises)
     var totalPRsThisMonth: Int
     var totalPRsAllTime: Int
@@ -93,6 +122,11 @@ final class User {
     // MARK: - Performance Analytics
     var averageSessionDuration: TimeInterval
     var lastAnalyticsUpdate: Date?
+    
+    // MARK: - BMI Cache (Performance Optimization)
+    private var _cachedBMI: Double?
+    private var _bmiCacheTimestamp: Date?
+    private var bmiCacheTimeout: TimeInterval = 3600 // 1 hour cache - performance optimization
     
     // MARK: - Computed Properties Using Enums
     var genderEnum: Gender {
@@ -125,16 +159,37 @@ final class User {
     }
     
     var bmi: Double {
-        // FIXED: BMI calculation with validation
+        // Check cache validity first
+        if let cached = _cachedBMI,
+           let timestamp = _bmiCacheTimestamp,
+           Date().timeIntervalSince(timestamp) < bmiCacheTimeout {
+            return cached
+        }
+        
+        // Calculate fresh BMI with validation
         guard height > 50 && height < 300,      // 50cm - 3m reasonable height range
               currentWeight > 10 && currentWeight < 500  // 10kg - 500kg reasonable weight range
-        else { return 25.0 }  // Return normal BMI for invalid inputs
+        else { 
+            _cachedBMI = 25.0
+            _bmiCacheTimestamp = Date()
+            return 25.0 
+        }
         
         let heightInMeters = height / 100
-        guard heightInMeters > 0 else { return 25.0 }  // Prevent division by zero
+        guard heightInMeters > 0 else { 
+            _cachedBMI = 25.0
+            _bmiCacheTimestamp = Date()
+            return 25.0 
+        }
         
         let calculatedBMI = currentWeight / (heightInMeters * heightInMeters)
-        return max(10.0, min(80.0, calculatedBMI))  // Clamp to reasonable BMI range
+        let result = max(10.0, min(80.0, calculatedBMI))  // Clamp to reasonable BMI range
+        
+        // Cache the result
+        _cachedBMI = result
+        _bmiCacheTimestamp = Date()
+        
+        return result
     }
     
     var bmiCategory: String {
@@ -202,7 +257,14 @@ final class User {
         self.benchPressOneRM = nil
         self.deadliftOneRM = nil
         self.overheadPressOneRM = nil
+        self.pullUpOneRM = nil
         self.oneRMLastUpdated = nil
+        
+        // Initialize strength test data
+        self.strengthTestLastCompleted = nil
+        self.strengthTestCompletionCount = 0
+        self.strengthProfile = nil
+        self.lastStrengthScore = 0.0
         
         // Initialize equipment setup with common plates
         self.availablePlates = [1.25, 2.5, 5, 10, 15, 20] // Standard gym plates
@@ -217,6 +279,11 @@ final class User {
         self.monthlySessionGoal = 16 // 4 sessions per week
         self.monthlyDistanceGoal = 50000 // 50km per month
         self.goalCompletionRate = 0.0
+        
+        // Initialize weekly goals (dashboard defaults)
+        self.weeklyLiftGoal = 4 // 4 lift sessions per week
+        self.weeklyCardioGoal = 3 // 3 cardio sessions per week
+        self.weeklyDistanceGoal = 12500 // 12.5km per week (50km/4)
         
         // Initialize PR tracking
         self.totalPRsThisMonth = 0
@@ -233,12 +300,34 @@ final class User {
     }
     
     // MARK: - Methods
+    
+    /**
+     * Recalculates all derived metrics (BMR, TDEE, daily goals) based on current user data.
+     * 
+     * This method should be called whenever user profile data changes to ensure
+     * all calculated values remain accurate and up-to-date.
+     */
     func calculateMetrics() {
         calculateBMR()
         calculateTDEE()
         calculateDailyGoals()
     }
     
+    /**
+     * Updates user profile information with optional parameters.
+     * 
+     * This method allows partial updates to user profile data while automatically
+     * recalculating dependent metrics and updating the last active timestamp.
+     * 
+     * - Parameters:
+     *   - name: User's display name
+     *   - age: User's age in years
+     *   - gender: User's gender (affects BMR calculation)
+     *   - height: User's height in centimeters
+     *   - weight: User's current weight in kilograms
+     *   - fitnessGoal: User's primary fitness objective
+     *   - activityLevel: User's typical activity level (affects TDEE)
+     */
     func updateProfile(
         name: String? = nil,
         age: Int? = nil,
@@ -251,8 +340,18 @@ final class User {
         if let name = name { self.name = name }
         if let age = age { self.age = age }
         if let gender = gender { self.genderEnum = gender }
-        if let height = height { self.height = height }
-        if let weight = weight { self.currentWeight = weight }
+        if let height = height { 
+            self.height = height
+            // Invalidate BMI cache when height changes
+            _cachedBMI = nil
+            _bmiCacheTimestamp = nil
+        }
+        if let weight = weight { 
+            self.currentWeight = weight
+            // Invalidate BMI cache when weight changes
+            _cachedBMI = nil
+            _bmiCacheTimestamp = nil
+        }
         if let fitnessGoal = fitnessGoal { self.fitnessGoalEnum = fitnessGoal }
         if let activityLevel = activityLevel { self.activityLevelEnum = activityLevel }
         
@@ -261,6 +360,13 @@ final class User {
     }
     
     // MARK: - BMR Calculation (Mifflin-St Jeor Equation)
+    
+    /**
+     * Calculates Basal Metabolic Rate using the Mifflin-St Jeor equation.
+     * 
+     * BMR represents the number of calories needed to maintain basic physiological
+     * functions at rest. This is the foundation for calculating TDEE and daily goals.
+     */
     private func calculateBMR() {
         bmr = HealthCalculator.calculateBMR(
             gender: genderEnum,
@@ -300,6 +406,9 @@ final class User {
             healthKitWeight = weight
             // Update current weight if HealthKit has newer data
             currentWeight = weight
+            // Invalidate BMI cache when weight changes from HealthKit
+            _cachedBMI = nil
+            _bmiCacheTimestamp = nil
             calculateMetrics()  // Recalculate with new weight
         }
         lastHealthKitSync = Date()
@@ -325,6 +434,20 @@ final class User {
             totalCardioCalories += calories
         }
         lastActiveDate = Date()
+    }
+    
+    func updateCardioSession(oldDuration: TimeInterval, oldDistance: Double, newDuration: TimeInterval, newDistance: Double) {
+        // Remove old values
+        totalCardioTime -= oldDuration
+        totalCardioDistance -= oldDistance
+        
+        // Add new values
+        totalCardioTime += newDuration
+        totalCardioDistance += newDistance
+        
+        // Update last active date
+        lastActiveDate = Date()
+        lastCardioDate = Date()
     }
     
     func updateCardioStats(sessions: Int, totalTime: TimeInterval, totalDistance: Double, calories: Int) {
@@ -455,14 +578,16 @@ final class User {
     
     func updateOneRM(exercise: String, newMax: Double) {
         switch exercise.lowercased() {
-        case "squat":
+        case "squat", "back_squat":
             squatOneRM = newMax
-        case "bench", "benchpress":
+        case "bench", "benchpress", "bench_press":
             benchPressOneRM = newMax
         case "deadlift":
             deadliftOneRM = newMax
-        case "ohp", "overheadpress":
+        case "ohp", "overheadpress", "overhead_press":
             overheadPressOneRM = newMax
+        case "pullup", "pull_up":
+            pullUpOneRM = newMax
         default:
             break
         }
@@ -473,12 +598,217 @@ final class User {
         return squatOneRM != nil && 
                benchPressOneRM != nil && 
                deadliftOneRM != nil && 
-               overheadPressOneRM != nil
+               overheadPressOneRM != nil &&
+               pullUpOneRM != nil
     }
     
     func roundToPlateIncrement(_ weight: Double) -> Double {
-        // TODO: Get unit system from UnitSettings when available
-        // For now, assume metric (kg) system and round to 2.5kg increments
-        return round(weight / 2.5) * 2.5
+        let unitSystem = UnitSettings.shared.unitSystem
+        return roundToPlateIncrement(weight, system: unitSystem)
+    }
+    
+    func roundToPlateIncrement(_ weight: Double, system: UnitSystem) -> Double {
+        let increment = system == .metric ? 2.5 : 5.0 // 2.5kg or 5lbs increments
+        return round(weight / increment) * increment
+    }
+    
+    // MARK: - Dashboard Properties
+    
+    /**
+     * Days since user created their account.
+     */
+    var daysSinceCreation: Int {
+        Calendar.current.dateComponents([.day], from: createdAt, to: Date()).day ?? 0
+    }
+    
+    /**
+     * Total count of all user activities across training types.
+     */
+    var totalActivitiesCount: Int {
+        return totalWorkouts + totalCardioSessions
+    }
+    
+    
+    /**
+     * Weekly lift progress as percentage (0.0 - 1.0).
+     */
+    var weeklyLiftProgress: Double {
+        let weeklyTarget = 4.0 // Default weekly lift target
+        let currentSessions = Double(min(totalWorkouts, Int(weeklyTarget)))
+        return currentSessions / weeklyTarget
+    }
+    
+    /**
+     * Daily calorie progress as percentage (0.0 - 1.0).
+     */
+    var dailyCalorieProgress: Double {
+        guard dailyCalorieGoal > 0 else { return 0.0 }
+        // This would be calculated with today's nutrition data in ViewModel
+        return 0.0 // Placeholder - actual calculation in ViewModel
+    }
+    
+    /**
+     * Formatted streak message for dashboard display.
+     */
+    var streakDisplayText: String {
+        guard currentWorkoutStreak > 0 else { return "" }
+        return "🔥\(currentWorkoutStreak)"
+    }
+    
+    // MARK: - Strength Test Integration Methods
+    
+    /**
+     * Updates user profile with strength test results.
+     */
+    func updateWithStrengthTest(_ strengthTest: StrengthTest) {
+        guard strengthTest.isCompleted else { 
+            print("❌ User.updateWithStrengthTest: Test not completed")
+            return 
+        }
+        
+        print("✅ User.updateWithStrengthTest: Processing test with \(strengthTest.results.count) results")
+        
+        // Update 1RM values from test results with safety checks
+        for result in strengthTest.results {
+            guard result.value > 0 && result.value.isFinite && !result.value.isNaN else {
+                print("❌ User.updateWithStrengthTest: Invalid result value for \(result.exerciseType)")
+                continue
+            }
+            updateOneRM(exercise: result.exerciseType, newMax: result.value)
+        }
+        
+        // Update strength test tracking with safe values
+        strengthTestLastCompleted = strengthTest.testDate
+        strengthTestCompletionCount += 1
+        strengthProfile = strengthTest.strengthProfile
+        
+        // Safely update score with validation
+        if strengthTest.overallScore.isFinite && !strengthTest.overallScore.isNaN {
+            lastStrengthScore = max(0.0, min(1.0, strengthTest.overallScore))
+        } else {
+            print("❌ User.updateWithStrengthTest: Invalid overall score")
+            lastStrengthScore = 0.0
+        }
+        
+        // Update activity tracking
+        lastActiveDate = Date()
+        
+        // Recalculate metrics with new data
+        calculateMetrics()
+        
+        print("✅ User.updateWithStrengthTest: Successfully updated user profile")
+    }
+    
+    // MARK: - Lifetime Statistics Methods
+    
+    /**
+     * Calculates total weight lifted across all lift sessions in kg.
+     */
+    func calculateTotalWeightLifted(from sessions: [LiftSession]) -> Double {
+        return sessions
+            .filter { $0.isCompleted }
+            .reduce(0.0) { total, session in
+                total + session.totalVolume
+            }
+    }
+    
+    /**
+     * Calculates total distance covered across all cardio sessions in kilometers.
+     */
+    func calculateTotalDistanceCovered(from sessions: [CardioSession]) -> Double {
+        return sessions
+            .filter { $0.isCompleted }
+            .reduce(0.0) { total, session in
+                total + (session.totalDistance / 1000.0) // Convert meters to km
+            }
+    }
+    
+    /**
+     * Calculates total number of completed workouts (lift + cardio).
+     */
+    func calculateTotalWorkouts(liftSessions: [LiftSession], cardioSessions: [CardioSession]) -> Int {
+        let liftCount = liftSessions.filter { $0.isCompleted }.count
+        let cardioCount = cardioSessions.filter { $0.isCompleted }.count
+        return liftCount + cardioCount
+    }
+    
+    /**
+     * Calculates total active days (days with any completed workout).
+     */
+    func calculateActiveDays(liftSessions: [LiftSession], cardioSessions: [CardioSession]) -> Int {
+        let liftDates = Set(liftSessions.filter { $0.isCompleted }.map { 
+            Calendar.current.startOfDay(for: $0.startDate)
+        })
+        let cardioDates = Set(cardioSessions.filter { $0.isCompleted }.map {
+            Calendar.current.startOfDay(for: $0.startDate)
+        })
+        
+        return Set(liftDates.union(cardioDates)).count
+    }
+    
+    /**
+     * Gets current 1RM for a specific exercise type with safety validation.
+     */
+    func getCurrentOneRM(for exerciseType: StrengthExerciseType) -> Double? {
+        let value: Double?
+        
+        switch exerciseType {
+        case .benchPress:
+            value = benchPressOneRM
+        case .overheadPress:
+            value = overheadPressOneRM
+        case .pullUp:
+            value = pullUpOneRM
+        case .backSquat:
+            value = squatOneRM
+        case .deadlift:
+            value = deadliftOneRM
+        }
+        
+        // Return nil if value is invalid (NaN, infinite, or negative)
+        if let val = value, val > 0 && val.isFinite && !val.isNaN {
+            return val
+        }
+        
+        return nil
+    }
+    
+    /**
+     * Checks if strength test is recommended based on last test date.
+     */
+    var isStrengthTestRecommended: Bool {
+        guard let lastTest = strengthTestLastCompleted else { return true }
+        
+        // Recommend retest after 4-8 weeks based on experience level
+        let weeksSinceTest = Calendar.current.dateComponents([.weekOfYear], from: lastTest, to: Date()).weekOfYear ?? 0
+        let recommendedInterval = strengthTestCompletionCount < 3 ? 4 : 8
+        
+        return weeksSinceTest >= recommendedInterval
+    }
+    
+    /**
+     * Gets strength profile emoji for dashboard display.
+     */
+    var strengthProfileEmoji: String {
+        switch strengthProfile {
+        case "balanced":
+            return "⚖️"
+        case "upper_dominant":
+            return "💪"
+        case "lower_dominant":
+            return "🦵"
+        default:
+            return "❓"
+        }
+    }
+    
+    // MARK: - Unit-aware formatting helpers
+    
+    func formattedWeight(system: UnitSystem) -> String {
+        return UnitsFormatter.formatWeight(kg: currentWeight, system: system)
+    }
+    
+    func formattedHeight(system: UnitSystem) -> String {
+        return UnitsFormatter.formatHeight(cm: height, system: system)
     }
 }

@@ -32,7 +32,7 @@ struct WODQRScannerView: View {
                 VStack {
                     // Top Bar
                     HStack {
-                        Button("Cancel") {
+                        Button("common.cancel".localized) {
                             dismiss()
                         }
                         .padding()
@@ -105,11 +105,11 @@ struct WODQRScannerView: View {
                             .background(.ultraThinMaterial)
                             .cornerRadius(theme.radius.m)
                         } else {
-                            Text("Scan WOD QR Code")
+                            Text("wod.scan_qr_code".localized)
                                 .font(theme.typography.headline)
                                 .foregroundColor(.white)
                             
-                            Text("Position the QR code within the frame")
+                            Text("wod.position_qr_code".localized)
                                 .font(theme.typography.caption)
                                 .foregroundColor(.white.opacity(0.8))
                         }
@@ -118,8 +118,8 @@ struct WODQRScannerView: View {
                     .padding(.bottom, 50)
                 }
             }
-            .alert("Error", isPresented: $showingError) {
-                Button("OK") {
+            .alert("common.error".localized, isPresented: $showingError) {
+                Button("common.ok".localized) {
                     errorMessage = nil
                     isProcessing = false
                 }
@@ -145,6 +145,23 @@ struct WODQRScannerView: View {
     private func handleScannedCode(_ code: String) {
         guard !isProcessing else { return }
         isProcessing = true
+        
+        // Handle camera errors
+        if code.hasPrefix("CAMERA_") {
+            switch code {
+            case "CAMERA_PERMISSION_DENIED":
+                errorMessage = "wod.camera_permission_denied".localized
+            case "CAMERA_SETUP_FAILED", "CAMERA_INPUT_FAILED", "CAMERA_OUTPUT_FAILED":
+                errorMessage = "wod.camera_setup_failed".localized
+            case "CAMERA_SETUP_ERROR":
+                errorMessage = "wod.camera_error_occurred".localized
+            default:
+                errorMessage = "Camera error: \(code)"
+            }
+            showingError = true
+            isProcessing = false
+            return
+        }
         
         // Haptic feedback
         HapticManager.shared.notification(.success)
@@ -174,7 +191,7 @@ struct WODQRScannerView: View {
                 showingTimer = true
             }
         } catch {
-            errorMessage = error.localizedDescription
+            errorMessage = "wod.invalid_qr_format".localized + ": \(error.localizedDescription)"
             showingError = true
             isProcessing = false
         }
@@ -246,10 +263,35 @@ class QRScannerViewController: UIViewController {
     }
     
     private func setupCamera() {
+        // Check camera authorization
+        switch AVCaptureDevice.authorizationStatus(for: .video) {
+        case .notDetermined:
+            AVCaptureDevice.requestAccess(for: .video) { [weak self] granted in
+                DispatchQueue.main.async {
+                    if granted {
+                        self?.setupCaptureSession()
+                    } else {
+                        self?.delegate?.didScanCode("CAMERA_PERMISSION_DENIED")
+                    }
+                }
+            }
+            return
+        case .denied, .restricted:
+            delegate?.didScanCode("CAMERA_PERMISSION_DENIED")
+            return
+        case .authorized:
+            setupCaptureSession()
+        @unknown default:
+            return
+        }
+    }
+    
+    private func setupCaptureSession() {
         captureSession = AVCaptureSession()
         
         guard let captureSession = captureSession,
               let videoCaptureDevice = AVCaptureDevice.default(for: .video) else {
+            delegate?.didScanCode("CAMERA_SETUP_FAILED")
             return
         }
         
@@ -259,6 +301,7 @@ class QRScannerViewController: UIViewController {
             if captureSession.canAddInput(videoInput) {
                 captureSession.addInput(videoInput)
             } else {
+                delegate?.didScanCode("CAMERA_INPUT_FAILED")
                 return
             }
             
@@ -269,6 +312,7 @@ class QRScannerViewController: UIViewController {
                 metadataOutput.setMetadataObjectsDelegate(self, queue: DispatchQueue.main)
                 metadataOutput.metadataObjectTypes = [.qr]
             } else {
+                delegate?.didScanCode("CAMERA_OUTPUT_FAILED")
                 return
             }
             
@@ -280,6 +324,7 @@ class QRScannerViewController: UIViewController {
             }
         } catch {
             print("Failed to setup camera: \(error)")
+            delegate?.didScanCode("CAMERA_SETUP_ERROR")
         }
     }
     

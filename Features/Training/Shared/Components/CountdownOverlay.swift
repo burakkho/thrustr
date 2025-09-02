@@ -18,7 +18,7 @@ struct CountdownOverlay: View {
                         .scaleEffect(value > 0 ? 1.0 : 1.5)
                         .animation(.spring(response: 0.3, dampingFraction: 0.6), value: value)
                     
-                    Text("Get Ready!")
+                    Text(TrainingKeys.Navigation.getReady.localized)
                         .font(theme.typography.headline)
                         .foregroundColor(.white.opacity(0.8))
                 }

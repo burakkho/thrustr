@@ -373,6 +373,15 @@ struct CardioSessionSummaryView: View {
             try modelContext.save()
             Logger.info("Cardio session saved successfully")
             
+            // Log activity for dashboard
+            ActivityLoggerService.shared.logCardioCompleted(
+                activityType: session.workoutName,
+                distance: session.totalDistance,
+                duration: TimeInterval(session.totalDuration),
+                calories: Double(session.totalCaloriesBurned ?? 0),
+                user: user
+            )
+            
             // Dismiss with callback
             if let onDismiss = onDismiss {
                 onDismiss()

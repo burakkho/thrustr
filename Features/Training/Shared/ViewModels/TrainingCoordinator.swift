@@ -6,15 +6,17 @@ enum WorkoutType: Int, CaseIterable {
     case lift = 1
     case cardio = 2
     case wod = 3
-    case analytics = 4
+    case tests = 4
+    case analytics = 5
     
     var title: String {
         switch self {
-        case .dashboard: return LocalizationKeys.Training.Dashboard.title.localized
-        case .lift: return "training.lift.title".localized
-        case .cardio: return LocalizationKeys.Training.Cardio.title.localized
-        case .wod: return LocalizationKeys.Training.WOD.title.localized
-        case .analytics: return LocalizationKeys.Training.Analytics.title.localized
+        case .dashboard: return TrainingKeys.Dashboard.title.localized
+        case .lift: return TrainingKeys.Lift.title.localized
+        case .cardio: return TrainingKeys.Cardio.title.localized
+        case .wod: return TrainingKeys.WOD.title.localized
+        case .tests: return TrainingKeys.Strength.title.localized
+        case .analytics: return TrainingKeys.Analytics.title.localized
         }
     }
     
@@ -24,6 +26,7 @@ enum WorkoutType: Int, CaseIterable {
         case .lift: return "dumbbell.fill"
         case .cardio: return "heart.fill"
         case .wod: return "flame.fill"
+        case .tests: return "chart.bar.doc.horizontal.fill"
         case .analytics: return "chart.bar.fill"
         }
     }
@@ -34,6 +37,9 @@ class TrainingCoordinator {
     // Navigation State
     var selectedWorkoutType: WorkoutType = .dashboard
     var navigationPath = NavigationPath()
+    
+    // WOD Navigation State
+    var wodSelectedTab: String = "benchmark"
     
     // Shared UI State
     var showingNewWorkout = false
@@ -51,8 +57,6 @@ class TrainingCoordinator {
     // Active Sessions
     private(set) var hasActiveSession = false
     private(set) var activeSessionType: WorkoutType?
-    
-    init() {}
     
     // MARK: - Navigation Methods
     
@@ -74,6 +78,26 @@ class TrainingCoordinator {
     
     func navigateToProgramSelection() {
         showingProgramSelection = true
+    }
+    
+    func navigateToWODHistory() {
+        selectedWorkoutType = .wod
+        wodSelectedTab = "history"
+    }
+    
+    // Listen for navigation notifications
+    init() {
+        NotificationCenter.default.addObserver(
+            forName: .navigateToWODHistory,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            self?.handleWODHistoryNavigation()
+        }
+    }
+    
+    @objc private func handleWODHistoryNavigation() {
+        navigateToWODHistory()
     }
     
     // MARK: - Session Management

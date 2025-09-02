@@ -1,13 +1,27 @@
 import Foundation
 import SwiftData
 
+/**
+ * Workout of the Day (WOD) model for CrossFit-style workouts.
+ * 
+ * This model defines structured workouts with various time domains and movement patterns.
+ * Supports multiple workout types including AMRAP, For Time, EMOM, Tabata, and custom formats.
+ * WODs can be benchmark workouts (Girls, Heroes) or user-created custom workouts.
+ * 
+ * Key features:
+ * - Flexible rep scheme system for different workout structures
+ * - Time cap and round specifications for various WOD types
+ * - Difficulty scaling for different fitness levels
+ * - QR code sharing for workout distribution
+ * - Integration with movement library for exercise selection
+ */
 @Model
 final class WOD {
     var id: UUID
     var name: String
     var type: String // WODType raw value
     var category: String // WODCategory raw value (girls, heroes, opens, custom)
-    var repScheme: [Int] // [21, 15, 9] for 21-15-9 format
+    private var repSchemeData: String // JSON serialized [Int] array
     var timeCap: Int? // in seconds
     var rounds: Int? // for EMOM, Tabata etc
     var difficulty: String? // beginner, intermediate, advanced
@@ -34,7 +48,7 @@ final class WOD {
         self.name = name
         self.type = type.rawValue
         self.category = category
-        self.repScheme = repScheme
+        self.repSchemeData = Self.encodeIntArray(repScheme)
         self.timeCap = timeCap
         self.rounds = rounds
         self.difficulty = difficulty
@@ -48,6 +62,35 @@ final class WOD {
 }
 
 // MARK: - Computed Properties
+extension WOD {
+    var repScheme: [Int] {
+        get {
+            Self.decodeIntArray(repSchemeData)
+        }
+        set {
+            repSchemeData = Self.encodeIntArray(newValue)
+        }
+    }
+    
+    // MARK: - Array Serialization Helpers
+    private static func encodeIntArray(_ array: [Int]) -> String {
+        do {
+            let data = try JSONEncoder().encode(array)
+            return String(data: data, encoding: .utf8) ?? "[]"
+        } catch {
+            return "[]"
+        }
+    }
+    
+    private static func decodeIntArray(_ string: String) -> [Int] {
+        guard let data = string.data(using: .utf8) else { return [] }
+        do {
+            return try JSONDecoder().decode([Int].self, from: data)
+        } catch {
+            return []
+        }
+    }
+}
 extension WOD {
     var wodType: WODType {
         WODType(rawValue: type) ?? .custom

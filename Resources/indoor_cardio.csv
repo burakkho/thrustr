@@ -1,0 +1,4 @@
+name,nameEN,nameTR,nameES,nameDE,equipment,exerciseType,met,descriptionTR,descriptionES,descriptionDE
+Treadmill Running,Treadmill Running,Koşu Bandı,Cinta de Correr,Laufband,treadmill,run,9.8,Koşu bandında koşu,Correr en cinta,Laufen auf dem Laufband
+Treadmill Walking,Treadmill Walking,Yürüyüş Bandı,Cinta para Caminar,Gehband,treadmill,walk,3.3,Koşu bandında yürüyüş,Caminar en cinta,Gehen auf dem Laufband
+Indoor Cycling,Indoor Cycling,Salon Bisikleti,Bicicleta Estática,Indoor-Rad,indoor_bike,bike,7.0,Kapalı alanda bisiklet,Ciclismo en interiores,Indoor-Radfahren

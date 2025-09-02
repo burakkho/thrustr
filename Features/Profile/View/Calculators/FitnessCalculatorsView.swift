@@ -1,6 +1,13 @@
 import SwiftUI
+import SwiftData
 
 struct FitnessCalculatorsView: View {
+    @Query private var users: [User]
+    
+    private var currentUser: User? {
+        users.first
+    }
+    
     var body: some View {
         NavigationStack {
             ScrollView {
@@ -12,31 +19,31 @@ struct FitnessCalculatorsView: View {
                     VStack(spacing: 16) {
                         NavigationLink(destination: OneRMCalculatorView()) {
                             CalculatorCard(
-                                title: LocalizationKeys.localized(LocalizationKeys.OneRMCalculator.title),
-                                description: LocalizationKeys.localized(LocalizationKeys.OneRMCalculator.subtitle),
+                                title: ProfileKeys.OneRMCalculator.title.localized,
+                                description: ProfileKeys.OneRMCalculator.subtitle.localized,
                                 icon: "dumbbell.fill",
                                 color: .blue,
-                                details: LocalizationKeys.localized("fitness_calculators.card.one_rm.details")
+                                details: "fitness_calculators.card.one_rm.details".localized
                             )
                         }
                         
                         NavigationLink(destination: FFMICalculatorView()) {
                             CalculatorCard(
-                                title: LocalizationKeys.localized(LocalizationKeys.FFMICalculator.title),
-                                description: LocalizationKeys.localized(LocalizationKeys.FFMICalculator.subtitle),
+                                title: ProfileKeys.FFMICalculator.title.localized,
+                                description: ProfileKeys.FFMICalculator.subtitle.localized,
                                 icon: "figure.strengthtraining.traditional",
                                 color: .green,
-                                details: LocalizationKeys.localized("fitness_calculators.card.ffmi.details")
+                                details: "fitness_calculators.card.ffmi.details".localized
                             )
                         }
                         
-                        NavigationLink(destination: NavyMethodCalculatorView()) {
+                        NavigationLink(destination: NavyMethodCalculatorView(user: currentUser)) {
                             CalculatorCard(
-                                title: LocalizationKeys.localized(LocalizationKeys.NavyMethodCalculator.title),
-                                description: LocalizationKeys.localized(LocalizationKeys.NavyMethodCalculator.subtitle),
+                                title: ProfileKeys.NavyMethodCalculator.title.localized,
+                                description: ProfileKeys.NavyMethodCalculator.calculate.localized,
                                 icon: "percent",
                                 color: .orange,
-                                details: LocalizationKeys.localized("fitness_calculators.card.navy.details")
+                                details: "fitness_calculators.card.navy.details".localized
                             )
                         }
                     }
@@ -46,7 +53,7 @@ struct FitnessCalculatorsView: View {
                 }
                 .padding()
             }
-            .navigationTitle(LocalizationKeys.localized(LocalizationKeys.FitnessCalculators.title))
+            .navigationTitle("fitness_calculators.title".localized)
             .navigationBarTitleDisplayMode(.large)
             .background(Color(.systemGroupedBackground))
         }
@@ -62,11 +69,11 @@ struct CalculatorsHeaderSection: View {
                 .foregroundColor(.blue)
             
             VStack(spacing: 8) {
-                Text(LocalizationKeys.localized(LocalizationKeys.FitnessCalculators.title))
+                Text("fitness_calculators.title".localized)
                     .font(.title2)
                     .fontWeight(.semibold)
                 
-                Text(LocalizationKeys.localized(LocalizationKeys.FitnessCalculators.subtitle))
+                Text("fitness_calculators.subtitle".localized)
                     .font(.subheadline)
                     .foregroundColor(.secondary)
                     .multilineTextAlignment(.center)

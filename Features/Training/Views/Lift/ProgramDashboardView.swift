@@ -5,6 +5,7 @@ import SwiftData
 struct ProgramDashboardView: View {
     @Environment(\.theme) private var theme
     @Environment(\.modelContext) private var modelContext
+    @EnvironmentObject private var unitSettings: UnitSettings
     
     let execution: ProgramExecution?
     let onStartWorkout: () -> Void
@@ -131,7 +132,7 @@ struct ProgramDashboardView: View {
             statItem(
                 icon: "chart.line.uptrend.xyaxis",
                 title: "Total Volume",
-                value: "\(Int(totalVolume(execution: execution)))kg"
+                value: UnitsFormatter.formatVolume(kg: totalVolume(execution: execution), system: unitSettings.unitSystem)
             )
             
             Divider()

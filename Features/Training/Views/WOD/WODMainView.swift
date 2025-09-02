@@ -5,23 +5,71 @@ struct WODMainView: View {
     @Environment(\.theme) private var theme
     @Environment(\.modelContext) private var modelContext
     @Environment(TrainingCoordinator.self) private var coordinator
+    @Query private var user: [User]
     
-    @Query private var customWODs: [WOD]
-    @Query private var wodResults: [WODResult]
-    @Query(filter: #Predicate<WOD> { !$0.isCustom }) private var benchmarkWODs: [WOD]
+    @Query(
+        filter: #Predicate<WOD> { $0.isCustom == true },
+        sort: [SortDescriptor(\WOD.updatedAt, order: .reverse)]
+    ) private var customWODs: [WOD]
+    
+    @Query(sort: [SortDescriptor(\WODResult.completedAt, order: .reverse)]) 
+    private var wodResults: [WODResult]
+    
+    @Query(
+        filter: #Predicate<WOD> { $0.isCustom == false },
+        sort: [SortDescriptor(\WOD.name)]
+    ) private var benchmarkWODs: [WOD]
     
     @State private var selectedCategory: WODCategory = .custom
+    private var selectedTab: WODTab {
+        get {
+            switch coordinator.wodSelectedTab {
+            case "history": return .history
+            case "custom": return .custom
+            default: return .benchmark
+            }
+        }
+        set {
+            coordinator.wodSelectedTab = newValue.rawValue.lowercased()
+        }
+    }
+    
+    private enum WODTab: String, CaseIterable {
+        case benchmark = "Benchmark"
+        case custom = "Custom" 
+        case history = "History"
+        
+        var localizedTitle: String {
+            switch self {
+            case .benchmark: return TrainingKeys.WOD.benchmark.localized
+            case .custom: return TrainingKeys.WOD.custom.localized
+            case .history: return TrainingKeys.WOD.history.localized
+            }
+        }
+        
+        var icon: String {
+            switch self {
+            case .benchmark: return "star.circle.fill"
+            case .custom: return "plus.circle.fill"
+            case .history: return "clock.fill"
+            }
+        }
+    }
     @State private var searchText = ""
     @State private var selectedWOD: WOD?
     @State private var showingNewWOD = false
     @State private var showingQRScanner = false
+    
+    private var currentUser: User? {
+        user.first
+    }
     
     private var filteredWODs: [WOD] {
         let categoryWODs: [WOD]
         
         switch selectedCategory {
         case .custom:
-            categoryWODs = customWODs.filter { $0.isCustom }
+            categoryWODs = customWODs // Already filtered by @Query
         case .girls, .heroes:
             categoryWODs = benchmarkWODs.filter { wod in
                 wod.category == selectedCategory.rawValue
@@ -30,55 +78,21 @@ struct WODMainView: View {
             categoryWODs = []
         }
         
-        if searchText.isEmpty {
-            return categoryWODs
+        // Early return for empty search
+        guard !searchText.isEmpty else {
+            return Array(categoryWODs.prefix(20)) // Limit initial results
         }
         
-        return categoryWODs.filter { wod in
+        // Optimized search with prefix limiting
+        let searchResults = categoryWODs.filter { wod in
             wod.name.localizedCaseInsensitiveContains(searchText) ||
             wod.movements.contains { $0.name.localizedCaseInsensitiveContains(searchText) }
         }
+        
+        return Array(searchResults.prefix(15)) // Limit search results
     }
     
-    var body: some View {
-        VStack(spacing: 0) {
-            // Header
-            headerView
-            
-            // Category Selector
-            categorySelector
-            
-            // Search Bar
-            searchBar
-            
-            // Content
-            ScrollView {
-                LazyVStack(spacing: theme.spacing.m) {
-                    // Quick Actions for Custom WODs
-                    if selectedCategory == .custom {
-                        quickActionsSection
-                    }
-                    
-                    // WOD Cards
-                    if !filteredWODs.isEmpty {
-                        wodsList
-                    } else {
-                        emptyState
-                    }
-                }
-                .padding(.vertical, theme.spacing.m)
-            }
-        }
-        .sheet(isPresented: $showingNewWOD) {
-            WODBuilderView()
-        }
-        .sheet(item: $selectedWOD) { wod in
-            WODDetailView(wod: wod)
-        }
-        .fullScreenCover(isPresented: $showingQRScanner) {
-            WODQRScannerView()
-        }
-    }
+    // MARK: - UI Components
     
     private var headerView: some View {
         HStack {
@@ -113,6 +127,50 @@ struct WODMainView: View {
         }
         .padding(.horizontal)
         .padding(.vertical, theme.spacing.m)
+    }
+    
+    private var tabSelector: some View {
+        HStack(spacing: 0) {
+            ForEach(WODTab.allCases, id: \.self) { tab in
+                Button {
+                    withAnimation(.easeInOut(duration: 0.2)) {
+                        coordinator.wodSelectedTab = tab.rawValue.lowercased()
+                        if tab != .history {
+                            selectedCategory = tab == .benchmark ? .girls : .custom
+                        }
+                    }
+                } label: {
+                    VStack(spacing: 6) {
+                        Image(systemName: tab.icon)
+                            .font(.caption)
+                        Text(tab.localizedTitle)
+                            .font(.caption2)
+                            .fontWeight(.medium)
+                    }
+                    .foregroundColor(selectedTab == tab ? theme.colors.accent : theme.colors.textSecondary)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 12)
+                }
+            }
+        }
+        .background(theme.colors.backgroundSecondary)
+        .overlay(
+            Rectangle()
+                .fill(theme.colors.accent)
+                .frame(height: 2)
+                .offset(x: tabIndicatorOffset, y: 0)
+                .animation(.easeInOut(duration: 0.2), value: selectedTab),
+            alignment: .bottom
+        )
+    }
+    
+    private var tabIndicatorOffset: CGFloat {
+        let tabWidth = UIScreen.main.bounds.width / 3
+        switch selectedTab {
+        case .benchmark: return -tabWidth
+        case .custom: return 0
+        case .history: return tabWidth
+        }
     }
     
     private var categorySelector: some View {
@@ -154,7 +212,7 @@ struct WODMainView: View {
         HStack {
             Image(systemName: "magnifyingglass")
                 .foregroundColor(theme.colors.textSecondary)
-            TextField("Search METCON...", text: $searchText)
+            TextField("wod.search_placeholder".localized, text: $searchText)
                 .textFieldStyle(.plain)
             if !searchText.isEmpty {
                 Button(action: { searchText = "" }) {
@@ -172,31 +230,22 @@ struct WODMainView: View {
     private var quickActionsSection: some View {
         VStack(spacing: theme.spacing.m) {
             QuickActionButton(
-                title: "Create New METCON",
+                title: "wod.create_new_metcon".localized,
                 icon: "plus.circle.fill",
-                subtitle: "Build your custom workout",
+                subtitle: "wod.build_custom_workout".localized,
                 style: .primary,
                 size: .fullWidth,
                 action: { showingNewWOD = true }
             )
             
-            HStack(spacing: theme.spacing.m) {
-                QuickActionButton(
-                    title: "Scan QR",
-                    icon: "qrcode.viewfinder",
-                    style: .secondary,
-                    size: .medium,
-                    action: { showingQRScanner = true }
-                )
-                
-                QuickActionButton(
-                    title: "METCON Generator",
-                    icon: "sparkles",
-                    style: .secondary,
-                    size: .medium,
-                    action: { generateRandomWOD() }
-                )
-            }
+            QuickActionButton(
+                title: "wod.scan_qr".localized,
+                icon: "qrcode.viewfinder",
+                subtitle: "wod.import_shared_workouts".localized,
+                style: .secondary,
+                size: .fullWidth,
+                action: { showingQRScanner = true }
+            )
         }
         .padding(.horizontal)
     }
@@ -221,12 +270,12 @@ struct WODMainView: View {
     private var emptyState: some View {
         EmptyStateCard(
             icon: "dumbbell",
-            title: selectedCategory == .custom ? "No Custom METCON" : "No METCON Found",
+            title: selectedCategory == .custom ? "wod.no_custom_metcon".localized : "wod.no_metcon_found".localized,
             message: selectedCategory == .custom ? 
-                "Create your first METCON to get started" : 
-                "Try a different search or category",
+                "wod.create_first_metcon".localized : 
+                "wod.try_different_search".localized,
             primaryAction: .init(
-                title: selectedCategory == .custom ? "Create METCON" : "Clear Search",
+                title: selectedCategory == .custom ? "wod.create_metcon".localized : "common.clear_search".localized,
                 icon: selectedCategory == .custom ? "plus.circle.fill" : nil,
                 action: {
                     if selectedCategory == .custom {
@@ -238,6 +287,56 @@ struct WODMainView: View {
             )
         )
         .padding(.top, 50)
+    }
+    
+    var body: some View {
+        VStack(spacing: 0) {
+            // Header
+            headerView
+            
+            // Tab Selector
+            tabSelector
+            
+            // Content based on selected tab
+            if selectedTab == .history {
+                WODHistoryView()
+            } else {
+                VStack(spacing: 0) {
+                    // Category Selector
+                    categorySelector
+                    
+                    // Search Bar
+                    searchBar
+                    
+                    // Content
+                    ScrollView {
+                        LazyVStack(spacing: theme.spacing.m) {
+                            // Quick Actions for Custom WODs
+                            if selectedCategory == .custom {
+                                quickActionsSection
+                            }
+                            
+                            // WOD Cards
+                            if !filteredWODs.isEmpty {
+                                wodsList
+                            } else {
+                                emptyState
+                            }
+                        }
+                        .padding(.vertical, theme.spacing.m)
+                    }
+                }
+            }
+        }
+        .sheet(isPresented: $showingNewWOD) {
+            WODBuilderView()
+        }
+        .sheet(item: $selectedWOD) { wod in
+            WODDetailView(wod: wod)
+        }
+        .fullScreenCover(isPresented: $showingQRScanner) {
+            WODQRScannerView()
+        }
     }
     
     // MARK: - Helper Methods
@@ -343,13 +442,23 @@ struct WODMainView: View {
     }
     
     private func startWOD(_ wod: WOD) {
+        // Set default weights based on user gender
+        for movement in wod.movements {
+            if let rxWeight = movement.rxWeight(for: currentUser?.gender) {
+                // Parse weight value from string (e.g., "43kg" -> 43)
+                let numbers = rxWeight.filter { "0123456789.".contains($0) }
+                if let weight = Double(numbers) {
+                    movement.userWeight = weight
+                    movement.isRX = true
+                }
+            }
+        }
+        
+        // Haptic feedback for user interaction
+        HapticManager.shared.impact(.light)
+        
+        // Trigger detail view which has "Start WOD" button
         selectedWOD = wod
-        // Navigate to timer/tracking view
-    }
-    
-    private func generateRandomWOD() {
-        // Generate a random WOD based on available movements
-        Logger.info("Generate random WOD")
     }
 }
 

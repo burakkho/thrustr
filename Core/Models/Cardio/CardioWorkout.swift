@@ -41,7 +41,6 @@ final class CardioWorkout {
     // Relationships
     var exercises: [CardioExercise]
     var sessions: [CardioSession]
-    var program: CardioProgram?
     
     init(
         name: String,
@@ -94,7 +93,6 @@ final class CardioWorkout {
         
         self.exercises = []
         self.sessions = []
-        self.program = nil
     }
 }
 
@@ -122,15 +120,7 @@ extension CardioWorkout {
     
     var formattedDistance: String? {
         guard let distance = targetDistance else { return nil }
-        if distance >= 1000 {
-            let km = Double(distance) / 1000.0
-            if km.truncatingRemainder(dividingBy: 1) == 0 {
-                return "\(Int(km))km"
-            } else {
-                return String(format: "%.1fkm", km)
-            }
-        }
-        return "\(distance)m"
+        return UnitsFormatter.formatDistance(meters: Double(distance), system: UnitSettings.shared.unitSystem)
     }
     
     var formattedTargetTime: String? {

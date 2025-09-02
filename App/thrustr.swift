@@ -1,6 +1,7 @@
 import SwiftUI
 import SwiftData
 import HealthKit
+import UserNotifications
 
 @main
 struct ThrusterApp: App {
@@ -12,10 +13,13 @@ struct ThrusterApp: App {
     @StateObject private var languageManager = LanguageManager.shared
     @StateObject private var tabRouter = TabRouter()
     @StateObject private var healthKitService = HealthKitService()
-    @StateObject private var unitSettings = UnitSettings()
+    let unitSettings = UnitSettings.shared
+    @StateObject private var notificationManager = NotificationManager.shared
     @Environment(\.scenePhase) private var scenePhase
     
-    @State private var isSeedingDatabase = false  // ← Loading state ekle
+    @State private var isSeedingDatabase = false  // Loading state
+    @State private var seedingProgress: SeedingProgress? = nil  // Progress tracking
+    @State private var seedingRetryCount = 0  // Retry counter
 
     init() {
         do {
@@ -50,10 +54,13 @@ struct ThrusterApp: App {
                 CardioExercise.self,
                 CardioSession.self,
                 CardioResult.self,
-                CardioProgram.self,
-                CardioProgramExecution.self,
-                CardioRoutine.self,
-                CompletedCardioSession.self
+                // Strength Test models
+                StrengthTest.self,
+                StrengthTestResult.self,
+                // Activity tracking
+                ActivityEntry.self,
+                // Notifications
+                UserNotificationSettings.self
             )
         } catch {
             // Graceful fallback: Try creating a temporary in-memory container
@@ -94,10 +101,13 @@ struct ThrusterApp: App {
                     CardioExercise.self,
                     CardioSession.self,
                     CardioResult.self,
-                    CardioProgram.self,
-                    CardioProgramExecution.self,
-                    CardioRoutine.self,
-                    CompletedCardioSession.self,
+                        // Strength Test models
+                    StrengthTest.self,
+                    StrengthTestResult.self,
+                    // Activity tracking
+                    ActivityEntry.self,
+                    // Notifications
+                    UserNotificationSettings.self,
                     configurations: config
                 )
             } catch {
@@ -108,9 +118,22 @@ struct ThrusterApp: App {
                 let config = ModelConfiguration(isStoredInMemoryOnly: true)
                 do {
                     container = try ModelContainer(for: User.self, configurations: config)
+                    Logger.info("✅ Minimal fallback container created successfully")
                 } catch {
-                    // If we can't even create a minimal container, the app has deeper issues
-                    fatalError("💥 Critical failure: Cannot initialize any data storage: \(error)")
+                    // Last resort: Create absolute minimal container for app to function
+                    Logger.error("❌ Complete database failure: \(error)")
+                    print("⚠️ App running in emergency safe mode - limited functionality")
+                    
+                    // Emergency fallback: try with even more minimal configuration
+                    let emergencyConfig = ModelConfiguration(isStoredInMemoryOnly: true, allowsSave: false)
+                    do {
+                        container = try ModelContainer(for: User.self, configurations: emergencyConfig)
+                        print("🆘 Emergency container created - app will function with limited data persistence")
+                    } catch {
+                        // If this fails, create the most basic container possible
+                        print("🔥 Creating absolute minimal container as last resort")
+                        container = try! ModelContainer(for: User.self)
+                    }
                 }
             }
         }
@@ -120,7 +143,19 @@ struct ThrusterApp: App {
         WindowGroup {
             Group {
                 if isSeedingDatabase {
-                    LoadingView()  // ← Kullanıcıya loading göster
+                    LoadingView(
+                        progress: seedingProgress,
+                        onRetry: {
+                            seedingRetryCount += 1
+                            Task {
+                                await seedDatabaseIfNeeded()
+                            }
+                        },
+                        onSkip: {
+                            isSeedingDatabase = false
+                            seedingProgress = nil
+                        }
+                    )
                 } else {
                     ContentView()
                         .environmentObject(themeManager)
@@ -128,6 +163,7 @@ struct ThrusterApp: App {
                         .environmentObject(tabRouter)
                         .environmentObject(unitSettings)
                         .environmentObject(healthKitService)
+                        .environmentObject(notificationManager)
                         .environment(\.theme, themeManager.designTheme)
                         .tint(themeManager.designTheme.colors.accent)
                         .onAppear {
@@ -163,8 +199,11 @@ struct ThrusterApp: App {
                                     }
                                 }
                             case .background:
-                                // App going to background - keep observers but log the state
-                                print("📱 App entering background - HealthKit observers remain active")
+                                // App going to background - stop observers to save battery
+                                Task { @MainActor in
+                                    healthKitService.stopObserverQueries()
+                                }
+                                print("📱 App entering background - HealthKit observers stopped for battery optimization")
                             case .inactive:
                                 // App becoming inactive - prepare for potential cleanup
                                 print("📱 App becoming inactive")
@@ -186,17 +225,38 @@ struct ThrusterApp: App {
     private func seedDatabaseIfNeeded() async {
         await MainActor.run {
             isSeedingDatabase = true
+            seedingProgress = .starting
         }
         
-        // DataSeeder with improved thread safety and sequential approach (warmup disabled)
-        Logger.info("🔄 Starting DataSeeder (warmup seeding disabled for stability)")
+        // DataSeeder with improved thread safety and sequential approach
+        Logger.info("🔄 Starting DataSeeder with progress tracking (retry count: \(seedingRetryCount))")
         
         await DataSeeder.seedDatabaseIfNeeded(
-            modelContext: container.mainContext
+            modelContext: container.mainContext,
+            progressCallback: { progress in
+                await MainActor.run {
+                    seedingProgress = progress
+                    
+                    // Auto-dismiss after completion with delay
+                    if case .completed = progress {
+                        Task {
+                            try? await Task.sleep(nanoseconds: 1_500_000_000) // 1.5 seconds
+                            await MainActor.run {
+                                isSeedingDatabase = false
+                                seedingProgress = nil
+                            }
+                        }
+                    }
+                }
+            }
         )
         
+        // Fallback: Ensure UI is dismissed even if completion callback fails
         await MainActor.run {
-            isSeedingDatabase = false
+            if seedingProgress != .completed && !seedingProgress!.id.starts(with: "error") {
+                isSeedingDatabase = false
+                seedingProgress = nil
+            }
         }
     }
 }

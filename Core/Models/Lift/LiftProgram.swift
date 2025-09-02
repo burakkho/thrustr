@@ -8,14 +8,19 @@ final class LiftProgram {
     var name: String
     var nameEN: String
     var nameTR: String
+    var nameDE: String
+    var nameES: String
+    var nameIT: String
     var programDescription: String
     var descriptionEN: String
     var descriptionTR: String
+    var descriptionDE: String
+    var descriptionES: String
+    var descriptionIT: String
     var weeks: Int
     var daysPerWeek: Int
     var level: String // beginner, intermediate, advanced
     var category: String // strength, hypertrophy, powerlifting
-    var isCustom: Bool
     var isFavorite: Bool
     var createdAt: Date
     var updatedAt: Date
@@ -28,27 +33,37 @@ final class LiftProgram {
         name: String,
         nameEN: String? = nil,
         nameTR: String? = nil,
+        nameDE: String? = nil,
+        nameES: String? = nil,
+        nameIT: String? = nil,
         description: String = "",
         descriptionEN: String? = nil,
         descriptionTR: String? = nil,
-        weeks: Int = 12,
+        descriptionDE: String? = nil,
+        descriptionES: String? = nil,
+        descriptionIT: String? = nil,
+        weeks: Int = 4,
         daysPerWeek: Int = 3,
         level: String = "beginner",
         category: String = "strength",
-        isCustom: Bool = false
     ) {
         self.id = UUID()
         self.name = name
         self.nameEN = nameEN ?? name
         self.nameTR = nameTR ?? name
+        self.nameDE = nameDE ?? name
+        self.nameES = nameES ?? name
+        self.nameIT = nameIT ?? name
         self.programDescription = description
         self.descriptionEN = descriptionEN ?? description
         self.descriptionTR = descriptionTR ?? description
+        self.descriptionDE = descriptionDE ?? description
+        self.descriptionES = descriptionES ?? description
+        self.descriptionIT = descriptionIT ?? description
         self.weeks = weeks
         self.daysPerWeek = daysPerWeek
         self.level = level
         self.category = category
-        self.isCustom = isCustom
         self.isFavorite = false
         self.createdAt = Date()
         self.updatedAt = Date()
@@ -59,15 +74,47 @@ final class LiftProgram {
 // MARK: - Computed Properties
 extension LiftProgram {
     var localizedName: String {
-        // For now use English as default to avoid MainActor issues
-        // TODO: Implement proper localization without MainActor
-        return nameEN.isEmpty ? name : nameEN
+        // Use device language preference for basic localization
+        let preferredLanguage = Locale.current.language.languageCode?.identifier ?? "en"
+        
+        switch preferredLanguage {
+        case "tr":
+            if !nameTR.isEmpty { return nameTR }
+            return !nameEN.isEmpty ? nameEN : name
+        case "de":
+            if !nameDE.isEmpty { return nameDE }
+            return !nameEN.isEmpty ? nameEN : name
+        case "es":
+            if !nameES.isEmpty { return nameES }
+            return !nameEN.isEmpty ? nameEN : name
+        case "it":
+            if !nameIT.isEmpty { return nameIT }
+            return !nameEN.isEmpty ? nameEN : name
+        default:
+            return !nameEN.isEmpty ? nameEN : name
+        }
     }
     
     var localizedDescription: String {
-        // For now use English as default to avoid MainActor issues
-        // TODO: Implement proper localization without MainActor
-        return descriptionEN.isEmpty ? programDescription : descriptionEN
+        // Use device language preference for basic localization  
+        let preferredLanguage = Locale.current.language.languageCode?.identifier ?? "en"
+        
+        switch preferredLanguage {
+        case "tr":
+            if !descriptionTR.isEmpty { return descriptionTR }
+            return !descriptionEN.isEmpty ? descriptionEN : programDescription
+        case "de":
+            if !descriptionDE.isEmpty { return descriptionDE }
+            return !descriptionEN.isEmpty ? descriptionEN : programDescription
+        case "es":
+            if !descriptionES.isEmpty { return descriptionES }
+            return !descriptionEN.isEmpty ? descriptionEN : programDescription
+        case "it":
+            if !descriptionIT.isEmpty { return descriptionIT }
+            return !descriptionEN.isEmpty ? descriptionEN : programDescription
+        default:
+            return !descriptionEN.isEmpty ? descriptionEN : programDescription
+        }
     }
     
     var totalWorkouts: Int {
@@ -110,7 +157,6 @@ extension LiftProgram {
             daysPerWeek: daysPerWeek,
             level: level,
             category: category,
-            isCustom: true
         )
         
         // Duplicate workouts
@@ -133,29 +179,12 @@ extension LiftProgram {
             description: "Simple and effective strength program for beginners. Focus on compound movements with progressive overload.",
             descriptionEN: "Simple and effective strength program for beginners. Focus on compound movements with progressive overload.",
             descriptionTR: "Yeni başlayanlar için basit ve etkili güç programı. Artan yükle bileşik hareketlere odaklanır.",
-            weeks: 12,
+            weeks: 4,
             daysPerWeek: 3,
             level: "beginner",
             category: "strength",
-            isCustom: false
         )
         return program
     }
     
-    static func createPPL() -> LiftProgram {
-        let program = LiftProgram(
-            name: "Push Pull Legs",
-            nameEN: "Push Pull Legs",
-            nameTR: "İtme Çekme Bacak",
-            description: "Popular 6-day split focusing on movement patterns. Great for intermediate to advanced lifters.",
-            descriptionEN: "Popular 6-day split focusing on movement patterns. Great for intermediate to advanced lifters.",
-            descriptionTR: "Hareket kalıplarına odaklanan popüler 6 günlük program. Orta ve ileri seviye sporcular için idealdir.",
-            weeks: 8,
-            daysPerWeek: 6,
-            level: "intermediate",
-            category: "hypertrophy",
-            isCustom: false
-        )
-        return program
-    }
 }

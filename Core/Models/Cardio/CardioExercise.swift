@@ -88,15 +88,7 @@ extension CardioExercise {
     
     var formattedDistance: String? {
         guard let distance = targetDistance else { return nil }
-        if distance >= 1000 {
-            let km = Double(distance) / 1000.0
-            if km.truncatingRemainder(dividingBy: 1) == 0 {
-                return "\(Int(km))km"
-            } else {
-                return String(format: "%.1fkm", km)
-            }
-        }
-        return "\(distance)m"
+        return UnitsFormatter.formatDistance(meters: Double(distance), system: UnitSettings.shared.unitSystem)
     }
     
     var formattedTargetTime: String? {
@@ -116,9 +108,8 @@ extension CardioExercise {
     
     var formattedPace: String? {
         guard let pace = targetPace else { return nil }
-        let minutes = Int(pace) / 60
-        let seconds = Int(pace) % 60
-        return "\(minutes):\(String(format: "%02d", seconds))/km"
+        let paceMinPerKm = Double(pace) / 60.0 // Convert seconds to minutes per km
+        return UnitsFormatter.formatPace(minPerKm: paceMinPerKm, system: UnitSettings.shared.unitSystem)
     }
     
     var formattedRestTime: String? {

@@ -10,8 +10,6 @@ struct TrainingDashboardView: View {
     @Query private var cardioSessions: [CardioSession]
     @Query private var wodResults: [WODResult]
     @Query private var user: [User]
-    @Query(filter: #Predicate<CardioProgramExecution> { !$0.isCompleted })
-    private var activeCardioExecutions: [CardioProgramExecution]
     
     private var currentUser: User? {
         user.first
@@ -64,10 +62,8 @@ struct TrainingDashboardView: View {
                 // Header Section
                 headerSection
                 
-                // Active Program Card (if any)
-                if let activeCardioExecution = activeCardioExecutions.first {
-                    activeCardioCard(activeCardioExecution)
-                } else if let lastWorkout = recentSessions.first {
+                // Last Workout Card
+                if let lastWorkout = recentSessions.first {
                     // Last Workout Motivation Card (fallback)
                     lastWorkoutCard(lastWorkout)
                 }
@@ -93,7 +89,7 @@ struct TrainingDashboardView: View {
     private var headerSection: some View {
         HStack {
             VStack(alignment: .leading, spacing: 4) {
-                Text(LocalizationKeys.Training.Dashboard.title.localized)
+                Text(TrainingKeys.Dashboard.title.localized)
                     .font(theme.typography.title2)
                     .fontWeight(.bold)
                     .foregroundColor(theme.colors.textPrimary)
@@ -116,7 +112,7 @@ struct TrainingDashboardView: View {
             // Header
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
-                    Text(LocalizationKeys.Training.Dashboard.lastWorkout.localized)
+                    Text(TrainingKeys.Dashboard.lastWorkout.localized)
                         .font(theme.typography.headline)
                         .fontWeight(.semibold)
                         .foregroundColor(.white)
@@ -129,120 +125,54 @@ struct TrainingDashboardView: View {
                 
                 Spacer()
                 
-                // Celebration emoji
-                Text("💪")
-                    .font(.largeTitle)
+                // Workout type icon
+                Image(systemName: workoutTypeIcon(for: session))
+                    .font(.title2)
+                    .foregroundColor(.white.opacity(0.9))
             }
             
             // Stats
-            HStack(spacing: theme.spacing.l) {
+            HStack(spacing: theme.spacing.s) {
                 StatPill(
                     icon: "clock",
                     value: formatDuration(session.sessionDuration),
-                    label: "Duration"
+                    label: TrainingKeys.Dashboard.duration.localized
                 )
                 
                 StatPill(
                     icon: "calendar",
                     value: formatRelativeDate(session.completedAt ?? session.startDate),
-                    label: "When"
+                    label: TrainingKeys.Dashboard.when.localized
                 )
                 
                 Spacer()
             }
             
             // Motivational message
-            Text("Great job! Keep up the momentum! 🔥")
+            Text(TrainingKeys.Dashboard.motivationalMessage.localized)
                 .font(theme.typography.body)
                 .foregroundColor(.white.opacity(0.9))
                 .italic()
         }
-        .padding(theme.spacing.l)
+        .padding(theme.spacing.m)
         .background(
             LinearGradient(
-                colors: [theme.colors.success, theme.colors.success.opacity(0.8)],
+                colors: [theme.colors.success.opacity(0.8), theme.colors.success.opacity(0.6)],
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
             )
         )
-        .cornerRadius(theme.radius.l)
-        .shadow(color: theme.colors.success.opacity(0.3), radius: 8, y: 4)
+        .cornerRadius(theme.radius.m)
+        .shadow(color: theme.colors.success.opacity(0.15), radius: 4, y: 2)
         .padding(.horizontal)
     }
     
-    // MARK: - Active Cardio Card
-    private func activeCardioCard(_ execution: CardioProgramExecution) -> some View {
-        VStack(alignment: .leading, spacing: theme.spacing.m) {
-            // Header
-            HStack {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("Active Program")
-                        .font(theme.typography.headline)
-                        .fontWeight(.semibold)
-                        .foregroundColor(.white)
-                    
-                    Text(execution.program.localizedName)
-                        .font(theme.typography.title3)
-                        .fontWeight(.bold)
-                        .foregroundColor(.white)
-                }
-                
-                Spacer()
-                
-                // Program icon
-                Image(systemName: execution.program.categoryIcon)
-                    .font(.largeTitle)
-                    .foregroundColor(.white)
-            }
-            
-            // Progress Stats
-            HStack(spacing: theme.spacing.l) {
-                StatPill(
-                    icon: "calendar",
-                    value: "Week \(execution.currentWeek)",
-                    label: "Current"
-                )
-                
-                StatPill(
-                    icon: "checkmark.circle",
-                    value: "\(execution.completedSessionsThisWeek)/\(execution.program.daysPerWeek)",
-                    label: "This Week"
-                )
-                
-                StatPill(
-                    icon: "ruler",
-                    value: execution.formattedTotalDistance,
-                    label: "Total"
-                )
-            }
-            
-            // Motivational message
-            Text("Keep up the great work! Next: \(execution.currentWorkout?.localizedName ?? "Rest Day")")
-                .font(theme.typography.body)
-                .foregroundColor(.white.opacity(0.9))
-                .italic()
-        }
-        .padding(theme.spacing.l)
-        .background(
-            LinearGradient(
-                colors: [Color.cardioColor, Color.cardioColor.opacity(0.8)],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-        )
-        .cornerRadius(theme.radius.l)
-        .shadow(color: Color.cardioColor.opacity(0.3), radius: 8, y: 4)
-        .padding(.horizontal)
-        .onTapGesture {
-            coordinator.selectWorkoutType(.cardio)
-        }
-    }
     
     // MARK: - This Week Stats
     private var thisWeekStatsSection: some View {
         VStack(alignment: .leading, spacing: theme.spacing.m) {
             HStack {
-                Text(LocalizationKeys.Training.Dashboard.thisWeek.localized)
+                Text(TrainingKeys.Dashboard.thisWeek.localized)
                     .font(theme.typography.headline)
                     .fontWeight(.semibold)
                     .foregroundColor(theme.colors.textPrimary)
@@ -282,7 +212,7 @@ struct TrainingDashboardView: View {
     private var quickActionsSection: some View {
         VStack(alignment: .leading, spacing: theme.spacing.m) {
             HStack {
-                Text(LocalizationKeys.Training.Dashboard.quickActions.localized)
+                Text(TrainingKeys.Dashboard.quickActions.localized)
                     .font(theme.typography.headline)
                     .fontWeight(.semibold)
                     .foregroundColor(theme.colors.textPrimary)
@@ -342,7 +272,7 @@ struct TrainingDashboardView: View {
     private var recentActivitySection: some View {
         VStack(alignment: .leading, spacing: theme.spacing.m) {
             HStack {
-                Text(LocalizationKeys.Training.Dashboard.recentActivity.localized)
+                Text(TrainingKeys.Dashboard.recentActivity.localized)
                     .font(theme.typography.headline)
                     .fontWeight(.semibold)
                     .foregroundColor(theme.colors.textPrimary)
@@ -369,7 +299,7 @@ struct TrainingDashboardView: View {
         VStack(spacing: theme.spacing.l) {
             EmptyStateView(
                 systemImage: "figure.strengthtraining.traditional",
-                title: LocalizationKeys.Training.Dashboard.noRecentActivity.localized,
+                title: TrainingKeys.Dashboard.noRecentActivity.localized,
                 message: "Start your first workout to see your progress here!",
                 primaryTitle: "Start Workout",
                 primaryAction: {
@@ -420,6 +350,12 @@ struct TrainingDashboardView: View {
         let formatter = RelativeDateTimeFormatter()
         formatter.unitsStyle = .short
         return formatter.localizedString(for: date, relativeTo: Date())
+    }
+    
+    private func workoutTypeIcon(for session: any WorkoutSession) -> String {
+        if session is LiftSession { return "dumbbell.fill" }
+        if session is CardioSession { return "heart.fill" }
+        return "flame.fill"
     }
 }
 
@@ -516,12 +452,12 @@ struct StatPill: View {
     var body: some View {
         HStack(spacing: theme.spacing.xs) {
             Image(systemName: icon)
-                .font(.caption)
+                .font(.caption2)
                 .foregroundColor(.white.opacity(0.8))
             
-            VStack(alignment: .leading, spacing: 1) {
+            VStack(alignment: .leading, spacing: 0) {
                 Text(value)
-                    .font(theme.typography.caption)
+                    .font(.caption)
                     .fontWeight(.semibold)
                     .foregroundColor(.white)
                 
@@ -530,10 +466,10 @@ struct StatPill: View {
                     .foregroundColor(.white.opacity(0.7))
             }
         }
-        .padding(.horizontal, theme.spacing.s)
-        .padding(.vertical, theme.spacing.xs)
-        .background(.white.opacity(0.2))
-        .cornerRadius(theme.radius.s)
+        .padding(.horizontal, theme.spacing.xs)
+        .padding(.vertical, theme.spacing.xxs)
+        .background(.white.opacity(0.15))
+        .cornerRadius(theme.radius.xs)
     }
 }
 

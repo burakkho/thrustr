@@ -6,7 +6,7 @@ struct EnhancedMovementPicker: View {
     @Environment(\.theme) private var theme
     @Query private var crossfitMovements: [CrossFitMovement]
     
-    let onAdd: (WODMovementData) -> Void
+    let onAdd: (WODBuilderView.WODMovementData) -> Void
     
     @State private var searchText = ""
     @State private var selectedCategory = "All"
@@ -18,16 +18,6 @@ struct EnhancedMovementPicker: View {
     @State private var scaledWeightFemale = ""
     @State private var notes = ""
     
-    // Movement data structure
-    struct WODMovementData {
-        let name: String
-        let reps: String
-        let rxWeightMale: String
-        let rxWeightFemale: String
-        let scaledWeightMale: String
-        let scaledWeightFemale: String
-        let notes: String
-    }
     
     
     private let categories = [
@@ -120,7 +110,7 @@ struct EnhancedMovementPicker: View {
                                         .foregroundColor(theme.colors.textPrimary)
                                 }
                                 Spacer()
-                                Button("Change") {
+                                Button(CommonKeys.Onboarding.Common.change.localized) {
                                     selectedMovement = nil
                                 }
                                 .foregroundColor(theme.colors.accent)
@@ -239,11 +229,11 @@ struct EnhancedMovementPicker: View {
     var body: some View {
         NavigationStack {
             mainContent
-                .navigationTitle("Add Movement")
+                .navigationTitle(CommonKeys.Navigation.addMovement.localized)
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
                     ToolbarItem(placement: .navigationBarLeading) {
-                        Button("Cancel") { dismiss() }
+                        Button(CommonKeys.Onboarding.Common.cancel.localized) { dismiss() }
                     }
                 }
         }
@@ -252,7 +242,7 @@ struct EnhancedMovementPicker: View {
     private func addMovement() {
         guard let movement = selectedMovement else { return }
         
-        let wodMovement = WODMovementData(
+        let wodMovement = WODBuilderView.WODMovementData(
             name: movement.displayName,
             reps: reps,
             rxWeightMale: rxWeightMale,

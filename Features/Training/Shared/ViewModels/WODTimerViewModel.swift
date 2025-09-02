@@ -123,6 +123,24 @@ class WODTimerViewModel {
         
         do {
             try modelContext.save()
+            
+            // Check if this is a personal record
+            let isPR = result == wod.personalRecord
+            
+            // Log activity for recent activity feed
+            Task { @MainActor in
+                ActivityLoggerService.shared.logWODCompleted(
+                    wodName: wod.name,
+                    wodType: wod.wodType.rawValue,
+                    totalTime: result.totalTime,
+                    rounds: result.rounds,
+                    extraReps: result.extraReps,
+                    isRX: result.isRX,
+                    isPR: isPR,
+                    user: currentUser
+                )
+            }
+            
             HapticManager.shared.notification(.success)
         } catch {
             print("Error saving WOD result: \(error)")

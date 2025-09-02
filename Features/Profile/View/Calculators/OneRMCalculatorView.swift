@@ -1,6 +1,8 @@
 import SwiftUI
+import Foundation
 
 struct OneRMCalculatorView: View {
+    @EnvironmentObject private var unitSettings: UnitSettings
     @State private var weight = ""
     @State private var reps = ""
     @State private var selectedFormula: RMFormula = .brzycki
@@ -20,6 +22,7 @@ struct OneRMCalculatorView: View {
                 
                 // Input Section
                 OneRMInputSection(
+                    unitSystem: unitSettings.unitSystem,
                     weight: $weight,
                     reps: $reps,
                     selectedFormula: $selectedFormula
@@ -29,7 +32,7 @@ struct OneRMCalculatorView: View {
                 Button {
                     calculateOneRM()
                 } label: {
-                    Text("Hesapla")
+                    Text(ProfileKeys.OneRMCalculator.calculate.localized)
                         .font(.headline)
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
@@ -42,7 +45,7 @@ struct OneRMCalculatorView: View {
                 
                 // Results Section
                 if let oneRM = calculatedRM {
-                    OneRMResultsSection(oneRM: oneRM, selectedFormula: selectedFormula)
+                    OneRMResultsSection(oneRM: oneRM, selectedFormula: selectedFormula, unitSystem: unitSettings.unitSystem)
                 }
                 
                 // Formula Info Section
@@ -53,7 +56,7 @@ struct OneRMCalculatorView: View {
             }
             .padding()
         }
-        .navigationTitle("1RM Hesaplayıcı")
+        .navigationTitle(ProfileKeys.OneRMCalculator.title.localized)
         .navigationBarTitleDisplayMode(.inline)
         .background(Color(.systemGroupedBackground))
     }
@@ -68,7 +71,9 @@ struct OneRMCalculatorView: View {
         guard let weightValue = Double(weight.replacingOccurrences(of: ",", with: ".")),
               let repsValue = Int(reps) else { return }
         
-        let result = selectedFormula.calculate(weight: weightValue, reps: repsValue)
+        // Convert weight to kg if needed for calculation
+        let weightKg = unitSettings.unitSystem == .imperial ? UnitsConverter.lbsToKg(weightValue) : weightValue
+        let result = selectedFormula.calculate(weight: weightKg, reps: repsValue)
         calculatedRM = result
         
         // Call the callback if provided
@@ -85,11 +90,11 @@ struct OneRMHeaderSection: View {
                 .foregroundColor(.blue)
             
             VStack(spacing: 8) {
-                Text("1RM Hesaplayıcı")
+                Text(ProfileKeys.OneRMCalculator.title.localized)
                     .font(.title2)
                     .fontWeight(.semibold)
                 
-                Text("Maksimum tek tekrar kaldırabileceğiniz ağırlığı hesaplayın")
+                Text(ProfileKeys.OneRMCalculator.subtitle.localized)
                     .font(.subheadline)
                     .foregroundColor(.secondary)
                     .multilineTextAlignment(.center)
@@ -104,13 +109,14 @@ struct OneRMHeaderSection: View {
 
 // MARK: - Input Section
 struct OneRMInputSection: View {
+    let unitSystem: UnitSystem
     @Binding var weight: String
     @Binding var reps: String
     @Binding var selectedFormula: RMFormula
     
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
-            Text("Antrenman Bilgileri")
+            Text(ProfileKeys.OneRMCalculator.trainingInfo.localized)
                 .font(.headline)
                 .fontWeight(.semibold)
             
@@ -120,11 +126,11 @@ struct OneRMInputSection: View {
                     HStack {
                         Image(systemName: "scalemass.fill")
                             .foregroundColor(.blue)
-                        Text("Kaldırdığınız Ağırlık (kg)")
+                        Text(ProfileKeys.OneRMCalculator.weightLifted.localized)
                             .fontWeight(.medium)
                     }
                     
-                    TextField("70", text: $weight)
+                    TextField(unitSystem == .metric ? "70" : "155", text: $weight)
                         .keyboardType(.decimalPad)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                         .font(.title3)
@@ -135,7 +141,7 @@ struct OneRMInputSection: View {
                     HStack {
                         Image(systemName: "repeat")
                             .foregroundColor(.green)
-                        Text("Tekrar Sayısı (1-15)")
+                        Text(ProfileKeys.OneRMCalculator.repCount.localized)
                             .fontWeight(.medium)
                     }
                     
@@ -150,12 +156,12 @@ struct OneRMInputSection: View {
                     HStack {
                         Image(systemName: "function")
                             .foregroundColor(.orange)
-                        Text("Hesaplama Formülü")
+                        Text(ProfileKeys.OneRMCalculator.calculationFormula.localized)
                             .fontWeight(.medium)
                     }
                     
                     Picker("Formula", selection: $selectedFormula) {
-                        ForEach(RMFormula.allCases, id: \.self) { formula in
+                        ForEach(RMFormula.allCases.filter { ![.custom, .repetitionBased].contains($0) }, id: \.self) { formula in
                             Text(formula.displayName).tag(formula)
                         }
                     }
@@ -174,6 +180,7 @@ struct OneRMInputSection: View {
 struct OneRMResultsSection: View {
     let oneRM: Double
     let selectedFormula: RMFormula
+    let unitSystem: UnitSystem
     
     private var percentageTable: [(percentage: Int, weight: Double)] {
         [
@@ -190,18 +197,18 @@ struct OneRMResultsSection: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
-            Text("Sonuçlar")
+            Text(ProfileKeys.OneRMCalculator.results.localized)
                 .font(.headline)
                 .fontWeight(.semibold)
             
             VStack(spacing: 16) {
                 // Main Result
                 VStack(spacing: 8) {
-                    Text("1RM Tahmininiz")
+                    Text(ProfileKeys.OneRMCalculator.oneRMValue.localized)
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                     
-                    Text("\(String(format: "%.1f", oneRM)) kg")
+                    Text(UnitsFormatter.formatWeight(kg: oneRM, system: unitSystem))
                         .font(.largeTitle)
                         .fontWeight(.bold)
                         .foregroundColor(.blue)
@@ -216,7 +223,7 @@ struct OneRMResultsSection: View {
                 
                 // Percentage Table
                 VStack(alignment: .leading, spacing: 12) {
-                    Text("Antrenman Yoğunlukları")
+                    Text(ProfileKeys.OneRMCalculator.percentageTable.localized)
                         .font(.subheadline)
                         .fontWeight(.semibold)
                     
@@ -224,7 +231,8 @@ struct OneRMResultsSection: View {
                         ForEach(percentageTable, id: \.percentage) { item in
                             PercentageRow(
                                 percentage: item.percentage,
-                                weight: item.weight
+                                weight: item.weight,
+                                unitSystem: unitSystem
                             )
                         }
                     }
@@ -241,6 +249,7 @@ struct OneRMResultsSection: View {
 struct PercentageRow: View {
     let percentage: Int
     let weight: Double
+    let unitSystem: UnitSystem
     
     var body: some View {
         HStack {
@@ -251,7 +260,7 @@ struct PercentageRow: View {
             
             Spacer()
             
-            Text("\(String(format: "%.1f", weight)) kg")
+            Text(UnitsFormatter.formatWeight(kg: weight, system: unitSystem))
                 .font(.subheadline)
                 .fontWeight(.semibold)
         }
@@ -266,24 +275,24 @@ struct PercentageRow: View {
 struct FormulaInfoSection: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("Formül Bilgileri")
+            Text("formula_info.title".localized)
                 .font(.headline)
                 .fontWeight(.semibold)
             
             VStack(spacing: 12) {
                 FormulaInfoRow(
                     formula: .brzycki,
-                    description: "En yaygın kullanılan, 1-10 tekrar için ideal"
+                    description: "formula_info.brzycki_desc".localized
                 )
                 
                 FormulaInfoRow(
                     formula: .epley,
-                    description: "Powerlifting'de tercih edilen, daha muhafazakar"
+                    description: "formula_info.epley_desc".localized
                 )
                 
                 FormulaInfoRow(
                     formula: .lander,
-                    description: "Yüksek tekrarlarda daha doğru sonuçlar"
+                    description: "formula_info.lander_desc".localized
                 )
             }
             .padding()
@@ -324,27 +333,27 @@ struct FormulaInfoRow: View {
 struct OneRMTipsSection: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("Önemli Notlar")
+            Text(ProfileKeys.OneRMCalculator.about.localized)
                 .font(.headline)
                 .fontWeight(.semibold)
             
             VStack(spacing: 12) {
                 TipRow(
                     icon: "exclamationmark.triangle.fill",
-                    title: "Güvenlik",
-                    description: "Gerçek 1RM denemelerinde mutlaka yardımcı bulundurun"
+                    title: ProfileKeys.OneRMCalculator.safety.localized,
+                    description: ProfileKeys.OneRMCalculator.safetyDesc.localized
                 )
                 
                 TipRow(
                     icon: "clock.fill",
-                    title: "Doğruluk",
-                    description: "Son setinizin failure'a yakın olması daha doğru sonuç verir"
+                    title: ProfileKeys.OneRMCalculator.accuracy.localized,
+                    description: ProfileKeys.OneRMCalculator.accuracyDesc.localized
                 )
                 
                 TipRow(
                     icon: "chart.line.uptrend.xyaxis",
-                    title: "Kullanım",
-                    description: "Antrenman yoğunluğu planlamak için yüzdelik değerleri kullanın"
+                    title: ProfileKeys.OneRMCalculator.howToUse.localized,
+                    description: ProfileKeys.OneRMCalculator.howToUseDesc.localized
                 )
             }
             .padding()
@@ -382,34 +391,7 @@ struct TipRow: View {
     }
 }
 
-// MARK: - 1RM Formula Enum
-enum RMFormula: String, CaseIterable {
-    case brzycki = "brzycki"
-    case epley = "epley"
-    case lander = "lander"
-    
-    var displayName: String {
-        switch self {
-        case .brzycki: return "Brzycki"
-        case .epley: return "Epley"
-        case .lander: return "Lander"
-        }
-    }
-    
-    func calculate(weight: Double, reps: Int) -> Double {
-        switch self {
-        case .brzycki:
-            // Brzycki: Weight × (36 / (37 - Reps))
-            return weight * (36.0 / (37.0 - Double(reps)))
-        case .epley:
-            // Epley: Weight × (1 + 0.0333 × Reps)
-            return weight * (1.0 + 0.0333 * Double(reps))
-        case .lander:
-            // Lander: Weight × (100 / (101.3 - 2.67123 × Reps))
-            return weight * (100.0 / (101.3 - 2.67123 * Double(reps)))
-        }
-    }
-}
+// Note: RMFormula enum is now located in Core/Models/Tests/StrengthExerciseType.swift
 
 #Preview {
     NavigationStack {

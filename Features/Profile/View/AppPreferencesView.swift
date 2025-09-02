@@ -26,7 +26,7 @@ struct AppPreferencesView: View {
                 Section {
                     UnitSystemSelector(unitSystem: Binding(
                         get: { unitSettings.unitSystem.rawValue },
-                        set: { unitSettings.unitSystem = UnitSystem(rawValue: $0) ?? .metric }
+                        set: { unitSettings.updateUnitSystem(UnitSystem(rawValue: $0) ?? .metric) }
                     ))
                 } header: {
                     SectionHeaderView(title: "settings.units".localized, icon: "ruler")
@@ -42,11 +42,7 @@ struct AppPreferencesView: View {
                 
                 // Notifications Section
                 Section {
-                    NotificationSettings(
-                        notificationsEnabled: $notificationsEnabled,
-                        workoutReminders: $workoutReminders,
-                        nutritionReminders: $nutritionReminders
-                    )
+                    NotificationSettingsSection()
                 } header: {
                     SectionHeaderView(title: "settings.notifications".localized, icon: "bell")
                 }
@@ -394,6 +390,30 @@ struct AudioHapticSettings: View {
 struct AppInfoSection: View {
     var body: some View {
         VStack(spacing: 0) {
+            // App Logo Row
+            HStack {
+                Image("AppLogo")
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 32, height: 32)
+                
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Thrustr")
+                        .font(.headline)
+                        .foregroundColor(Color.textPrimary)
+                    
+                    Text("Fitness Tracking App")
+                        .font(.caption)
+                        .foregroundColor(Color.textSecondary)
+                }
+                
+                Spacer()
+            }
+            .padding(.vertical, 4)
+            
+            Divider()
+                .padding(.vertical, 8)
+            
             AppInfoRow(title: "settings.version".localized, value: "1.0.0")
             
             Divider()

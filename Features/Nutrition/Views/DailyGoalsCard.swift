@@ -26,7 +26,7 @@ struct DailyGoalsCard: View {
     var body: some View {
         if let user = currentUser {
             VStack(alignment: .leading, spacing: 16) {
-                Text(LocalizationKeys.Nutrition.DailyGoals.title.localized)
+                Text(NutritionKeys.DailyGoals.title.localized)
                     .font(.title2)
                     .fontWeight(.semibold)
                     .padding(.horizontal)
@@ -36,8 +36,8 @@ struct DailyGoalsCard: View {
                     GoalProgressRing(
                         current: todaysNutrition.calories,
                         goal: user.dailyCalorieGoal,
-                        title: LocalizationKeys.Nutrition.calories.localized,
-                        unit: LocalizationKeys.Nutrition.Units.kcal.localized,
+                        title: NutritionKeys.calories.localized,
+                        unit: NutritionKeys.Units.kcal.localized,
                         color: .orange
                     )
                     
@@ -46,8 +46,8 @@ struct DailyGoalsCard: View {
                         GoalProgressBar(
                             current: todaysNutrition.protein,
                             goal: user.dailyProteinGoal,
-                            title: LocalizationKeys.Nutrition.DailySummary.protein.localized,
-                            unit: LocalizationKeys.Nutrition.Units.g.localized,
+                            title: NutritionKeys.DailySummary.protein.localized,
+                            unit: NutritionKeys.Units.g.localized,
                             color: .red
                         )
                         
@@ -55,8 +55,8 @@ struct DailyGoalsCard: View {
                         GoalProgressBar(
                             current: todaysNutrition.carbs,
                             goal: user.dailyCarbGoal,
-                            title: LocalizationKeys.Nutrition.DailySummary.carbs.localized,
-                            unit: LocalizationKeys.Nutrition.Units.g.localized,
+                            title: NutritionKeys.DailySummary.carbs.localized,
+                            unit: NutritionKeys.Units.g.localized,
                             color: .blue
                         )
                         
@@ -64,8 +64,8 @@ struct DailyGoalsCard: View {
                         GoalProgressBar(
                             current: todaysNutrition.fat,
                             goal: user.dailyFatGoal,
-                            title: LocalizationKeys.Nutrition.DailySummary.fat.localized,
-                            unit: LocalizationKeys.Nutrition.Units.g.localized,
+                            title: NutritionKeys.DailySummary.fat.localized,
+                            unit: NutritionKeys.Units.g.localized,
                             color: .yellow
                         )
                     }
@@ -77,7 +77,7 @@ struct DailyGoalsCard: View {
                     HStack {
                         Image(systemName: "star.fill")
                             .foregroundColor(.yellow)
-                        Text(LocalizationKeys.Nutrition.DailyGoals.achievementMessage.localized)
+                        Text(NutritionKeys.DailyGoals.achievementMessage.localized)
                             .font(.caption)
                             .fontWeight(.medium)
                             .foregroundColor(.primary)

@@ -7,6 +7,7 @@ struct EnhancedWODTimerView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.theme) private var theme
     @Environment(\.modelContext) private var modelContext
+    @EnvironmentObject private var unitSettings: UnitSettings
     @Query private var user: [User]
     
     let wod: WOD
@@ -47,7 +48,7 @@ struct EnhancedWODTimerView: View {
                 VStack(spacing: 0) {
                     // Top Bar
                     HStack {
-                        Button("Cancel") {
+                        Button(TrainingKeys.TimerControls.cancel.localized) {
                             viewModel.timerViewModel.stopTimer()
                             UIApplication.shared.isIdleTimerDisabled = false
                             onCompletion?()
@@ -282,6 +283,7 @@ private struct MovementTimerCard: View {
     let currentRepIndex: Int
     
     @Environment(\.theme) private var theme
+    @EnvironmentObject private var unitSettings: UnitSettings
     
     private var repsToDisplay: String {
         if let specificReps = movement.reps {
@@ -330,7 +332,7 @@ private struct MovementTimerCard: View {
                 }
                 
                 if let userWeight = movement.userWeight {
-                    Text("\(Int(userWeight))kg")
+                    Text(UnitsFormatter.formatWeight(kg: userWeight, system: unitSettings.unitSystem))
                         .font(theme.typography.caption)
                         .foregroundColor(theme.colors.textSecondary)
                 }
@@ -439,11 +441,11 @@ private struct EnhancedResultEntryView: View {
                 }
                 .padding()
             }
-            .navigationTitle("Save Result")
+            .navigationTitle(CommonKeys.Navigation.saveResult.localized)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Cancel") { dismiss() }
+                    Button(CommonKeys.Onboarding.Common.cancel.localized) { dismiss() }
                 }
                 
                 ToolbarItem(placement: .navigationBarTrailing) {

@@ -5,6 +5,7 @@ struct WODDetailView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.theme) private var theme
     @Environment(\.modelContext) private var modelContext
+    @EnvironmentObject private var unitSettings: UnitSettings
     @Query private var user: [User]
     
     let wod: WOD
@@ -205,11 +206,11 @@ struct WODDetailView: View {
                 }
                 .padding()
             }
-            .navigationTitle("WOD Details")
+            .navigationTitle(TrainingKeys.Navigation.wodDetails.localized)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Close") { dismiss() }
+                    Button(CommonKeys.Onboarding.Common.close.localized) { dismiss() }
                 }
             }
             .fullScreenCover(isPresented: $showingTimer) {
@@ -225,7 +226,16 @@ struct WODDetailView: View {
                 )
             }
             .sheet(isPresented: $showingHistory) {
-                WODHistoryView(wod: wod)
+                NavigationStack {
+                    WODHistoryView()
+                        .navigationTitle(String(format: CommonKeys.Navigation.wodHistoryFormat.localized, wod.name))
+                        .navigationBarTitleDisplayMode(.inline)
+                        .toolbar {
+                            ToolbarItem(placement: .navigationBarTrailing) {
+                                Button(CommonKeys.Onboarding.Common.done.localized) { showingHistory = false }
+                            }
+                        }
+                }
             }
             .sheet(isPresented: $showingShare) {
                 WODShareView(wod: wod, result: nil)
@@ -248,6 +258,7 @@ private struct MovementCard: View {
     @Binding var isRX: Bool
     @Binding var selectedWeight: Double?
     @Environment(\.theme) private var theme
+    @EnvironmentObject private var unitSettings: UnitSettings
     @State private var weightText = ""
     
     private var rxWeight: String? {
@@ -256,6 +267,26 @@ private struct MovementCard: View {
     
     private var scaledWeight: String? {
         movement.scaledWeight(for: userGender)
+    }
+    
+    private var displayRxWeight: String? {
+        guard let rx = rxWeight else { return nil }
+        // Parse weight value and convert to user's preferred units
+        let numbers = rx.filter { "0123456789.".contains($0) }
+        if let weight = Double(numbers) {
+            return UnitsFormatter.formatWeight(kg: weight, system: unitSettings.unitSystem)
+        }
+        return rx // Fallback to original string
+    }
+    
+    private var displayScaledWeight: String? {
+        guard let scaled = scaledWeight else { return nil }
+        // Parse weight value and convert to user's preferred units
+        let numbers = scaled.filter { "0123456789.".contains($0) }
+        if let weight = Double(numbers) {
+            return UnitsFormatter.formatWeight(kg: weight, system: unitSettings.unitSystem)
+        }
+        return scaled // Fallback to original string
     }
     
     var body: some View {
@@ -272,14 +303,14 @@ private struct MovementCard: View {
                         .fontWeight(.medium)
                         .foregroundColor(theme.colors.textPrimary)
                     
-                    if let rx = rxWeight {
+                    if let displayRx = displayRxWeight {
                         HStack(spacing: theme.spacing.s) {
-                            Text("RX: \(rx)")
+                            Text("RX: \(displayRx)")
                                 .font(theme.typography.caption)
                                 .foregroundColor(theme.colors.accent)
                             
-                            if let scaled = scaledWeight {
-                                Text("Scaled: \(scaled)")
+                            if let displayScaled = displayScaledWeight {
+                                Text("Scaled: \(displayScaled)")
                                     .font(theme.typography.caption)
                                     .foregroundColor(theme.colors.textSecondary)
                             }
@@ -302,10 +333,12 @@ private struct MovementCard: View {
                             .background(theme.colors.backgroundSecondary)
                             .cornerRadius(theme.radius.s)
                             .onChange(of: weightText) { oldValue, newValue in
-                                selectedWeight = Double(newValue)
+                                guard let inputWeight = Double(newValue) else { return }
+                                // Always store in kg internally
+                                selectedWeight = unitSettings.unitSystem == .metric ? inputWeight : UnitsConverter.lbsToKg(inputWeight)
                             }
                         
-                        Text("kg")
+                        Text(unitSettings.unitSystem == .metric ? "kg" : "lb")
                             .font(theme.typography.caption)
                             .foregroundColor(theme.colors.textSecondary)
                     }
@@ -324,13 +357,16 @@ private struct MovementCard: View {
         .cornerRadius(theme.radius.m)
         .onAppear {
             if let weight = selectedWeight {
-                weightText = String(format: "%.0f", weight)
+                // Display in user's preferred units
+                let displayWeight = unitSettings.unitSystem == .metric ? weight : UnitsConverter.kgToLbs(weight)
+                weightText = String(format: "%.0f", displayWeight)
             } else if let rx = rxWeight {
                 // Parse weight from RX string (e.g., "43kg" -> 43)
                 let numbers = rx.filter { "0123456789.".contains($0) }
                 if let parsed = Double(numbers) {
-                    selectedWeight = parsed
-                    weightText = String(format: "%.0f", parsed)
+                    selectedWeight = parsed // Always store in kg
+                    let displayWeight = unitSettings.unitSystem == .metric ? parsed : UnitsConverter.kgToLbs(parsed)
+                    weightText = String(format: "%.0f", displayWeight)
                 }
             }
         }
@@ -380,31 +416,3 @@ private struct ResultRow: View {
     }
 }
 
-// MARK: - WOD History View
-private struct WODHistoryView: View {
-    @Environment(\.dismiss) private var dismiss
-    @Environment(\.theme) private var theme
-    let wod: WOD
-    
-    private var sortedResults: [WODResult] {
-        wod.results.sorted { $0.completedAt > $1.completedAt }
-    }
-    
-    var body: some View {
-        NavigationStack {
-            List(sortedResults) { result in
-                ResultRow(result: result, wod: wod)
-                    .listRowBackground(Color.clear)
-                    .listRowSeparator(.hidden)
-            }
-            .listStyle(.plain)
-            .navigationTitle("\(wod.name) History")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Done") { dismiss() }
-                }
-            }
-        }
-    }
-}

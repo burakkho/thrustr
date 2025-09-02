@@ -23,22 +23,22 @@ enum FoodCategory: String, CaseIterable {
     
     var displayName: String {
         switch self {
-        case .meat: return "Et & Tavuk"
-        case .dairy: return "Süt Ürünleri"
-        case .grains: return "Tahıllar"
-        case .vegetables: return "Sebzeler"
-        case .fruits: return "Meyveler"
-        case .nuts: return "Kuruyemişler"
-        case .beverages: return "İçecekler"
-        case .snacks: return "Atıştırmalıklar"
-        case .turkish: return "Türk Yemekleri"
-        case .fastfood: return "Fast Food"
-        case .supplements: return "Takviyeler"
-        case .condiments: return "Soslar & Baharatlar"
-        case .bakery: return "Fırın Ürünleri"
-        case .seafood: return "Deniz Ürünleri"
-        case .desserts: return "Tatlılar"
-        case .other: return "Diğer"
+        case .meat: return NutritionKeys.Categories.meat.localized
+        case .dairy: return NutritionKeys.Categories.dairy.localized
+        case .grains: return NutritionKeys.Categories.grains.localized
+        case .vegetables: return NutritionKeys.Categories.vegetables.localized
+        case .fruits: return NutritionKeys.Categories.fruits.localized
+        case .nuts: return NutritionKeys.Categories.nuts.localized
+        case .beverages: return NutritionKeys.Categories.beverages.localized
+        case .snacks: return NutritionKeys.Categories.snacks.localized
+        case .turkish: return "Türk Yemekleri" // Keep Turkish-specific
+        case .fastfood: return "Fast Food" // Keep universal
+        case .supplements: return "Takviyeler" // Keep Turkish-specific
+        case .condiments: return "Soslar & Baharatlar" // Keep Turkish-specific
+        case .bakery: return "Fırın Ürünleri" // Keep Turkish-specific
+        case .seafood: return "Deniz Ürünleri" // Keep Turkish-specific
+        case .desserts: return "Tatlılar" // Keep Turkish-specific
+        case .other: return NutritionKeys.Categories.other.localized
         }
     }
     

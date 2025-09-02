@@ -3,6 +3,7 @@ import SwiftData
 
 struct ProfileView: View {
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.theme) private var theme
     @Query private var users: [User]
     @EnvironmentObject private var unitSettings: UnitSettings
     
@@ -24,15 +25,19 @@ struct ProfileView: View {
                     // User Header Card
                     UserHeaderCard(user: currentUser)
                     
-                    // Composition Stats Section (replaces daily calories block)
-                    CompositionStatsSection(user: currentUser)
+                    // Athlete Profile Card
+                    if let user = currentUser {
+                        AthleteProfileCard(user: user)
+                    }
                     
                     // Settings Sections
                     VStack(spacing: 16) {
-                        PersonalSettingsSection(
-                            showingPersonalInfo: $showingPersonalInfoSheet,
-                            showingAccount: $showingAccountSheet
-                        )
+                        // Lifetime Achievements Section
+                        if let user = currentUser {
+                            LifetimeAchievementsSection(user: user)
+                        }
+                        
+                        ProgressAnalyticsSection()
                         
                         BodyTrackingSection(
                             showingWeightEntry: $showingWeightEntry,
@@ -40,19 +45,22 @@ struct ProfileView: View {
                             showingPhotos: $showingProgressPhotos
                         )
                         
+                        PersonalSettingsSection(
+                            showingPersonalInfo: $showingPersonalInfoSheet,
+                            showingAccount: $showingAccountSheet
+                        )
+                        
                         FitnessCalculatorsSection()
                         
                         AppPreferencesSection(
                             showingPreferences: $showingPreferencesSheet
                         )
-                        
-                        ProgressAnalyticsSection()
                     }
                 }
                 .padding()
             }
             .navigationTitle("profile.title".localized)
-            .background(Color(.systemGroupedBackground))
+            .background(theme.colors.backgroundPrimary)
         }
         .sheet(isPresented: $showingPersonalInfoSheet) {
             if let user = currentUser {
@@ -90,7 +98,7 @@ struct UserHeaderCard: View {
     
     var body: some View {
         HStack(spacing: 16) {
-            // Profile Photo Placeholder
+            // Profile Photo with Logo Background
             Circle()
                 .fill(LinearGradient(
                     gradient: Gradient(colors: [.blue, .purple]),
@@ -99,10 +107,20 @@ struct UserHeaderCard: View {
                 ))
                 .frame(width: 80, height: 80)
                 .overlay(
-                    Text(user?.name.prefix(1).uppercased() ?? "U")
-                        .font(.title)
-                        .fontWeight(.bold)
-                        .foregroundColor(.white)
+                    ZStack {
+                        // App Logo as background
+                        Image("AppLogo")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 40, height: 40)
+                            .opacity(0.3)
+                        
+                        // User initials on top
+                        Text(user?.name.prefix(1).uppercased() ?? "U")
+                            .font(.title)
+                            .fontWeight(.bold)
+                            .foregroundColor(.white)
+                    }
                 )
             
             VStack(alignment: .leading, spacing: 4) {
@@ -136,106 +154,6 @@ struct UserHeaderCard: View {
     }
 }
 
-// MARK: - Composition Stats Section (FFMI, Body Fat, Fitness Level)
-struct CompositionStatsSection: View {
-    let user: User?
-    
-    private var gender: Gender {
-        user?.genderEnum ?? .male
-    }
-    
-    private var bodyFatPercent: Double? {
-        user?.calculateBodyFatPercentage()
-    }
-    
-    private var ffmiValue: Double? {
-        guard let user = user else { return nil }
-        return FitnessLevelCalculator.calculateNormalizedFFMI(
-            weightKg: user.currentWeight,
-            heightCm: user.height,
-            bodyFatPercent: bodyFatPercent
-        )
-    }
-    
-    private var fitnessScore: (score: Int, stage: FitnessLevelCalculator.FitnessStage)? {
-        FitnessLevelCalculator.fitnessScore(
-            ffmi: ffmiValue,
-            bodyFat: bodyFatPercent,
-            gender: gender
-        )
-    }
-    
-    var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text("body_composition.title".localized)
-                .font(.headline)
-                .fontWeight(.semibold)
-            
-            HStack(spacing: 12) {
-                // FFMI Card → Calculator
-                NavigationLink(destination: FFMICalculatorView()) {
-                    CompositionMiniCard(
-                        icon: "figure.strengthtraining.traditional",
-                        title: "body_composition.ffmi".localized,
-                        value: ffmiValue.map { String(format: "%.1f", $0) } ?? "—",
-                        subtitle: ffmiValue.map { FitnessLevelCalculator.ffmiCategory(for: $0) } ?? "body_composition.measurement_required".localized,
-                        color: .green
-                    )
-                }
-                
-                // Body Fat Card → Navy Method Calculator
-                NavigationLink(destination: NavyMethodCalculatorView()) {
-                    CompositionMiniCard(
-                        icon: "percent",
-                        title: "body_composition.body_fat".localized,
-                        value: bodyFatPercent.map { String(format: "%.1f%%", $0) } ?? "—",
-                        subtitle: bodyFatPercent.map { FitnessLevelCalculator.bodyFatCategory(for: $0, gender: gender) } ?? "body_composition.measurement_required".localized,
-                        color: .orange
-                    )
-                }
-                
-                // Fitness Level Card
-                CompositionMiniCard(
-                    icon: "bolt.heart",
-                    title: "body_composition.fitness_level".localized,
-                    value: fitnessScore.map { "\($0.score)" } ?? "—",
-                    subtitle: fitnessScore.map { $0.stage.rawValue } ?? "body_composition.insufficient_data".localized,
-                    color: .blue
-                )
-            }
-        }
-    }
-}
-
-// Small card used inside composition section
-private struct CompositionMiniCard: View {
-    let icon: String
-    let title: String
-    let value: String
-    let subtitle: String
-    let color: Color
-    
-    var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack {
-                Image(systemName: icon)
-                    .foregroundColor(color)
-                Spacer()
-            }
-            
-            Text(value)
-                .font(.system(size: 22, weight: .bold, design: .rounded))
-            Text(subtitle)
-                .font(.caption)
-                .foregroundColor(.secondary)
-            
-        }
-        .padding()
-        .background(Color(.systemBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 12))
-        .shadow(color: .black.opacity(0.05), radius: 5, x: 0, y: 2)
-    }
-}
 
 // MARK: - Settings Sections
 struct PersonalSettingsSection: View {

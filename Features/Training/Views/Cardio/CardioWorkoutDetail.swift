@@ -19,144 +19,16 @@ struct CardioWorkoutDetail: View {
         NavigationView {
             ScrollView {
                 VStack(spacing: theme.spacing.l) {
-                    // Header Section
-                    VStack(alignment: .leading, spacing: theme.spacing.m) {
-                        HStack {
-                            VStack(alignment: .leading, spacing: theme.spacing.s) {
-                                Text(workout.localizedName)
-                                    .font(theme.typography.title2)
-                                    .fontWeight(.bold)
-                                    .foregroundColor(theme.colors.textPrimary)
-                                
-                                if !workout.localizedDescription.isEmpty {
-                                    Text(workout.localizedDescription)
-                                        .font(theme.typography.body)
-                                        .foregroundColor(theme.colors.textSecondary)
-                                        .multilineTextAlignment(.leading)
-                                }
-                            }
-                            
-                            Spacer()
-                            
-                            Button(action: toggleFavorite) {
-                                Image(systemName: workout.isFavorite ? "star.fill" : "star")
-                                    .font(.title2)
-                                    .foregroundColor(workout.isFavorite ? theme.colors.warning : theme.colors.textSecondary)
-                            }
-                        }
-                        
-                        // Workout Info Row
-                        HStack(spacing: theme.spacing.xl) {
-                            InfoColumn(
-                                title: LocalizationKeys.Training.Cardio.type.localized,
-                                value: LocalizationKeys.Training.Category.cardio.localized,
-                                icon: "heart.fill"
-                            )
-                            
-                            if let exercise = workout.exercises.first {
-                                InfoColumn(
-                                    title: LocalizationKeys.Training.Cardio.activity.localized,
-                                    value: exercise.exerciseType.capitalized,
-                                    icon: exercise.exerciseIcon
-                                )
-                            }
-                            
-                            InfoColumn(
-                                title: LocalizationKeys.Training.Cardio.flexibility.localized,
-                                value: LocalizationKeys.Training.Cardio.anyDistanceTime.localized,
-                                icon: "arrow.triangle.2.circlepath"
-                            )
-                            
-                            Spacer()
-                        }
-                        
-                        // Equipment
-                        if !workout.equipment.isEmpty {
-                            VStack(alignment: .leading, spacing: theme.spacing.s) {
-                                Text(LocalizationKeys.Training.Cardio.equipment.localized)
-                                    .font(theme.typography.headline)
-                                    .foregroundColor(theme.colors.textPrimary)
-                                
-                                HStack {
-                                    ForEach(workout.equipment, id: \.self) { equipment in
-                                        EquipmentBadge(equipment: equipment)
-                                    }
-                                    Spacer()
-                                }
-                            }
-                        }
-                    }
-                    .padding(theme.spacing.m)
-                    .cardStyle()
-                    
-                    // Personal Record Section
-                    if let pr = workout.personalRecord {
-                        PersonalRecordCard(result: pr, workoutType: workout.type)
-                    }
-                    
-                    // Statistics Section
-                    if workout.totalSessions > 0 {
-                        StatisticsCard(workout: workout)
-                    }
-                    
-                    // Recent Sessions
-                    if !workout.sessions.isEmpty {
-                        RecentSessionsSection(sessions: Array(workout.sessions.filter { $0.isCompleted }.sorted { $0.completedAt ?? $0.startDate > $1.completedAt ?? $1.startDate }.prefix(5)))
-                    }
-                    
-                    // Action Buttons
-                    VStack(spacing: theme.spacing.m) {
-                        // Start Workout Button
-                        Button(action: { showingSessionStart = true }) {
-                            HStack {
-                                Image(systemName: "play.fill")
-                                    .font(.title3)
-                                Text(LocalizationKeys.Training.Cardio.startWorkout.localized)
-                                    .font(theme.typography.headline)
-                                    .fontWeight(.semibold)
-                            }
-                            .foregroundColor(.white)
-                            .frame(maxWidth: .infinity)
-                            .padding(theme.spacing.m)
-                            .background(theme.colors.accent)
-                            .cornerRadius(theme.radius.m)
-                        }
-                        
-                        // Secondary Actions
-                        HStack(spacing: theme.spacing.m) {
-                            Button(action: duplicateWorkout) {
-                                HStack {
-                                    Image(systemName: "doc.on.doc")
-                                    Text(LocalizationKeys.Training.Cardio.duplicate.localized)
-                                        .fontWeight(.medium)
-                                }
-                                .foregroundColor(theme.colors.accent)
-                                .frame(maxWidth: .infinity)
-                                .padding(theme.spacing.m)
-                                .background(theme.colors.accent.opacity(0.1))
-                                .cornerRadius(theme.radius.m)
-                            }
-                            
-                            if workout.isCustom {
-                                Button(action: { showingDeleteConfirmation = true }) {
-                                    HStack {
-                                        Image(systemName: "trash")
-                                        Text(LocalizationKeys.Training.Cardio.delete.localized)
-                                            .fontWeight(.medium)
-                                    }
-                                    .foregroundColor(theme.colors.error)
-                                    .frame(maxWidth: .infinity)
-                                    .padding(theme.spacing.m)
-                                    .background(theme.colors.error.opacity(0.1))
-                                    .cornerRadius(theme.radius.m)
-                                }
-                            }
-                        }
-                    }
+                    headerSection
+                    workoutInfoSection
+                    personalRecordSection
+                    statisticsSection  
+                    recentSessionsSection
+                    actionButtonsSection
                 }
                 .padding(theme.spacing.m)
             }
-            .navigationTitle(LocalizationKeys.Training.Cardio.workoutDetails.localized)
+            .navigationTitle(TrainingKeys.Cardio.workoutDetails.localized)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
@@ -202,6 +74,166 @@ struct CardioWorkoutDetail: View {
         case "intermediate": return "2.circle.fill"
         case "advanced": return "3.circle.fill"
         default: return "circle.fill"
+        }
+    }
+    
+    // MARK: - View Sections
+    private var headerSection: some View {
+        VStack(alignment: .leading, spacing: theme.spacing.s) {
+            HStack {
+                VStack(alignment: .leading, spacing: theme.spacing.s) {
+                    Text(workout.localizedName)
+                        .font(theme.typography.title2)
+                        .fontWeight(.bold)
+                        .foregroundColor(theme.colors.textPrimary)
+                    
+                    if !workout.localizedDescription.isEmpty {
+                        Text(workout.localizedDescription)
+                            .font(theme.typography.body)
+                            .foregroundColor(theme.colors.textSecondary)
+                            .multilineTextAlignment(.leading)
+                    }
+                }
+                
+                Spacer()
+                
+                Button(action: toggleFavorite) {
+                    Image(systemName: workout.isFavorite ? "star.fill" : "star")
+                        .font(.title2)
+                        .foregroundColor(workout.isFavorite ? theme.colors.warning : theme.colors.textSecondary)
+                }
+            }
+        }
+    }
+    
+    private var workoutInfoSection: some View {
+        VStack(alignment: .leading, spacing: theme.spacing.m) {
+            // Workout Info Row
+            HStack(spacing: theme.spacing.xl) {
+                InfoColumn(
+                    title: TrainingKeys.Cardio.type.localized,
+                    value: TrainingKeys.Cardio.title.localized,
+                    icon: "heart.fill"
+                )
+                
+                if let exercise = workout.exercises.first {
+                    InfoColumn(
+                        title: TrainingKeys.Cardio.activity.localized,
+                        value: exercise.exerciseType.capitalized,
+                        icon: exercise.exerciseIcon
+                    )
+                }
+                
+                InfoColumn(
+                    title: TrainingKeys.Cardio.flexibility.localized,
+                    value: TrainingKeys.Cardio.anyDistanceTime.localized,
+                    icon: "arrow.triangle.2.circlepath"
+                )
+                
+                Spacer()
+            }
+            
+            // Equipment
+            if !workout.equipment.isEmpty {
+                VStack(alignment: .leading, spacing: theme.spacing.s) {
+                    Text(TrainingKeys.Cardio.equipment.localized)
+                        .font(theme.typography.headline)
+                        .foregroundColor(theme.colors.textPrimary)
+                    
+                    HStack {
+                        ForEach(workout.equipment, id: \.self) { equipment in
+                            EquipmentBadge(equipment: equipment)
+                        }
+                        Spacer()
+                    }
+                }
+            }
+        }
+        .padding(theme.spacing.m)
+        .cardStyle()
+    }
+    
+    @ViewBuilder
+    private var personalRecordSection: some View {
+        if let pr = workout.personalRecord {
+            PersonalRecordCard(result: pr, workoutType: workout.type)
+        }
+    }
+    
+    @ViewBuilder
+    private var statisticsSection: some View {
+        if workout.totalSessions > 0 {
+            StatisticsCard(workout: workout)
+        }
+    }
+    
+    @ViewBuilder
+    private var recentSessionsSection: some View {
+        if !workout.sessions.isEmpty {
+            RecentSessionsSection(sessions: Array(workout.sessions.filter { $0.isCompleted }.sorted { $0.completedAt ?? $0.startDate > $1.completedAt ?? $1.startDate }.prefix(5)))
+        }
+    }
+    
+    private var actionButtonsSection: some View {
+        VStack(spacing: theme.spacing.m) {
+            // Start Workout Button
+            Button(action: { showingSessionStart = true }) {
+                HStack {
+                    Image(systemName: "play.fill")
+                        .font(.title3)
+                    Text(TrainingKeys.Cardio.startWorkout.localized)
+                        .font(theme.typography.headline)
+                        .fontWeight(.semibold)
+                }
+                .foregroundColor(.white)
+                .frame(maxWidth: .infinity)
+                .padding(theme.spacing.m)
+                .background(theme.colors.accent)
+                .cornerRadius(theme.radius.m)
+            }
+            
+            // Secondary Actions
+            HStack(spacing: theme.spacing.m) {
+                Button(action: duplicateWorkout) {
+                    HStack {
+                        Image(systemName: "doc.on.doc")
+                        Text(TrainingKeys.Cardio.duplicate.localized)
+                            .fontWeight(.medium)
+                    }
+                    .foregroundColor(theme.colors.accent)
+                    .frame(maxWidth: .infinity)
+                    .padding(theme.spacing.m)
+                    .background(theme.colors.accent.opacity(0.1))
+                    .cornerRadius(theme.radius.m)
+                }
+                
+                if workout.isCustom {
+                    Button(action: { showingDeleteConfirmation = true }) {
+                        HStack {
+                            Image(systemName: "trash")
+                            Text(TrainingKeys.Cardio.delete.localized)
+                                .fontWeight(.medium)
+                        }
+                        .foregroundColor(theme.colors.error)
+                        .frame(maxWidth: .infinity)
+                        .padding(theme.spacing.m)
+                        .background(theme.colors.error.opacity(0.1))
+                        .cornerRadius(theme.radius.m)
+                    }
+                }
+            }
+        }
+        .padding(theme.spacing.m)
+    }
+
+    private func equipmentDisplayName(_ equipment: String) -> String {
+        switch equipment {
+        case "outdoor": return "Outdoor"
+        case "treadmill": return "Treadmill"
+        case "row_erg": return "Row Erg"
+        case "bike_erg": return "Bike Erg"
+        case "ski_erg": return "Ski Erg"
+        default: return equipment.capitalized
         }
     }
 }
@@ -286,7 +318,7 @@ struct PersonalRecordCard: View {
             HStack {
                 Image(systemName: "trophy.fill")
                     .foregroundColor(theme.colors.warning)
-                Text(LocalizationKeys.Training.Cardio.personalRecord.localized)
+                Text(TrainingKeys.Cardio.personalRecord.localized)
                     .font(theme.typography.headline)
                     .fontWeight(.semibold)
                     .foregroundColor(theme.colors.textPrimary)
@@ -330,7 +362,7 @@ struct StatisticsCard: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: theme.spacing.m) {
-            Text(LocalizationKeys.Training.Cardio.statistics.localized)
+            Text(TrainingKeys.Cardio.statistics.localized)
                 .font(theme.typography.headline)
                 .fontWeight(.semibold)
                 .foregroundColor(theme.colors.textPrimary)
@@ -390,7 +422,7 @@ struct RecentSessionsSection: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: theme.spacing.m) {
-            Text(LocalizationKeys.Training.Cardio.recentSessions.localized)
+            Text(TrainingKeys.Cardio.recentSessions.localized)
                 .font(theme.typography.headline)
                 .fontWeight(.semibold)
                 .foregroundColor(theme.colors.textPrimary)
@@ -439,7 +471,6 @@ struct RecentSessionsSection: View {
         .cardStyle()
     }
 }
-
 
 #Preview {
     let workout = CardioWorkout(

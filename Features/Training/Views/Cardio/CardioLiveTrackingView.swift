@@ -43,11 +43,12 @@ struct CardioLiveTrackingView: View {
                         // Metrics Grid
                         metricsGrid
                         
-                        // Heart Rate Section
+                        // Heart Rate Section (always shown)
                         heartRateSection
                         
-                        // Splits (if any)
-                        if !viewModel.splits.isEmpty {
+                        
+                        // Splits (outdoor only)
+                        if isOutdoor && !viewModel.splits.isEmpty {
                             splitsSection
                         }
                     }
@@ -191,39 +192,76 @@ struct CardioLiveTrackingView: View {
     // MARK: - Metrics Grid
     private var metricsGrid: some View {
         LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: theme.spacing.m) {
-            MetricCard(
-                icon: "speedometer",
-                title: isOutdoor ? "Hız" : "Ortalama Hız",
-                value: isOutdoor ? viewModel.formattedSpeed : "--",
-                unit: "km/h",
-                color: theme.colors.accent
-            )
-            
-            MetricCard(
-                icon: "location.fill",
-                title: "Mesafe",
-                value: viewModel.formattedDistance,
-                unit: "",
-                color: theme.colors.success
-            )
-            
-            MetricCard(
-                icon: "flame.fill",
-                title: "Kalori",
-                value: "\(viewModel.currentCalories)",
-                unit: "kcal",
-                color: theme.colors.warning
-            )
-            .id("calories-\(viewModel.currentCalories)") // Force refresh when calories change
-            
-            MetricCard(
-                icon: "gauge.medium",
-                title: "Tempo",
-                value: viewModel.formattedPace,
-                unit: "min/km",
-                color: theme.colors.accent.opacity(0.8)
-            )
-            .id("pace-\(viewModel.currentPace)") // Force refresh when pace changes
+            if isOutdoor {
+                // Outdoor metrics: GPS-based performance data
+                MetricCard(
+                    icon: "speedometer",
+                    title: "Hız",
+                    value: viewModel.formattedSpeed,
+                    unit: "km/h",
+                    color: theme.colors.accent
+                )
+                
+                MetricCard(
+                    icon: "location.fill",
+                    title: "Mesafe",
+                    value: viewModel.formattedDistance,
+                    unit: "",
+                    color: theme.colors.success
+                )
+                
+                MetricCard(
+                    icon: "flame.fill",
+                    title: "Kalori",
+                    value: "\(viewModel.currentCalories)",
+                    unit: "kcal",
+                    color: theme.colors.warning
+                )
+                .id("calories-\(viewModel.currentCalories)")
+                
+                MetricCard(
+                    icon: "gauge.medium",
+                    title: "Tempo",
+                    value: viewModel.formattedPace,
+                    unit: "min/km",
+                    color: theme.colors.accent.opacity(0.8)
+                )
+                .id("pace-\(viewModel.currentPace)")
+            } else {
+                // Indoor metrics: Focus on effort and physiological data
+                MetricCard(
+                    icon: "flame.fill",
+                    title: "Kalori",
+                    value: "\(viewModel.currentCalories)",
+                    unit: "kcal",
+                    color: theme.colors.warning
+                )
+                .id("calories-\(viewModel.currentCalories)")
+                
+                MetricCard(
+                    icon: "heart.fill",
+                    title: "Nabız",
+                    value: viewModel.formattedHeartRate,
+                    unit: "BPM",
+                    color: theme.colors.error
+                )
+                
+                MetricCard(
+                    icon: "bolt.fill",
+                    title: "Effort",
+                    value: viewModel.perceivedEffortLevel,
+                    unit: "RPE",
+                    color: theme.colors.accent
+                )
+                
+                MetricCard(
+                    icon: "target",
+                    title: "Zone",
+                    value: viewModel.heartRateZone,
+                    unit: "",
+                    color: viewModel.heartRateZoneColor
+                )
+            }
         }
     }
     
@@ -465,6 +503,7 @@ struct MetricCard: View {
         .background(theme.colors.backgroundSecondary)
         .cornerRadius(theme.radius.m)
     }
+    
 }
 
 // MARK: - Bluetooth Device Sheet

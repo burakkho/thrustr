@@ -1,6 +1,24 @@
 import SwiftData
 import Foundation
 
+/**
+ * Comprehensive food model for nutrition tracking with multilingual support and barcode integration.
+ * 
+ * This model stores nutritional information for foods from multiple sources including CSV seeding,
+ * manual entry, and barcode scanning via OpenFoodFacts API. All nutritional values are stored
+ * per 100g for consistency and converted during display based on actual portions.
+ * 
+ * Data sources:
+ * - CSV: Pre-seeded food database with localized names
+ * - Manual: User-created custom foods
+ * - Barcode: OpenFoodFacts API integration for packaged foods
+ * 
+ * Features:
+ * - Complete macronutrient and micronutrient tracking
+ * - Multi-language aliases for enhanced search
+ * - Category-based organization for easy browsing
+ * - Remote image URLs from barcode scanning
+ */
 @Model
 final class Food {
     var id: UUID
@@ -86,7 +104,7 @@ extension Food {
         if let servingName, !servingName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
             return "1 \(servingName) ≈ \(grams) g"
         }
-        return "1 porsiyon ≈ \(grams) g"
+        return "1 \(NutritionKeys.Labels.serving.localized) ≈ \(grams) g"
     }
     
     var isRecentlyUsed: Bool {

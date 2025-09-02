@@ -20,9 +20,9 @@ struct MeasurementsStepView: View {
     var body: some View {
         VStack(spacing: 24) {
             VStack(spacing: 8) {
-                Text(LocalizationKeys.Onboarding.measurementsTitle.localized)
+                Text(CommonKeys.Onboarding.measurementsTitle.localized)
                     .font(.system(size: 28, weight: .semibold, design: .rounded))
-                Text(LocalizationKeys.Onboarding.measurementsSubtitle.localized)
+                Text(CommonKeys.Onboarding.measurementsSubtitle.localized)
                     .font(.system(size: 14, weight: .regular, design: .rounded))
                     .foregroundColor(.secondary)
                     .multilineTextAlignment(.center)
@@ -36,10 +36,10 @@ struct MeasurementsStepView: View {
                             Image(systemName: "ruler")
                                 .foregroundColor(.blue)
                                 .font(.title2)
-                            Text(LocalizationKeys.Onboarding.navyMethodTitle.localized)
+                            Text(CommonKeys.Onboarding.navyMethodTitle.localized)
                                 .font(.headline)
                         }
-                        Text(LocalizationKeys.Onboarding.navyMethodDesc.localized)
+                        Text(CommonKeys.Onboarding.navyMethodDesc.localized)
                             .font(.subheadline)
                             .foregroundColor(.secondary)
                     }
@@ -49,34 +49,34 @@ struct MeasurementsStepView: View {
                     
                     VStack(spacing: 16) {
                         MeasurementInput(
-                            title: LocalizationKeys.Onboarding.neckLabel.localized,
+                            title: CommonKeys.Onboarding.neckLabel.localized,
                             value: $data.neckCircumference,
                             range: data.unitSystem == "imperial" ? 10...20 : 25...50,
                             unit: data.unitSystem == "imperial" ? "in" : "cm",
-                            placeholder: LocalizationKeys.Onboarding.optional.localized,
+                            placeholder: CommonKeys.Onboarding.optional.localized,
                             unitSystem: data.unitSystem,
                             focus: $neckFocused
                         )
                         
                         MeasurementInput(
                             title: data.gender == "male" ?
-                                LocalizationKeys.Onboarding.waistMaleLabel.localized :
-                                LocalizationKeys.Onboarding.waistFemaleLabel.localized,
+                                CommonKeys.Onboarding.waistMaleLabel.localized :
+                                CommonKeys.Onboarding.waistFemaleLabel.localized,
                             value: $data.waistCircumference,
                             range: data.unitSystem == "imperial" ? 20...60 : 50...150,
                             unit: data.unitSystem == "imperial" ? "in" : "cm",
-                            placeholder: LocalizationKeys.Onboarding.optional.localized,
+                            placeholder: CommonKeys.Onboarding.optional.localized,
                             unitSystem: data.unitSystem,
                             focus: $waistFocused
                         )
                         
                         if data.gender == "female" {
                             MeasurementInput(
-                                title: LocalizationKeys.Onboarding.hipLabel.localized,
+                                title: CommonKeys.Onboarding.hipLabel.localized,
                                 value: $data.hipCircumference,
                                 range: data.unitSystem == "imperial" ? 25...60 : 70...150,
                                 unit: data.unitSystem == "imperial" ? "in" : "cm",
-                                placeholder: LocalizationKeys.Onboarding.optional.localized,
+                                placeholder: CommonKeys.Onboarding.optional.localized,
                                 unitSystem: data.unitSystem,
                                 focus: $hipFocused
                             )
@@ -89,12 +89,12 @@ struct MeasurementsStepView: View {
                                 Image(systemName: "chart.pie.fill")
                                     .foregroundColor(.green)
                                     .font(.title2)
-                                Text(LocalizationKeys.Onboarding.bodyFatTitle.localized)
+                                Text(CommonKeys.Onboarding.bodyFatTitle.localized)
                                     .font(.headline)
                             }
                             let bodyFat = calculateNavyMethod()
                             HStack {
-                                Text(LocalizationKeys.Onboarding.bodyFatNavy.localized)
+                                Text(CommonKeys.Onboarding.bodyFatNavy.localized)
                                     .foregroundColor(.secondary)
                                 Spacer()
                                 Text("%\(String(format: "%.1f", bodyFat))")
@@ -112,12 +112,12 @@ struct MeasurementsStepView: View {
                         HStack {
                             Image(systemName: "info.circle.fill")
                                 .foregroundColor(.gray)
-                            Text(LocalizationKeys.Onboarding.optionalInfo.localized)
+                            Text(CommonKeys.Onboarding.optionalInfo.localized)
                                 .font(.subheadline)
                                 .fontWeight(.medium)
                             Spacer()
                         }
-                        Text(LocalizationKeys.Onboarding.optionalDesc.localized)
+                        Text(CommonKeys.Onboarding.optionalDesc.localized)
                             .font(.caption)
                             .foregroundColor(.secondary)
                             .frame(maxWidth: .infinity, alignment: .leading)
@@ -137,14 +137,14 @@ struct MeasurementsStepView: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
                 
-                PrimaryButton(title: LocalizationKeys.Onboarding.continueButton.localized, icon: "arrow.right") {
+                PrimaryButton(title: CommonKeys.Onboarding.continueButton.localized, icon: "arrow.right") {
                     validationMessage = validateInputs()
                     if validationMessage == nil {
                         onNext()
                     }
                 }
                 
-                Button(LocalizationKeys.Onboarding.skipStep.localized) {
+                Button(CommonKeys.Onboarding.skipStep.localized) {
                     data.neckCircumference = nil
                     data.waistCircumference = nil
                     data.hipCircumference = nil

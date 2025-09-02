@@ -1,11 +1,13 @@
 import SwiftUI
 import SwiftData
+import Foundation
 
 // MARK: - Workout Preview View
 struct WorkoutPreviewView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.theme) private var theme
     @Environment(\.modelContext) private var modelContext
+    @EnvironmentObject private var unitSettings: UnitSettings
     
     let workout: LiftWorkout
     let programExecution: ProgramExecution?
@@ -37,11 +39,11 @@ struct WorkoutPreviewView: View {
                 .padding(.horizontal)
                 .padding(.bottom, theme.spacing.xl)
             }
-            .navigationTitle("Workout Preview")
+            .navigationTitle(CommonKeys.Navigation.workoutPreview.localized)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Cancel") {
+                    Button(CommonKeys.Onboarding.Common.cancel.localized) {
                         dismiss()
                     }
                 }
@@ -307,6 +309,7 @@ struct WorkoutPreviewView: View {
 // MARK: - Exercise Preview Card
 struct ExercisePreviewCard: View {
     @Environment(\.theme) private var theme
+    @EnvironmentObject private var unitSettings: UnitSettings
     
     let exercise: LiftExercise
     let index: Int
@@ -351,7 +354,7 @@ struct ExercisePreviewCard: View {
             // Target Weight (if available)
             if let targetWeight = exercise.targetWeight {
                 VStack(alignment: .trailing, spacing: 2) {
-                    Text("\(Int(targetWeight))kg")
+                    Text(UnitsFormatter.formatWeight(kg: targetWeight, system: unitSettings.unitSystem))
                         .font(theme.typography.body)
                         .fontWeight(.medium)
                         .foregroundColor(theme.colors.accent)

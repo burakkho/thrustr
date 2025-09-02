@@ -1,6 +1,26 @@
 import SwiftUI
 import UIKit
 
+/**
+ * Centralized theme management service for app-wide appearance control.
+ * 
+ * This service manages theme switching between light, dark, and system themes with
+ * real-time UI updates. Integrates with the design system protocol for consistent
+ * theming across all components and stores user preferences persistently.
+ * 
+ * Features:
+ * - System, light, and dark theme support
+ * - Real-time theme switching without app restart  
+ * - UIWindow-level theme override for immediate effect
+ * - UserDefaults persistence for theme preferences
+ * - Published properties for SwiftUI reactive updates
+ * 
+ * Usage:
+ * - Access via @EnvironmentObject in views
+ * - Theme protocol available via @Environment(\.theme)
+ * - Automatic system theme change detection
+ */
+
 // MARK: - Theme Types
 enum AppTheme: String, CaseIterable {
     case system = "system"

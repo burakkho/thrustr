@@ -88,13 +88,13 @@ struct TrainingDashboardView: View {
     private var headerSection: some View {
         HStack {
             VStack(alignment: .leading, spacing: 4) {
-                Text(LocalizationKeys.Training.Dashboard.title.localized)
+                Text(TrainingKeys.Dashboard.title.localized)
                     .font(theme.typography.title2)
                     .fontWeight(.bold)
                     .foregroundColor(theme.colors.textPrimary)
                 
                 if let user = currentUser {
-                    Text("Welcome back, \(user.name)!")
+                    Text(String(format: TrainingKeys.Dashboard.welcomeBack.localized, user.name))
                         .font(theme.typography.body)
                         .foregroundColor(theme.colors.textSecondary)
                 }
@@ -111,7 +111,7 @@ struct TrainingDashboardView: View {
             // Header
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
-                    Text(LocalizationKeys.Training.Dashboard.lastWorkout.localized)
+                    Text(TrainingKeys.Dashboard.lastWorkout.localized)
                         .font(theme.typography.headline)
                         .fontWeight(.semibold)
                         .foregroundColor(.white)
@@ -135,21 +135,21 @@ struct TrainingDashboardView: View {
                     StatPill(
                         icon: "clock",
                         value: formatDuration(duration),
-                        label: "Duration"
+                        label: TrainingKeys.Dashboard.duration.localized
                     )
                 }
                 
                 StatPill(
                     icon: "calendar",
                     value: formatRelativeDate(session.completedAt ?? session.startDate),
-                    label: "When"
+                    label: TrainingKeys.Dashboard.when.localized
                 )
                 
                 Spacer()
             }
             
             // Motivational message
-            Text("Great job! Keep up the momentum! 🔥")
+            Text(TrainingKeys.Dashboard.motivationalMessage.localized)
                 .font(theme.typography.body)
                 .foregroundColor(.white.opacity(0.9))
                 .italic()
@@ -171,7 +171,7 @@ struct TrainingDashboardView: View {
     private var thisWeekStatsSection: some View {
         VStack(alignment: .leading, spacing: theme.spacing.m) {
             HStack {
-                Text(LocalizationKeys.Training.Dashboard.thisWeek.localized)
+                Text(TrainingKeys.Dashboard.thisWeek.localized)
                     .font(theme.typography.headline)
                     .fontWeight(.semibold)
                     .foregroundColor(theme.colors.textPrimary)
@@ -181,21 +181,21 @@ struct TrainingDashboardView: View {
             HStack(spacing: theme.spacing.m) {
                 QuickStatCard(
                     title: "\(thisWeekStats.workouts)",
-                    subtitle: "Workouts",
+                    subtitle: TrainingKeys.Dashboard.workouts.localized,
                     icon: "dumbbell.fill",
                     color: theme.colors.accent
                 )
                 
                 QuickStatCard(
                     title: formatDuration(thisWeekStats.totalTime),
-                    subtitle: "Total Time",
+                    subtitle: TrainingKeys.Dashboard.totalTime.localized,
                     icon: "clock.fill",
                     color: theme.colors.accent
                 )
                 
                 QuickStatCard(
                     title: "\(thisWeekStats.streak)",
-                    subtitle: "Day Streak",
+                    subtitle: TrainingKeys.Dashboard.dayStreak.localized,
                     icon: "flame.fill",
                     color: theme.colors.warning
                 )
@@ -208,7 +208,7 @@ struct TrainingDashboardView: View {
     private var quickActionsSection: some View {
         VStack(alignment: .leading, spacing: theme.spacing.m) {
             HStack {
-                Text(LocalizationKeys.Training.Dashboard.quickActions.localized)
+                Text(TrainingKeys.Dashboard.quickActions.localized)
                     .font(theme.typography.headline)
                     .fontWeight(.semibold)
                     .foregroundColor(theme.colors.textPrimary)
@@ -220,8 +220,8 @@ struct TrainingDashboardView: View {
                 GridItem(.flexible())
             ], spacing: theme.spacing.m) {
                 QuickActionCard(
-                    title: "Quick Lift",
-                    subtitle: "Start strength training",
+                    title: TrainingKeys.Dashboard.quickLift.localized,
+                    subtitle: TrainingKeys.Dashboard.startStrengthTraining.localized,
                     icon: "dumbbell.fill",
                     color: .strengthColor,
                     action: {
@@ -230,8 +230,8 @@ struct TrainingDashboardView: View {
                 )
                 
                 QuickActionCard(
-                    title: "Quick Cardio",
-                    subtitle: "Start cardio session",
+                    title: TrainingKeys.Dashboard.quickCardio.localized,
+                    subtitle: TrainingKeys.Dashboard.startCardioSession.localized,
                     icon: "heart.fill",
                     color: .cardioColor,
                     action: {
@@ -240,8 +240,8 @@ struct TrainingDashboardView: View {
                 )
                 
                 QuickActionCard(
-                    title: "Daily WOD",
-                    subtitle: "Today's workout",
+                    title: TrainingKeys.Dashboard.dailyWOD.localized,
+                    subtitle: TrainingKeys.Dashboard.todaysWorkout.localized,
                     icon: "flame.fill",
                     color: .wodColor,
                     action: {
@@ -250,8 +250,8 @@ struct TrainingDashboardView: View {
                 )
                 
                 QuickActionCard(
-                    title: "Browse Programs",
-                    subtitle: "Find a program",
+                    title: TrainingKeys.Dashboard.browsePrograms.localized,
+                    subtitle: TrainingKeys.Dashboard.findProgram.localized,
                     icon: "rectangle.3.group",
                     color: theme.colors.accent,
                     action: {
@@ -268,13 +268,13 @@ struct TrainingDashboardView: View {
     private var recentActivitySection: some View {
         VStack(alignment: .leading, spacing: theme.spacing.m) {
             HStack {
-                Text(LocalizationKeys.Training.Dashboard.recentActivity.localized)
+                Text(TrainingKeys.Dashboard.recentActivity.localized)
                     .font(theme.typography.headline)
                     .fontWeight(.semibold)
                     .foregroundColor(theme.colors.textPrimary)
                 Spacer()
                 
-                Button("See All") {
+                Button(TrainingKeys.Dashboard.seeAll.localized) {
                     // Navigate to history
                 }
                 .font(theme.typography.caption)
@@ -295,9 +295,9 @@ struct TrainingDashboardView: View {
         VStack(spacing: theme.spacing.l) {
             EmptyStateView(
                 icon: "figure.strengthtraining.traditional",
-                title: LocalizationKeys.Training.Dashboard.noRecentActivity.localized,
-                description: "Start your first workout to see your progress here!",
-                actionTitle: "Start Workout",
+                title: TrainingKeys.Dashboard.noRecentActivity.localized,
+                description: TrainingKeys.Dashboard.emptyStateDescription.localized,
+                actionTitle: TrainingKeys.Dashboard.startWorkout.localized,
                 action: {
                     coordinator.selectWorkoutType(.lift)
                 }

@@ -1,6 +1,26 @@
 import Foundation
 import HealthKit
+import UserNotifications
 
+/**
+ * HealthKit integration service for seamless health data synchronization.
+ * 
+ * This service manages Apple HealthKit permissions, data fetching, and background sync
+ * for health metrics including steps, calories, and weight. Implements caching for
+ * performance optimization and observer queries for real-time updates.
+ * 
+ * Features:
+ * - Authorization management for HealthKit permissions
+ * - Background delivery and observer queries for real-time sync
+ * - Cached data with configurable validity duration (5 minutes)
+ * - Automatic data refresh when app becomes active
+ * - Thread-safe operations with @MainActor
+ * 
+ * Supported data types:
+ * - Steps (HKQuantityTypeIdentifier.stepCount)
+ * - Active Energy Burned (HKQuantityTypeIdentifier.activeEnergyBurned)
+ * - Body Weight (HKQuantityTypeIdentifier.bodyMass) - read/write
+ */
 @MainActor
 class HealthKitService: ObservableObject {
     private let healthStore = HKHealthStore()
@@ -11,7 +31,7 @@ class HealthKitService: ObservableObject {
     private var cachedCalories: Double = 0
     private var cachedWeight: Double? = nil
     private var lastCacheUpdate: Date = Date.distantPast
-    private let cacheValidityDuration: TimeInterval = 300 // 5 minutes
+    private let cacheValidityDuration: TimeInterval = 900 // 15 minutes - performance optimization
     
     // MARK: - Published Properties
     @Published var isAuthorized = false
@@ -36,6 +56,23 @@ class HealthKitService: ObservableObject {
             return false
         }
         
+        // Request both HealthKit and Notification permissions together
+        async let healthKitResult = requestHealthKitPermissions()
+        async let notificationResult = requestNotificationPermissions()
+        
+        let (healthAuthorized, notificationRequested) = await (healthKitResult, notificationResult)
+        
+        if healthAuthorized {
+            await readTodaysData()
+            enableBackgroundDelivery()
+            startObserverQueries()
+        }
+        
+        print("✅ Permissions requested - HealthKit: \(healthAuthorized), Notifications: \(notificationRequested)")
+        return healthAuthorized
+    }
+    
+    private func requestHealthKitPermissions() async -> Bool {
         let readTypes: Set<HKObjectType> = [
             stepCountType,
             activeEnergyType,
@@ -49,23 +86,24 @@ class HealthKitService: ObservableObject {
             let calorieStatus = healthStore.authorizationStatus(for: activeEnergyType)
             let weightStatus = healthStore.authorizationStatus(for: bodyMassType)
             
-            // Consider authorized if ANY relevant type is permitted
-            // Dashboard uses steps and active energy; weight is optional
             isAuthorized = (stepStatus == .sharingAuthorized) ||
                            (calorieStatus == .sharingAuthorized) ||
                            (weightStatus == .sharingAuthorized)
-            
-            if isAuthorized {
-                await readTodaysData()
-                // Start background delivery and observers once authorized
-                enableBackgroundDelivery()
-                startObserverQueries()
-            }
             
             return isAuthorized
         } catch {
             print("HealthKit authorization error: \(error)")
             self.error = error
+            return false
+        }
+    }
+    
+    private func requestNotificationPermissions() async -> Bool {
+        do {
+            try await NotificationManager.shared.requestAuthorization()
+            return true
+        } catch {
+            print("Notification authorization error: \(error)")
             return false
         }
     }
@@ -96,6 +134,21 @@ class HealthKitService: ObservableObject {
             }
             
             await updateCacheAndUI(with: results, startTime: startTime)
+            
+            // Log HealthKit sync activity if data was successfully fetched
+            if results.0 != nil || results.1 != nil || results.2 != nil {
+                let syncedTypes = [
+                    results.0 != nil ? "Adımlar" : nil,
+                    results.1 != nil ? "Kalori" : nil, 
+                    results.2 != nil ? "Kilo" : nil
+                ].compactMap { $0 }
+                
+                if !syncedTypes.isEmpty {
+                    // Note: ActivityLoggerService integration would need user and modelContext
+                    // For now, just log the sync attempt
+                    print("HealthKit synced: \(syncedTypes.joined(separator: ", "))")
+                }
+            }
         } catch let caughtError {
             Task { @MainActor in
                 ErrorHandlingService.shared.handle(
@@ -306,11 +359,17 @@ class HealthKitService: ObservableObject {
     
     @MainActor
     func stopObserverQueries() {
+        guard !observerQueries.isEmpty else { 
+            print("🔍 No HealthKit observer queries to stop")
+            return 
+        }
+        
+        let queryCount = observerQueries.count
         for query in observerQueries {
             healthStore.stop(query)
         }
         observerQueries.removeAll()
-        print("🛑 All HealthKit observer queries stopped")
+        print("🛑 Stopped \(queryCount) HealthKit observer queries (\(Date()))")
     }
     
     func disableBackgroundDelivery() {

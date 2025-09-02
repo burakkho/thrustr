@@ -6,6 +6,7 @@ struct TrainingAnalyticsView: View {
     @Environment(\.theme) private var theme
     @Environment(\.modelContext) private var modelContext
     @Environment(TrainingCoordinator.self) private var coordinator
+    @EnvironmentObject private var unitSettings: UnitSettings
     @Query private var users: [User]
     
     @StateObject private var analyticsService: AnalyticsService
@@ -36,16 +37,19 @@ struct TrainingAnalyticsView: View {
                     // Monthly Goals Section
                     monthlyGoalsSection(for: user)
                     
+                    // 1RM Progression Section
+                    oneRMProgressionSection(for: user)
+                    
                     // Recent PRs Section
                     recentPRsSection(for: user)
                 } else {
                     // No user state
                     EmptyStateCard(
                         icon: "person.circle",
-                        title: "No User Profile",
-                        message: "Complete your profile setup to see analytics",
+                        title: TrainingKeys.Analytics.noUserProfile.localized,
+                        message: TrainingKeys.Analytics.setupProfileMessage.localized,
                         primaryAction: .init(
-                            title: "Setup Profile",
+                            title: TrainingKeys.Analytics.setupProfile.localized,
                             action: { /* Navigate to profile */ }
                         )
                     )
@@ -70,12 +74,12 @@ struct TrainingAnalyticsView: View {
     private var headerSection: some View {
         HStack {
             VStack(alignment: .leading, spacing: 4) {
-                Text("Training Analytics")
+                Text(TrainingKeys.Analytics.title.localized)
                     .font(theme.typography.title2)
                     .fontWeight(.bold)
                     .foregroundColor(theme.colors.textPrimary)
                 
-                Text("Track your progress and achievements")
+                Text(TrainingKeys.Analytics.subtitle.localized)
                     .font(theme.typography.body)
                     .foregroundColor(theme.colors.textSecondary)
             }
@@ -97,33 +101,33 @@ struct TrainingAnalyticsView: View {
             LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: theme.spacing.m) {
                 QuickStatCard(
                     icon: "calendar",
-                    title: "Bu Hafta",
+                    title: TrainingKeys.Analytics.thisWeek.localized,
                     value: "\(weeklySummary.totalSessions)",
-                    subtitle: "antrenman",
+                    subtitle: TrainingKeys.Analytics.sessions.localized,
                     color: theme.colors.accent
                 )
                 
                 QuickStatCard(
                     icon: "clock",
-                    title: "Toplam Süre", 
+                    title: TrainingKeys.Analytics.totalTime.localized, 
                     value: formatDuration(weeklySummary.totalDuration),
-                    subtitle: "bu hafta",
+                    subtitle: TrainingKeys.Analytics.thisWeekLower.localized,
                     color: theme.colors.success
                 )
                 
                 QuickStatCard(
                     icon: "flame.fill",
-                    title: "Streak",
+                    title: TrainingKeys.Analytics.streak.localized,
                     value: "\(weeklySummary.currentStreak)",
-                    subtitle: "gün",
+                    subtitle: TrainingKeys.Analytics.days.localized,
                     color: theme.colors.warning
                 )
                 
                 QuickStatCard(
                     icon: "trophy.fill",
-                    title: "PRs",
+                    title: TrainingKeys.Analytics.prs.localized,
                     value: "\(user.totalPRsThisMonth)",
-                    subtitle: "bu ay",
+                    subtitle: TrainingKeys.Analytics.thisMonth.localized,
                     color: theme.colors.error
                 )
             }
@@ -149,14 +153,14 @@ struct TrainingAnalyticsView: View {
     private func monthlyGoalsSection(for user: User) -> some View {
         VStack(alignment: .leading, spacing: theme.spacing.m) {
             HStack {
-                Text("Monthly Goals")
+                Text(TrainingKeys.Analytics.monthlyGoals.localized)
                     .font(theme.typography.headline)
                     .fontWeight(.semibold)
                     .foregroundColor(theme.colors.textPrimary)
                 
                 Spacer()
                 
-                Button("Edit Goals") {
+                Button(TrainingKeys.Analytics.editGoals.localized) {
                     showingGoalSettings = true
                 }
                 .font(theme.typography.caption)
@@ -168,7 +172,7 @@ struct TrainingAnalyticsView: View {
             
             HStack(spacing: theme.spacing.m) {
                 GoalProgressCard(
-                    title: "Sessions",
+                    title: TrainingKeys.Analytics.sessions.localized,
                     progress: goalProgress.sessionProgress,
                     current: "\(goalProgress.currentSessions)",
                     target: "\(goalProgress.targetSessions)",
@@ -177,7 +181,7 @@ struct TrainingAnalyticsView: View {
                 )
                 
                 GoalProgressCard(
-                    title: "Distance", 
+                    title: TrainingKeys.Analytics.distance.localized, 
                     progress: goalProgress.distanceProgress,
                     current: "\(Int(goalProgress.currentDistance / 1000))km",
                     target: "\(Int(goalProgress.targetDistance / 1000))km",
@@ -193,14 +197,14 @@ struct TrainingAnalyticsView: View {
     private func recentPRsSection(for user: User) -> some View {
         VStack(alignment: .leading, spacing: theme.spacing.m) {
             HStack {
-                Text("Recent PRs")
+                Text(TrainingKeys.Analytics.recentPRs.localized)
                     .font(theme.typography.headline) 
                     .fontWeight(.semibold)
                     .foregroundColor(theme.colors.textPrimary)
                 
                 Spacer()
                 
-                Button("View All") {
+                Button(TrainingKeys.Analytics.viewAll.localized) {
                     // Navigate to detailed PR view
                 }
                 .font(theme.typography.caption)
@@ -213,10 +217,10 @@ struct TrainingAnalyticsView: View {
             if recentPRs.isEmpty {
                 EmptyStateCard(
                     icon: "trophy",
-                    title: "No PRs Yet",
-                    message: "Complete workouts to start tracking personal records",
+                    title: TrainingKeys.Analytics.noPRsYet.localized,
+                    message: TrainingKeys.Analytics.noPRsMessage.localized,
                     primaryAction: .init(
-                        title: "Start Training",
+                        title: TrainingKeys.Analytics.startTraining.localized,
                         action: { /* Navigate to training */ }
                     )
                 )
@@ -269,6 +273,105 @@ struct TrainingAnalyticsView: View {
         .background(theme.colors.cardBackground)
         .cornerRadius(theme.radius.m)
         .shadow(color: theme.shadows.card.opacity(0.05), radius: 1)
+    }
+    
+    // MARK: - 1RM Progression Section
+    private func oneRMProgressionSection(for user: User) -> some View {
+        VStack(alignment: .leading, spacing: theme.spacing.m) {
+            HStack {
+                Text("1RM Progression")
+                    .font(theme.typography.headline)
+                    .fontWeight(.semibold)
+                    .foregroundColor(theme.colors.textPrimary)
+                
+                Spacer()
+                
+                Button("Update 1RMs") {
+                    // Navigate to strength test or 1RM input
+                }
+                .font(theme.typography.caption)
+                .foregroundColor(theme.colors.accent)
+            }
+            .padding(.horizontal)
+            
+            let oneRMs = analyticsService.getLatestOneRMs(for: user)
+            
+            if oneRMs.allSatisfy({ $0.value == nil }) {
+                // Empty state for 1RM data
+                EmptyStateCard(
+                    icon: "scalemass.fill",
+                    title: "No 1RM Data",
+                    message: "Take a strength test to track your 1RM progression over time",
+                    primaryAction: .init(
+                        title: "Take Strength Test",
+                        icon: "play.circle",
+                        action: { /* Navigate to strength test */ }
+                    )
+                )
+                .padding(.horizontal)
+            } else {
+                // 1RM Cards Grid
+                LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: theme.spacing.m) {
+                    ForEach(oneRMs.filter { $0.value != nil }, id: \.name) { oneRM in
+                        oneRMCard(
+                            exercise: oneRM.name,
+                            value: oneRM.value ?? 0,
+                            date: oneRM.date
+                        )
+                    }
+                }
+                .padding(.horizontal)
+            }
+        }
+    }
+    
+    private func oneRMCard(exercise: String, value: Double, date: Date?) -> some View {
+        VStack(spacing: theme.spacing.s) {
+            // Exercise icon
+            Image(systemName: exerciseIcon(for: exercise))
+                .font(.title2)
+                .foregroundColor(theme.colors.accent)
+            
+            // Exercise name
+            Text(exercise)
+                .font(theme.typography.caption)
+                .foregroundColor(theme.colors.textSecondary)
+                .multilineTextAlignment(.center)
+                .lineLimit(2)
+            
+            // 1RM value
+            Text(UnitsFormatter.formatWeight(kg: value, system: unitSettings.unitSystem))
+                .font(theme.typography.headline)
+                .fontWeight(.bold)
+                .foregroundColor(theme.colors.textPrimary)
+            
+            // Last updated
+            if let date = date {
+                Text(formatRelativeDate(date))
+                    .font(.caption2)
+                    .foregroundColor(theme.colors.textSecondary)
+            }
+        }
+        .frame(maxWidth: .infinity)
+        .padding()
+        .background(theme.colors.cardBackground)
+        .cornerRadius(theme.radius.m)
+        .shadow(color: theme.shadows.card.opacity(0.05), radius: 1)
+    }
+    
+    private func exerciseIcon(for exercise: String) -> String {
+        switch exercise.lowercased() {
+        case let name where name.contains("squat"):
+            return "figure.squat"
+        case let name where name.contains("bench"):
+            return "figure.strengthtraining.traditional"
+        case let name where name.contains("deadlift"):
+            return "figure.strengthtraining.functional"
+        case let name where name.contains("overhead") || name.contains("press"):
+            return "figure.arms.open"
+        default:
+            return "dumbbell.fill"
+        }
     }
     
     // MARK: - Helper Methods

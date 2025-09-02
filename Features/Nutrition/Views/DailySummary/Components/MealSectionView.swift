@@ -41,13 +41,13 @@ struct MealSectionView: View {
     private func mealHeaderTitle(for mealKey: String) -> String {
         switch mealKey {
         case "breakfast":
-            return LocalizationKeys.Nutrition.MealEntry.MealTypes.breakfast.localized
+            return NutritionKeys.MealEntry.MealTypes.breakfast.localized
         case "lunch":
-            return LocalizationKeys.Nutrition.MealEntry.MealTypes.lunch.localized
+            return NutritionKeys.MealEntry.MealTypes.lunch.localized
         case "dinner":
-            return LocalizationKeys.Nutrition.MealEntry.MealTypes.dinner.localized
+            return NutritionKeys.MealEntry.MealTypes.dinner.localized
         case "snack":
-            return LocalizationKeys.Nutrition.MealEntry.MealTypes.snack.localized
+            return NutritionKeys.MealEntry.MealTypes.snack.localized
         default:
             return mealKey.capitalized
         }

@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct FoodRowView: View {
+    @EnvironmentObject private var unitSettings: UnitSettings
     let food: Food
     let action: () -> Void
     
@@ -53,7 +54,7 @@ struct FoodRowView: View {
                         .foregroundColor(.primary)
                         .lineLimit(2)
                     
-                    Text(foodMacroLine(food))
+                    Text(foodMacroLine)
                         .font(.caption)
                         .foregroundColor(.secondary)
                         .lineLimit(1)
@@ -68,7 +69,7 @@ struct FoodRowView: View {
                     
                     if food.source == .openFoodFacts {
                         HStack(spacing: 6) {
-                            Text("OFF")
+                            Text(NutritionKeys.Labels.off.localized)
                                 .font(.system(size: 9, weight: .bold))
                                 .padding(.horizontal, 6)
                                 .padding(.vertical, 2)
@@ -97,19 +98,19 @@ struct FoodRowView: View {
             .font(.title3)
             .frame(width: 24)
     }
-}
-
-// OPTIMIZED: Move function outside view for better performance
-private func foodMacroLine(_ food: Food) -> String {
-    // Show per serving if available, else per 100g
-    let grams = Int(food.servingSizeGramsOrDefault.rounded())
-    let scope: String
-    if let name = food.servingName, !name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-        scope = " / 1 \(name) (\(grams)g)"
-    } else {
-        scope = " / 1 porsiyon (\(grams)g)"
+    
+    // MARK: - Computed Properties
+    private var foodMacroLine: String {
+        // Show per serving if available, else per 100g
+        let grams = Int(food.servingSizeGramsOrDefault.rounded())
+        let scope: String
+        if let name = food.servingName, !name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            scope = " / 1 \(name) (\(UnitsFormatter.formatFoodWeight(grams: Double(grams), system: unitSettings.unitSystem)))"
+        } else {
+            scope = " / 1 \(NutritionKeys.Labels.serving.localized) (\(UnitsFormatter.formatFoodWeight(grams: Double(grams), system: unitSettings.unitSystem)))"
+        }
+        return "\(Int(food.calories)) \(NutritionKeys.Units.kcal.localized) • P: \(Int(food.protein))\(NutritionKeys.Units.g.localized) • C: \(Int(food.carbs))\(NutritionKeys.Units.g.localized) • F: \(Int(food.fat))\(NutritionKeys.Units.g.localized)" + scope
     }
-    return "\(Int(food.calories)) \(LocalizationKeys.Nutrition.Units.kcal.localized) • P: \(Int(food.protein))\(LocalizationKeys.Nutrition.Units.g.localized) • C: \(Int(food.carbs))\(LocalizationKeys.Nutrition.Units.g.localized) • F: \(Int(food.fat))\(LocalizationKeys.Nutrition.Units.g.localized)" + scope
 }
 
 #Preview {

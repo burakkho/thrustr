@@ -70,7 +70,7 @@ struct GoalProgressCard: View {
 #Preview {
     HStack(spacing: 16) {
         GoalProgressCard(
-            title: "Sessions",
+            title: TrainingKeys.Analytics.sessions.localized,
             progress: 0.75,
             current: "12",
             target: "16",
@@ -79,7 +79,7 @@ struct GoalProgressCard: View {
         )
         
         GoalProgressCard(
-            title: "Distance",
+            title: TrainingKeys.Analytics.distance.localized,
             progress: 0.45,
             current: "22km",
             target: "50km",

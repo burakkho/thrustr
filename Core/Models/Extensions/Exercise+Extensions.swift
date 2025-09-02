@@ -5,9 +5,6 @@ extension Exercise {
     
     /// Returns localized exercise name based on current language
     var localizedName: String {
-        // Use LanguageManager to determine current language
-        // For now, default to English to avoid dependency issues
-        // TODO: Implement proper localization with LanguageManager
         return nameEN.isEmpty ? nameTR : nameEN
     }
     

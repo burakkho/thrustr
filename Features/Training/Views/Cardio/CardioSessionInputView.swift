@@ -9,7 +9,7 @@ struct CardioSessionInputView: View {
     let exerciseType: CardioWorkout
     let user: User
     
-    @State private var sessionType: SessionType = .distance
+    @State private var sessionType: CardioSessionType = .distance
     @State private var targetDistance: Double = 5.0 // km
     @State private var targetTime: Int = 30 // minutes
     @State private var notes: String = ""
@@ -34,7 +34,7 @@ struct CardioSessionInputView: View {
                                 .foregroundColor(theme.colors.textPrimary)
                         }
                         
-                        Text(LocalizationKeys.Training.Cardio.setGoal.localized)
+                        Text(TrainingKeys.Cardio.setGoal.localized)
                             .font(theme.typography.body)
                             .foregroundColor(theme.colors.textSecondary)
                     }
@@ -42,18 +42,18 @@ struct CardioSessionInputView: View {
                     
                     // Session Type Selection
                     VStack(alignment: .leading, spacing: theme.spacing.m) {
-                        Text(LocalizationKeys.Training.Cardio.sessionType.localized)
+                        Text(TrainingKeys.Cardio.sessionType.localized)
                             .font(theme.typography.headline)
                             .foregroundColor(theme.colors.textPrimary)
                         
                         HStack(spacing: theme.spacing.m) {
-                            SessionTypeButton(
+                            CardioSessionTypeButton(
                                 type: .distance,
                                 isSelected: sessionType == .distance,
                                 onTap: { sessionType = .distance }
                             )
                             
-                            SessionTypeButton(
+                            CardioSessionTypeButton(
                                 type: .time,
                                 isSelected: sessionType == .time,
                                 onTap: { sessionType = .time }
@@ -65,7 +65,7 @@ struct CardioSessionInputView: View {
                     
                     // Target Input
                     VStack(alignment: .leading, spacing: theme.spacing.m) {
-                        Text(LocalizationKeys.Training.Cardio.target.localized)
+                        Text(TrainingKeys.Cardio.target.localized)
                             .font(theme.typography.headline)
                             .foregroundColor(theme.colors.textPrimary)
                         
@@ -79,11 +79,11 @@ struct CardioSessionInputView: View {
                     
                     // Notes (Optional)
                     VStack(alignment: .leading, spacing: theme.spacing.s) {
-                        Text(LocalizationKeys.Training.Cardio.notes.localized)
+                        Text(TrainingKeys.Cardio.notes.localized)
                             .font(theme.typography.headline)
                             .foregroundColor(theme.colors.textPrimary)
                         
-                        TextField(LocalizationKeys.Training.Cardio.notesPlaceholder.localized, text: $notes)
+                        TextField(TrainingKeys.Cardio.notesPlaceholder.localized, text: $notes)
                             .textFieldStyle(.plain)
                             .padding(theme.spacing.m)
                             .background(theme.colors.backgroundSecondary)
@@ -93,7 +93,7 @@ struct CardioSessionInputView: View {
                     // Equipment Info
                     if !exerciseType.equipment.isEmpty {
                         VStack(alignment: .leading, spacing: theme.spacing.s) {
-                            Text(LocalizationKeys.Training.Cardio.equipmentOptions.localized)
+                            Text(TrainingKeys.Cardio.equipmentOptions.localized)
                                 .font(theme.typography.headline)
                                 .foregroundColor(theme.colors.textPrimary)
                             
@@ -111,7 +111,7 @@ struct CardioSessionInputView: View {
                         HStack {
                             Image(systemName: "play.fill")
                                 .font(.title3)
-                            Text(LocalizationKeys.Training.Cardio.startSession.localized)
+                            Text(TrainingKeys.Cardio.startSession.localized)
                                 .font(theme.typography.headline)
                                 .fontWeight(.semibold)
                         }
@@ -124,7 +124,7 @@ struct CardioSessionInputView: View {
                 }
                 .padding(theme.spacing.m)
             }
-            .navigationTitle(LocalizationKeys.Training.Cardio.newSession.localized)
+            .navigationTitle(TrainingKeys.Cardio.newSession.localized)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
@@ -150,14 +150,14 @@ struct CardioSessionInputView: View {
 }
 
 // MARK: - Session Type
-enum SessionType: String, CaseIterable {
+enum CardioSessionType: String, CaseIterable {
     case distance = "distance"
     case time = "time"
     
     var displayName: String {
         switch self {
-        case .distance: return LocalizationKeys.Training.Cardio.distanceGoal.localized
-        case .time: return LocalizationKeys.Training.Cardio.timeGoal.localized
+        case .distance: return TrainingKeys.Cardio.distanceGoal.localized
+        case .time: return TrainingKeys.Cardio.timeGoal.localized
         }
     }
     
@@ -170,16 +170,16 @@ enum SessionType: String, CaseIterable {
     
     var description: String {
         switch self {
-        case .distance: return LocalizationKeys.Training.Cardio.distanceGoal.localized
-        case .time: return LocalizationKeys.Training.Cardio.timeGoal.localized
+        case .distance: return TrainingKeys.Cardio.distanceGoal.localized
+        case .time: return TrainingKeys.Cardio.timeGoal.localized
         }
     }
 }
 
 // MARK: - Supporting Views
-struct SessionTypeButton: View {
+struct CardioSessionTypeButton: View {
     @Environment(\.theme) private var theme
-    let type: SessionType
+    let type: CardioSessionType
     let isSelected: Bool
     let onTap: () -> Void
     
@@ -226,7 +226,7 @@ struct DistanceInputView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: theme.spacing.s) {
             // Quick Select
-            Text(LocalizationKeys.Training.Cardio.quickSelect.localized)
+            Text(TrainingKeys.Cardio.quickSelect.localized)
                 .font(theme.typography.body)
                 .foregroundColor(theme.colors.textSecondary)
             
@@ -249,7 +249,7 @@ struct DistanceInputView: View {
             }
             
             // Custom Input
-            Text(LocalizationKeys.Training.Cardio.customDistance.localized)
+            Text(TrainingKeys.Cardio.customDistance.localized)
                 .font(theme.typography.body)
                 .foregroundColor(theme.colors.textSecondary)
                 .padding(.top, theme.spacing.s)
@@ -289,7 +289,7 @@ struct TimeInputView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: theme.spacing.s) {
             // Quick Select
-            Text(LocalizationKeys.Training.Cardio.quickSelect.localized)
+            Text(TrainingKeys.Cardio.quickSelect.localized)
                 .font(theme.typography.body)
                 .foregroundColor(theme.colors.textSecondary)
             
@@ -312,7 +312,7 @@ struct TimeInputView: View {
             }
             
             // Custom Input
-            Text(LocalizationKeys.Training.Cardio.customDuration.localized)
+            Text(TrainingKeys.Cardio.customDuration.localized)
                 .font(theme.typography.body)
                 .foregroundColor(theme.colors.textSecondary)
                 .padding(.top, theme.spacing.s)

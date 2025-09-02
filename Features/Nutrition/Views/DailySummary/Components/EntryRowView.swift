@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct EntryRowView: View {
+    @EnvironmentObject private var unitSettings: UnitSettings
     let entry: NutritionEntry
     let onEdit: () -> Void
     let onError: (String) -> Void
@@ -31,14 +32,14 @@ struct EntryRowView: View {
         VStack(alignment: .leading, spacing: 2) {
             Text(entry.foodName)
                 .font(.headline)
-            Text(portionSubtitle(entry: entry))
+            Text(portionSubtitle)
                 .font(.caption)
                 .foregroundColor(.secondary)
         }
     }
     
     private var calorieInfo: some View {
-        Text("\(Int(entry.calories)) \(LocalizationKeys.Nutrition.Units.kcal.localized)")
+        Text("\(Int(entry.calories)) \(NutritionKeys.Units.kcal.localized)")
             .font(.subheadline)
             .fontWeight(.medium)
     }
@@ -74,13 +75,13 @@ struct EntryRowView: View {
         Button {
             onEdit()
         } label: {
-            Label(LocalizationKeys.Common.edit.localized, systemImage: "pencil")
+            Label(CommonKeys.Onboarding.Common.edit.localized, systemImage: "pencil")
         }
         
         Button(role: .destructive) {
             deleteEntry()
         } label: {
-            Label(LocalizationKeys.Common.delete.localized, systemImage: "trash")
+            Label(CommonKeys.Onboarding.Common.delete.localized, systemImage: "trash")
         }
     }
     
@@ -131,29 +132,29 @@ struct EntryRowView: View {
             }
         }
     }
-}
-
-// MARK: - Portion subtitle helper
-private func portionSubtitle(entry: NutritionEntry) -> String {
-    let grams = entry.gramsConsumed
-    guard let food = entry.food else {
-        return "\(Int(grams))\(LocalizationKeys.Nutrition.Units.g.localized)"
-    }
-    let per = food.servingSizeGramsOrDefault
-    let servings = per > 0 ? grams / per : 0
-    if servings > 0 {
-        let servingsText: String
-        if abs(servings.rounded() - servings) < 0.001 {
-            servingsText = String(format: "%.0f", servings)
-        } else {
-            servingsText = String(format: "%.2f", servings)
+    
+    // MARK: - Computed Properties
+    private var portionSubtitle: String {
+        let grams = entry.gramsConsumed
+        guard let food = entry.food else {
+            return UnitsFormatter.formatFoodWeight(grams: grams, system: unitSettings.unitSystem)
         }
-        if let name = food.servingName, !name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-            return "\(servingsText) \(name) • \(Int(grams))\(LocalizationKeys.Nutrition.Units.g.localized)"
+        let per = food.servingSizeGramsOrDefault
+        let servings = per > 0 ? grams / per : 0
+        if servings > 0 {
+            let servingsText: String
+            if abs(servings.rounded() - servings) < 0.001 {
+                servingsText = String(format: "%.0f", servings)
+            } else {
+                servingsText = String(format: "%.2f", servings)
+            }
+            if let name = food.servingName, !name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                return "\(servingsText) \(name) • \(UnitsFormatter.formatFoodWeight(grams: grams, system: unitSettings.unitSystem))"
+            }
+            return "\(servingsText) \(NutritionKeys.Labels.serving.localized) • \(UnitsFormatter.formatFoodWeight(grams: grams, system: unitSettings.unitSystem))"
         }
-        return "\(servingsText) porsiyon • \(Int(grams))\(LocalizationKeys.Nutrition.Units.g.localized)"
+        return UnitsFormatter.formatFoodWeight(grams: grams, system: unitSettings.unitSystem)
     }
-    return "\(Int(grams))\(LocalizationKeys.Nutrition.Units.g.localized)"
 }
 
 #Preview {

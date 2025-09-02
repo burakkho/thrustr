@@ -9,13 +9,13 @@ enum WODCategory: String, CaseIterable {
     var displayName: String {
         switch self {
         case .custom:
-            return "My WODs"
+            return TrainingKeys.WOD.myWODs.localized
         case .girls:
-            return "The Girls"
+            return TrainingKeys.WOD.theGirls.localized
         case .heroes:
-            return "Hero WODs"
+            return TrainingKeys.WOD.heroWODs.localized
         case .opens:
-            return "Open WODs"
+            return TrainingKeys.WOD.openWODs.localized
         }
     }
     
@@ -35,13 +35,13 @@ enum WODCategory: String, CaseIterable {
     var description: String {
         switch self {
         case .custom:
-            return "Your custom workouts"
+            return TrainingKeys.WOD.customDesc.localized
         case .girls:
-            return "Classic benchmark WODs"
+            return TrainingKeys.WOD.girlsDesc.localized
         case .heroes:
-            return "Hero tribute workouts"
+            return TrainingKeys.WOD.heroesDesc.localized
         case .opens:
-            return "CrossFit Open workouts"
+            return TrainingKeys.WOD.opensDesc.localized
         }
     }
 }

@@ -16,9 +16,9 @@ struct GoalsStepView: View {
     var body: some View {
         VStack(spacing: 24) {
             VStack(spacing: 8) {
-                Text(LocalizationKeys.Onboarding.Goals.title.localized)
+                Text(CommonKeys.Onboarding.goalsTitle.localized)
                     .font(.system(size: 28, weight: .semibold, design: .rounded))
-                Text(LocalizationKeys.Onboarding.Goals.subtitle.localized)
+                Text(CommonKeys.Onboarding.goalsSubtitle.localized)
                     .font(.system(size: 14, weight: .regular, design: .rounded))
                     .foregroundColor(.secondary)
                     .multilineTextAlignment(.center)
@@ -28,12 +28,12 @@ struct GoalsStepView: View {
             ScrollView {
                 VStack(spacing: 24) {
                     VStack(alignment: .leading, spacing: 12) {
-                        Text(LocalizationKeys.Onboarding.Goals.mainGoal.localized)
+                        Text(CommonKeys.Onboarding.mainGoalLabel.localized)
                             .font(.headline)
                         VStack(spacing: 8) {
                             GoalOptionButton(
-                                title: LocalizationKeys.Onboarding.Goals.Cut.title.localized,
-                                subtitle: LocalizationKeys.Onboarding.Goals.Cut.subtitle.localized,
+                                title: CommonKeys.Onboarding.goalCutTitle.localized,
+                                subtitle: CommonKeys.Onboarding.goalCutSubtitle.localized,
                                 icon: "flame.fill",
                                 color: .red,
                                 isSelected: data.fitnessGoal == "cut"
@@ -41,8 +41,8 @@ struct GoalsStepView: View {
                                 data.fitnessGoal = "cut"
                             }
                             GoalOptionButton(
-                                title: LocalizationKeys.Onboarding.Goals.Bulk.title.localized,
-                                subtitle: LocalizationKeys.Onboarding.Goals.Bulk.subtitle.localized,
+                                title: CommonKeys.Onboarding.goalBulkTitle.localized,
+                                subtitle: CommonKeys.Onboarding.goalBulkSubtitle.localized,
                                 icon: "dumbbell.fill",
                                 color: .blue,
                                 isSelected: data.fitnessGoal == "bulk"
@@ -50,8 +50,8 @@ struct GoalsStepView: View {
                                 data.fitnessGoal = "bulk"
                             }
                             GoalOptionButton(
-                                title: LocalizationKeys.Onboarding.Goals.Maintain.title.localized,
-                                subtitle: LocalizationKeys.Onboarding.Goals.Maintain.subtitle.localized,
+                                title: CommonKeys.Onboarding.goalMaintainTitle.localized,
+                                subtitle: CommonKeys.Onboarding.goalMaintainSubtitle.localized,
                                 icon: "target",
                                 color: .green,
                                 isSelected: data.fitnessGoal == "maintain"
@@ -62,40 +62,40 @@ struct GoalsStepView: View {
                     }
                     
                     VStack(alignment: .leading, spacing: 12) {
-                        Text(LocalizationKeys.Onboarding.Goals.activityLevel.localized)
+                        Text(CommonKeys.Onboarding.activityLevelLabel.localized)
                             .font(.headline)
                         VStack(spacing: 8) {
                             ActivityLevelButton(
-                                title: LocalizationKeys.Onboarding.Activity.sedentary.localized,
-                                subtitle: LocalizationKeys.Onboarding.Activity.sedentaryDesc.localized,
+                                title: CommonKeys.Onboarding.activitySedentary.localized,
+                                subtitle: CommonKeys.Onboarding.activitySedentaryDesc.localized,
                                 isSelected: data.activityLevel == "sedentary"
                             ) {
                                 data.activityLevel = "sedentary"
                             }
                             ActivityLevelButton(
-                                title: LocalizationKeys.Onboarding.Activity.light.localized,
-                                subtitle: LocalizationKeys.Onboarding.Activity.lightDesc.localized,
+                                title: CommonKeys.Onboarding.activityLight.localized,
+                                subtitle: CommonKeys.Onboarding.activityLightDesc.localized,
                                 isSelected: data.activityLevel == "light"
                             ) {
                                 data.activityLevel = "light"
                             }
                             ActivityLevelButton(
-                                title: LocalizationKeys.Onboarding.Activity.moderate.localized,
-                                subtitle: LocalizationKeys.Onboarding.Activity.moderateDesc.localized,
+                                title: CommonKeys.Onboarding.activityModerate.localized,
+                                subtitle: CommonKeys.Onboarding.activityModerateDesc.localized,
                                 isSelected: data.activityLevel == "moderate"
                             ) {
                                 data.activityLevel = "moderate"
                             }
                             ActivityLevelButton(
-                                title: LocalizationKeys.Onboarding.Activity.active.localized,
-                                subtitle: LocalizationKeys.Onboarding.Activity.activeDesc.localized,
+                                title: CommonKeys.Onboarding.activityActive.localized,
+                                subtitle: CommonKeys.Onboarding.activityActiveDesc.localized,
                                 isSelected: data.activityLevel == "active"
                             ) {
                                 data.activityLevel = "active"
                             }
                             ActivityLevelButton(
-                                title: LocalizationKeys.Onboarding.Activity.veryActive.localized,
-                                subtitle: LocalizationKeys.Onboarding.Activity.veryActiveDesc.localized,
+                                title: CommonKeys.Onboarding.activityVeryActive.localized,
+                                subtitle: CommonKeys.Onboarding.activityVeryActiveDesc.localized,
                                 isSelected: data.activityLevel == "very_active"
                             ) {
                                 data.activityLevel = "very_active"
@@ -104,10 +104,10 @@ struct GoalsStepView: View {
                     }
                     
                     VStack(alignment: .leading, spacing: 12) {
-                        Text(LocalizationKeys.Onboarding.Goals.targetWeight.localized)
+                        Text(CommonKeys.Onboarding.targetWeightLabel.localized)
                             .font(.headline)
                         VStack(spacing: 8) {
-                            Toggle(LocalizationKeys.Onboarding.Goals.targetWeightToggle.localized, isOn: Binding(
+                            Toggle(CommonKeys.Onboarding.targetWeightToggle.localized, isOn: Binding(
                                 get: { data.targetWeight != nil },
                                 set: { isOn in data.targetWeight = isOn ? data.weight : nil }
                             ))
@@ -157,7 +157,7 @@ struct GoalsStepView: View {
                 .padding(.horizontal)
             }
             
-            PrimaryButton(title: LocalizationKeys.Onboarding.continueAction.localized, icon: "arrow.right") {
+            PrimaryButton(title: CommonKeys.Onboarding.continueAction.localized, icon: "arrow.right") {
                 onNext()
             }
             .padding(.horizontal)

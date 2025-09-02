@@ -96,11 +96,7 @@ class LocationManager: NSObject {
     }
     
     func startTracking() {
-        guard CLLocationManager.locationServicesEnabled() else {
-            Logger.error("Location services are disabled")
-            return
-        }
-        
+        // Check authorization status first without calling locationServicesEnabled on main thread
         guard isAuthorized else {
             Logger.warning("Location not authorized, cannot start tracking")
             return

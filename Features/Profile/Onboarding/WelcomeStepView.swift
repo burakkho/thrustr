@@ -19,14 +19,15 @@ struct WelcomeStepView: View {
         VStack(spacing: 0) {
             Spacer()
             
-            // App Icon - Sade ve büyük
+            // App Logo - Sade ve büyük
             Circle()
                 .fill(Color.blue.opacity(0.1))
                 .frame(width: 120, height: 120)
                 .overlay(
-                    Image(systemName: "figure.run")
-                        .font(.system(size: 50, weight: .medium, design: .rounded))
-                        .foregroundColor(.blue)
+                    Image("AppLogo")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 60, height: 60)
                 )
                 .scaleEffect(reduceMotion ? 1.0 : iconScale)
                 .onAppear {
@@ -36,11 +37,11 @@ struct WelcomeStepView: View {
                 }
             
             VStack(spacing: 12) {
-                Text(LocalizationKeys.Onboarding.Welcome.title.localized)
+                Text(CommonKeys.Onboarding.welcomeTitle.localized)
                     .font(.largeTitle)
                     .multilineTextAlignment(.center)
                 
-                Text(LocalizationKeys.Onboarding.Welcome.subtitle.localized)
+                Text(CommonKeys.Onboarding.welcomeSubtitle.localized)
                     .font(.body)
                     .foregroundColor(.secondary)
                     .multilineTextAlignment(.center)
@@ -59,7 +60,7 @@ struct WelcomeStepView: View {
             VStack(spacing: 0) {
                 MinimalFeatureRow(
                     icon: "figure.strengthtraining.traditional",
-                    text: LocalizationKeys.Onboarding.Feature.workout.localized
+                    text: CommonKeys.Onboarding.featureWorkout.localized
                 )
                 
                 Divider()
@@ -67,7 +68,7 @@ struct WelcomeStepView: View {
                 
                 MinimalFeatureRow(
                     icon: "chart.line.uptrend.xyaxis",
-                    text: LocalizationKeys.Onboarding.Feature.progress.localized
+                    text: CommonKeys.Onboarding.featureProgress.localized
                 )
                 
                 Divider()
@@ -75,7 +76,7 @@ struct WelcomeStepView: View {
                 
                 MinimalFeatureRow(
                     icon: "fork.knife",
-                    text: LocalizationKeys.Onboarding.Feature.nutrition.localized
+                    text: CommonKeys.Onboarding.featureNutrition.localized
                 )
                 
                 Divider()
@@ -83,7 +84,7 @@ struct WelcomeStepView: View {
                 
                 MinimalFeatureRow(
                     icon: "target",
-                    text: LocalizationKeys.Onboarding.Feature.goals.localized
+                    text: CommonKeys.Onboarding.featureGoals.localized
                 )
             }
             .padding(.top, 48)
@@ -92,10 +93,10 @@ struct WelcomeStepView: View {
             Spacer()
             
             // CTA Button - Daha sade
-            PrimaryButton(title: LocalizationKeys.Onboarding.Welcome.start.localized, icon: "arrow.right") {
+            PrimaryButton(title: CommonKeys.Onboarding.welcomeStart.localized, icon: "arrow.right") {
                 onNext()
             }
-            .accessibilityLabel(Text(LocalizationKeys.Onboarding.Welcome.start.localized))
+            .accessibilityLabel(Text(CommonKeys.Onboarding.welcomeStart.localized))
             .accessibilityHint(Text("Onboarding'a başla"))
             .padding(.horizontal, 24)
             .padding(.bottom, 50)

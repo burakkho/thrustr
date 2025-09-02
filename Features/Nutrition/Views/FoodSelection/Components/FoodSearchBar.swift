@@ -11,11 +11,11 @@ struct FoodSearchBar: View {
                 Image(systemName: "magnifyingglass")
                     .foregroundColor(.secondary)
                 
-                TextField(LocalizationKeys.Nutrition.FoodSelection.searchPlaceholder.localized, text: $searchText)
+                TextField(NutritionKeys.FoodSelection.searchPlaceholder.localized, text: $searchText)
                     .textFieldStyle(.plain)
                 
                 if !searchText.isEmpty {
-                    Button(LocalizationKeys.Nutrition.FoodSelection.clear.localized) {
+                    Button(NutritionKeys.FoodSelection.clear.localized) {
                         searchText = ""
                     }
                     .foregroundColor(.secondary)
@@ -49,7 +49,7 @@ struct FoodSearchBar: View {
                                 searchText = term
                             }
                         }
-                        Button(LocalizationKeys.Nutrition.FoodSelection.clear.localized) {
+                        Button(NutritionKeys.FoodSelection.clear.localized) {
                             recentSearches.removeAll()
                         }
                         .font(.caption)

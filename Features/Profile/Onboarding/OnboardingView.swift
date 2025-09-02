@@ -232,7 +232,7 @@ class OnboardingData: Codable {
         hipCircumference: Double? = nil,
         consentAccepted: Bool = false,
         marketingOptIn: Bool = false,
-        consentTimestamp: Date? = nil
+        consentTimestamp: Date? = nil,
     ) {
         self.name = name
         self.age = age

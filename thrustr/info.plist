@@ -11,5 +11,11 @@
 		<string>location</string>
 		<string>remote-notification</string>
 	</array>
+	<key>NSMotionUsageDescription</key>
+	<string>Bu uygulama antrenman sırasında adımlarınızı saymak ve aktivite takibi yapmak için hareket sensörlerine erişim gerektirir.</string>
+	<key>NSBluetoothAlwaysUsageDescription</key>
+	<string>Bu uygulama nabız bandınıza bağlanmak için Bluetooth erişimi gerektirir.</string>
+	<key>NSBluetoothPeripheralUsageDescription</key>
+	<string>Bu uygulama nabız bandınıza bağlanmak için Bluetooth erişimi gerektirir.</string>
 </dict>
 </plist>

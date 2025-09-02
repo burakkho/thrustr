@@ -9,7 +9,7 @@ struct WeeklyActivityChart: View {
         VStack(alignment: .leading, spacing: theme.spacing.m) {
             // Chart Title
             HStack {
-                Text("This Week Activity")
+                Text(TrainingKeys.Analytics.thisWeekActivity.localized)
                     .font(theme.typography.headline)
                     .fontWeight(.semibold)
                     .foregroundColor(theme.colors.textPrimary)
@@ -20,14 +20,14 @@ struct WeeklyActivityChart: View {
             // Chart
             Chart(activityData, id: \.dayName) { data in
                 BarMark(
-                    x: .value("Day", data.dayName),
-                    y: .value("Lift Sessions", data.liftSessions)
+                    x: .value(TrainingKeys.Analytics.day.localized, data.dayName),
+                    y: .value(TrainingKeys.Analytics.liftSessions.localized, data.liftSessions)
                 )
                 .foregroundStyle(.blue)
                 
                 BarMark(
-                    x: .value("Day", data.dayName),
-                    y: .value("Cardio Sessions", data.cardioSessions)
+                    x: .value(TrainingKeys.Analytics.day.localized, data.dayName),
+                    y: .value(TrainingKeys.Analytics.cardioSessions.localized, data.cardioSessions)
                 )
                 .foregroundStyle(.green)
             }
@@ -55,12 +55,12 @@ struct WeeklyActivityChart: View {
             
             // Legend
             HStack(spacing: theme.spacing.l) {
-                Label("Lift", systemImage: "circle.fill")
+                Label(DashboardKeys.QuickActions.lift.localized, systemImage: "circle.fill")
                     .font(.caption)
                     .foregroundColor(.blue)
                     .labelStyle(ChartLegendLabelStyle())
                 
-                Label("Cardio", systemImage: "circle.fill")
+                Label(DashboardKeys.QuickActions.cardio.localized, systemImage: "circle.fill")
                     .font(.caption)
                     .foregroundColor(.green)
                     .labelStyle(ChartLegendLabelStyle())

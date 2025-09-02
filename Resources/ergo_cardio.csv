@@ -1,0 +1,4 @@
+name,nameEN,nameTR,nameES,nameDE,equipment,exerciseType,met,descriptionTR,descriptionES,descriptionDE
+Row Ergometer,Row Ergometer,Kürek Ergometresi,Remo Ergómetro,Ruderergometer,row_erg,row,7.0,Kürek ergometresinde antrenman,Entrenamiento en remo ergómetro,Training am Ruderergometer
+Ski Ergometer,Ski Ergometer,Kayak Ergometresi,Esquí Ergómetro,Skiergometer,ski_erg,ski,9.0,Kayak ergometresinde antrenman,Entrenamiento en esquí ergómetro,Training am Skiergometer
+Bike Ergometer,Bike Ergometer,Bisiklet Ergometresi,Bicicleta Ergómetro,Fahrradergometer,bike_erg,bike_erg,6.8,Bisiklet ergometresinde antrenman,Entrenamiento en bicicleta ergómetro,Training am Fahrradergometer

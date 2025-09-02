@@ -84,6 +84,7 @@ struct ConsentStepView: View {
         sheet = AnyView(document)
         showSheet = true
     }
+    
 }
 
 private struct ConsentRow: View {

@@ -4,19 +4,20 @@ import SwiftData
 struct LiftWorkoutsSection: View {
     @Environment(\.theme) private var theme
     @Environment(\.modelContext) private var modelContext
-    @Query private var sessions: [LiftSession]
-    @Query(filter: #Predicate<ProgramExecution> { !$0.isCompleted })
+    
+    @Query(
+        filter: #Predicate<LiftSession> { $0.isCompleted == true },
+        sort: [SortDescriptor(\LiftSession.startDate, order: .reverse)]
+    ) private var completedSessions: [LiftSession]
+    
+    @Query(filter: #Predicate<ProgramExecution> { $0.isCompleted == false })
     private var activeProgramExecutions: [ProgramExecution]
     
     @State private var selectedWorkout: LiftWorkout?
     @State private var showingScratchBuilder = false
     
     private var recentSessions: [LiftSession] {
-        sessions
-            .filter { $0.isCompleted }
-            .sorted { $0.startDate > $1.startDate }
-            .prefix(3)
-            .map { $0 }
+        Array(completedSessions.prefix(3))
     }
     
     var body: some View {

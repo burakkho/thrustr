@@ -258,8 +258,8 @@ final class Goal {
     
     var progressPercentage: Double {
         guard targetValue > 0 else { return 0 }
-        let progress = (currentValue / targetValue) * 100
-        return min(max(progress, 0), 100)
+        let progress = currentValue / targetValue
+        return min(max(progress, 0), 1.0)
     }
     
     var isExpired: Bool {

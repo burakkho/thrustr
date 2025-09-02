@@ -19,6 +19,13 @@ struct UnifiedWorkoutCard: View {
     let primaryAction: () -> Void
     let secondaryAction: (() -> Void)?
     
+    // MARK: - Performance Optimizations
+    private var hasSecondaryAction: Bool { secondaryAction != nil }
+    private var hasDescription: Bool { description?.isEmpty == false }
+    private var hasSubtitle: Bool { subtitle?.isEmpty == false }
+    private var hasSecondaryInfo: Bool { !secondaryInfo.isEmpty }
+    private var displayedPrimaryStats: [WorkoutStat] { Array(primaryStats.prefix(3)) } // Limit stats for performance
+    
     init(
         title: String,
         subtitle: String? = nil,
@@ -62,8 +69,8 @@ struct UnifiedWorkoutCard: View {
                         .foregroundColor(theme.colors.textPrimary)
                         .lineLimit(1)
                     
-                    if let subtitle = subtitle {
-                        Text(subtitle)
+                    if hasSubtitle {
+                        Text(subtitle!)
                             .font(theme.typography.caption)
                             .foregroundColor(theme.colors.textSecondary)
                     }
@@ -77,7 +84,7 @@ struct UnifiedWorkoutCard: View {
                         .foregroundColor(theme.colors.warning)
                 }
                 
-                if secondaryAction != nil {
+                if hasSecondaryAction {
                     Button(action: secondaryAction!) {
                         Image(systemName: "play.circle.fill")
                             .font(.title3)
@@ -103,14 +110,14 @@ struct UnifiedWorkoutCard: View {
                             .fontWeight(.semibold)
                             .foregroundColor(theme.colors.textPrimary)
                         
-                        if let subtitle = subtitle {
-                            Text(subtitle)
+                        if hasSubtitle {
+                            Text(subtitle!)
                                 .font(theme.typography.caption)
                                 .foregroundColor(theme.colors.textSecondary)
                         }
                         
-                        if let description = description {
-                            Text(description)
+                        if hasDescription {
+                            Text(description!)
                                 .font(theme.typography.body)
                                 .foregroundColor(theme.colors.textSecondary)
                                 .lineLimit(2)
@@ -138,9 +145,9 @@ struct UnifiedWorkoutCard: View {
                 }
                 
                 // Stats
-                if !primaryStats.isEmpty {
+                if !displayedPrimaryStats.isEmpty {
                     HStack(spacing: theme.spacing.l) {
-                        ForEach(primaryStats) { stat in
+                        ForEach(displayedPrimaryStats) { stat in
                             WorkoutStatView(stat: stat)
                         }
                         Spacer()
@@ -148,7 +155,7 @@ struct UnifiedWorkoutCard: View {
                 }
                 
                 // Secondary Info
-                if !secondaryInfo.isEmpty {
+                if hasSecondaryInfo {
                     HStack(spacing: theme.spacing.m) {
                         ForEach(secondaryInfo, id: \.self) { info in
                             Label(info, systemImage: "circle.fill")
@@ -215,15 +222,16 @@ struct UnifiedWorkoutCard: View {
                             .lineLimit(3)
                     }
                     
-                    if !primaryStats.isEmpty {
+                    if !displayedPrimaryStats.isEmpty {
                         HStack(spacing: theme.spacing.xl) {
-                            ForEach(primaryStats) { stat in
+                            ForEach(displayedPrimaryStats) { stat in
                                 WorkoutStatView(stat: stat, style: .large)
                             }
                         }
                     }
                     
-                    if let action = secondaryAction {
+                    if hasSecondaryAction {
+                        let action = secondaryAction!
                         Button(action: action) {
                             HStack {
                                 Image(systemName: "play.circle.fill")

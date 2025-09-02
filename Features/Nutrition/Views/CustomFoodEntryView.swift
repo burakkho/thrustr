@@ -9,6 +9,7 @@ struct CustomFoodEntryView: View {
     
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
+    @EnvironmentObject private var unitSettings: UnitSettings
     
     @State private var foodName = ""
     @State private var brand = ""
@@ -26,16 +27,46 @@ struct CustomFoodEntryView: View {
     }
     
     var body: some View {
-        NavigationStack {
+        VStack(spacing: 0) {
+            // Native iOS Sheet Header
+            HStack {
+                Button(NutritionKeys.CustomFood.cancel.localized) {
+                    dismiss()
+                }
+                .font(.body)
+                .foregroundColor(.blue)
+                
+                Spacer()
+                
+                Text(NutritionKeys.CustomFood.title.localized)
+                    .font(.headline)
+                    .fontWeight(.semibold)
+                    .foregroundColor(.primary)
+                
+                Spacer()
+                
+                // Invisible button for balance
+                Text(NutritionKeys.CustomFood.cancel.localized)
+                    .font(.body)
+                    .opacity(0)
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)
+            .background(
+                Color(.systemBackground)
+                    .shadow(color: Color.black.opacity(0.1), radius: 1, x: 0, y: 1)
+            )
+            
+            // Content
             ScrollView {
                 VStack(spacing: 20) {
                     // Header
                     VStack(alignment: .leading, spacing: 8) {
-                        Text(LocalizationKeys.Nutrition.CustomFood.newFood.localized)
+                        Text(NutritionKeys.CustomFood.newFood.localized)
                             .font(.title2)
                             .fontWeight(.semibold)
                         
-                        Text(LocalizationKeys.Nutrition.CustomFood.subtitle.localized)
+                        Text(NutritionKeys.CustomFood.subtitle.localized)
                             .font(.caption)
                             .foregroundColor(.secondary)
                     }
@@ -43,34 +74,34 @@ struct CustomFoodEntryView: View {
                     
                     // Temel bilgiler
                     VStack(alignment: .leading, spacing: 16) {
-                        Text(LocalizationKeys.Nutrition.CustomFood.basicInfo.localized)
+                        Text(NutritionKeys.CustomFood.basicInfo.localized)
                             .font(.headline)
                             .fontWeight(.medium)
                         
                         VStack(alignment: .leading, spacing: 8) {
-                            Text(LocalizationKeys.Nutrition.CustomFood.foodNameRequired.localized)
+                            Text(NutritionKeys.CustomFood.foodNameRequired.localized)
                                 .font(.subheadline)
                                 .fontWeight(.medium)
                             
-                            TextField(LocalizationKeys.Nutrition.CustomFood.foodNamePlaceholder.localized, text: $foodName)
+                            TextField(NutritionKeys.CustomFood.foodNamePlaceholder.localized, text: $foodName)
                                 .textFieldStyle(.roundedBorder)
                         }
                         
                         VStack(alignment: .leading, spacing: 8) {
-                            Text(LocalizationKeys.Nutrition.CustomFood.brandOptional.localized)
+                            Text(NutritionKeys.CustomFood.brandOptional.localized)
                                 .font(.subheadline)
                                 .fontWeight(.medium)
                             
-                            TextField(LocalizationKeys.Nutrition.CustomFood.brandPlaceholder.localized, text: $brand)
+                            TextField(NutritionKeys.CustomFood.brandPlaceholder.localized, text: $brand)
                                 .textFieldStyle(.roundedBorder)
                         }
                         
                         VStack(alignment: .leading, spacing: 8) {
-                            Text(LocalizationKeys.Nutrition.CustomFood.category.localized)
+                            Text(NutritionKeys.CustomFood.category.localized)
                                 .font(.subheadline)
                                 .fontWeight(.medium)
                             
-                            Picker(LocalizationKeys.Nutrition.CustomFood.category.localized, selection: $selectedCategory) {
+                            Picker(NutritionKeys.CustomFood.category.localized, selection: $selectedCategory) {
                                 ForEach(FoodCategory.allCases, id: \.self) { category in
                                     Label(category.displayName, systemImage: category.systemIcon)
                                         .tag(category)
@@ -84,13 +115,13 @@ struct CustomFoodEntryView: View {
                     // Besin değerleri
                     VStack(alignment: .leading, spacing: 16) {
                         HStack {
-                            Text(LocalizationKeys.Nutrition.CustomFood.nutritionValues.localized)
+                            Text(NutritionKeys.CustomFood.nutritionValues.localized)
                                 .font(.headline)
                                 .fontWeight(.medium)
                             
                             Spacer()
                             
-                            Text(LocalizationKeys.Nutrition.CustomFood.per100g.localized)
+                            Text(unitSettings.unitSystem == .metric ? NutritionKeys.CustomFood.per100g.localized : "Per 3.5oz (100g)")
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                         }
@@ -100,30 +131,30 @@ struct CustomFoodEntryView: View {
                             GridItem(.flexible())
                         ], spacing: 16) {
                             NutritionInputField(
-                                title: LocalizationKeys.Nutrition.CustomFood.caloriesRequired.localized,
+                                title: NutritionKeys.CustomFood.caloriesRequired.localized,
                                 value: $calories,
-                                unit: LocalizationKeys.Nutrition.Units.kcal.localized,
+                                unit: NutritionKeys.Units.kcal.localized,
                                 color: .orange
                             )
                             
                             NutritionInputField(
-                                title: LocalizationKeys.Nutrition.CustomFood.protein.localized,
+                                title: NutritionKeys.CustomFood.protein.localized,
                                 value: $protein,
-                                unit: LocalizationKeys.Nutrition.Units.g.localized,
+                                unit: NutritionKeys.Units.g.localized,
                                 color: .red
                             )
                             
                             NutritionInputField(
-                                title: LocalizationKeys.Nutrition.CustomFood.carbs.localized,
+                                title: NutritionKeys.CustomFood.carbs.localized,
                                 value: $carbs,
-                                unit: LocalizationKeys.Nutrition.Units.g.localized,
+                                unit: NutritionKeys.Units.g.localized,
                                 color: .blue
                             )
                             
                             NutritionInputField(
-                                title: LocalizationKeys.Nutrition.CustomFood.fat.localized,
+                                title: NutritionKeys.CustomFood.fat.localized,
                                 value: $fat,
-                                unit: LocalizationKeys.Nutrition.Units.g.localized,
+                                unit: NutritionKeys.Units.g.localized,
                                 color: .yellow
                             )
                         }
@@ -132,7 +163,7 @@ struct CustomFoodEntryView: View {
                     // Önizleme
                     if isValid {
                         VStack(alignment: .leading, spacing: 8) {
-                            Text(LocalizationKeys.Nutrition.CustomFood.preview.localized)
+                            Text(NutritionKeys.CustomFood.preview.localized)
                                 .font(.headline)
                                 .fontWeight(.medium)
                             
@@ -147,7 +178,7 @@ struct CustomFoodEntryView: View {
                                         .italic()
                                 }
                                 
-                                Text("\(Int(calories)) \(LocalizationKeys.Nutrition.Units.kcal.localized) • P: \(Int(protein))\(LocalizationKeys.Nutrition.Units.g.localized) • C: \(Int(carbs))\(LocalizationKeys.Nutrition.Units.g.localized) • F: \(Int(fat))\(LocalizationKeys.Nutrition.Units.g.localized)")
+                                Text("\(Int(calories)) \(NutritionKeys.Units.kcal.localized) • P: \(Int(protein))\(NutritionKeys.Units.g.localized) • C: \(Int(carbs))\(NutritionKeys.Units.g.localized) • F: \(Int(fat))\(NutritionKeys.Units.g.localized)")
                                     .font(.caption)
                                     .foregroundColor(.secondary)
                             }
@@ -158,7 +189,7 @@ struct CustomFoodEntryView: View {
                     }
                     
                     // Ekle butonu
-                    Button(LocalizationKeys.Nutrition.CustomFood.addFood.localized) {
+                    Button(NutritionKeys.CustomFood.addFood.localized) {
                         createCustomFood()
                     }
                     .buttonStyle(.borderedProminent)
@@ -176,18 +207,9 @@ struct CustomFoodEntryView: View {
                 }
                 .padding()
             }
-            .navigationTitle(LocalizationKeys.Nutrition.CustomFood.title.localized)
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button(LocalizationKeys.Nutrition.CustomFood.cancel.localized) {
-                        dismiss()
-                    }
-                }
-            }
         }
-        .alert(LocalizationKeys.Nutrition.CustomFood.error.localized, isPresented: $showingAlert) {
-            Button(LocalizationKeys.Nutrition.CustomFood.ok.localized) { }
+        .alert(NutritionKeys.CustomFood.error.localized, isPresented: $showingAlert) {
+            Button(NutritionKeys.CustomFood.ok.localized) { }
         } message: {
             Text(alertMessage)
         }

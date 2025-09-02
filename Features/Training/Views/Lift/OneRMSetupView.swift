@@ -1,11 +1,13 @@
 import SwiftUI
 import SwiftData
+import Foundation
 
 // MARK: - One RM Setup View
 struct OneRMSetupView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.theme) private var theme
     @Environment(\.modelContext) private var modelContext
+    @EnvironmentObject private var unitSettings: UnitSettings
     
     let program: LiftProgram
     let onComplete: (User) -> Void
@@ -25,7 +27,7 @@ struct OneRMSetupView: View {
     }
     
     private let exercises = [
-        ("squat", "Squat", "squat.fill"),
+        ("squat", "Squat", "figure.strengthtraining.traditional"),
         ("bench", "Bench Press", "figure.strengthtraining.traditional"),
         ("deadlift", "Deadlift", "figure.strengthtraining.functional"),
         ("ohp", "Overhead Press", "figure.arms.open")
@@ -55,7 +57,7 @@ struct OneRMSetupView: View {
                     .padding(.bottom, theme.spacing.xl)
                 }
             }
-            .navigationTitle("Program Setup")
+            .navigationTitle(CommonKeys.Navigation.programSetup.localized)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
@@ -115,7 +117,7 @@ struct OneRMSetupView: View {
                     .fontWeight(.bold)
                     .foregroundColor(theme.colors.textPrimary)
                 
-                Text("What's your current 1 Rep Max?")
+                Text(TrainingKeys.OneRM.enterWeight.localized)
                     .font(theme.typography.body)
                     .foregroundColor(theme.colors.textSecondary)
                     .multilineTextAlignment(.center)
@@ -137,18 +139,18 @@ struct OneRMSetupView: View {
         VStack(spacing: theme.spacing.l) {
             // 1RM Input
             VStack(alignment: .leading, spacing: theme.spacing.s) {
-                Text("1 Rep Max (kg)")
+                Text("1 Rep Max (\(unitSettings.unitSystem == .metric ? "kg" : "lb"))")
                     .font(theme.typography.body)
                     .fontWeight(.medium)
                     .foregroundColor(theme.colors.textPrimary)
                 
                 HStack {
-                    TextField("Enter weight", text: currentRMBinding)
+                    TextField(TrainingKeys.OneRM.enterWeight.localized, text: currentRMBinding)
                         .keyboardType(.decimalPad)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                         .font(theme.typography.headline)
                     
-                    Text("kg")
+                    Text(unitSettings.unitSystem == .metric ? "kg" : "lb")
                         .font(theme.typography.body)
                         .foregroundColor(theme.colors.textSecondary)
                 }
@@ -164,7 +166,7 @@ struct OneRMSetupView: View {
     
     private var helpSection: some View {
         VStack(alignment: .leading, spacing: theme.spacing.m) {
-            Text("Don't know your 1RM?")
+            Text(TrainingKeys.OneRM.estimateHelp.localized)
                 .font(theme.typography.headline)
                 .foregroundColor(theme.colors.textPrimary)
             
@@ -172,12 +174,12 @@ struct OneRMSetupView: View {
                 // Calculator Button
                 Button(action: { showingCalculator = true }) {
                     HStack(spacing: theme.spacing.s) {
-                        Image(systemName: "calculator")
+                        Image(systemName: "function")
                             .font(.body)
                             .foregroundColor(theme.colors.accent)
                             .frame(width: 20)
                         
-                        Text("Calculate 1RM")
+                        Text(TrainingKeys.OneRM.calculateWeights.localized)
                             .font(theme.typography.body)
                             .fontWeight(.medium)
                             .foregroundColor(theme.colors.accent)
@@ -192,7 +194,7 @@ struct OneRMSetupView: View {
                 .buttonStyle(PlainButtonStyle())
                 
                 helpTip(icon: "lightbulb", text: "Estimate: If you can do 5 reps with 60kg, your 1RM is ~67kg")
-                helpTip(icon: "exclamationmark.circle", text: "Better to underestimate than overestimate")
+                helpTip(icon: "exclamationmark.circle", text: TrainingKeys.OneRM.underestimateWarning.localized)
             }
         }
         .padding()
@@ -222,7 +224,7 @@ struct OneRMSetupView: View {
                 Button(action: previousStep) {
                     HStack {
                         Image(systemName: "chevron.left")
-                        Text("Previous")
+                        Text(TrainingKeys.OneRM.previous.localized)
                     }
                     .frame(maxWidth: .infinity)
                     .padding()
@@ -234,7 +236,7 @@ struct OneRMSetupView: View {
             
             Button(action: nextStep) {
                 HStack {
-                    Text(currentStep < exercises.count - 1 ? "Next" : "Calculate Starting Weights")
+                    Text(currentStep < exercises.count - 1 ? TrainingKeys.OneRM.next.localized : TrainingKeys.OneRM.calculateWeights.localized)
                     if currentStep < exercises.count - 1 {
                         Image(systemName: "chevron.right")
                     }
@@ -332,6 +334,7 @@ struct OneRMSetupView: View {
 struct StartingWeightsPreviewView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.theme) private var theme
+    @EnvironmentObject private var unitSettings: UnitSettings
     
     let program: LiftProgram
     let startingWeights: [String: Double]
@@ -341,67 +344,14 @@ struct StartingWeightsPreviewView: View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: theme.spacing.l) {
-                    // Header
-                    VStack(spacing: theme.spacing.m) {
-                        Image(systemName: "checkmark.circle.fill")
-                            .font(.system(size: 48))
-                            .foregroundColor(theme.colors.success)
-                        
-                        Text("Starting Weights Calculated")
-                            .font(theme.typography.title2)
-                            .fontWeight(.bold)
-                        
-                        Text("Based on your 1RMs, here are your starting weights for \(program.localizedName)")
-                            .font(theme.typography.body)
-                            .foregroundColor(theme.colors.textSecondary)
-                            .multilineTextAlignment(.center)
-                    }
-                    
-                    // Starting Weights List
-                    VStack(spacing: theme.spacing.m) {
-                        ForEach(Array(startingWeights.keys.sorted()), id: \.self) { exercise in
-                            if let weight = startingWeights[exercise] {
-                                StartingWeightRow(
-                                    exercise: exercise.capitalized,
-                                    weight: weight
-                                )
-                            }
-                        }
-                    }
-                    
-                    // Info Section
-                    VStack(alignment: .leading, spacing: theme.spacing.s) {
-                        Text("💡 Pro Tips")
-                            .font(theme.typography.headline)
-                            .fontWeight(.semibold)
-                        
-                        VStack(alignment: .leading, spacing: theme.spacing.xs) {
-                            Text("• Starting conservative ensures proper form")
-                            Text("• You'll add 2.5kg every successful workout")
-                            Text("• You can adjust weights during workouts")
-                        }
-                        .font(theme.typography.body)
-                        .foregroundColor(theme.colors.textSecondary)
-                    }
-                    .padding()
-                    .background(theme.colors.warning.opacity(0.05))
-                    .cornerRadius(theme.radius.m)
-                    
-                    // Confirm Button
-                    Button(action: onConfirm) {
-                        Text("Start Program")
-                            .font(theme.typography.headline)
-                            .fontWeight(.semibold)
-                            .foregroundColor(.white)
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                            .background(theme.colors.accent)
-                            .cornerRadius(theme.radius.m)
-                    }
+                    headerSection
+                    weightsListSection
+                    proTipsSection
+                    confirmButton
                 }
                 .padding()
             }
-            .navigationTitle("Starting Weights")
+            .navigationTitle(CommonKeys.Navigation.startingWeights.localized)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
@@ -412,11 +362,75 @@ struct StartingWeightsPreviewView: View {
             }
         }
     }
+    
+    private var headerSection: some View {
+        VStack(spacing: 16) {
+            Image(systemName: "checkmark.circle.fill")
+                .font(.system(size: 48))
+                .foregroundColor(.green)
+            
+            Text("Starting Weights Calculated")
+                .font(.title2)
+                .fontWeight(.bold)
+            
+            let programName = program.localizedName.isEmpty ? "your program" : program.localizedName
+            Text("Based on your 1RMs, here are your starting weights for \(programName)")
+                .font(.body)
+                .foregroundColor(.secondary)
+                .multilineTextAlignment(.center)
+        }
+    }
+    
+    private var weightsListSection: some View {
+        VStack(spacing: theme.spacing.m) {
+            ForEach(Array(startingWeights.keys.sorted()), id: \.self) { exercise in
+                if let weight = startingWeights[exercise] {
+                    StartingWeightRow(
+                        exercise: exercise.capitalized,
+                        weight: weight
+                    )
+                }
+            }
+        }
+    }
+    
+    private var proTipsSection: some View {
+        VStack(alignment: .leading, spacing: theme.spacing.s) {
+            Text("💡 Pro Tips")
+                .font(theme.typography.headline)
+                .fontWeight(.semibold)
+            
+            VStack(alignment: .leading, spacing: theme.spacing.xs) {
+                Text("• Starting conservative ensures proper form")
+                Text("• You'll add \(unitSettings.unitSystem == .metric ? "2.5kg" : "5lb") every successful workout")
+                Text("• You can adjust weights during workouts")
+            }
+            .font(theme.typography.body)
+            .foregroundColor(theme.colors.textSecondary)
+        }
+        .padding()
+        .background(theme.colors.warning.opacity(0.05))
+        .cornerRadius(theme.radius.m)
+    }
+    
+    private var confirmButton: some View {
+        Button(action: onConfirm) {
+            Text(TrainingKeys.Common.startProgram.localized)
+                .font(theme.typography.headline)
+                .fontWeight(.semibold)
+                .foregroundColor(.white)
+                .frame(maxWidth: .infinity)
+                .padding()
+                .background(theme.colors.accent)
+                .cornerRadius(theme.radius.m)
+        }
+    }
 }
 
 // MARK: - Starting Weight Row
 struct StartingWeightRow: View {
     @Environment(\.theme) private var theme
+    @EnvironmentObject private var unitSettings: UnitSettings
     let exercise: String
     let weight: Double
     
@@ -429,7 +443,7 @@ struct StartingWeightRow: View {
             
             Spacer()
             
-            Text("\(Int(weight))kg")
+            Text(UnitsFormatter.formatWeight(kg: weight, system: unitSettings.unitSystem))
                 .font(theme.typography.headline)
                 .fontWeight(.bold)
                 .foregroundColor(theme.colors.accent)
@@ -447,11 +461,10 @@ struct StartingWeightRow: View {
             name: "Test Program",
             nameEN: "Test Program",
             nameTR: "Test Programı",
-            weeks: 12,
+            weeks: 4,
             daysPerWeek: 3,
             level: "beginner",
             category: "strength",
-            isCustom: false
         ),
         onComplete: { _ in }
     )

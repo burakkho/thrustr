@@ -1,0 +1,251 @@
+{
+  "metadata": {
+    "id": "531-beginner",
+    "name": {
+      "en": "5/3/1 Beginner",
+      "tr": "5/3/1 Başlangıç",
+      "de": "5/3/1 Anfänger",
+      "es": "5/3/1 Principiante",
+      "it": "5/3/1 Principiante"
+    },
+    "description": {
+      "en": "Jim Wendler's beginner-friendly 5/3/1 program. Percentage-based training with PR tests. Perfect introduction to periodization.",
+      "tr": "Jim Wendler'ın yeni başlayanlar için 5/3/1 programı. Yüzde temelli antrenman ve PR testleri. Periyodizasyona mükemmel giriş.",
+      "de": "Jim Wendlers anfängerfreundliches 5/3/1-Programm. Prozentbasiertes Training mit PR-Tests. Perfekte Einführung in die Periodisierung.",
+      "es": "Programa 5/3/1 de Jim Wendler para principiantes. Entrenamiento basado en porcentajes con pruebas de PR. Introducción perfecta a la periodización.",
+      "it": "Programma 5/3/1 di Jim Wendler per principianti. Allenamento basato su percentuali con test PR. Introduzione perfetta alla periodizzazione."
+    },
+    "weeks": 4,
+    "daysPerWeek": 3,
+    "level": "beginner",
+    "category": "strength",
+    "isCustom": false,
+    "author": "Jim Wendler",
+    "version": "1.0"
+  },
+  "progression": {
+    "type": "percentage",
+    "increment": 2.5,
+    "unit": "kg",
+    "deloadThreshold": 2,
+    "deloadPercentage": 10,
+    "notes": {
+      "en": "Based on training max (90% of 1RM). Week 4 is PR test week.",
+      "tr": "Antrenman maksına göre (%90 1RM). 4. hafta PR test haftası."
+    }
+  },
+  "workouts": [
+    {
+      "id": "squat-bench",
+      "name": {
+        "en": "Squat & Bench",
+        "tr": "Squat & Bench"
+      },
+      "dayNumber": 1,
+      "estimatedDuration": 60,
+      "exercises": [
+        {
+          "id": "squat-531",
+          "exerciseName": "Back Squat",
+          "exerciseNameTR": "Back Squat",
+          "orderIndex": 0,
+          "targetSets": 3,
+          "targetReps": 5,
+          "targetWeight": null,
+          "restTime": 180,
+          "isWarmup": false,
+          "notes": {
+            "en": "5/3/1 main set. Week 1: 65%x5, 75%x5, 85%x5+",
+            "tr": "5/3/1 ana seti. 1. hafta: %65x5, %75x5, %85x5+"
+          },
+          "progression": {
+            "type": "percentage",
+            "increment": 2.5
+          }
+        },
+        {
+          "id": "bench-531",
+          "exerciseName": "Bench Press",
+          "exerciseNameTR": "Bench Press",
+          "orderIndex": 1,
+          "targetSets": 3,
+          "targetReps": 5,
+          "targetWeight": null,
+          "restTime": 180,
+          "isWarmup": false,
+          "notes": {
+            "en": "5/3/1 main set. Week 1: 65%x5, 75%x5, 85%x5+",
+            "tr": "5/3/1 ana seti. 1. hafta: %65x5, %75x5, %85x5+"
+          },
+          "progression": {
+            "type": "percentage",
+            "increment": 1.25
+          }
+        },
+        {
+          "id": "assistance-squat",
+          "exerciseName": "Leg Press",
+          "exerciseNameTR": "Leg Press",
+          "orderIndex": 2,
+          "targetSets": 3,
+          "targetReps": 12,
+          "targetWeight": null,
+          "restTime": 90,
+          "isWarmup": false,
+          "notes": {
+            "en": "Assistance work. 50-60% effort.",
+            "tr": "Yardımcı hareket. %50-60 çaba."
+          },
+          "progression": {
+            "type": "weight",
+            "increment": 5.0
+          }
+        }
+      ]
+    },
+    {
+      "id": "deadlift-ohp",
+      "name": {
+        "en": "Deadlift & OHP",
+        "tr": "Deadlift & OHP"
+      },
+      "dayNumber": 2,
+      "estimatedDuration": 60,
+      "exercises": [
+        {
+          "id": "deadlift-531",
+          "exerciseName": "Deadlift",
+          "exerciseNameTR": "Deadlift",
+          "orderIndex": 0,
+          "targetSets": 3,
+          "targetReps": 5,
+          "targetWeight": null,
+          "restTime": 180,
+          "isWarmup": false,
+          "notes": {
+            "en": "5/3/1 main set. Week 1: 65%x5, 75%x5, 85%x5+",
+            "tr": "5/3/1 ana seti. 1. hafta: %65x5, %75x5, %85x5+"
+          },
+          "progression": {
+            "type": "percentage",
+            "increment": 5.0
+          }
+        },
+        {
+          "id": "ohp-531",
+          "exerciseName": "Overhead Press",
+          "exerciseNameTR": "Overhead Press",
+          "orderIndex": 1,
+          "targetSets": 3,
+          "targetReps": 5,
+          "targetWeight": null,
+          "restTime": 180,
+          "isWarmup": false,
+          "notes": {
+            "en": "5/3/1 main set. Week 1: 65%x5, 75%x5, 85%x5+",
+            "tr": "5/3/1 ana seti. 1. hafta: %65x5, %75x5, %85x5+"
+          },
+          "progression": {
+            "type": "percentage",
+            "increment": 1.25
+          }
+        },
+        {
+          "id": "assistance-deadlift",
+          "exerciseName": "Lat Pulldown",
+          "exerciseNameTR": "Lat Pulldown",
+          "orderIndex": 2,
+          "targetSets": 3,
+          "targetReps": 12,
+          "targetWeight": null,
+          "restTime": 90,
+          "isWarmup": false,
+          "notes": {
+            "en": "Assistance work. 50-60% effort.",
+            "tr": "Yardımcı hareket. %50-60 çaba."
+          },
+          "progression": {
+            "type": "weight",
+            "increment": 2.5
+          }
+        }
+      ]
+    },
+    {
+      "id": "bench-squat",
+      "name": {
+        "en": "Bench & Squat",
+        "tr": "Bench & Squat"
+      },
+      "dayNumber": 3,
+      "estimatedDuration": 60,
+      "exercises": [
+        {
+          "id": "bench-531-2",
+          "exerciseName": "Bench Press",
+          "exerciseNameTR": "Bench Press",
+          "orderIndex": 0,
+          "targetSets": 3,
+          "targetReps": 5,
+          "targetWeight": null,
+          "restTime": 180,
+          "isWarmup": false,
+          "notes": {
+            "en": "5/3/1 main set. Week 1: 65%x5, 75%x5, 85%x5+",
+            "tr": "5/3/1 ana seti. 1. hafta: %65x5, %75x5, %85x5+"
+          },
+          "progression": {
+            "type": "percentage",
+            "increment": 1.25
+          }
+        },
+        {
+          "id": "squat-531-2",
+          "exerciseName": "Back Squat",
+          "exerciseNameTR": "Back Squat",
+          "orderIndex": 1,
+          "targetSets": 3,
+          "targetReps": 5,
+          "targetWeight": null,
+          "restTime": 180,
+          "isWarmup": false,
+          "notes": {
+            "en": "5/3/1 main set. Week 1: 65%x5, 75%x5, 85%x5+",
+            "tr": "5/3/1 ana seti. 1. hafta: %65x5, %75x5, %85x5+"
+          },
+          "progression": {
+            "type": "percentage",
+            "increment": 2.5
+          }
+        },
+        {
+          "id": "assistance-bench",
+          "exerciseName": "Incline Dumbbell Press",
+          "exerciseNameTR": "Incline Dumbbell Press",
+          "orderIndex": 2,
+          "targetSets": 3,
+          "targetReps": 12,
+          "targetWeight": null,
+          "restTime": 90,
+          "isWarmup": false,
+          "notes": {
+            "en": "Assistance work. 50-60% effort.",
+            "tr": "Yardımcı hareket. %50-60 çaba."
+          },
+          "progression": {
+            "type": "weight",
+            "increment": 2.5
+          }
+        }
+      ]
+    }
+  ],
+  "schedule": {
+    "pattern": "A-B-C",
+    "restDays": 1,
+    "notes": {
+      "en": "3 different workouts per week. Week 4: Test PR on main lifts.",
+      "tr": "Haftada 3 farklı antrenman. 4. hafta: Ana hareketlerde PR testi."
+    }
+  }
+}

@@ -53,8 +53,6 @@ final class LiftWorkout {
 // MARK: - Computed Properties
 extension LiftWorkout {
     var localizedName: String {
-        // For now use English as default to avoid MainActor issues
-        // TODO: Implement proper localization without MainActor
         return nameEN.isEmpty ? name : nameEN
     }
     

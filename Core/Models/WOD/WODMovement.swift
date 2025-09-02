@@ -25,17 +25,20 @@ final class WODMovement {
         rxWeightMale: String? = nil,
         rxWeightFemale: String? = nil,
         reps: Int? = nil,
-        orderIndex: Int = 0
+        orderIndex: Int = 0,
+        scaledWeightMale: String? = nil,
+        scaledWeightFemale: String? = nil,
+        notes: String? = nil
     ) {
         self.id = UUID()
         self.name = name
         self.rxWeightMale = rxWeightMale
         self.rxWeightFemale = rxWeightFemale
-        self.scaledWeightMale = nil
-        self.scaledWeightFemale = nil
+        self.scaledWeightMale = scaledWeightMale
+        self.scaledWeightFemale = scaledWeightFemale
         self.reps = reps
         self.orderIndex = orderIndex
-        self.notes = nil
+        self.notes = notes
         self.userWeight = nil
         self.isRX = false
     }

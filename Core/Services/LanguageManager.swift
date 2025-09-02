@@ -21,6 +21,7 @@ class LanguageManager: ObservableObject {
         case english = "en"
         case spanish = "es"
         case german = "de"
+        case italian = "it"
         
         var id: String { rawValue }
         
@@ -36,6 +37,8 @@ class LanguageManager: ObservableObject {
                 return "Español"
             case .german:
                 return "Deutsch"
+            case .italian:
+                return "Italiano"
             }
         }
         
@@ -51,6 +54,8 @@ class LanguageManager: ObservableObject {
                 return "🇪🇸"
             case .german:
                 return "🇩🇪"
+            case .italian:
+                return "🇮🇹"
             }
         }
     }
@@ -92,6 +97,8 @@ class LanguageManager: ObservableObject {
                 return .spanish
             case "de":
                 return .german
+            case "it":
+                return .italian
             default:
                 continue
             }
@@ -141,6 +148,15 @@ class LanguageManager: ObservableObject {
                 print("❌ German bundle not found")
             }
             UserDefaults.standard.set(["de"], forKey: "AppleLanguages")
+        case .italian:
+            if let path = Bundle.main.path(forResource: "it", ofType: "lproj"),
+               let bundle = Bundle(path: path) {
+                customBundle = bundle
+                print("✅ Italian bundle found at: \(path)")
+            } else {
+                print("❌ Italian bundle not found")
+            }
+            UserDefaults.standard.set(["it"], forKey: "AppleLanguages")
         }
         
         UserDefaults.standard.synchronize()

@@ -6,6 +6,7 @@ struct LiftSessionView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.theme) private var theme
     @Environment(\.modelContext) private var modelContext
+    @EnvironmentObject private var unitSettings: UnitSettings
     @Query private var user: [User]
     
     let workout: LiftWorkout
@@ -17,6 +18,8 @@ struct LiftSessionView: View {
     @State private var showingExerciseSelection = false
     @State private var previousSessions: [LiftSession] = []
     @State private var isEditingOrder = false
+    @State private var showingNotes = false
+    @State private var sessionNotes = ""
     
     private var currentUser: User? {
         user.first
@@ -49,7 +52,7 @@ struct LiftSessionView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
-                Button("Cancel") {
+                Button(CommonKeys.Onboarding.Common.cancel.localized) {
                     showingCancelAlert = true
                 }
             }
@@ -79,20 +82,20 @@ struct LiftSessionView: View {
             }
             
             ToolbarItem(placement: .navigationBarTrailing) {
-                Button("Finish") {
+                Button(CommonKeys.Onboarding.Common.finish.localized) {
                     completeSession()
                 }
                 .fontWeight(.semibold)
                 .disabled(session.exerciseResults.allSatisfy { $0.completedSets == 0 })
             }
         }
-        .alert("Cancel Workout?", isPresented: $showingCancelAlert) {
-            Button("Keep Training", role: .cancel) { }
-            Button("Cancel Workout", role: .destructive) {
+        .alert(TrainingKeys.Alerts.cancelWorkout.localized, isPresented: $showingCancelAlert) {
+            Button(TrainingKeys.Alerts.keepTraining.localized, role: .cancel) { }
+            Button(TrainingKeys.Alerts.cancelWorkoutAction.localized, role: .destructive) {
                 cancelSession()
             }
         } message: {
-            Text("Are you sure you want to cancel this workout? Your progress will not be saved.")
+            Text(TrainingKeys.Alerts.cancelWorkoutMessage.localized)
         }
         .sheet(isPresented: $showingCompletion) {
             LiftSessionCompletionView(
@@ -106,6 +109,16 @@ struct LiftSessionView: View {
             ExerciseSelectionView { exercise in
                 addExerciseToSession(exercise)
             }
+        }
+        .sheet(isPresented: $showingNotes) {
+            WorkoutNotesSheet(
+                notes: $sessionNotes,
+                onSave: { notes in
+                    session.notes = notes.isEmpty ? nil : notes
+                    try? modelContext.save()
+                    showingNotes = false
+                }
+            )
         }
     }
     
@@ -184,7 +197,7 @@ struct LiftSessionView: View {
             LiftStatCard(
                 icon: "scalemass.fill",
                 title: "Volume",
-                value: "\(Int(session?.totalVolume ?? 0))kg",
+                value: UnitsFormatter.formatVolume(kg: session?.totalVolume ?? 0, system: unitSettings.unitSystem),
                 color: theme.colors.accent
             )
             
@@ -225,7 +238,8 @@ struct LiftSessionView: View {
             
             // Notes Button
             Button(action: {
-                // Show notes sheet
+                sessionNotes = session?.notes ?? ""
+                showingNotes = true
             }) {
                 HStack {
                     Image(systemName: "note.text")
@@ -285,8 +299,8 @@ struct LiftSessionView: View {
                let nextIncomplete = session.exerciseResults.first(where: { 
                    !$0.sets.allSatisfy { $0.isCompleted } 
                }) {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
-                    withAnimation(.easeInOut(duration: 0.3)) {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    withAnimation(.easeInOut(duration: 0.2)) {
                         expandedExerciseId = nextIncomplete.id
                     }
                 }
@@ -302,7 +316,86 @@ struct LiftSessionView: View {
     private func completeSession() {
         session?.complete()
         try? modelContext.save()
+        
+        // Check for PRs and log activities
+        if let completedSession = session, let user = fetchCurrentUser() {
+            ActivityLoggerService.shared.setModelContext(modelContext)
+            
+            // Log workout completion
+            ActivityLoggerService.shared.logWorkoutCompleted(
+                workoutType: workout.name,
+                duration: completedSession.duration,
+                volume: completedSession.totalVolume,
+                sets: completedSession.totalSets,
+                reps: completedSession.totalReps,
+                user: user
+            )
+            
+            // Check for PRs in completed exercises
+            checkAndLogPersonalRecords(session: completedSession, user: user)
+        }
+        
         showingCompletion = true
+    }
+    
+    private func checkAndLogPersonalRecords(session: LiftSession, user: User) {
+        for exerciseResult in session.exerciseResults {
+            let exercise = exerciseResult.exercise
+            
+            // Calculate max weight for this exercise in this session
+            let maxWeightThisSession = exerciseResult.sets
+                .filter { $0.isCompleted && $0.reps > 0 }
+                .compactMap { $0.weight }
+                .max() ?? 0
+            
+            if maxWeightThisSession > 0 {
+                // Get previous best for this exercise
+                let previousBest = getPreviousBest(for: exercise, user: user)
+                
+                // Check if this is a PR (personal record)
+                if maxWeightThisSession > previousBest {
+                    ActivityLoggerService.shared.logPersonalRecord(
+                        exerciseName: exercise.exerciseName,
+                        newValue: maxWeightThisSession,
+                        previousValue: previousBest > 0 ? previousBest : nil,
+                        unit: "kg",
+                        user: user
+                    )
+                }
+            }
+        }
+    }
+    
+    private func getPreviousBest(for exercise: LiftExercise, user: User) -> Double {
+        // Query previous sessions for this exercise
+        let descriptor = FetchDescriptor<LiftSession>(
+            predicate: #Predicate<LiftSession> { session in
+                session.isCompleted
+            },
+            sortBy: [SortDescriptor(\LiftSession.startDate, order: .reverse)]
+        )
+        
+        do {
+            let previousSessions = try modelContext.fetch(descriptor)
+            var maxWeight: Double = 0
+            
+            for session in previousSessions {
+                for result in session.exerciseResults {
+                    if result.exercise.exerciseName == exercise.exerciseName {
+                        let sessionMax = result.sets
+                            .filter { $0.isCompleted && $0.reps > 0 }
+                            .compactMap { $0.weight }
+                            .max() ?? 0
+                        maxWeight = max(maxWeight, sessionMax)
+                    }
+                }
+            }
+            
+            return maxWeight
+        } catch {
+            Logger.error("Error fetching previous sessions for PR check: \(error)")
+            return 0
+        }
     }
     
     private func cancelSession() {
@@ -318,6 +411,17 @@ struct LiftSessionView: View {
         previousSessions = workout.sessions
             .filter { $0.isCompleted }
             .sorted { $0.startDate > $1.startDate }
+    }
+    
+    // Helper to get current user
+    private func fetchCurrentUser() -> User? {
+        let descriptor = FetchDescriptor<User>(sortBy: [SortDescriptor(\User.createdAt)])
+        do {
+            let users = try modelContext.fetch(descriptor)
+            return users.first
+        } catch {
+            return nil
+        }
     }
     
     // MARK: - Program Integration
@@ -404,6 +508,61 @@ struct LiftSessionView: View {
     }
 }
 
+// MARK: - Workout Notes Sheet
+struct WorkoutNotesSheet: View {
+    @Environment(\.dismiss) private var dismiss
+    @Environment(\.theme) private var theme
+    @Binding var notes: String
+    let onSave: (String) -> Void
+    
+    var body: some View {
+        NavigationStack {
+            VStack(spacing: theme.spacing.m) {
+                // Header
+                VStack(alignment: .leading, spacing: theme.spacing.s) {
+                    Text("Workout Notes")
+                        .font(theme.typography.headline)
+                        .fontWeight(.semibold)
+                        .foregroundColor(theme.colors.textPrimary)
+                    
+                    Text("Add notes about your workout, form cues, or how you're feeling")
+                        .font(theme.typography.body)
+                        .foregroundColor(theme.colors.textSecondary)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.horizontal)
+                
+                // Text Editor
+                TextEditor(text: $notes)
+                    .font(theme.typography.body)
+                    .padding(theme.spacing.m)
+                    .background(theme.colors.backgroundSecondary)
+                    .cornerRadius(theme.radius.m)
+                    .frame(minHeight: 200)
+                    .padding(.horizontal)
+                
+                Spacer()
+            }
+            .navigationTitle(CommonKeys.Navigation.notes.localized)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button("Cancel") {
+                        dismiss()
+                    }
+                }
+                
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Save") {
+                        onSave(notes)
+                    }
+                    .fontWeight(.semibold)
+                }
+            }
+        }
+    }
+}
+
 // MARK: - Lift Stat Card Component
 struct LiftStatCard: View {
     @Environment(\.theme) private var theme
@@ -438,6 +597,7 @@ struct LiftStatCard: View {
 struct LiftSessionCompletionView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.theme) private var theme
+    @EnvironmentObject private var unitSettings: UnitSettings
     let session: LiftSession?
     let onCompletion: (() -> Void)?
     
@@ -457,7 +617,7 @@ struct LiftSessionCompletionView: View {
                 if let session = session {
                     VStack(spacing: theme.spacing.m) {
                         LiftStatRow(label: "Duration", value: session.formattedDuration)
-                        LiftStatRow(label: "Total Volume", value: "\(Int(session.totalVolume))kg")
+                        LiftStatRow(label: "Total Volume", value: UnitsFormatter.formatVolume(kg: session.totalVolume, system: unitSettings.unitSystem))
                         LiftStatRow(label: "Sets Completed", value: "\(session.totalSets)")
                         LiftStatRow(label: "Total Reps", value: "\(session.totalReps)")
                         
@@ -516,7 +676,7 @@ struct LiftSessionCompletionView: View {
                 }
             }
             .padding()
-            .navigationTitle("Summary")
+            .navigationTitle(CommonKeys.Navigation.summary.localized)
             .navigationBarTitleDisplayMode(.inline)
         }
     }

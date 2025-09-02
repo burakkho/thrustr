@@ -1,11 +1,21 @@
 import SwiftUI
 
 struct PortionQuickSelect: View {
+    @EnvironmentObject private var unitSettings: UnitSettings
     @Binding var quantity: Double
     var suggested: [Int] = []
-    private let defaultQuickAmounts: [Int] = [25, 50, 100, 150, 200, 250]
     @State private var showingCustomInput = false
     @State private var customText = ""
+    
+    // Unit-aware quick amounts
+    private var defaultQuickAmounts: [Double] {
+        switch unitSettings.unitSystem {
+        case .metric:
+            return [25, 50, 100, 150, 200, 250] // grams
+        case .imperial:
+            return [1, 2, 3, 4, 6, 8].map { UnitsConverter.ozToGram($0) } // ounces converted to grams for storage
+        }
+    }
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -15,25 +25,25 @@ struct PortionQuickSelect: View {
             
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 8) {
-                    let amounts = suggested.isEmpty ? defaultQuickAmounts : suggested
-                    ForEach(amounts, id: \.self) { amount in
+                    let amounts = suggested.isEmpty ? defaultQuickAmounts : suggested.map(Double.init)
+                    ForEach(Array(amounts.enumerated()), id: \.offset) { _, amount in
                         Button {
-                            quantity = Double(amount)
+                            quantity = amount
                             #if canImport(UIKit)
                             UIImpactFeedbackGenerator(style: .light).impactOccurred()
                             #endif
                         } label: {
                             VStack(spacing: 4) {
-                                Text("\(amount)")
+                                Text(formatAmountDisplay(amount))
                                     .font(.headline)
-                                Text("g")
+                                Text(unitSettings.unitSystem == .metric ? "g" : "oz")
                                     .font(.caption2)
                             }
-                            .foregroundColor(quantity == Double(amount) ? .white : .primary)
+                            .foregroundColor(quantity == amount ? .white : .primary)
                             .frame(width: 60, height: 50)
                             .background(
                                 RoundedRectangle(cornerRadius: 12)
-                                    .fill(quantity == Double(amount) ? Color.blue : Color(.systemGray6))
+                                    .fill(quantity == amount ? Color.blue : Color(.systemGray6))
                             )
                         }
                     }
@@ -69,7 +79,9 @@ struct PortionQuickSelect: View {
                                 ToolbarItem(placement: .confirmationAction) {
                                     Button("quick_portions.set".localized) {
                                         if let value = Double(customText), value > 0 {
-                                            quantity = value
+                                            // Convert input to grams for storage
+                                            let grams = unitSettings.unitSystem == .metric ? value : UnitsConverter.ozToGram(value)
+                                            quantity = grams
                                             #if canImport(UIKit)
                                             UIImpactFeedbackGenerator(style: .light).impactOccurred()
                                             #endif
@@ -78,7 +90,7 @@ struct PortionQuickSelect: View {
                                     }
                                 }
                                 ToolbarItem(placement: .cancellationAction) {
-                                    Button(LocalizationKeys.Common.cancel.localized) {
+                                    Button(CommonKeys.Onboarding.Common.cancel.localized) {
                                         showingCustomInput = false
                                     }
                                 }
@@ -91,18 +103,29 @@ struct PortionQuickSelect: View {
             }
             
             HStack {
-                Text("\(Int(quantity))g")
+                Text(UnitsFormatter.formatFoodWeight(grams: quantity, system: unitSettings.unitSystem))
                     .font(.title3)
                     .fontWeight(.semibold)
-                    .frame(width: 60)
+                    .frame(width: 80)
                 
-                Slider(value: $quantity, in: 1...500, step: 5)
+                Slider(value: $quantity, in: 1...500, step: unitSettings.unitSystem == .metric ? 5 : UnitsConverter.ozToGram(0.25))
                     .tint(.blue)
             }
         }
         .padding()
         .background(Color(.systemGray6).opacity(0.5))
         .cornerRadius(12)
+    }
+    
+    // Helper to format amount display based on unit system
+    private func formatAmountDisplay(_ grams: Double) -> String {
+        switch unitSettings.unitSystem {
+        case .metric:
+            return String(format: "%.0f", grams)
+        case .imperial:
+            let oz = UnitsConverter.gramToOz(grams)
+            return String(format: "%.0f", oz)
+        }
     }
 }
 

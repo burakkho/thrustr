@@ -34,36 +34,92 @@ extension EnvironmentValues {
 struct DefaultLightTheme: Theme {
     let colors = Colors(
         accent: .appPrimary,
+        accentSecondary: .appPrimary.opacity(0.8),
+        accentTertiary: .appPrimary.opacity(0.6),
         backgroundPrimary: .backgroundPrimary,
         backgroundSecondary: .backgroundSecondary,
+        backgroundTertiary: Color(.systemGroupedBackground),
         cardBackground: .cardBackground,
+        cardBackgroundSecondary: Color(.secondarySystemGroupedBackground),
+        surfaceElevated: .white,
         textPrimary: .textPrimary,
         textSecondary: .textSecondary,
+        textTertiary: Color(.tertiaryLabel),
+        textInverse: .white,
+        textOnAccent: .white,
         success: .appSuccess,
+        successLight: .appSuccess.opacity(0.1),
         warning: .appWarning,
-        error: .appError
+        warningLight: .appWarning.opacity(0.1),
+        error: .appError,
+        errorLight: .appError.opacity(0.1),
+        info: .blue,
+        infoLight: .blue.opacity(0.1),
+        border: Color(.separator),
+        borderLight: Color(.separator).opacity(0.5),
+        shadow: .black.opacity(0.1),
+        overlay: .black.opacity(0.3),
+        disabled: Color(.systemGray4),
+        strength: .red,
+        strengthLight: .red.opacity(0.1),
+        cardio: .blue,
+        cardioLight: .blue.opacity(0.1),
+        flexibility: .green,
+        flexibilityLight: .green.opacity(0.1)
     )
     let spacing = Spacing()
     let radius = Radius()
-    let shadows = Shadows()
+    let shadows = Shadows(
+        card: .black.opacity(0.05),
+        elevated: .black.opacity(0.1),
+        overlay: .black.opacity(0.15)
+    )
     let typography = Typography()
 }
 
 struct DefaultDarkTheme: Theme {
     let colors = Colors(
         accent: .appPrimary,
+        accentSecondary: .appPrimary.opacity(0.8),
+        accentTertiary: .appPrimary.opacity(0.6),
         backgroundPrimary: .backgroundPrimary,
         backgroundSecondary: .backgroundSecondary,
+        backgroundTertiary: Color(.systemGroupedBackground),
         cardBackground: .cardBackground,
+        cardBackgroundSecondary: Color(.secondarySystemGroupedBackground),
+        surfaceElevated: Color(.secondarySystemBackground),
         textPrimary: .textPrimary,
         textSecondary: .textSecondary,
+        textTertiary: Color(.tertiaryLabel),
+        textInverse: .black,
+        textOnAccent: .white,
         success: .appSuccess,
+        successLight: .appSuccess.opacity(0.1),
         warning: .appWarning,
-        error: .appError
+        warningLight: .appWarning.opacity(0.1),
+        error: .appError,
+        errorLight: .appError.opacity(0.1),
+        info: .blue,
+        infoLight: .blue.opacity(0.1),
+        border: Color(.separator),
+        borderLight: Color(.separator).opacity(0.5),
+        shadow: .black.opacity(0.3),
+        overlay: .black.opacity(0.5),
+        disabled: Color(.systemGray4),
+        strength: .red,
+        strengthLight: .red.opacity(0.1),
+        cardio: .blue,
+        cardioLight: .blue.opacity(0.1),
+        flexibility: .green,
+        flexibilityLight: .green.opacity(0.1)
     )
     let spacing = Spacing()
     let radius = Radius()
-    let shadows = Shadows()
+    let shadows = Shadows(
+        card: .black.opacity(0.2),
+        elevated: .black.opacity(0.3),
+        overlay: .black.opacity(0.4)
+    )
     let typography = Typography()
 }
 

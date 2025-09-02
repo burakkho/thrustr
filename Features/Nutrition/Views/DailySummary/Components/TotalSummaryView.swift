@@ -15,12 +15,12 @@ struct TotalSummaryView: View {
     
     private var totalHeader: some View {
         HStack {
-            Text(LocalizationKeys.Nutrition.DailySummary.total.localized)
+            Text(NutritionKeys.DailySummary.total.localized)
                 .font(.headline)
             
             Spacer()
             
-            Text("\(Int(totalCalories)) \(LocalizationKeys.Nutrition.Units.kcal.localized)")
+            Text("\(Int(totalCalories)) \(NutritionKeys.Units.kcal.localized)")
                 .font(.title2)
                 .fontWeight(.bold)
                 .foregroundColor(.orange)
@@ -31,17 +31,17 @@ struct TotalSummaryView: View {
         HStack(spacing: 20) {
             MacroView(
                 value: Int(totalProtein),
-                label: LocalizationKeys.Nutrition.DailySummary.protein.localized,
+                label: NutritionKeys.DailySummary.protein.localized,
                 color: .red
             )
             MacroView(
                 value: Int(totalCarbs),
-                label: LocalizationKeys.Nutrition.DailySummary.carbs.localized,
+                label: NutritionKeys.DailySummary.carbs.localized,
                 color: .blue
             )
             MacroView(
                 value: Int(totalFat),
-                label: LocalizationKeys.Nutrition.DailySummary.fat.localized,
+                label: NutritionKeys.DailySummary.fat.localized,
                 color: .yellow
             )
         }

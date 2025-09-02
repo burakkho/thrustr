@@ -118,11 +118,11 @@ struct ExerciseSelectionView: View {
                     }
                 }
             }
-            .navigationTitle("Select Exercise")
+            .navigationTitle(TrainingKeys.Navigation.selectExercise.localized)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Cancel") {
+                    Button(TrainingKeys.Common.cancel.localized) {
                         dismiss()
                     }
                 }

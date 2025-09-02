@@ -57,7 +57,7 @@ struct NutritionView: View {
                         // Test butonlarÄ± (geÃ§ici)
                         if foods.isEmpty {
                             VStack(spacing: 12) {
-                                Button(LocalizationKeys.Nutrition.Test.addTestFood.localized) {
+                                Button(NutritionKeys.Test.addTestFood.localized) {
                                     addTestFoods()
                                 }
                                 .buttonStyle(.borderedProminent)
@@ -69,14 +69,14 @@ struct NutritionView: View {
                         if foods.isEmpty && todayEntries.isEmpty && weekEntries.isEmpty {
                             EmptyStateView(
                                 systemImage: "fork.knife.circle.fill",
-                                title: LocalizationKeys.Nutrition.Empty.firstTitle.localized,
-                                message: LocalizationKeys.Nutrition.Empty.firstMessage.localized,
-                                primaryTitle: LocalizationKeys.Nutrition.Empty.addMeal.localized,
+                                title: NutritionKeys.Empty.firstTitle.localized,
+                                message: NutritionKeys.Empty.firstMessage.localized,
+                                primaryTitle: NutritionKeys.Empty.addMeal.localized,
                                 primaryAction: {
                                     forceStartWithScanner = false
                                     showingFoodSelection = true
                                 },
-                                secondaryTitle: LocalizationKeys.Nutrition.Empty.addCustomFood.localized,
+                                secondaryTitle: NutritionKeys.Empty.addCustomFood.localized,
                                 secondaryAction: { showingCustomFoodEntry = true }
                             )
                             .padding(.top, 40)
@@ -94,7 +94,10 @@ struct NutritionView: View {
                         if !foods.isEmpty {
                             FavoritesSection(foods: foods) { food in
                                 selectedFood = food
-                                showingMealEntry = true
+                                // Small delay to ensure state is properly set
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                    showingMealEntry = true
+                                }
                             }
                         }
                         
@@ -109,7 +112,7 @@ struct NutritionView: View {
                     .padding(.top)
                 }
             }
-            .navigationTitle(LocalizationKeys.Nutrition.title.localized)
+            .navigationTitle(NutritionKeys.title.localized)
             .navigationBarTitleDisplayMode(.large)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
@@ -120,7 +123,7 @@ struct NutritionView: View {
                         }) {
                             Image(systemName: "barcode.viewfinder")
                                 .font(.headline)
-                                .accessibilityLabel(LocalizationKeys.Nutrition.scanBarcode.localized)
+                                .accessibilityLabel(NutritionKeys.scanBarcode.localized)
                         }
 
                         Button(action: {
@@ -129,7 +132,7 @@ struct NutritionView: View {
                         }) {
                             Image(systemName: "plus")
                                 .font(.headline)
-                                .accessibilityLabel(LocalizationKeys.Common.add.localized)
+                                .accessibilityLabel(CommonKeys.Onboarding.Common.add.localized)
                         }
                     }
                 }
@@ -138,10 +141,14 @@ struct NutritionView: View {
         .sheet(isPresented: $showingFoodSelection) {
             FoodSelectionView(foods: foods, onFoodSelected: { food in
                 selectedFood = food
-                showingFoodSelection = false
-                // Add a small delay to ensure proper sheet transition
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                    showingMealEntry = true
+                // Don't immediately dismiss - let delay handle it
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    showingFoodSelection = false  // Dismiss first sheet
+                    if selectedFood != nil {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                            showingMealEntry = true  // Then open second sheet
+                        }
+                    }
                 }
             }, startWithScanner: forceStartWithScanner)
             .presentationDetents([.medium, .large])
@@ -157,15 +164,29 @@ struct NutritionView: View {
                 .presentationDragIndicator(.visible)
             } else {
                 // Fallback view if selectedFood is nil
-                VStack {
-                    Text("error.food_not_selected".localized)
+                VStack(spacing: 16) {
+                    Image(systemName: "exclamationmark.triangle")
+                        .font(.largeTitle)
+                        .foregroundColor(.red)
+                    Text(NutritionKeys.Errors.noFoodSelected.localized)
                         .font(.headline)
-                    Button("common.close".localized) {
+                    Text(NutritionKeys.Errors.noFoodSelectedDesc.localized)
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                    Button(NutritionKeys.Actions.close.localized) {
                         showingMealEntry = false
                     }
                     .buttonStyle(.borderedProminent)
+                    Button(NutritionKeys.Actions.tryAgain.localized) {
+                        showingMealEntry = false
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                            showingFoodSelection = true
+                        }
+                    }
+                    .buttonStyle(.bordered)
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .padding()
             }
         }
         .sheet(isPresented: $showingCustomFoodEntry) {
@@ -182,9 +203,9 @@ struct NutritionView: View {
             set: { if !$0 { saveErrorMessage = nil } }
         )) {
             Alert(
-                title: Text(LocalizationKeys.Common.error.localized),
+                title: Text(CommonKeys.Onboarding.Common.error.localized),
                 message: Text(saveErrorMessage ?? ""),
-                dismissButton: .default(Text(LocalizationKeys.Common.ok.localized))
+                dismissButton: .default(Text(CommonKeys.Onboarding.Common.ok.localized))
             )
         }
     }

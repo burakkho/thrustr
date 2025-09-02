@@ -6,6 +6,7 @@ struct MealEntryView: View {
     let onDismiss: () -> Void
     
     @Environment(\.modelContext) private var modelContext
+    @EnvironmentObject private var unitSettings: UnitSettings
     @State private var gramsConsumed: Double = 100
     @State private var servingCount: Double = 1
     @State private var inputMode: PortionInputMode = .grams
@@ -15,15 +16,45 @@ struct MealEntryView: View {
     
     private var mealTypes: [(String, String)] {
         [
-            ("breakfast", LocalizationKeys.Nutrition.MealEntry.MealTypes.breakfast.localized),
-            ("lunch", LocalizationKeys.Nutrition.MealEntry.MealTypes.lunch.localized),
-            ("dinner", LocalizationKeys.Nutrition.MealEntry.MealTypes.dinner.localized),
-            ("snack", LocalizationKeys.Nutrition.MealEntry.MealTypes.snack.localized)
+            ("breakfast", NutritionKeys.MealEntry.MealTypes.breakfast.localized),
+            ("lunch", NutritionKeys.MealEntry.MealTypes.lunch.localized),
+            ("dinner", NutritionKeys.MealEntry.MealTypes.dinner.localized),
+            ("snack", NutritionKeys.MealEntry.MealTypes.snack.localized)
         ]
     }
     
     var body: some View {
-        NavigationStack {
+        VStack(spacing: 0) {
+            // Native iOS Sheet Header
+            HStack {
+                Button(NutritionKeys.MealEntry.cancel.localized) {
+                    onDismiss()
+                }
+                .font(.body)
+                .foregroundColor(.blue)
+                
+                Spacer()
+                
+                Text(NutritionKeys.MealEntry.title.localized)
+                    .font(.headline)
+                    .fontWeight(.semibold)
+                    .foregroundColor(.primary)
+                
+                Spacer()
+                
+                // Invisible button for balance
+                Text(NutritionKeys.MealEntry.cancel.localized)
+                    .font(.body)
+                    .opacity(0)
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)
+            .background(
+                Color(.systemBackground)
+                    .shadow(color: Color.black.opacity(0.1), radius: 1, x: 0, y: 1)
+            )
+            
+            // Content
             VStack(spacing: 20) {
                 // Food bilgisi
                 foodInfoSection
@@ -43,21 +74,12 @@ struct MealEntryView: View {
                 addButton
             }
             .padding()
-            .navigationTitle(LocalizationKeys.Nutrition.MealEntry.title.localized)
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button(LocalizationKeys.Nutrition.MealEntry.cancel.localized) {
-                        onDismiss()
-                    }
-                }
-            }
         }
         .alert(isPresented: errorAlertBinding) {
             Alert(
-                title: Text(LocalizationKeys.Common.error.localized),
+                title: Text(CommonKeys.Onboarding.Common.error.localized),
                 message: Text(saveErrorMessage ?? ""),
-                dismissButton: .default(Text(LocalizationKeys.Common.ok.localized))
+                dismissButton: .default(Text(CommonKeys.Onboarding.Common.ok.localized))
             )
         }
     }
@@ -85,7 +107,7 @@ struct MealEntryView: View {
                 }
             }
             
-            Text(LocalizationKeys.Nutrition.MealEntry.per100gCalories.localized(with: Int(food.calories)))
+            Text(NutritionKeys.MealEntry.per100gCalories.localized(with: Int(food.calories)))
                 .font(.caption)
                 .foregroundColor(.secondary)
         }
@@ -94,7 +116,7 @@ struct MealEntryView: View {
     
     private var mealSelectionSection: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text(LocalizationKeys.Nutrition.MealEntry.meal.localized)
+            Text(NutritionKeys.MealEntry.meal.localized)
                 .font(.headline)
             
             HStack(spacing: 8) {
@@ -126,9 +148,9 @@ struct MealEntryView: View {
             if effectiveGrams > 0 {
                 let nutrition = food.calculateNutrition(for: effectiveGrams)
                 VStack(spacing: 4) {
-                    Text(LocalizationKeys.Nutrition.MealEntry.total.localized(with: Int(nutrition.calories)))
+                    Text(NutritionKeys.MealEntry.total.localized(with: Int(nutrition.calories)))
                         .font(.headline)
-                    Text("Protein: \(Int(nutrition.protein))\(LocalizationKeys.Nutrition.Units.g.localized) • Carbs: \(Int(nutrition.carbs))\(LocalizationKeys.Nutrition.Units.g.localized) • Fat: \(Int(nutrition.fat))\(LocalizationKeys.Nutrition.Units.g.localized)")
+                    Text("Protein: \(Int(nutrition.protein))\(NutritionKeys.Units.g.localized) • Carbs: \(Int(nutrition.carbs))\(NutritionKeys.Units.g.localized) • Fat: \(Int(nutrition.fat))\(NutritionKeys.Units.g.localized)")
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
@@ -140,7 +162,7 @@ struct MealEntryView: View {
     }
     
     private var addButton: some View {
-        Button(LocalizationKeys.Nutrition.MealEntry.addToMeal.localized) { addMealEntry() }
+        Button(NutritionKeys.MealEntry.addToMeal.localized) { addMealEntry() }
             .buttonStyle(.borderedProminent)
             .disabled(effectiveGrams <= 0 || selectedMealTypes.isEmpty)
     }
@@ -167,6 +189,27 @@ struct MealEntryView: View {
         food.recordUsage()
         do {
             try modelContext.save()
+            
+            // Log meal completion activity for dashboard
+            let currentUser = fetchCurrentUser()
+            ActivityLoggerService.shared.setModelContext(modelContext)
+            
+            // For each meal type, calculate total nutrition and log meal completion
+            for meal in selectedMealTypes {
+                let mealDisplayName = mealTypes.first { $0.0 == meal }?.1 ?? meal
+                let mealTotals = calculateMealTotals(for: meal, on: Date())
+                
+                ActivityLoggerService.shared.logMealCompleted(
+                    mealType: mealDisplayName,
+                    foodCount: mealTotals.foodCount,
+                    totalCalories: mealTotals.calories,
+                    totalProtein: mealTotals.protein,
+                    totalCarbs: mealTotals.carbs,
+                    totalFat: mealTotals.fat,
+                    user: currentUser
+                )
+            }
+            
             #if canImport(UIKit)
             UINotificationFeedbackGenerator().notificationOccurred(.success)
             #endif
@@ -176,6 +219,50 @@ struct MealEntryView: View {
         }
     }
 
+    // Helper to get current user
+    private func fetchCurrentUser() -> User? {
+        let descriptor = FetchDescriptor<User>(sortBy: [SortDescriptor(\User.createdAt)])
+        do {
+            let users = try modelContext.fetch(descriptor)
+            return users.first
+        } catch {
+            return nil
+        }
+    }
+    
+    // Calculate total nutrition for a specific meal type on a given date
+    private func calculateMealTotals(for mealType: String, on date: Date) -> (foodCount: Int, calories: Double, protein: Double, carbs: Double, fat: Double) {
+        let startOfDay = Calendar.current.startOfDay(for: date)
+        let endOfDay = Calendar.current.date(byAdding: .day, value: 1, to: startOfDay) ?? date
+        
+        let predicate = #Predicate<NutritionEntry> { entry in
+            entry.mealType == mealType &&
+            entry.date >= startOfDay &&
+            entry.date < endOfDay
+        }
+        
+        let descriptor = FetchDescriptor<NutritionEntry>(predicate: predicate)
+        
+        do {
+            let entries = try modelContext.fetch(descriptor)
+            let totalCalories = entries.reduce(0) { $0 + $1.calories }
+            let totalProtein = entries.reduce(0) { $0 + $1.protein }
+            let totalCarbs = entries.reduce(0) { $0 + $1.carbs }
+            let totalFat = entries.reduce(0) { $0 + $1.fat }
+            
+            return (
+                foodCount: entries.count,
+                calories: totalCalories,
+                protein: totalProtein,
+                carbs: totalCarbs,
+                fat: totalFat
+            )
+        } catch {
+            print("Error calculating meal totals: \(error)")
+            return (foodCount: 0, calories: 0, protein: 0, carbs: 0, fat: 0)
+        }
+    }
+    
     private func suggestedQuickAmounts() -> [Int] {
         // Basit heuristik: bazı yaygın ürünler için pratik gram önerileri
         let name = food.displayName.lowercased()
@@ -207,6 +294,28 @@ extension MealEntryView {
         }
     }
     
+    // Unit-aware binding for TextField display
+    private var displayBinding: Binding<Double> {
+        Binding<Double>(
+            get: {
+                switch unitSettings.unitSystem {
+                case .metric:
+                    return gramsConsumed
+                case .imperial:
+                    return UnitsConverter.gramToOz(gramsConsumed)
+                }
+            },
+            set: { newValue in
+                switch unitSettings.unitSystem {
+                case .metric:
+                    gramsConsumed = newValue
+                case .imperial:
+                    gramsConsumed = UnitsConverter.ozToGram(newValue)
+                }
+            }
+        )
+    }
+    
     @ViewBuilder
     private var portionInputSection: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -220,9 +329,15 @@ extension MealEntryView {
             if inputMode == .grams {
                 PortionQuickSelect(quantity: $gramsConsumed, suggested: suggestedQuickAmounts())
                 VStack(alignment: .leading, spacing: 8) {
-                    Text(LocalizationKeys.Nutrition.MealEntry.portion.localized)
+                    Text(NutritionKeys.MealEntry.portion.localized)
                         .font(.headline)
-                    TextField(LocalizationKeys.Nutrition.MealEntry.portionGrams.localized, value: $gramsConsumed, format: .number)
+                    TextField(
+                        unitSettings.unitSystem == .metric ? 
+                        NutritionKeys.MealEntry.portionGrams.localized :
+                        "nutrition.meal_entry.portion_ounces".localized, 
+                        value: displayBinding,
+                        format: .number
+                    )
                         .textFieldStyle(.roundedBorder)
                         .keyboardType(.decimalPad)
                 }

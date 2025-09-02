@@ -3,13 +3,19 @@
     "id": "stronglifts-5x5",
     "name": {
       "en": "StrongLifts 5x5",
-      "tr": "StrongLifts 5x5"
+      "tr": "StrongLifts 5x5",
+      "de": "StrongLifts 5x5",
+      "es": "StrongLifts 5x5",
+      "it": "StrongLifts 5x5"
     },
     "description": {
       "en": "Simple and effective strength program. Add 2.5kg to each lift every workout. Deload by 10% if you fail 3 times.",
-      "tr": "Basit ve etkili güç programı. Her antrenmanda 2.5kg ekleyin. 3 kez başarısız olursanız %10 azaltın."
+      "tr": "Basit ve etkili güç programı. Her antrenmanda 2.5kg ekleyin. 3 kez başarısız olursanız %10 azaltın.",
+      "de": "Einfaches und effektives Kraftprogramm. Fügen Sie bei jedem Training 2,5 kg hinzu. Reduzieren Sie um 10%, wenn Sie 3 Mal versagen.",
+      "es": "Programa de fuerza simple y efectivo. Añade 2.5kg en cada entrenamiento. Reduce un 10% si fallas 3 veces.",
+      "it": "Programma di forza semplice ed efficace. Aggiungi 2,5 kg ad ogni allenamento. Riduci del 10% se fallisci 3 volte."
     },
-    "weeks": 12,
+    "weeks": 4,
     "daysPerWeek": 3,
     "level": "beginner",
     "category": "strength",
@@ -40,8 +46,8 @@
       "exercises": [
         {
           "id": "squat-a",
-          "exerciseName": "Barbell Back Squat",
-          "exerciseNameTR": "Barbell Back Squat",
+          "exerciseName": "Back Squat",
+          "exerciseNameTR": "Back Squat",
           "orderIndex": 0,
           "targetSets": 5,
           "targetReps": 5,
@@ -59,8 +65,8 @@
         },
         {
           "id": "bench-a",
-          "exerciseName": "Barbell Bench Press",
-          "exerciseNameTR": "Barbell Bench Press",
+          "exerciseName": "Bench Press",
+          "exerciseNameTR": "Bench Press",
           "orderIndex": 1,
           "targetSets": 5,
           "targetReps": 5,
@@ -78,8 +84,8 @@
         },
         {
           "id": "row-a",
-          "exerciseName": "Barbell Bent Over Row",
-          "exerciseNameTR": "Barbell Bent Over Row",
+          "exerciseName": "Barbell Row",
+          "exerciseNameTR": "Barbell Row",
           "orderIndex": 2,
           "targetSets": 5,
           "targetReps": 5,
@@ -108,8 +114,8 @@
       "exercises": [
         {
           "id": "squat-b",
-          "exerciseName": "Barbell Back Squat",
-          "exerciseNameTR": "Barbell Back Squat",
+          "exerciseName": "Back Squat",
+          "exerciseNameTR": "Back Squat",
           "orderIndex": 0,
           "targetSets": 5,
           "targetReps": 5,
@@ -127,8 +133,8 @@
         },
         {
           "id": "ohp-b",
-          "exerciseName": "Barbell Overhead Press",
-          "exerciseNameTR": "Barbell Overhead Press",
+          "exerciseName": "Overhead Press",
+          "exerciseNameTR": "Overhead Press",
           "orderIndex": 1,
           "targetSets": 5,
           "targetReps": 5,
@@ -146,8 +152,8 @@
         },
         {
           "id": "deadlift-b",
-          "exerciseName": "Barbell Deadlift",
-          "exerciseNameTR": "Barbell Deadlift",
+          "exerciseName": "Deadlift",
+          "exerciseNameTR": "Deadlift",
           "orderIndex": 2,
           "targetSets": 1,
           "targetReps": 5,

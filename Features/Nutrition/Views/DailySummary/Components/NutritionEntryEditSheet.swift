@@ -3,6 +3,7 @@ import SwiftUI
 struct NutritionEntryEditSheet: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
+    @EnvironmentObject private var unitSettings: UnitSettings
     @State private var grams: Double
     @State private var meal: String
     @State private var saveErrorMessage: String? = nil
@@ -17,7 +18,7 @@ struct NutritionEntryEditSheet: View {
     var body: some View {
         NavigationStack {
             editForm
-                .navigationTitle(LocalizationKeys.Common.edit.localized)
+                .navigationTitle(CommonKeys.Onboarding.Common.edit.localized)
                 .toolbar {
                     ToolbarItem(placement: .cancellationAction) {
                         cancelButton
@@ -38,36 +39,49 @@ struct NutritionEntryEditSheet: View {
     }
     
     private var portionSection: some View {
-        Section(header: Text(LocalizationKeys.Nutrition.MealEntry.portion.localized)) {
-            TextField(
-                LocalizationKeys.Nutrition.MealEntry.portionGrams.localized,
-                value: $grams,
-                format: .number
-            )
-            .keyboardType(.decimalPad)
+        Section(header: Text(NutritionKeys.MealEntry.portion.localized)) {
+            HStack {
+                TextField(
+                    unitSettings.unitSystem == .metric ? NutritionKeys.MealEntry.portionGrams.localized : "Portion (oz)",
+                    value: Binding(
+                        get: { 
+                            unitSettings.unitSystem == .metric ? grams : UnitsConverter.gramToOz(grams)
+                        },
+                        set: { newValue in
+                            grams = unitSettings.unitSystem == .metric ? newValue : UnitsConverter.ozToGram(newValue)
+                        }
+                    ),
+                    format: .number
+                )
+                .keyboardType(.decimalPad)
+                
+                Text(unitSettings.unitSystem == .metric ? "g" : "oz")
+                    .foregroundColor(.secondary)
+                    .font(.caption)
+            }
         }
     }
     
     private var mealSection: some View {
-        Section(header: Text(LocalizationKeys.Nutrition.MealEntry.meal.localized)) {
+        Section(header: Text(NutritionKeys.MealEntry.meal.localized)) {
             Picker("", selection: $meal) {
-                Text(LocalizationKeys.Nutrition.MealEntry.MealTypes.breakfast.localized).tag("breakfast")
-                Text(LocalizationKeys.Nutrition.MealEntry.MealTypes.lunch.localized).tag("lunch")
-                Text(LocalizationKeys.Nutrition.MealEntry.MealTypes.dinner.localized).tag("dinner")
-                Text(LocalizationKeys.Nutrition.MealEntry.MealTypes.snack.localized).tag("snack")
+                Text(NutritionKeys.MealEntry.MealTypes.breakfast.localized).tag("breakfast")
+                Text(NutritionKeys.MealEntry.MealTypes.lunch.localized).tag("lunch")
+                Text(NutritionKeys.MealEntry.MealTypes.dinner.localized).tag("dinner")
+                Text(NutritionKeys.MealEntry.MealTypes.snack.localized).tag("snack")
             }
             .pickerStyle(.segmented)
         }
     }
     
     private var cancelButton: some View {
-        Button(LocalizationKeys.Common.cancel.localized) {
+        Button(CommonKeys.Onboarding.Common.cancel.localized) {
             dismiss()
         }
     }
     
     private var saveButton: some View {
-        Button(LocalizationKeys.Common.save.localized) {
+        Button(CommonKeys.Onboarding.Common.save.localized) {
             applyChanges()
         }
         .disabled(grams <= 0)

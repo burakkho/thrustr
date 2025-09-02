@@ -1,6 +1,6 @@
 import XCTest
 import SwiftData
-@testable import thrustr
+@testable import Thrustr
 
 final class OpenFoodFactsServiceTests: XCTestCase {
     private class MockURLProtocol: URLProtocol {

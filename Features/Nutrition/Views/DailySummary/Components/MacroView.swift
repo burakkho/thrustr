@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct MacroView: View {
+    @EnvironmentObject private var unitSettings: UnitSettings
     let value: Int
     let label: String
     let color: Color
@@ -13,7 +14,7 @@ struct MacroView: View {
     }
     
     private var valueText: some View {
-        Text("\(value)\(LocalizationKeys.Nutrition.Units.g.localized)")
+        Text(formatMacroValue(Double(value)))
             .font(.subheadline)
             .fontWeight(.semibold)
             .foregroundColor(color)
@@ -24,23 +25,34 @@ struct MacroView: View {
             .font(.caption)
             .foregroundColor(.secondary)
     }
+    
+    // Helper to format macro values based on unit system
+    private func formatMacroValue(_ grams: Double) -> String {
+        switch unitSettings.unitSystem {
+        case .metric:
+            return "\(Int(grams))\(NutritionKeys.Units.g.localized)"
+        case .imperial:
+            let oz = UnitsConverter.gramToOz(grams)
+            return String(format: "%.1f oz", oz)
+        }
+    }
 }
 
 #Preview {
     HStack(spacing: 20) {
         MacroView(
             value: 25,
-            label: LocalizationKeys.Nutrition.DailySummary.protein.localized,
+            label: NutritionKeys.DailySummary.protein.localized,
             color: .red
         )
         MacroView(
             value: 45,
-            label: LocalizationKeys.Nutrition.DailySummary.carbs.localized,
+            label: NutritionKeys.DailySummary.carbs.localized,
             color: .blue
         )
         MacroView(
             value: 15,
-            label: LocalizationKeys.Nutrition.DailySummary.fat.localized,
+            label: NutritionKeys.DailySummary.fat.localized,
             color: .yellow
         )
     }

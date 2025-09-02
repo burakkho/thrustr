@@ -122,28 +122,19 @@ extension CardioResult {
     
     var formattedDistance: String? {
         guard let distance = distanceCovered else { return nil }
-        if distance >= 1000 {
-            let km = distance / 1000.0
-            if km.truncatingRemainder(dividingBy: 1) == 0 {
-                return "\(Int(km))km"
-            } else {
-                return String(format: "%.2fkm", km)
-            }
-        }
-        return String(format: "%.0fm", distance)
+        return UnitsFormatter.formatDistance(meters: distance, system: UnitSettings.shared.unitSystem)
     }
     
     var formattedPace: String? {
-        let pace = calculatePace()
-        guard let pace = pace else { return nil }
-        let minutes = Int(pace) / 60
-        let seconds = Int(pace) % 60
-        return "\(minutes):\(String(format: "%02d", seconds))/km"
+        let paceSeconds = calculatePace()
+        guard let paceSeconds = paceSeconds else { return nil }
+        let paceMinPerKm = Double(paceSeconds) / 60.0
+        return UnitsFormatter.formatPace(minPerKm: paceMinPerKm, system: UnitSettings.shared.unitSystem)
     }
     
     var formattedSpeed: String? {
         guard let speed = calculateSpeed() else { return nil }
-        return String(format: "%.1f km/h", speed)
+        return UnitsFormatter.formatSpeed(kmh: speed, system: UnitSettings.shared.unitSystem)
     }
     
     var percentageOfTarget: Double? {
@@ -404,9 +395,10 @@ struct ResultComparison {
         }
         
         if let paceImpr = paceImprovement, paceImpr > 0 {
-            let minutes = Int(paceImpr) / 60
-            let seconds = Int(paceImpr) % 60
-            improvements.append("⚡ \(minutes):\(String(format: "%02d", seconds))/km faster")
+            let paceMinPerKm = Double(paceImpr) / 60.0
+            let paceUnit = UnitsFormatter.formatPaceUnit(system: UnitSettings.shared.unitSystem)
+            let paceFormatted = UnitsFormatter.formatDetailedPace(minPerKm: paceMinPerKm, system: UnitSettings.shared.unitSystem)
+            improvements.append("⚡ \(paceFormatted) \(paceUnit) faster")
         }
         
         if improvements.isEmpty {

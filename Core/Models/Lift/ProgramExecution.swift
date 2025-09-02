@@ -145,6 +145,19 @@ extension ProgramExecution {
     func completeProgram() {
         endDate = Date()
         isCompleted = true
+        
+        // Log program completion activity
+        let weekCount = currentWeek - 1
+        let totalCompletedWorkouts = completedWorkouts.filter { !$0.isSkipped }.count
+        
+        Task { @MainActor in
+            ActivityLoggerService.shared.logProgramCompleted(
+                programName: program.localizedName,
+                totalWorkouts: totalCompletedWorkouts,
+                weekCount: weekCount,
+                user: user
+            )
+        }
     }
     
     func pauseProgram() {

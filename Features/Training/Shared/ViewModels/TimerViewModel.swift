@@ -51,7 +51,7 @@ class TimerViewModel {
         isPaused = false
         startTime = Date()
         
-        timer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] _ in
+        timer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { [weak self] _ in
             self?.updateMainTimer()
         }
     }
@@ -73,7 +73,7 @@ class TimerViewModel {
         timerState = .running
         isPaused = false
         
-        timer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] _ in
+        timer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { [weak self] _ in
             self?.updateMainTimer()
         }
     }
@@ -95,7 +95,7 @@ class TimerViewModel {
         isPaused = false
         isCompleted = false
         elapsedTime = 0
-        formattedTime = "00:00.0"
+        formattedTime = "00:00"
         isCountdown = false
         showingCountdown = false
         countdownValue = 3
@@ -124,7 +124,7 @@ class TimerViewModel {
             
             startTime = Date()
             
-            timer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] _ in
+            timer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { [weak self] _ in
                 self?.updateMainTimer()
             }
         }
@@ -140,8 +140,7 @@ class TimerViewModel {
     private func formatTime(_ time: TimeInterval) -> String {
         let minutes = Int(time) / 60
         let seconds = Int(time) % 60
-        let tenths = Int((time.truncatingRemainder(dividingBy: 1)) * 10)
-        return String(format: "%02d:%02d.%d", minutes, seconds, tenths)
+        return String(format: "%02d:%02d", minutes, seconds)
     }
     
     // MARK: - Cleanup

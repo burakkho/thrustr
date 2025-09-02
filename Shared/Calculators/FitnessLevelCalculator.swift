@@ -27,15 +27,15 @@ struct FitnessLevelCalculator {
         }
     }
 
-    /// Human readable FFMI category (TR)
+    /// Human readable FFMI category
     static func ffmiCategory(for ffmi: Double) -> String {
         switch ffmi {
-        case ..<16: return "Ortalamanın Altı"
-        case 16..<18: return "Ortalama"
-        case 18..<21: return "Ortalamanın Üstü"
-        case 21..<24: return "Mükemmel"
-        case 24...25: return "Üstün"
-        default: return "Şüpheli"
+        case ..<16: return ProfileKeys.FFMICalculator.belowAverage.localized
+        case 16..<18: return ProfileKeys.FFMICalculator.average.localized
+        case 18..<21: return ProfileKeys.FFMICalculator.aboveAverage.localized
+        case 21..<24: return ProfileKeys.FFMICalculator.excellent.localized
+        case 24...25: return ProfileKeys.FFMICalculator.superior.localized
+        default: return ProfileKeys.FFMICalculator.suspicious.localized
         }
     }
 
@@ -61,34 +61,44 @@ struct FitnessLevelCalculator {
         }
     }
 
-    /// Human readable body fat category (TR)
+    /// Human readable body fat category
     static func bodyFatCategory(for bodyFat: Double, gender: Gender) -> String {
         switch gender {
         case .male:
             switch bodyFat {
-            case 0..<6: return "Temel Yağ"
-            case 6..<14: return "Atlet"
-            case 14..<18: return "Fitness"
-            case 18..<25: return "Ortalama"
-            default: return "Obez"
+            case 0..<6: return ProfileKeys.BodyFatCategories.essential.localized
+            case 6..<14: return ProfileKeys.BodyFatCategories.athlete.localized
+            case 14..<18: return ProfileKeys.BodyFatCategories.fitness.localized
+            case 18..<25: return ProfileKeys.BodyFatCategories.average.localized
+            default: return ProfileKeys.BodyFatCategories.obese.localized
             }
         case .female:
             switch bodyFat {
-            case 0..<14: return "Temel Yağ"
-            case 14..<21: return "Atlet"
-            case 21..<25: return "Fitness"
-            case 25..<32: return "Ortalama"
-            default: return "Obez"
+            case 0..<14: return ProfileKeys.BodyFatCategories.essential.localized
+            case 14..<21: return ProfileKeys.BodyFatCategories.athlete.localized
+            case 21..<25: return ProfileKeys.BodyFatCategories.fitness.localized
+            case 25..<32: return ProfileKeys.BodyFatCategories.average.localized
+            default: return ProfileKeys.BodyFatCategories.obese.localized
             }
         }
     }
 
     enum FitnessStage: String {
-        case beginner = "Başlangıç"
-        case intermediate = "Orta"
-        case good = "İyi"
-        case advanced = "İleri"
-        case elite = "Elit"
+        case beginner
+        case intermediate
+        case good
+        case advanced
+        case elite
+        
+        var localizedString: String {
+            switch self {
+            case .beginner: return ProfileKeys.FitnessLevels.beginner.localized
+            case .intermediate: return ProfileKeys.FitnessLevels.intermediate.localized
+            case .good: return ProfileKeys.FitnessLevels.good.localized
+            case .advanced: return ProfileKeys.FitnessLevels.advanced.localized
+            case .elite: return ProfileKeys.FitnessLevels.elite.localized
+            }
+        }
     }
 
     /// Combines FFMI and body fat into a 0-100 score and stage label

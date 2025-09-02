@@ -1,14 +1,23 @@
 import SwiftUI
+import SwiftData
 
 struct NavyMethodCalculatorView: View {
+    @Environment(\.modelContext) private var modelContext
+    @Environment(\.dismiss) private var dismiss
     @EnvironmentObject private var unitSettings: UnitSettings
+    
+    let user: User?
+    
     @State private var gender: NavyGender = .male
     @State private var age = ""
     @State private var height = ""   // expects cm
+    @State private var heightFeet = ""  // for imperial input
+    @State private var heightInches = "" // for imperial input
     @State private var waist = ""    // expects cm
     @State private var neck = ""     // expects cm
     @State private var hips = ""     // expects cm (female only)
     @State private var calculatedBodyFat: Double?
+    @State private var showingSaveSuccessToast = false
     
     var body: some View {
         ScrollView {
@@ -25,6 +34,8 @@ struct NavyMethodCalculatorView: View {
                     gender: gender,
                     age: $age,
                     height: $height,
+                    heightFeet: $heightFeet,
+                    heightInches: $heightInches,
                     waist: $waist,
                     neck: $neck,
                     hips: $hips
@@ -34,7 +45,7 @@ struct NavyMethodCalculatorView: View {
                 Button {
                     calculateBodyFat()
                 } label: {
-                    Text("Hesapla")
+                    Text(ProfileKeys.NavyMethodCalculator.calculate.localized)
                         .font(.headline)
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
@@ -48,6 +59,11 @@ struct NavyMethodCalculatorView: View {
                 // Results Section
                 if let bodyFat = calculatedBodyFat {
                     NavyResultsSection(bodyFat: bodyFat, gender: gender)
+                    
+                    // Save to Profile Button
+                    if user != nil {
+                        saveToProfileButton
+                    }
                 }
                 
                 // Body Fat Scale Section
@@ -59,18 +75,47 @@ struct NavyMethodCalculatorView: View {
             }
             .padding()
         }
-        .navigationTitle("Navy Method")
+        .navigationTitle(ProfileKeys.NavyMethodCalculator.title.localized)
         .navigationBarTitleDisplayMode(.inline)
+        .navigationBarItems(trailing: Button(CommonKeys.Onboarding.Common.close.localized) { dismiss() })
         .background(Color(.systemGroupedBackground))
+        .onAppear {
+            loadUserData()
+        }
+        .overlay(
+            Group {
+                if showingSaveSuccessToast {
+                    ToastView(
+                        text: ProfileKeys.Messages.measurementsSaved.localized, 
+                        icon: "checkmark.circle.fill"
+                    )
+                        .padding(.top, 50)
+                        .onAppear {
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                                showingSaveSuccessToast = false
+                            }
+                        }
+                }
+            }, alignment: .top
+        )
     }
     
     private var isFormValid: Bool {
         guard let ageValue = Int(age),
-              let heightValue = Double(height.replacingOccurrences(of: ",", with: ".")),
               let waistValue = Double(waist.replacingOccurrences(of: ",", with: ".")),
               let neckValue = Double(neck.replacingOccurrences(of: ",", with: ".")) else { return false }
         
-        let basicValid = ageValue > 0 && heightValue > 0 && waistValue > 0 && neckValue > 0
+        // Height validation based on unit system
+        let heightValid: Bool
+        if unitSettings.unitSystem == .metric {
+            guard let heightValue = Double(height.replacingOccurrences(of: ",", with: ".")) else { return false }
+            heightValid = heightValue > 0
+        } else {
+            guard let feet = Int(heightFeet), let inches = Int(heightInches) else { return false }
+            heightValid = feet > 0 && inches >= 0 && inches < 12
+        }
+        
+        let basicValid = ageValue > 0 && heightValid && waistValue > 0 && neckValue > 0
         
         if gender == .female {
             guard let hipsValue = Double(hips.replacingOccurrences(of: ",", with: ".")) else { return false }
@@ -82,14 +127,27 @@ struct NavyMethodCalculatorView: View {
     
     private func calculateBodyFat() {
         guard let _ = Int(age),
-              let heightRaw = Double(height.replacingOccurrences(of: ",", with: ".")),
               let waistRaw = Double(waist.replacingOccurrences(of: ",", with: ".")),
               let neckRaw = Double(neck.replacingOccurrences(of: ",", with: ".")) else { return }
 
-        // Normalize to cm
-        let heightValue = heightRaw
-        let waistValue = waistRaw
-        let neckValue = neckRaw
+        // Get height in cm based on unit system
+        let heightInCm: Double
+        if unitSettings.unitSystem == .metric {
+            guard let heightRaw = Double(height.replacingOccurrences(of: ",", with: ".")) else { return }
+            heightInCm = heightRaw
+        } else {
+            guard let feet = Int(heightFeet), let inches = Int(heightInches) else { return }
+            heightInCm = UnitsConverter.feetInchesToCm(feet: feet, inches: inches)
+        }
+
+        // Convert measurements to cm (all calculations expect cm)
+        let waistInCm = unitSettings.unitSystem == .metric ? waistRaw : (waistRaw * 2.54)
+        let neckInCm = unitSettings.unitSystem == .metric ? neckRaw : (neckRaw * 2.54)
+
+        // Use cm values for calculation
+        let heightValue = heightInCm
+        let waistValue = waistInCm
+        let neckValue = neckInCm
         
         if gender == .male {
             // Male formula: 495 / (1.0324 - 0.19077 * log10(waist - neck) + 0.15456 * log10(height)) - 450
@@ -100,12 +158,138 @@ struct NavyMethodCalculatorView: View {
         } else {
             // Female formula: 495 / (1.29579 - 0.35004 * log10(waist + hip - neck) + 0.22100 * log10(height)) - 450
             guard let hipsRaw = Double(hips.replacingOccurrences(of: ",", with: ".")) else { return }
-            let hipsValue = hipsRaw
+            let hipsInCm = unitSettings.unitSystem == .metric ? hipsRaw : (hipsRaw * 2.54)
+            let hipsValue = hipsInCm
             let logWaistHipNeck = log10(waistValue + hipsValue - neckValue)
             let logHeight = log10(heightValue)
             let bodyFatPercentage = 495 / (1.29579 - 0.35004 * logWaistHipNeck + 0.22100 * logHeight) - 450
             calculatedBodyFat = max(0, bodyFatPercentage)
         }
+    }
+    
+    // MARK: - User Data Management
+    
+    private func loadUserData() {
+        guard let user = user else { return }
+        
+        // Load existing data if available
+        gender = user.genderEnum == .female ? .female : .male
+        age = "\(user.age)"
+        
+        // Convert height based on unit system
+        if unitSettings.unitSystem == .metric {
+            height = String(format: "%.0f", user.height)
+        } else {
+            // Convert cm to feet and inches for imperial display
+            let (feet, inches) = UnitsConverter.cmToFeetInches(user.height)
+            heightFeet = "\(feet)"
+            heightInches = "\(inches)"
+        }
+        
+        // Load existing measurements and convert based on unit system
+        if let waistMeasurement = user.waist {
+            if unitSettings.unitSystem == .metric {
+                waist = String(format: "%.1f", waistMeasurement)
+            } else {
+                let inches = waistMeasurement / 2.54 // cm to inches
+                waist = String(format: "%.1f", inches)
+            }
+        }
+        
+        if let neckMeasurement = user.neck {
+            if unitSettings.unitSystem == .metric {
+                neck = String(format: "%.1f", neckMeasurement)
+            } else {
+                let inches = neckMeasurement / 2.54 // cm to inches
+                neck = String(format: "%.1f", inches)
+            }
+        }
+        
+        if let hipMeasurement = user.hips {
+            if unitSettings.unitSystem == .metric {
+                hips = String(format: "%.1f", hipMeasurement)
+            } else {
+                let inches = hipMeasurement / 2.54 // cm to inches
+                hips = String(format: "%.1f", inches)
+            }
+        }
+        
+        // If we have all measurements, calculate body fat immediately
+        if isFormValid {
+            calculateBodyFat()
+        }
+    }
+    
+    private func saveToUser() {
+        guard let user = user else { return }
+        
+        // Convert height based on unit system
+        let heightInCm: Double
+        if unitSettings.unitSystem == .metric {
+            guard let heightValue = Double(height.replacingOccurrences(of: ",", with: ".")) else { return }
+            heightInCm = heightValue
+        } else {
+            guard let feet = Int(heightFeet), let inches = Int(heightInches) else { return }
+            heightInCm = UnitsConverter.feetInchesToCm(feet: feet, inches: inches)
+        }
+        
+        // Convert measurements based on unit system
+        guard let waistInput = Double(waist.replacingOccurrences(of: ",", with: ".")),
+              let neckInput = Double(neck.replacingOccurrences(of: ",", with: ".")) else { return }
+        
+        let waistInCm = unitSettings.unitSystem == .metric ? waistInput : (waistInput * 2.54) // inches to cm
+        let neckInCm = unitSettings.unitSystem == .metric ? neckInput : (neckInput * 2.54)     // inches to cm
+        
+        // Save measurements to user (always stored in metric)
+        user.height = heightInCm
+        user.neck = neckInCm
+        user.waist = waistInCm
+        
+        if gender == .female,
+           let hipsInput = Double(hips.replacingOccurrences(of: ",", with: ".")) {
+            let hipsInCm = unitSettings.unitSystem == .metric ? hipsInput : (hipsInput * 2.54) // inches to cm
+            user.hips = hipsInCm
+        }
+        
+        // Save to SwiftData
+        do {
+            try modelContext.save()
+            
+            // Show success toast
+            withAnimation {
+                showingSaveSuccessToast = true
+            }
+            
+            // Hide toast after 2 seconds
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                withAnimation {
+                    showingSaveSuccessToast = false
+                }
+            }
+        } catch {
+            print("Error saving Navy Method measurements: \(error)")
+            // TODO: Show error toast with ProfileKeys.Messages.saveError
+        }
+    }
+    
+    // MARK: - UI Components
+    
+    private var saveToProfileButton: some View {
+        Button {
+            saveToUser()
+        } label: {
+            HStack {
+                Image(systemName: "person.crop.circle")
+                Text(ProfileKeys.Messages.saveToProfile.localized)
+            }
+            .font(.headline)
+            .foregroundColor(.white)
+            .frame(maxWidth: .infinity)
+            .padding()
+            .background(Color.orange)
+            .clipShape(RoundedRectangle(cornerRadius: 12))
+        }
+        .padding(.horizontal)
     }
 }
 
@@ -181,6 +365,8 @@ struct NavyInputSection: View {
     let gender: NavyGender
     @Binding var age: String
     @Binding var height: String
+    @Binding var heightFeet: String
+    @Binding var heightInches: String
     @Binding var waist: String
     @Binding var neck: String
     @Binding var hips: String
@@ -212,14 +398,38 @@ struct NavyInputSection: View {
                     HStack {
                         Image(systemName: "ruler.fill")
                             .foregroundColor(.green)
-                        Text("Boy (cm)")
+                        Text(unitSystem == .metric ? "Boy (cm)" : "Boy (ft'in\")")
                             .fontWeight(.medium)
                     }
                     
-                    TextField("175", text: $height)
-                        .keyboardType(.decimalPad)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                        .font(.title3)
+                    if unitSystem == .metric {
+                        TextField("175", text: $height)
+                            .keyboardType(.decimalPad)
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                            .font(.title3)
+                    } else {
+                        // Imperial: feet and inches input
+                        HStack(spacing: 12) {
+                            VStack {
+                                Text("Feet")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                                TextField("5", text: $heightFeet)
+                                    .keyboardType(.numberPad)
+                                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                                    .font(.title3)
+                            }
+                            VStack {
+                                Text("Inches")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                                TextField("10", text: $heightInches)
+                                    .keyboardType(.numberPad)
+                                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                                    .font(.title3)
+                            }
+                        }
+                    }
                 }
                 
                 // Waist Input
@@ -545,6 +755,8 @@ enum BodyFatCategory: CaseIterable {
 
 #Preview {
     NavigationStack {
-        NavyMethodCalculatorView()
+        NavyMethodCalculatorView(user: nil)
     }
+    .modelContainer(for: [User.self], inMemory: true)
+    .environmentObject(UnitSettings.shared)
 }

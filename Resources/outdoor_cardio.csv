@@ -1,0 +1,4 @@
+name,nameEN,nameTR,nameES,nameDE,equipment,exerciseType,met,descriptionTR,descriptionES,descriptionDE
+Running,Running,Koşu,Carrera,Laufen,outdoor,run,10.0,Açık havada koşu,Carrera al aire libre,Laufen im Freien
+Walking,Walking,Yürüyüş,Caminata,Gehen,outdoor,walk,3.5,Açık havada yürüyüş,Caminata al aire libre,Gehen im Freien
+Cycling,Cycling,Bisiklet,Ciclismo,Radfahren,outdoor,bike,8.0,Açık havada bisiklet,Ciclismo al aire libre,Radfahren im Freien

@@ -52,10 +52,10 @@ final class NutritionEntry {
 extension NutritionEntry {
     var displayMealType: String {
         switch mealType {
-        case "breakfast": return LocalizationKeys.Nutrition.MealEntry.MealTypes.breakfast.localized
-        case "lunch": return LocalizationKeys.Nutrition.MealEntry.MealTypes.lunch.localized
-        case "dinner": return LocalizationKeys.Nutrition.MealEntry.MealTypes.dinner.localized
-        case "snack": return LocalizationKeys.Nutrition.MealEntry.MealTypes.snack.localized
+        case "breakfast": return NutritionKeys.MealEntry.MealTypes.breakfast.localized
+        case "lunch": return NutritionKeys.MealEntry.MealTypes.lunch.localized
+        case "dinner": return NutritionKeys.MealEntry.MealTypes.dinner.localized
+        case "snack": return NutritionKeys.MealEntry.MealTypes.snack.localized
         default: return mealType.capitalized
         }
     }

@@ -69,3 +69,9 @@ Power Snatch,Power Snatch,olympic,barbell,true,true,false,false
 Clean and Jerk,Clean and Jerk,olympic,barbell,true,true,false,false
 Muscle Up,Muscle Up,functional,pullup_bar,false,true,false,false
 Barbell Curls,Barbell Curls,isolation,barbell,true,true,false,false
+Close Grip Bench Press,Close Grip Bench Press,push,barbell,true,true,false,false
+Cable Fly,Cable Fly,push,cable,true,true,false,false
+Tricep Dips,Tricep Dips,push,bodyweight,false,true,false,false
+Skullcrushers,Skullcrushers,isolation,barbell,true,true,false,false
+Cable Crossover,Cable Crossover,push,cable,true,true,false,false
+Incline Dumbbell Fly,Incline Dumbbell Fly,push,dumbbell,true,true,false,false

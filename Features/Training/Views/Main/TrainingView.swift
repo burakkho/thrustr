@@ -17,11 +17,12 @@ struct TrainingView: View {
                         set: { coordinator.selectWorkoutType(WorkoutType(rawValue: $0) ?? .dashboard) }
                     ),
                     tabs: [
-                        TrainingTab(title: LocalizationKeys.Training.Dashboard.title.localized, icon: "house.fill"),
-                        TrainingTab(title: "training.lift.title".localized, icon: "dumbbell.fill"),
-                        TrainingTab(title: LocalizationKeys.Training.Cardio.title.localized, icon: "heart.fill"),
-                        TrainingTab(title: LocalizationKeys.Training.WOD.title.localized, icon: "flame.fill"),
-                        TrainingTab(title: LocalizationKeys.Training.Analytics.title.localized, icon: "chart.bar.fill")
+                        TrainingTab(title: TrainingKeys.Dashboard.title.localized, icon: "house.fill"),
+                        TrainingTab(title: TrainingKeys.Lift.title.localized, icon: "dumbbell.fill"),
+                        TrainingTab(title: TrainingKeys.Cardio.title.localized, icon: "heart.fill"),
+                        TrainingTab(title: TrainingKeys.WOD.title.localized, icon: "flame.fill"),
+                        TrainingTab(title: TrainingKeys.Strength.title.localized, icon: "chart.bar.doc.horizontal.fill"),
+                        TrainingTab(title: TrainingKeys.Analytics.title.localized, icon: "chart.bar.fill")
                     ]
                 )
                 
@@ -40,13 +41,16 @@ struct TrainingView: View {
                     case .wod:
                         WODMainView()
                             .environment(coordinator)
+                    case .tests:
+                        TestsMainView()
+                            .environment(coordinator)
                     case .analytics:
                         TrainingAnalyticsView(modelContext: modelContext)
                             .environment(coordinator)
                     }
                 }
             }
-            .navigationTitle(LocalizationKeys.Training.title.localized)
+            .navigationTitle(TrainingKeys.title.localized)
             .navigationBarTitleDisplayMode(.large)
         }
     }
@@ -64,6 +68,7 @@ struct TrainingView: View {
             CardioSession.self,
             WOD.self,
             WODResult.self,
+            StrengthTest.self,
             User.self
         ], inMemory: true)
 }

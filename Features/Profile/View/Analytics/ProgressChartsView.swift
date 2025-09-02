@@ -5,9 +5,13 @@ import Charts
 struct ProgressChartsView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var users: [User]
+    @EnvironmentObject private var unitSettings: UnitSettings
     
     @State private var selectedTimeRange: TimeRange = .month3
     @State private var selectedChartType: ChartType = .weight
+    @State private var isLoading = true
+    @State private var showingChartDetail = false
+    @State private var selectedDataPoint: Date? = nil
     
     // PERFORMANCE: Lazy loaded queries based on selected time range
     private var cutoffDate: Date {
@@ -50,14 +54,18 @@ struct ProgressChartsView: View {
                 ChartTypeSelector(selectedType: $selectedChartType)
                 
                 // Main Chart Section - PERFORMANCE: Use computed filtered data
-                MainChartSection(
-                    chartType: selectedChartType,
-                    timeRange: selectedTimeRange,
-                    weightEntries: weightEntries,
-                    liftSessions: liftSessions,
-                    bodyMeasurements: bodyMeasurements,
-                    user: currentUser
-                )
+                if isLoading {
+                    ChartSkeletonView()
+                } else {
+                    MainChartSection(
+                        chartType: selectedChartType,
+                        timeRange: selectedTimeRange,
+                        weightEntries: weightEntries,
+                        liftSessions: liftSessions,
+                        bodyMeasurements: bodyMeasurements,
+                        user: currentUser
+                    )
+                }
                 
                 // Summary Statistics
                 SummaryStatisticsSection(
@@ -76,9 +84,39 @@ struct ProgressChartsView: View {
             }
             .padding()
         }
-        .navigationTitle(LocalizationKeys.localized(LocalizationKeys.ProgressCharts.title))
+        .navigationTitle(ProfileKeys.progressCharts.localized)
         .navigationBarTitleDisplayMode(.inline)
         .background(Color(.systemGroupedBackground))
+        .onAppear {
+            // Simulate initial loading delay
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                withAnimation(.easeInOut(duration: 0.3)) {
+                    isLoading = false
+                }
+            }
+        }
+        .onChange(of: selectedTimeRange) {
+            // Show loading when changing time range
+            withAnimation(.easeInOut(duration: 0.2)) {
+                isLoading = true
+            }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                withAnimation(.easeInOut(duration: 0.3)) {
+                    isLoading = false
+                }
+            }
+        }
+        .onChange(of: selectedChartType) {
+            // Show loading when changing chart type
+            withAnimation(.easeInOut(duration: 0.2)) {
+                isLoading = true
+            }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                withAnimation(.easeInOut(duration: 0.3)) {
+                    isLoading = false
+                }
+            }
+        }
     }
 }
 
@@ -91,11 +129,11 @@ struct ProgressChartsHeaderSection: View {
                 .foregroundColor(.blue)
             
             VStack(spacing: 8) {
-                Text(LocalizationKeys.localized(LocalizationKeys.ProgressCharts.title))
+                Text(ProfileKeys.progressCharts.localized)
                     .font(.title2)
                     .fontWeight(.semibold)
                 
-                Text(LocalizationKeys.localized(LocalizationKeys.ProgressCharts.subtitle))
+                Text(ProfileKeys.chartsSubtitle.localized)
                     .font(.subheadline)
                     .foregroundColor(.secondary)
                     .multilineTextAlignment(.center)
@@ -114,7 +152,7 @@ struct TimeRangeSelector: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text(LocalizationKeys.localized(LocalizationKeys.ProgressCharts.timeRange))
+            Text(ProfileKeys.Analytics.timeRange.localized)
                 .font(.headline)
                 .fontWeight(.semibold)
             
@@ -147,7 +185,7 @@ struct ChartTypeSelector: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text(LocalizationKeys.localized(LocalizationKeys.ProgressCharts.chartType))
+            Text(ProfileKeys.Analytics.chartType.localized)
                 .font(.headline)
                 .fontWeight(.semibold)
             
@@ -219,6 +257,9 @@ struct MainChartSection: View {
 // MARK: - Weight Chart View
 struct WeightChartView: View {
     let entries: [WeightEntry]
+    @EnvironmentObject private var unitSettings: UnitSettings
+    
+    @State private var selectedPoint: Date? = nil
     
     private var chartData: [WeightChartData] {
         entries.map { WeightChartData(date: $0.date, weight: $0.weight) }
@@ -227,23 +268,30 @@ struct WeightChartView: View {
     var body: some View {
         VStack(spacing: 12) {
             if chartData.isEmpty {
-                EmptyChartView(message: LocalizationKeys.localized(LocalizationKeys.ProgressCharts.emptyWeightChange))
+                EmptyChartView(message: ProfileKeys.Analytics.noDataAvailable.localized)
             } else {
                 if #available(iOS 16.0, *) {
                     Chart(chartData) { data in
                         LineMark(
-                             x: .value(LocalizationKeys.localized(LocalizationKeys.ProgressCharts.axisDate), data.date),
-                             y: .value(LocalizationKeys.localized(LocalizationKeys.ProgressCharts.axisWeight), data.weight)
+                             x: .value("Date", data.date),
+                             y: .value("Weight", data.weight)
                         )
                         .foregroundStyle(.orange)
                         .lineStyle(StrokeStyle(lineWidth: 3))
                         
                         PointMark(
-                             x: .value(LocalizationKeys.localized(LocalizationKeys.ProgressCharts.axisDate), data.date),
-                             y: .value(LocalizationKeys.localized(LocalizationKeys.ProgressCharts.axisWeight), data.weight)
+                             x: .value("Date", data.date),
+                             y: .value("Weight", data.weight)
                         )
                         .foregroundStyle(.orange)
-                        .symbolSize(50)
+                        .symbolSize(selectedPoint == data.date ? 80 : 50)
+                        
+                        // Highlight selected point
+                        if let selectedPoint = selectedPoint, selectedPoint == data.date {
+                            RuleMark(x: .value("Selected", selectedPoint))
+                                .foregroundStyle(.orange.opacity(0.3))
+                                .lineStyle(StrokeStyle(lineWidth: 2, dash: [5, 5]))
+                        }
                     }
                     .frame(height: 200)
                     .chartXAxis {
@@ -258,11 +306,29 @@ struct WeightChartView: View {
                             AxisValueLabel()
                         }
                     }
+                    .chartBackground { chartProxy in
+                        GeometryReader { geometry in
+                            Rectangle()
+                                .fill(Color.clear)
+                                .contentShape(Rectangle())
+                                .onTapGesture { location in
+                                    if let date = chartProxy.value(atX: location.x, as: Date.self) {
+                                        withAnimation(.spring(response: 0.3)) {
+                                            selectedPoint = findNearestDataPoint(to: date)
+                                        }
+                                    }
+                                }
+                        }
+                    }
                 } else {
-                    FallbackChartView(color: .orange, message: LocalizationKeys.localized(LocalizationKeys.ProgressCharts.typeWeightChange))
+                    FallbackChartView(color: .orange, message: "Weight Change")
                 }
             }
         }
+    }
+    
+    private func findNearestDataPoint(to date: Date) -> Date? {
+        return chartData.min(by: { abs($0.date.timeIntervalSince(date)) < abs($1.date.timeIntervalSince(date)) })?.date
     }
 }
 
@@ -287,19 +353,19 @@ struct WorkoutVolumeChartView: View {
     var body: some View {
         VStack(spacing: 12) {
             if weeklyData.isEmpty {
-                EmptyChartView(message: LocalizationKeys.localized(LocalizationKeys.ProgressCharts.emptyWorkoutVolume))
+                EmptyChartView(message: ProfileKeys.Analytics.noDataAvailable.localized)
             } else {
                 if #available(iOS 16.0, *) {
                     Chart(weeklyData) { data in
                         BarMark(
-                            x: .value(LocalizationKeys.localized(LocalizationKeys.ProgressCharts.axisWeek), data.week),
-                            y: .value(LocalizationKeys.localized(LocalizationKeys.ProgressCharts.axisVolume), data.volume)
+                            x: .value("Week", data.week),
+                            y: .value("Volume", data.volume)
                         )
                         .foregroundStyle(.blue)
                     }
                     .frame(height: 200)
                 } else {
-                    FallbackChartView(color: .blue, message: LocalizationKeys.localized(LocalizationKeys.ProgressCharts.typeWorkoutVolume))
+                    FallbackChartView(color: .blue, message: "Workout Volume")
                 }
             }
         }
@@ -325,19 +391,19 @@ struct WorkoutFrequencyChartView: View {
     var body: some View {
         VStack(spacing: 12) {
             if frequencyData.isEmpty {
-                EmptyChartView(message: LocalizationKeys.localized(LocalizationKeys.ProgressCharts.emptyWorkoutFrequency))
+                EmptyChartView(message: ProfileKeys.Analytics.noDataAvailable.localized)
             } else {
                 if #available(iOS 16.0, *) {
                     Chart(frequencyData) { data in
                         BarMark(
-                            x: .value(LocalizationKeys.localized(LocalizationKeys.ProgressCharts.axisWeek), data.period),
-                            y: .value(LocalizationKeys.localized(LocalizationKeys.ProgressCharts.axisFrequency), data.count)
+                            x: .value("Week", data.period),
+                            y: .value("Frequency", data.count)
                         )
                         .foregroundStyle(.green)
                     }
                     .frame(height: 200)
                 } else {
-                    FallbackChartView(color: .green, message: LocalizationKeys.localized(LocalizationKeys.ProgressCharts.typeWorkoutFrequency))
+                    FallbackChartView(color: .green, message: "Workout Frequency")
                 }
             }
         }
@@ -347,18 +413,117 @@ struct WorkoutFrequencyChartView: View {
 // MARK: - Body Measurements Chart View
 struct BodyMeasurementsChartView: View {
     let measurements: [BodyMeasurement]
+    @EnvironmentObject private var unitSettings: UnitSettings
+    
+    @State private var selectedMeasurementType: MeasurementType = .waist
+    
+    private var filteredMeasurements: [BodyMeasurement] {
+        measurements.filter { $0.typeEnum == selectedMeasurementType }
+            .sorted { $0.date < $1.date }
+    }
+    
+    private var chartData: [MeasurementChartData] {
+        filteredMeasurements.map { 
+            MeasurementChartData(
+                date: $0.date, 
+                value: unitSettings.unitSystem == .metric ? $0.value : $0.value * 0.393701
+            ) 
+        }
+    }
     
     var body: some View {
         VStack(spacing: 12) {
             if measurements.isEmpty {
-                EmptyChartView(message: LocalizationKeys.localized(LocalizationKeys.ProgressCharts.emptyBodyMeasurements))
+                EmptyChartView(message: ProfileKeys.Analytics.noDataAvailable.localized)
             } else {
-                Text(LocalizationKeys.localized(LocalizationKeys.ProgressCharts.bodyMeasurementsInfo))
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-                    .multilineTextAlignment(.center)
-                    .padding()
+                // Measurement Type Selector
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 8) {
+                        ForEach(MeasurementType.allCases, id: \.self) { type in
+                            Button {
+                                selectedMeasurementType = type
+                            } label: {
+                                Text(type.displayName)
+                                    .font(.caption)
+                                    .fontWeight(.medium)
+                                    .padding(.horizontal, 12)
+                                    .padding(.vertical, 6)
+                                    .background(selectedMeasurementType == type ? type.color : Color(.secondarySystemBackground))
+                                    .foregroundColor(selectedMeasurementType == type ? .white : .primary)
+                                    .clipShape(Capsule())
+                            }
+                        }
+                    }
+                    .padding(.horizontal)
+                }
+                
+                // Chart
+                if chartData.isEmpty {
+                    EmptyChartView(message: "No data for selected measurement")
+                } else {
+                    if #available(iOS 16.0, *) {
+                        Chart(chartData) { data in
+                            LineMark(
+                                x: .value("Date", data.date),
+                                y: .value("Measurement", data.value)
+                            )
+                            .foregroundStyle(selectedMeasurementType.color)
+                            .lineStyle(StrokeStyle(lineWidth: 3))
+                            
+                            PointMark(
+                                x: .value("Date", data.date),
+                                y: .value("Measurement", data.value)
+                            )
+                            .foregroundStyle(selectedMeasurementType.color)
+                            .symbolSize(50)
+                        }
+                        .frame(height: 200)
+                        .chartXAxis {
+                            AxisMarks(values: .stride(by: .day, count: 7)) { _ in
+                                AxisGridLine()
+                                AxisValueLabel(format: .dateTime.day().month(.abbreviated))
+                            }
+                        }
+                        .chartYAxis {
+                            AxisMarks { _ in
+                                AxisGridLine()
+                                AxisValueLabel()
+                            }
+                        }
+                    } else {
+                        FallbackChartView(
+                            color: selectedMeasurementType.color, 
+                            message: selectedMeasurementType.displayName
+                        )
+                    }
+                }
             }
+        }
+    }
+}
+
+// MARK: - Chart Skeleton View
+struct ChartSkeletonView: View {
+    var body: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            SkeletonView(height: 20, width: 150)
+            
+            VStack(spacing: 12) {
+                // Chart area skeleton
+                SkeletonView(height: 200, cornerRadius: 12)
+                
+                // Legend skeleton
+                HStack(spacing: 12) {
+                    SkeletonView(height: 12, width: 60)
+                    SkeletonView(height: 12, width: 80)
+                    SkeletonView(height: 12, width: 70)
+                    Spacer()
+                }
+            }
+            .padding()
+            .background(Color(.systemBackground))
+            .clipShape(RoundedRectangle(cornerRadius: 12))
+            .shadow(color: .black.opacity(0.05), radius: 5, x: 0, y: 2)
         }
     }
 }
@@ -368,16 +533,32 @@ struct EmptyChartView: View {
     let message: String
     
     var body: some View {
-        VStack(spacing: 12) {
+        VStack(spacing: 16) {
             Image(systemName: "chart.line.flattrend.xyaxis")
-                .font(.system(size: 40))
-                .foregroundColor(.gray)
+                .font(.system(size: 50))
+                .foregroundColor(.gray.opacity(0.6))
             
-            Text(message)
-                .font(.subheadline)
-                .foregroundColor(.secondary)
+            VStack(spacing: 8) {
+                Text("No Data Available")
+                    .font(.headline)
+                    .fontWeight(.semibold)
+                    .foregroundColor(.primary)
+                
+                Text(message)
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                    .multilineTextAlignment(.center)
+                    .lineLimit(2)
+                
+                Text("Start tracking to see your progress")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                    .italic()
+            }
         }
         .frame(height: 200)
+        .frame(maxWidth: .infinity)
+        .padding()
     }
 }
 
@@ -396,7 +577,7 @@ struct FallbackChartView: View {
                 .font(.subheadline)
                 .foregroundColor(.secondary)
             
-            Text(LocalizationKeys.localized(LocalizationKeys.ProgressCharts.fallbackRequiresIOS16))
+            Text("Charts require iOS 16+")
                 .font(.caption)
                 .foregroundColor(.secondary)
         }
@@ -413,7 +594,7 @@ struct SummaryStatisticsSection: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text(LocalizationKeys.localized(LocalizationKeys.ProgressCharts.statsTitle))
+            Text(ProfileKeys.Analytics.statistics.localized)
                 .font(.headline)
                 .fontWeight(.semibold)
             
@@ -438,6 +619,7 @@ struct SummaryStatisticsSection: View {
 // MARK: - Weight Statistics Cards
 struct WeightStatisticsCards: View {
     let entries: [WeightEntry]
+    @EnvironmentObject private var unitSettings: UnitSettings
     
     private var weightChange: Double {
         guard entries.count >= 2 else { return 0 }
@@ -453,26 +635,26 @@ struct WeightStatisticsCards: View {
     
     var body: some View {
         StatCard(
-            title: LocalizationKeys.localized(LocalizationKeys.ProgressCharts.statsWeightChange),
-            value: String(format: "%.1f kg", weightChange),
+            title: ProfileKeys.Analytics.weightChange.localized,
+            value: UnitsFormatter.formatWeight(kg: weightChange, system: unitSettings.unitSystem),
             color: weightChange >= 0 ? .green : .red
         )
         
         StatCard(
-            title: LocalizationKeys.localized(LocalizationKeys.ProgressCharts.statsAverageWeight),
-            value: String(format: "%.1f kg", averageWeight),
+            title: ProfileKeys.Analytics.averageWeight.localized,
+            value: UnitsFormatter.formatWeight(kg: averageWeight, system: unitSettings.unitSystem),
             color: .blue
         )
         
         StatCard(
-            title: LocalizationKeys.localized(LocalizationKeys.ProgressCharts.statsEntryCount),
+            title: ProfileKeys.Analytics.entries.localized,
             value: "\(entries.count)",
             color: .orange
         )
         
         StatCard(
-            title: LocalizationKeys.localized(LocalizationKeys.ProgressCharts.statsLatest),
-            value: String(format: "%.1f kg", entries.first?.weight ?? 0),
+            title: ProfileKeys.Analytics.latest.localized,
+            value: UnitsFormatter.formatWeight(kg: entries.first?.weight ?? 0, system: unitSettings.unitSystem),
             color: .purple
         )
     }
@@ -482,6 +664,7 @@ struct WeightStatisticsCards: View {
 struct WorkoutStatisticsCards: View {
     let liftSessions: [LiftSession]
     let timeRange: TimeRange
+    @EnvironmentObject private var unitSettings: UnitSettings
     
     private var totalWorkouts: Int {
         liftSessions.count
@@ -502,26 +685,26 @@ struct WorkoutStatisticsCards: View {
     
     var body: some View {
         StatCard(
-            title: LocalizationKeys.localized(LocalizationKeys.ProgressCharts.statsTotalWorkouts),
+            title: ProfileKeys.Analytics.totalWorkouts.localized,
             value: "\(totalWorkouts)",
             color: .blue
         )
         
         StatCard(
-            title: LocalizationKeys.localized(LocalizationKeys.ProgressCharts.statsWeeklyAvg),
+            title: ProfileKeys.Analytics.weeklyAverage.localized,
             value: String(format: "%.1f", averageWorkoutsPerWeek),
             color: .green
         )
         
         StatCard(
-            title: LocalizationKeys.localized(LocalizationKeys.ProgressCharts.statsTotalVolume),
-            value: String(format: "%.0f kg", totalVolume),
+            title: ProfileKeys.Analytics.totalVolume.localized,
+            value: UnitsFormatter.formatWeight(kg: totalVolume, system: unitSettings.unitSystem),
             color: .orange
         )
         
         StatCard(
-            title: LocalizationKeys.localized(LocalizationKeys.ProgressCharts.statsAverageVolume),
-            value: String(format: "%.0f kg", averageVolume),
+            title: ProfileKeys.Analytics.averageVolume.localized,
+            value: UnitsFormatter.formatWeight(kg: averageVolume, system: unitSettings.unitSystem),
             color: .purple
         )
     }
@@ -531,14 +714,14 @@ struct WorkoutStatisticsCards: View {
 struct BodyMeasurementStatisticsCards: View {
     var body: some View {
         StatCard(
-            title: "analytics.change".localized,
-            value: "analytics.calculating".localized,
+            title: ProfileKeys.Analytics.change.localized,
+            value: ProfileKeys.Analytics.calculating.localized,
             color: .blue
         )
         
         StatCard(
-            title: "analytics.average".localized,
-            value: "analytics.calculating".localized,
+            title: ProfileKeys.Analytics.average.localized,
+            value: ProfileKeys.Analytics.calculating.localized,
             color: .green
         )
     }
@@ -576,7 +759,7 @@ struct InsightsSection: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text(LocalizationKeys.localized(LocalizationKeys.ProgressCharts.insightsTitle))
+            Text(ProfileKeys.Analytics.insights.localized)
                 .font(.headline)
                 .fontWeight(.semibold)
             
@@ -605,24 +788,24 @@ struct WeightInsightCard: View {
     let entries: [WeightEntry]
     
     private var trend: String {
-        guard entries.count >= 2 else { return LocalizationKeys.localized(LocalizationKeys.ProgressCharts.insightsInsufficientData) }
+        guard entries.count >= 2 else { return ProfileKeys.Analytics.insufficientData.localized }
         
         let latest = entries.first?.weight ?? 0
         let previous = entries.dropFirst().first?.weight ?? 0
         
         if latest > previous {
-            return LocalizationKeys.localized(LocalizationKeys.ProgressCharts.insightsTrendUp)
+            return ProfileKeys.Analytics.trendingUpward.localized
         } else if latest < previous {
-            return LocalizationKeys.localized(LocalizationKeys.ProgressCharts.insightsTrendDown)
+            return ProfileKeys.Analytics.trendingDownward.localized
         } else {
-            return LocalizationKeys.localized(LocalizationKeys.ProgressCharts.insightsTrendStable)
+            return ProfileKeys.Analytics.stableTrend.localized
         }
     }
     
     var body: some View {
         InsightCard(
             icon: "scalemass.fill",
-            title: LocalizationKeys.localized(LocalizationKeys.ProgressCharts.insightsWeightTrend),
+            title: ProfileKeys.Analytics.weightTrend.localized,
             insight: trend,
             color: .orange
         )
@@ -638,20 +821,20 @@ struct WorkoutInsightCard: View {
         let averagePerWeek = weeks > 0 ? Double(liftSessions.count) / Double(weeks) : 0
         
         if averagePerWeek >= 4 {
-            return LocalizationKeys.localized(LocalizationKeys.ProgressCharts.consistencyExcellent)
+            return ProfileKeys.Analytics.excellentConsistency.localized
         } else if averagePerWeek >= 3 {
-            return LocalizationKeys.localized(LocalizationKeys.ProgressCharts.consistencyGood)
+            return ProfileKeys.Analytics.goodConsistency.localized
         } else if averagePerWeek >= 2 {
-            return LocalizationKeys.localized(LocalizationKeys.ProgressCharts.consistencyAverage)
+            return ProfileKeys.Analytics.averageConsistency.localized
         } else {
-            return LocalizationKeys.localized(LocalizationKeys.ProgressCharts.consistencyLow)
+            return ProfileKeys.Analytics.lowConsistency.localized
         }
     }
     
     var body: some View {
         InsightCard(
             icon: "dumbbell.fill",
-            title: LocalizationKeys.localized(LocalizationKeys.ProgressCharts.insightsWorkoutConsistency),
+            title: ProfileKeys.Analytics.workoutConsistency.localized,
             insight: consistency,
             color: .blue
         )
@@ -662,8 +845,8 @@ struct EmptyInsightCard: View {
     var body: some View {
         InsightCard(
             icon: "lightbulb.fill",
-            title: LocalizationKeys.localized(LocalizationKeys.ProgressCharts.insightsTitle),
-            insight: LocalizationKeys.localized(LocalizationKeys.ProgressCharts.insightsEmptyDesc),
+            title: ProfileKeys.Analytics.insights.localized,
+            insight: ProfileKeys.Analytics.noDataAvailable.localized,
             color: .gray
         )
     }
@@ -719,17 +902,23 @@ struct FrequencyData: Identifiable {
     let count: Int
 }
 
+struct MeasurementChartData: Identifiable {
+    let id = UUID()
+    let date: Date
+    let value: Double
+}
+
 // MARK: - Enums
 enum TimeRange: CaseIterable {
     case week1, month1, month3, month6, year1
     
     var displayName: String {
         switch self {
-        case .week1: return LocalizationKeys.localized(LocalizationKeys.ProgressCharts.range1w)
-        case .month1: return LocalizationKeys.localized(LocalizationKeys.ProgressCharts.range1m)
-        case .month3: return LocalizationKeys.localized(LocalizationKeys.ProgressCharts.range3m)
-        case .month6: return LocalizationKeys.localized(LocalizationKeys.ProgressCharts.range6m)
-        case .year1: return LocalizationKeys.localized(LocalizationKeys.ProgressCharts.range1y)
+        case .week1: return ProfileKeys.TimeRange.week1.localized
+        case .month1: return ProfileKeys.TimeRange.month1.localized
+        case .month3: return ProfileKeys.TimeRange.month3.localized
+        case .month6: return ProfileKeys.TimeRange.month6.localized
+        case .year1: return ProfileKeys.TimeRange.year1.localized
         }
     }
     
@@ -762,10 +951,10 @@ enum ChartType: CaseIterable {
     
     var displayName: String {
         switch self {
-        case .weight: return LocalizationKeys.localized(LocalizationKeys.ProgressCharts.typeWeightChange)
-        case .workoutVolume: return LocalizationKeys.localized(LocalizationKeys.ProgressCharts.typeWorkoutVolume)
-        case .workoutFrequency: return LocalizationKeys.localized(LocalizationKeys.ProgressCharts.typeWorkoutFrequency)
-        case .bodyMeasurements: return LocalizationKeys.localized(LocalizationKeys.ProgressCharts.typeBodyMeasurements)
+        case .weight: return ProfileKeys.ChartType.weightChange.localized
+        case .workoutVolume: return ProfileKeys.ChartType.workoutVolume.localized
+        case .workoutFrequency: return ProfileKeys.ChartType.workoutFrequency.localized
+        case .bodyMeasurements: return ProfileKeys.ChartType.bodyMeasurements.localized
         }
     }
     

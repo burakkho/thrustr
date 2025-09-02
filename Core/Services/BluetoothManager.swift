@@ -4,6 +4,8 @@ import SwiftUI
 
 @Observable
 class BluetoothManager: NSObject {
+    // MARK: - Shared Instance
+    static let shared = BluetoothManager()
     // MARK: - Properties
     private var centralManager: CBCentralManager?
     private var heartRatePeripheral: CBPeripheral?
@@ -18,6 +20,8 @@ class BluetoothManager: NSObject {
     var currentHeartRate: Int = 0
     var heartRateHistory: [(Date, Int)] = []
     var batteryLevel: Int?
+    var lastError: String?
+    var connectionAttempts: Int = 0
     
     // Heart rate zones
     var maxHeartRate: Int = 190
@@ -29,6 +33,9 @@ class BluetoothManager: NSObject {
     private let heartRateMeasurementUUID = CBUUID(string: "0x2A37")
     private let batteryServiceUUID = CBUUID(string: "0x180F")
     private let batteryLevelUUID = CBUUID(string: "0x2A19")
+    
+    // UserDefaults key for storing last connected device UUID
+    private let lastConnectedDeviceKey = "LastConnectedBluetoothDevice"
     
     // MARK: - Models
     struct BluetoothDevice: Identifiable {
@@ -88,19 +95,30 @@ class BluetoothManager: NSObject {
             return
         }
         
+        guard centralManager?.state == .poweredOn else {
+            Logger.warning("Bluetooth not powered on, state: \(centralManager?.state.rawValue ?? -1)")
+            return
+        }
+        
         isScanning = true
         discoveredDevices.removeAll()
         
+        // Scan for all peripherals, not just heart rate (some devices don't advertise heart rate service)
         centralManager?.scanForPeripherals(
-            withServices: [heartRateServiceUUID],
-            options: [CBCentralManagerScanOptionAllowDuplicatesKey: false]
+            withServices: nil, // Scan all services to find more devices
+            options: [
+                CBCentralManagerScanOptionAllowDuplicatesKey: false
+            ]
         )
         
-        Logger.info("Started scanning for heart rate devices")
+        Logger.info("Started scanning for all Bluetooth devices (looking for heart rate capable)")
         
-        // Stop scanning after 10 seconds
-        DispatchQueue.main.asyncAfter(deadline: .now() + 10) { [weak self] in
-            self?.stopScanning()
+        // Stop scanning after 15 seconds (longer timeout)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 15) { [weak self] in
+            if self?.isScanning == true {
+                self?.stopScanning()
+                Logger.info("Scanning timeout - stopped after 15 seconds")
+            }
         }
     }
     
@@ -112,11 +130,34 @@ class BluetoothManager: NSObject {
     
     func connect(to device: BluetoothDevice) {
         stopScanning()
+        lastError = nil
+        connectionAttempts += 1
+        
         heartRatePeripheral = device.peripheral
         heartRatePeripheral?.delegate = self
         centralManager?.connect(device.peripheral, options: nil)
         
-        Logger.info("Attempting to connect to \(device.name)")
+        // Save device UUID for auto-reconnect
+        UserDefaults.standard.set(device.peripheral.identifier.uuidString, forKey: lastConnectedDeviceKey)
+        
+        Logger.info("Attempting to connect to \(device.name) (attempt \(connectionAttempts))")
+        
+        // Set timeout for connection attempt
+        DispatchQueue.main.asyncAfter(deadline: .now() + 10) { [weak self] in
+            if let self = self, !self.isConnected {
+                self.lastError = "Connection timeout"
+                Logger.warning("Connection timeout for device: \(device.name)")
+                
+                // Try to reconnect if attempts < 3
+                if self.connectionAttempts < 3 {
+                    Logger.info("Retrying connection...")
+                    self.connect(to: device)
+                } else {
+                    self.connectionAttempts = 0
+                    Logger.error("Failed to connect after 3 attempts")
+                }
+            }
+        }
     }
     
     func disconnect() {
@@ -138,7 +179,35 @@ class BluetoothManager: NSObject {
     }
     
     func reconnectToLastDevice() {
-        // TODO: Implement auto-reconnect using saved device UUID
+        guard let uuidString = UserDefaults.standard.string(forKey: lastConnectedDeviceKey),
+              let uuid = UUID(uuidString: uuidString) else {
+            Logger.info("No saved device UUID found for reconnection")
+            return
+        }
+        
+        guard isBluetoothEnabled else {
+            Logger.info("Bluetooth not enabled, cannot reconnect")
+            return
+        }
+        
+        // Try to retrieve the peripheral by UUID
+        let peripherals = centralManager?.retrievePeripherals(withIdentifiers: [uuid])
+        
+        if let peripheral = peripherals?.first {
+            Logger.info("Found saved device, attempting to reconnect to: \(peripheral.name ?? "Unknown")")
+            
+            // Create a BluetoothDevice wrapper for the existing connect method
+            let savedDevice = BluetoothDevice(
+                peripheral: peripheral,
+                name: peripheral.name ?? "Saved Device",
+                rssi: -50 // Default RSSI since we don't have real-time data
+            )
+            
+            connect(to: savedDevice)
+        } else {
+            Logger.info("Saved device not found, starting scan to find it")
+            startScanning() // Fallback to scanning if device not immediately available
+        }
     }
     
     // MARK: - Heart Rate Methods
@@ -233,8 +302,25 @@ extension BluetoothManager: CBCentralManagerDelegate {
         
         let name = peripheral.name ?? advertisementData[CBAdvertisementDataLocalNameKey] as? String ?? "Unknown Device"
         
-        // Filter out already discovered devices
-        if !discoveredDevices.contains(where: { $0.peripheral.identifier == peripheral.identifier }) {
+        // Filter potential heart rate devices by name patterns
+        let heartRateDevicePatterns = [
+            "polar", "garmin", "wahoo", "suunto", "coospo", "magene", 
+            "hr", "heart", "chest", "strap", "band", "monitor",
+            "h7", "h9", "h10", "4iiii", "heartrate", "hrm"
+        ]
+        
+        let isLikelyHeartRateDevice = heartRateDevicePatterns.contains { pattern in
+            name.lowercased().contains(pattern.lowercased())
+        }
+        
+        // Also check if device advertises heart rate service
+        let advertisesHeartRate = advertisementData[CBAdvertisementDataServiceUUIDsKey] as? [CBUUID] ?? []
+        let hasHeartRateService = advertisesHeartRate.contains(heartRateServiceUUID)
+        
+        // Only add devices that are likely heart rate monitors or advertise heart rate service
+        if (isLikelyHeartRateDevice || hasHeartRateService) && 
+           !discoveredDevices.contains(where: { $0.peripheral.identifier == peripheral.identifier }) {
+            
             let device = BluetoothDevice(
                 peripheral: peripheral,
                 name: name,
@@ -242,24 +328,34 @@ extension BluetoothManager: CBCentralManagerDelegate {
             )
             discoveredDevices.append(device)
             
-            Logger.info("Discovered device: \(name) with RSSI: \(RSSI)")
+            Logger.info("Discovered heart rate device: \(name) with RSSI: \(RSSI), hasService: \(hasHeartRateService)")
+        } else {
+            // Log all devices for debugging
+            Logger.info("Skipped device: \(name) (not heart rate related)")
         }
     }
     
     func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
         isConnected = true
+        connectionAttempts = 0 // Reset on successful connection
+        lastError = nil
         connectedDevice = discoveredDevices.first { $0.peripheral.identifier == peripheral.identifier }
         
         // Discover services
         peripheral.discoverServices([heartRateServiceUUID, batteryServiceUUID])
         
-        Logger.info("Connected to \(peripheral.name ?? "device")")
+        Logger.success("Successfully connected to \(peripheral.name ?? "device")")
     }
     
     func centralManager(_ central: CBCentralManager, didFailToConnect peripheral: CBPeripheral, error: Error?) {
-        Logger.error("Failed to connect: \(error?.localizedDescription ?? "Unknown error")")
+        let errorMessage = error?.localizedDescription ?? "Unknown connection error"
+        lastError = errorMessage
         isConnected = false
         connectedDevice = nil
+        
+        Logger.error("Failed to connect to \(peripheral.name ?? "device"): \(errorMessage)")
+        
+        // Don't auto-retry here - let the timeout handler manage retries
     }
     
     func centralManager(_ central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: Error?) {

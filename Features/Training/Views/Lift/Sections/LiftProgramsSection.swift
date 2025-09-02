@@ -9,11 +9,10 @@ struct LiftProgramsSection: View {
     private var activeProgramExecutions: [ProgramExecution]
     
     @State private var selectedProgram: LiftProgram?
-    @State private var showingNewProgram = false
     @State private var searchText = ""
     
     private var filteredPrograms: [LiftProgram] {
-        let featured = programs.filter { !$0.isCustom }
+        let featured = programs
         if searchText.isEmpty {
             return featured
         }
@@ -23,9 +22,6 @@ struct LiftProgramsSection: View {
         }
     }
     
-    private var customPrograms: [LiftProgram] {
-        programs.filter { $0.isCustom }
-    }
     
     var body: some View {
         ScrollView {
@@ -40,15 +36,11 @@ struct LiftProgramsSection: View {
                     activeProgramCard(activeExecution)
                 }
                 
-                // Featured Programs
+                // Programs
                 if !filteredPrograms.isEmpty {
-                    featuredProgramsSection
+                    programsSection
                 }
                 
-                // Custom Programs
-                if !customPrograms.isEmpty {
-                    customProgramsSection
-                }
                 
                 // Empty State
                 if programs.isEmpty {
@@ -56,11 +48,7 @@ struct LiftProgramsSection: View {
                         icon: "rectangle.3.group",
                         title: "training.lift.noPrograms".localized,
                         message: "training.lift.noProgramsMessage".localized,
-                        primaryAction: .init(
-                            title: "training.lift.browsePrograms".localized,
-                            icon: "magnifyingglass",
-                            action: { showingNewProgram = true }
-                        )
+                        primaryAction: nil
                     )
                     .padding(.top, 50)
                 }
@@ -70,16 +58,13 @@ struct LiftProgramsSection: View {
         .sheet(item: $selectedProgram) { program in
             ProgramDetailView(program: program)
         }
-        .sheet(isPresented: $showingNewProgram) {
-            CreateProgramView()
-        }
     }
     
     private var searchBar: some View {
         HStack {
             Image(systemName: "magnifyingglass")
                 .foregroundColor(theme.colors.textSecondary)
-            TextField(LocalizationKeys.Common.search.localized, text: $searchText)
+            TextField("Search", text: $searchText)
                 .textFieldStyle(.plain)
             if !searchText.isEmpty {
                 Button(action: { searchText = "" }) {
@@ -134,9 +119,9 @@ struct LiftProgramsSection: View {
         }
     }
     
-    private var featuredProgramsSection: some View {
+    private var programsSection: some View {
         VStack(alignment: .leading, spacing: theme.spacing.m) {
-            Text("training.lift.featuredPrograms".localized)
+            Text("training.lift.programs".localized)
                 .font(theme.typography.headline)
                 .foregroundColor(theme.colors.textPrimary)
                 .padding(.horizontal)
@@ -156,36 +141,6 @@ struct LiftProgramsSection: View {
         }
     }
     
-    private var customProgramsSection: some View {
-        VStack(alignment: .leading, spacing: theme.spacing.m) {
-            HStack {
-                Text("training.lift.myPrograms".localized)
-                    .font(theme.typography.headline)
-                    .foregroundColor(theme.colors.textPrimary)
-                
-                Spacer()
-                
-                Button(action: { showingNewProgram = true }) {
-                    Image(systemName: "plus.circle.fill")
-                        .font(.title3)
-                        .foregroundColor(theme.colors.accent)
-                }
-            }
-            .padding(.horizontal)
-            
-            ForEach(customPrograms) { program in
-                UnifiedWorkoutCard(
-                    title: program.localizedName,
-                    subtitle: "\(program.weeks) weeks • \(program.daysPerWeek) days/week",
-                    description: program.localizedDescription,
-                    isFavorite: program.isFavorite,
-                    cardStyle: .detailed,
-                    primaryAction: { selectedProgram = program }
-                )
-                .padding(.horizontal)
-            }
-        }
-    }
     
     private func startCurrentWorkout(execution: ProgramExecution) {
         // Implementation for starting workout
