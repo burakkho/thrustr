@@ -18,9 +18,9 @@ struct PRTimelineCard: View {
         
         var displayName: String {
             switch self {
-            case .strength: return "Kuvvet"
-            case .endurance: return "Dayanıklılık"
-            case .volume: return "Hacim"
+            case .strength: return "training.analytics.strength".localized
+            case .endurance: return TrainingKeys.AnalyticsExtended.endurance.localized
+            case .volume: return "training.analytics.volume".localized
             }
         }
         
@@ -160,7 +160,7 @@ struct PRTimelineCard: View {
                 .progressViewStyle(CircularProgressViewStyle())
                 .scaleEffect(1.2)
             
-            Text("PR verileri yükleniyor...")
+            Text(TrainingKeys.AnalyticsExtended.prDataLoading.localized)
                 .font(theme.typography.body)
                 .foregroundColor(theme.colors.textSecondary)
         }
@@ -229,7 +229,7 @@ struct PRTimelineCard: View {
                     }
                     
                     if record.isRecent {
-                        Text("YENİ")
+                        Text("common.new".localized)
                             .font(.caption2)
                             .fontWeight(.bold)
                             .foregroundColor(.white)
@@ -253,7 +253,7 @@ struct PRTimelineCard: View {
             
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("Bu Ay")
+                    Text(TrainingKeys.Analytics.thisMonth.localized)
                         .font(.caption)
                         .foregroundColor(theme.colors.textSecondary)
                     
@@ -266,7 +266,7 @@ struct PRTimelineCard: View {
                 Spacer()
                 
                 VStack(alignment: .trailing, spacing: 4) {
-                    Text("Toplam PR")
+                    Text(TrainingKeys.Analytics.totalPRs.localized)
                         .font(.caption)
                         .foregroundColor(theme.colors.textSecondary)
                     
@@ -279,7 +279,7 @@ struct PRTimelineCard: View {
                 Spacer()
                 
                 VStack(alignment: .trailing, spacing: 4) {
-                    Text("En Son")
+                    Text(TrainingKeys.Analytics.latestPR.localized)
                         .font(.caption)
                         .foregroundColor(theme.colors.textSecondary)
                     
@@ -298,17 +298,17 @@ struct PRTimelineCard: View {
                 .font(.system(size: 48))
                 .foregroundColor(theme.colors.textSecondary.opacity(0.5))
             
-            Text("Henüz PR Kaydı Yok")
+            Text(TrainingKeys.AnalyticsExtended.noPRRecords.localized)
                 .font(theme.typography.headline)
                 .foregroundColor(theme.colors.textPrimary)
             
-            Text("\(selectedCategory.displayName) kategorisinde PR kırmaya başla")
+            Text("\(selectedCategory.displayName) \(TrainingKeys.AnalyticsExtended.startBreaking.localized)")
                 .font(theme.typography.body)
                 .foregroundColor(theme.colors.textSecondary)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal)
             
-            Button("İlk PR'ını Kaydet") {
+            Button(TrainingKeys.Analytics.recordFirstPR.localized) {
                 // Navigate to appropriate section
             }
             .buttonStyle(.borderedProminent)
@@ -500,9 +500,9 @@ struct PRTimelineCard: View {
         let calendar = Calendar.current
         
         if calendar.isDateInToday(date) {
-            return "Bugün"
+            return TrainingKeys.AnalyticsExtended.today.localized
         } else if calendar.isDateInYesterday(date) {
-            return "Dün"
+            return TrainingKeys.AnalyticsExtended.yesterday.localized
         } else if calendar.isDate(date, equalTo: Date(), toGranularity: .weekOfYear) {
             formatter.dateFormat = "EEEE"
             return formatter.string(from: date)

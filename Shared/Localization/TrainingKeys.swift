@@ -248,6 +248,63 @@ enum TrainingKeys {
         static let pr = "training.exercise.pr"
         static let noSets = "training.exercise.noSets"
         static let sets = "training.exercise.sets"
+        
+        // Exercise types
+        static let compound = "exercise.type.compound"
+        static let isolation = "exercise.type.isolation" 
+        static let other = "exercise.type.other"
+        
+        // Category descriptions
+        static let pushDescription = "exercise.category.push.description"
+        static let pullDescription = "exercise.category.pull.description"
+        static let legsDescription = "exercise.category.legs.description"
+        static let coreDescription = "exercise.category.core.description"
+        static let cardioDescription = "exercise.category.cardio.description"
+        static let olympicDescription = "exercise.category.olympic.description"
+        static let functionalDescription = "exercise.category.functional.description"
+        static let isolationDescription = "exercise.category.isolation.description"
+        static let strengthDescription = "exercise.category.strength.description"
+        static let flexibilityDescription = "exercise.category.flexibility.description"
+        static let plyometricDescription = "exercise.category.plyometric.description"
+        static let otherDescription = "exercise.category.other.description"
+        
+        // Equipment types
+        static let bodyweight = "exercise.equipment.bodyweight"
+        static let band = "exercise.equipment.band"
+        static let pullupBar = "exercise.equipment.pullup_bar"
+        static let otherEquipment = "exercise.equipment.other"
+        
+        // Workout formats
+        static let forTimeDescription = "exercise.format.for_time.description"
+        static let amrapDescription = "exercise.format.amrap.description"
+        static let emomDescription = "exercise.format.emom.description"
+        static let tabataDescription = "exercise.format.tabata.description"
+        static let roundsDescription = "exercise.format.rounds.description"
+        static let ladderDescription = "exercise.format.ladder.description"
+        static let chipperDescription = "exercise.format.chipper.description"
+        static let customDescription = "exercise.format.custom.description"
+        
+        // Difficulty levels
+        static let beginner = "exercise.difficulty.beginner"
+        static let intermediate = "exercise.difficulty.intermediate"
+        static let advanced = "exercise.difficulty.advanced"
+        
+        // Experience descriptions
+        static let intermediateExperience = "exercise.experience.intermediate"
+        static let advancedExperience = "exercise.experience.advanced"
+        static let eliteExperience = "exercise.experience.elite"
+        
+        // Fitness goals
+        static let recompDescription = "exercise.goal.recomp.description"
+        static let performanceDescription = "exercise.goal.performance.description"
+        
+        // Meal types
+        static let breakfast = "exercise.meal.breakfast"
+        static let lunch = "exercise.meal.lunch"
+        static let dinner = "exercise.meal.dinner"
+        static let snack = "exercise.meal.snack"
+        static let preworkout = "exercise.meal.preworkout"
+        static let postworkout = "exercise.meal.postworkout"
     }
 
     // MARK: - METCON
@@ -295,6 +352,7 @@ enum TrainingKeys {
         static let girlsDesc = "training.wod.girlsDesc"
         static let heroesDesc = "training.wod.heroesDesc"
         static let opensDesc = "training.wod.opensDesc"
+        static let historyDesc = "training.wod.historyDesc"
         
         // Additional WOD interface keys
         static let searchPlaceholder = "wod.search_placeholder"
@@ -540,6 +598,9 @@ enum TrainingKeys {
         static let olympic = "training.category.olympic"
         static let functional = "training.category.functional"
         static let isolation = "training.category.isolation"
+        static let strength = "training.category.strength"
+        static let flexibility = "training.category.flexibility"
+        static let plyometric = "training.category.plyometric"
         static let other = "training.category.other"
     }
     
@@ -703,6 +764,29 @@ enum TrainingKeys {
         static let day = "training.analytics.day"
         static let liftSessions = "training.analytics.liftSessions"
         static let cardioSessions = "training.analytics.cardioSessions"
+        
+        // PR Timeline specific keys
+        static let totalPRs = "training.analytics.totalPRs"
+        static let latestPR = "training.analytics.latestPR"
+        static let strengthProfile = "training.analytics.strengthProfile"
+        static let levelGuide = "training.analytics.levelGuide"
+        static let generalScore = "training.analytics.generalScore"
+        static let recordFirstPR = "training.analytics.recordFirstPR"
+        static let startStrengthTest = "training.analytics.startStrengthTest"
+        static let startFirstCardio = "training.analytics.startFirstCardio"
+        static let updateOneRMs = "training.analytics.updateOneRMs"
+        
+        // Common time periods
+        static let average = "training.analytics.average"
+        static let maximum = "training.analytics.maximum"
+        
+        // PR Analytics keys
+        static let endurance = "analytics.category.endurance"
+        static let prDataLoading = "analytics.pr_data_loading"
+        static let noPRRecords = "analytics.no_pr_records"
+        static let startBreaking = "analytics.start_breaking"
+        static let today = "analytics.date.today"
+        static let yesterday = "analytics.date.yesterday"
     }
     
     // MARK: - Tests & Strength
@@ -969,5 +1053,109 @@ enum TrainingKeys {
         static let forTimeWithCap = "training.workoutTypes.forTimeWithCap"
         static let amrapMinutes = "training.workoutTypes.amrapMinutes"
         static let emomMinutes = "training.workoutTypes.emomMinutes"
+    }
+    
+    // MARK: - Test Results
+    enum TestResults {
+        // Status messages
+        static let resultsNotReady = "training.test_results.not_ready"
+        static let analysisComplete = "training.test_results.analysis_complete"
+        static let recommendationTitle = "training.test_results.recommendation_title"
+        static let details = "training.test_results.details"
+        static let percentageSymbol = "training.test_results.percentage_symbol"
+        
+        // Context information
+        static let baseStandards = "training.test_results.base_standards"
+        static let demographicAdjustment = "training.test_results.demographic_adjustment"  
+        static let percentileExplanation = "training.test_results.percentile_explanation"
+        
+        // Experience levels
+        static let beginnerDescription = "training.test_results.beginner_description"
+        static let intermediateDescription = "training.test_results.intermediate_description"
+        static let advancedDescription = "training.test_results.advanced_description"
+        
+        // Body dominance
+        static let upperBodyDominant = "training.test_results.upper_body_dominant"
+        static let lowerBodyDominant = "training.test_results.lower_body_dominant" 
+        static let unknownDominance = "training.test_results.unknown_dominance"
+        
+        // Goal formats
+        static let repsGoalFormat = "training.test_results.reps_goal_format"
+        static let weightGoalFormat = "training.test_results.weight_goal_format"
+        
+        // Additional levels
+        static let noviceDescription = "training.test_results.novice_description"
+        static let expertDescription = "training.test_results.expert_description"
+        static let eliteDescription = "training.test_results.elite_description"
+        
+        // Labels
+        static let currentLevel = "training.test_results.current_level"
+        static let exercise = "training.test_results.exercise"
+        static let personalRecord = "training.test_results.personal_record"
+        static let balanced = "training.test_results.balanced"
+        static let unknown = "training.test_results.unknown"
+        static let completed = "training.test_results.completed"
+        static let nextTarget = "training.test_results.next_target"
+    }
+    
+    // MARK: - Activity Types
+    enum ActivityTypes {
+        static let running = "activity.type.running"
+        static let swimming = "activity.type.swimming"
+        static let walking = "activity.type.walking"
+        static let strengthTraining = "activity.type.strength_training"
+        static let rowing = "activity.type.rowing"
+        static let coreTraining = "activity.type.core_training"
+        static let hiit = "activity.type.hiit"
+        static let jumpRope = "activity.type.jump_rope"
+        static let wrestling = "activity.type.wrestling"
+        static let martialArts = "activity.type.martial_arts"
+        static let other = "activity.type.other"
+    }
+    
+    // MARK: - Progress & Analytics Extended
+    enum AnalyticsExtended {
+        static let endurance = "analytics.category.endurance"
+        static let prDataLoading = "analytics.pr_data_loading"
+        static let noPRRecords = "analytics.no_pr_records"
+        static let startBreaking = "analytics.start_breaking"
+        static let today = "analytics.date.today"
+        static let yesterday = "analytics.date.yesterday"
+    }
+    
+    // MARK: - Strength Test
+    enum StrengthTest {
+        static let weight = "strength_test.weight"
+        static let previous = "strength_test.previous"
+        static let errorWeightReps = "strength_test.error.weight_reps"
+    }
+    
+    // MARK: - Cardio Analytics
+    enum CardioAnalytics {
+        // Time periods
+        static let oneMonth = "cardio.analytics.one_month"
+        static let threeMonths = "cardio.analytics.three_months" 
+        static let sixMonths = "cardio.analytics.six_months"
+        static let lastYear = "cardio.analytics.last_year" 
+        static let allTime = "cardio.analytics.all_time"
+        
+        // Metrics
+        static let heartRate = "cardio.analytics.heart_rate"
+        
+        // Interface
+        static let cardioTitle = "cardio.analytics.cardio_title"
+        static let subtitle = "cardio.analytics.subtitle"
+        static let dataLoading = "cardio.analytics.data_loading"
+        static let noDataTitle = "cardio.analytics.no_data_title"
+        static let noDataDescription = "cardio.analytics.no_data_description"
+    }
+    
+    // MARK: - Strength Analytics
+    enum StrengthAnalytics {
+        static let strengthTitle = "strength.analytics.strength_title"
+        static let noOneRMData = "strength.analytics.no_1rm_data"
+        static let noOneRMDescription = "strength.analytics.no_1rm_description"
+        static let oneYear = "strength.analytics.one_year"
+        static let allTime = "strength.analytics.all_time"
     }
 }

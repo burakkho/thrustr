@@ -1372,10 +1372,320 @@
 "fitness_calculators.card.ffmi.details" = "Doğal potansiyelinizi öğrenin";
 "fitness_calculators.card.navy.details" = "Basit ölçümlerle yağ oranınızı hesaplayın";
 "calculators.info.title" = "Bilgi";
+
+// MARK: - Health Intelligence
+// Recovery Recommendations
+"health.recovery.recommendation.excellent" = "Mükemmel toparlanma! Yoğun antrenmanlar için hazırsın.";
+"health.recovery.recommendation.good" = "İyi durumdasın. Normal yoğunlukta antrenman yapabilirsin.";
+"health.recovery.recommendation.moderate" = "Orta düzeyde toparlanma. Hafif-orta yoğunlukta antrenman öneriliyor.";
+"health.recovery.recommendation.poor" = "Düşük toparlanma seviyesi. Dinlenme veya hafif aktivite öneriliyor.";
+"health.recovery.recommendation.critical" = "Kritik durum. Tam dinlenme gerekiyor.";
+
+// Fitness Level Descriptions
+"health.fitness.description.beginner" = "Fitness yolculuğunun başında";
+"health.fitness.description.intermediate" = "Düzenli antrenman yapıyor";
+"health.fitness.description.advanced" = "İyi kondisyon seviyesinde";
+"health.fitness.description.elite" = "Üstün atletik performans";
+
+// Health Insight Titles
+"health.insight.title.low_recovery" = "Düşük Toparlanma Skoru";
+"health.insight.title.sleep_quality" = "Uyku Kalitesi";
+"health.insight.title.workout_frequency" = "Antrenman Sıklığı Düşüyor";
+"health.insight.title.intense_training" = "Çok Yoğun Antrenman";
+"health.insight.title.low_activity" = "Düşük Günlük Aktivite";
+"health.insight.title.weight_change" = "Kilo Değişimi";
+
+// Health Insight Messages
+"health.insight.message.low_recovery" = "Toparlanma skorun düşük. Dinlenme günü alman öneriliyor.";
+"health.insight.message.sleep_quality" = "Uyku süren yetersiz. Toparlanma için 7-9 saat uyku hedefle.";
+"health.insight.message.workout_frequency" = "Son haftalarda antrenman sayın azalıyor.";
+"health.insight.message.intense_training" = "Dinlenme günleri eklemeyi düşün.";
+"health.insight.message.low_activity" = "10.000 adım hedefle.";
+"health.insight.message.weight_change" = "Son dönemde kilonda değişim var.";
+
+// Health Insight Actions
+"health.insight.action.low_recovery" = "Bugün tam dinlenme veya hafif yürüyüş yap";
+"health.insight.action.sleep_quality" = "Erken yatma rutini oluştur";
+"health.insight.action.workout_frequency" = "Haftalık antrenman planı oluştur";
+"health.insight.action.intense_training" = "Haftalık 1-2 dinlenme günü ekle";
+"health.insight.action.low_activity" = "Günde 2000 adım daha at";
+"health.insight.action.weight_change" = "Beslenme ve antrenman planını gözden geçir";
+
+// Weight Change Directions
+"health.weight.direction.increase" = "artış";
+"health.weight.direction.decrease" = "azalış";
+
+// MARK: - User Validation Errors
+"validation.user.name.empty" = "İsim boş olamaz";
+"validation.user.name.min_length" = "İsim en az 2 karakter olmalı";
+"validation.user.name.max_length" = "İsim en fazla 50 karakter olabilir";
+"validation.user.age.minimum" = "Yaş en az 13 olmalı";
+"validation.user.age.maximum" = "Yaş en fazla 120 olabilir";
+"validation.user.height.minimum" = "Boy en az 100 cm olmalı";
+"validation.user.weight.minimum" = "Kilo en az 30 kg olmalı";
+"validation.user.invalid_data" = "Geçersiz giriş verileri";
+"validation.user.height.maximum" = "Boy en fazla 250 cm olabilir";
+"validation.user.weight.maximum" = "Kilo en fazla 300 kg olabilir";
+"validation.ffmi.average" = "Ortalama";
+"validation.ffmi.elite" = "Elite";
+
+// Body Measurements Validation
+"validation.measurement.chest.range" = "50-200 cm arasında olmalı";
+"validation.measurement.waist.range" = "40-200 cm arasında olmalı";
+"validation.measurement.hip.range" = "50-200 cm arasında olmalı";
+"validation.measurement.neck.range" = "20-60 cm arasında olmalı";
+"validation.measurement.bicep.range" = "15-70 cm arasında olmalı";
+"validation.measurement.thigh.range" = "30-100 cm arasında olmalı";
+"validation.measurement.invalid" = "Geçersiz ölçüm değerleri";
+
+// FFMI Categories
+"validation.ffmi.not_calculable" = "Hesaplanamıyor";
+"validation.ffmi.low" = "Düşük";
+"validation.ffmi.below_average" = "Ortalama altı";
+"validation.ffmi.good" = "İyi";
+"validation.ffmi.very_good" = "Çok iyi";
+"validation.ffmi.excellent" = "Mükemmel";
+
+// Database Errors
+"validation.database.not_found" = "Veritabanı bağlantısı bulunamadı";
+"validation.database.user_not_found" = "Kullanıcı bulunamadı";
+
+// Error Type Prefixes
+"error.type.age" = "Yaş hatası";
+"error.type.height" = "Boy hatası";
+"error.type.weight" = "Kilo hatası";
+"error.type.name" = "İsim hatası";
+"error.type.measurement" = "hatası";
+
+// Health Insight Message Components
+"health.insight.weekly_workouts" = "Haftada";
+"health.insight.workouts_doing" = "antrenman yapıyorsun";
+"health.insight.daily_average_steps" = "Günlük ortalama adım sayın";
+"health.insight.weight_change_period" = "Son dönemde kilonda";
+"health.insight.weight_change_exists" = "var";
+
+// Body Part Names
+"body.part.chest" = "Göğüs";
+"body.part.waist" = "Bel";
+"body.part.hip" = "Kalça";
+"body.part.neck" = "Boyun";
+"body.part.bicep" = "Bicep";
+"body.part.thigh" = "Uyluk";
+"body.part.measurements" = "Ölçümler";
+
+// MARK: - Cardio Session Summary
+// Navigation titles
+"cardio.session.workout_summary_title" = "Antrenman Özeti";
+"cardio.session.edit_duration_title" = "Süre Düzenle";
+"cardio.session.edit_distance_title" = "Mesafe Düzenle";
+"cardio.session.edit_heart_rate_title" = "Nabız Düzenle";
+"cardio.session.edit_calories_title" = "Kalori Düzenle";
+
+// Main messages
+"cardio.session.workout_completed" = "Antrenmanını tamamladın";
+"cardio.session.how_do_you_feel" = "Nasıl Hissediyorsun?";
+"cardio.session.notes_placeholder" = "Antrenman hakkında notlarınız...";
+"cardio.session.exit_without_saving" = "Kaydetmeden Çık";
+
+// Route section
+"cardio.session.your_route" = "Rotanız";
+"cardio.session.start_marker" = "Başlangıç";
+"cardio.session.finish_marker" = "Bitiş";
+
+// Stats section
+"cardio.session.detailed_statistics" = "Detaylı İstatistikler";
+"cardio.session.perceived_effort" = "Algılanan Zorluk";
+"cardio.session.heart_rate_stats" = "Nabız İstatistikleri";
+"cardio.session.add_heart_rate_data" = "Nabız Verisi Ekle";
+"cardio.session.edited" = "DÜZENLENDI";
+
+// Edit sections
+"cardio.session.edit_duration" = "Süre Düzenle";
+"cardio.session.edit_distance" = "Mesafe Düzenle";
+"cardio.session.edit_heart_rate" = "Nabız Düzenle";
+"cardio.session.edit_calories" = "Kalori Düzenle";
+
+// Edit descriptions
+"cardio.session.duration_description" = "Antrenman sürenizi ayarlayın";
+"cardio.session.distance_description" = "Antrenman mesafenizi %@ cinsinden ayarlayın";
+"cardio.session.heart_rate_description" = "Ortalama ve maksimum nabız değerlerinizi girin";
+"cardio.session.calories_description" = "Yaktığınız kalori miktarını girin";
+
+// Form labels
+"cardio.session.duration_label" = "Süre";
+"cardio.session.average_heart_rate" = "Ortalama Nabız (BPM)";
+"cardio.session.maximum_heart_rate" = "Maksimum Nabız (BPM)";
+"cardio.session.burned_calories" = "Yakılan Kalori";
+
+// Tips
+"cardio.session.tip_icon" = "💡 İpucu";
+"cardio.session.heart_rate_tip" = "Normal dinlenme nabzı 60-100 BPM, maksimum nabız yaklaşık (220 - yaş) formülü ile hesaplanır";
+"cardio.session.calories_tip" = "Ortalama olarak koşu 60-100 kcal/km, bisiklet 30-50 kcal/km yakar";
+"cardio.session.average_heart_rate_bpm" = "Ortalama Nabız (BPM)";
+"cardio.session.maximum_heart_rate_bpm" = "Maksimum Nabız (BPM)";
+"cardio.session.edit_calories_title" = "Kalori Düzenle";
+"cardio.session.edit_calories_description" = "Yaktuğınız kalori miktarını girin";
+"cardio.session.calories_burned_label" = "Yakılan Kalori";
+
+// Share text components
+"cardio.session.share_workout_completed" = "🏃 Antrenmanımı tamamladım!";
+"cardio.session.share_duration_prefix" = "⏱ Süre:";
+
+// MARK: - Navy Method Calculator
+"calculator.navy_method.title" = "Navy Method Hesaplayıcısı";
+"calculator.navy_method.subtitle" = "Vücut yağ oranınızı ölçümlerle hesaplayın";
+"calculator.navy_method.measurements_section" = "Ölçümler";
+"calculator.navy_method.results_section" = "Sonuçlar";
+"calculator.navy_method.about_section" = "Navy Method Hakkında";
+"calculator.navy_method.age_label" = "Yaş";
+"calculator.navy_method.inches_label" = "Inches";
+"calculator.navy_method.waist_circumference" = "Bel Çevresi";
+"calculator.navy_method.neck_circumference" = "Boyun Çevresi";
+"calculator.navy_method.hip_circumference" = "Kalça Çevresi";
+"calculator.navy_method.body_fat_percentage_title" = "Vücut Yağ Oranınız";
+"calculator.navy_method.body_fat_scale_title" = "Vücut Yağ Skalası";
+"calculator.navy_method.reliability_title" = "Güvenilirlik";
+"calculator.navy_method.reliability_description" = "ABD Donanması tarafından geliştirilen, bilimsel olarak kanıtlanmış yöntem";
+"calculator.navy_method.accuracy_title" = "Doğruluk";
+"calculator.navy_method.accuracy_description" = "±3-4% hata payı ile oldukça doğru sonuçlar verir";
+"calculator.navy_method.important_note_title" = "Önemli Not";
+"calculator.navy_method.important_note_description" = "Ölçüm hassasiyeti sonucu doğrudan etkiler, dikkatli ölçün";
+"calculator.navy_method.tracking_title" = "Takip";
+"calculator.navy_method.tracking_description" = "Düzenli ölçümlerle ilerlemenizi takip edebilirsiniz";
+"calculator.navy_method.gender.male" = "Erkek";
+"calculator.navy_method.gender.female" = "Kadın";
+"calculator.body_fat.category.essential" = "Temel Yağ";
+"calculator.body_fat.category.athlete" = "Sporcu";
+"calculator.body_fat.category.fitness" = "Fitness";
+"calculator.body_fat.category.average" = "Ortalama";
+"calculator.body_fat.category.obese" = "Obez";
+"calculator.body_fat.description.essential" = "Vücudun temel işlevleri için gerekli minimum yağ";
+"calculator.body_fat.description.athlete" = "Profesyonel sporcular için ideal seviye";
+"calculator.body_fat.description.fitness" = "Aktif ve sağlıklı bireyler için ideal";
+"calculator.body_fat.description.average" = "Sağlıklı kabul edilen normal seviye";
+"calculator.body_fat.description.obese" = "Sağlık riskleri olabilir, kilo vermeyi düşünün";
+
+// MARK: - Common Actions
+"common.actions.save" = "Kaydet";
+"common.actions.cancel" = "İptal";
+"common.actions.retry" = "Tekrar Dene";
+"common.actions.continue" = "Devam";
+"common.actions.done" = "Tamam";
+"common.actions.share" = "Paylaş";
+
+// MARK: - Exercise Categories & Types
+"exercise.type.compound" = "Compound";
+"exercise.type.isolation" = "İzolasyon";
+"exercise.type.other" = "Diğer";
+"exercise.category.push.description" = "Göğüs, omuz, triceps hareketleri";
+"exercise.category.pull.description" = "Sırt, biceps hareketleri";
+"exercise.category.legs.description" = "Bacak ve kalça hareketleri";
+"exercise.category.core.description" = "Karın ve core hareketleri";
+"exercise.category.cardio.description" = "Kardiyovasküler egzersizler";
+"exercise.category.functional.description" = "Fonksiyonel hareket kalıpları";
+"exercise.category.isolation.description" = "İzolasyon ve yardımcı hareketler";
+"exercise.category.strength.description" = "Kuvvet odaklı çok eklemli hareketler";
+"exercise.category.flexibility.description" = "Esneklik ve mobilite çalışmaları";
+"exercise.category.plyometric.description" = "Patlayıcı güç ve sıçrama çalışmaları";
+"exercise.category.other.description" = "Diğer egzersiz türleri";
+"exercise.equipment.bodyweight" = "Vücut Ağırlığı";
+"exercise.equipment.band" = "Direnç Bandı";
+"exercise.equipment.pullup_bar" = "Barfiks Barı";
+"exercise.equipment.other" = "Diğer";
+"exercise.format.for_time.description" = "Belirlenen hareketleri mümkün olan en kısa sürede tamamla";
+"exercise.format.amrap.description" = "Belirlenen sürede mümkün olduğunca çok tekrar/round yap";
+"exercise.format.emom.description" = "Her dakikanın başında belirlenen hareketleri yap";
+"exercise.format.tabata.description" = "20 saniye çalış, 10 saniye dinlen - 8 round";
+"exercise.format.rounds.description" = "Belirlenen sayıda round tamamla";
+"exercise.format.ladder.description" = "Tekrar sayısını artırarak veya azaltarak ilerle";
+"exercise.format.chipper.description" = "Yüksek tekrarlı hareketleri sırayla bitir";
+"exercise.format.custom.description" = "Özel format";
+"exercise.difficulty.beginner" = "Başlangıç";
+"exercise.difficulty.intermediate" = "Orta";
+"exercise.difficulty.advanced" = "İleri";
+"exercise.experience.intermediate" = "6 ay - 2 yıl deneyim";
+"exercise.experience.advanced" = "2+ yıl deneyim";
+"exercise.experience.elite" = "Profesyonel/Yarışmacı";
+"exercise.goal.recomp.description" = "Aynı anda yağ yak ve kas kazan";
+"exercise.goal.performance.description" = "Atletik performansı artır";
+"exercise.meal.breakfast" = "Kahvaltı";
+"exercise.meal.lunch" = "Öğle";
+"exercise.meal.dinner" = "Akşam";
+"exercise.meal.snack" = "Atıştırma";
+"exercise.meal.preworkout" = "Antrenman Öncesi";
+"exercise.meal.postworkout" = "Antrenman Sonrası";
+
+// MARK: - Activity Status
+"activity.status.completed" = "tamamlandı";
+"activity.status.started" = "başladı";
+"activity.status.will_last" = "sürecek";
+"activity.status.completed_exclamation" = "tamamlandı!";
+"activity.unit.workout" = "antrenman";
+"activity.status.in_duration" = "sürede";
+"activity.strength_test.completed" = "Kuvvet testi tamamlandı";
+
+// MARK: - Time Format
+"time.format.minutes_ago" = "dk önce";
+"time.format.hours_ago" = "saat önce";
+"time.format.yesterday" = "dün";
+"time.format.now" = "şimdi";
+
+// MARK: - Records
+"records.previous_record" = "Önceki rekor";
+
+// MARK: - Units
+"units.kcal" = "kcal";
+"units.meters" = "m";
+
+// MARK: - Activity Types  
+"activity.type.running" = "Koşu";
+"activity.type.swimming" = "Yüzme";
+"activity.type.walking" = "Yürüyüş";
+"activity.type.strength_training" = "Güç Antrenmanı";
+"activity.type.rowing" = "Kürek";
+"activity.type.core_training" = "Core Antrenmanı";
+"activity.type.hiit" = "HIIT";
+"activity.type.jump_rope" = "İp Atlama";
+"activity.type.wrestling" = "Güreş";
+"activity.type.martial_arts" = "Dövüş Sanatları";
+"activity.type.other" = "Diğer";
 "calculators.info.accuracy" = "Doğruluk";
 "calculators.info.accuracy_desc" = "Hesaplamalar bilimsel formüllere dayanır";
 "calculators.info.estimated" = "Tahmini Sonuçlar";
 "calculators.info.estimated_desc" = "Sonuçlar yaklaşık değerlerdir, bireysel farklılıklar olabilir";
+
+// MARK: - Progress & Analytics  
+"analytics.category.endurance" = "Dayanıklılık";
+"analytics.pr_data_loading" = "PR verileri yükleniyor...";
+"analytics.no_pr_records" = "Henüz PR Kaydı Yok";
+"analytics.start_breaking" = "kategorisinde PR kırmaya başla";
+"analytics.date.today" = "Bugün";
+"analytics.date.yesterday" = "Dün";
+
+// MARK: - Strength Test
+"strength_test.weight" = "Ağırlık";
+"strength_test.previous" = "Önceki";
+"strength_test.error.weight_reps" = "Ağırlık ve tekrar sayısı girin";
+
+// MARK: - Cardio Analytics
+"cardio.analytics.one_month" = "Son 1 Ay";
+"cardio.analytics.three_months" = "Son 3 Ay";
+"cardio.analytics.six_months" = "Son 6 Ay";
+"cardio.analytics.last_year" = "Son 1 Yıl";
+"cardio.analytics.all_time" = "Tüm Zamanlar";
+"cardio.analytics.heart_rate" = "Nabız";
+"cardio.analytics.cardio_title" = "🏃‍♂️ Kardiyovasküler Gelişim";
+"cardio.analytics.subtitle" = "Mesafe, Pace ve Kalp Atışı Analitikleri";
+"cardio.analytics.data_loading" = "Kardio verileri yükleniyorsun...";
+"cardio.analytics.no_data_title" = "Henüz Kardio Verisi Yok";
+"cardio.analytics.no_data_description" = "Kardio seansları kaydederek endurance gelişimini takip etmeye başla";
+
+// MARK: - Strength Analytics
+"strength.analytics.strength_title" = "💪 Kuvvet Gelişimi";
+"strength.analytics.no_1rm_data" = "Henüz 1RM Verisi Yok";
+"strength.analytics.no_1rm_description" = "Strength test yaparak kuvvet gelişimini takip etmeye başla";
+"strength.analytics.one_year" = "Son 1 Yıl";
+"strength.analytics.all_time" = "Tüm Zamanlar";
 "calculators.info.health_warning" = "Sağlık Uyarısı";
 "calculators.info.health_warning_desc" = "Ciddi sağlık kararları için doktora danışın";
 "progress_charts.subtitle" = "Fitness yolculuğunuzu görselleştirin";
@@ -1389,6 +1699,39 @@
 "progress_charts.month" = "Ay";
 "progress_charts.year" = "Yıl";
 "progress_charts.all_time" = "Tüm Zamanlar";
+
+// MARK: - Test Results
+"training.test_results.not_ready" = "Test sonuçları henüz hazır değil.";
+"training.test_results.analysis_complete" = "Analiziniz tamamlandığında öneriler burada görünecek.";
+"training.test_results.recommendation_title" = "Öneri";
+"training.test_results.base_standards" = "Base standartlar: 25 yaş, 80kg erkek";
+"training.test_results.demographic_adjustment" = "Sizin için demografik ayarlama uygulandı";
+"training.test_results.percentile_explanation" = "Percentile: Seviye içindeki pozisyonunuz";
+"training.test_results.beginner_description" = "Fitness journey'ine yeni başlayanlar";
+"training.test_results.intermediate_description" = "Düzenli antrenman yapan sporcular";
+"training.test_results.advanced_description" = "İleri seviye deneyimli sporcular";
+"training.test_results.upper_body_dominant" = "Üst Vücut";
+"training.test_results.lower_body_dominant" = "Alt Vücut";
+"training.test_results.unknown_dominance" = "Bilinmiyor";
+"training.test_results.reps_goal_format" = "tekrar";
+"training.test_results.weight_goal_format" = "kg";
+"training.test_results.novice_description" = "Acemi seviye sporcular";
+"training.test_results.expert_description" = "Uzman seviye sporcular";
+"training.test_results.elite_description" = "Elit seviye sporcular";
+"training.test_results.current_level" = "Mevcut Seviye";
+"training.test_results.exercise" = "Egzersiz";
+"training.test_results.personal_record" = "Kişisel Rekor";
+"training.test_results.balanced" = "Dengeli";
+"training.test_results.unknown" = "Bilinmiyor";
+"training.test_results.novice_description" = "Acemi seviye sporcular";
+"training.test_results.expert_description" = "Uzman seviye sporcular";
+"training.test_results.elite_description" = "Elit seviye sporcular";
+"training.test_results.current_level" = "Mevcut Seviye";
+"training.test_results.exercise" = "Egzersiz";
+"training.test_results.personal_record" = "Kişisel Rekor";
+"training.test_results.balanced" = "Dengeli";
+"training.test_results.completed" = "Tamamlandi";
+"training.test_results.next_target" = "Sonraki Hedef";
 "progress_charts.no_data" = "Veri Yok";
 "progress_charts.no_data_desc" = "İlerleme grafiklerini görmek için veri ekleyin";
 
@@ -2904,3 +3247,256 @@
 "training.workoutTypes.forTimeWithCap" = "Zamana Karşı • %@ dk limit";
 "training.workoutTypes.amrapMinutes" = "AMRAP • %@ dakika";
 "training.workoutTypes.emomMinutes" = "EMOM • %@ dakika";
+
+// MARK: - HealthKit Integration
+"health.intelligence.title" = "Sağlık Zekası";
+"health.recovery_score.title" = "Toparlanma Skoru";
+"health.recovery_score.subtitle" = "Günlük performans değerlendirmesi";
+"health.fitness_level.title" = "Kondisyon Seviyesi";
+"health.insights.title" = "Sağlık Öngörüleri";
+"health.overall_level.title" = "Genel Seviye";
+"health.consistency.title" = "Tutarlılık";
+"health.cardio.title" = "Kardiyovasküler";
+"health.strength.title" = "Güç";
+"health.loading.message" = "Sağlık verileri analiz ediliyor...";
+"health.unavailable.title" = "Veri Mevcut Değil";
+"health.unavailable.message" = "HealthKit verileriniz henüz yeterli değil. Lütfen daha fazla sağlık verisi toplayın.";
+"health.no_insights.title" = "Harika durumdası!";
+"health.no_insights.message" = "Şu anda önemli bir sağlık uyarısı yok.";
+
+// Health Trends
+"health.trends.title" = "Sağlık Trendleri";
+"health.trends.subtitle" = "Geçmiş performans analizi";
+"health.trends.steps" = "Adımlar";
+"health.trends.heart_rate" = "Nabız";
+"health.trends.weight" = "Kilo";
+"health.trends.last_30_days" = "Son 30 Gün";
+"health.trends.last_90_days" = "Son 90 Gün";
+"health.trends.no_data" = "Veri bulunamadı";
+
+// Authorization
+"health.authorization.title" = "HealthKit İzinleri";
+"health.authorization.subtitle" = "Sağlık verilerinize erişim durumu";
+"health.authorization.refresh" = "İzinleri Yenile";
+"health.authorization.open_app" = "Sağlık Uygulamasını Aç";
+"health.authorization.detailed" = "Detaylı İzin Durumu";
+"health.authorization.authorized" = "İzin Verildi";
+"health.authorization.denied" = "Reddedildi";
+"health.authorization.not_determined" = "Belirlenmedi";
+
+// Categories
+"health.category.activity" = "Aktivite";
+"health.category.activity_desc" = "Adım, kalori, mesafe takibi";
+"health.category.heart" = "Kalp Sağlığı";
+"health.category.heart_desc" = "Nabız, HRV, VO2 Max";
+"health.category.body" = "Vücut Ölçümleri";
+"health.category.body_desc" = "Kilo, boy, BMI, yağ oranı";
+"health.category.sleep" = "Uyku";
+"health.category.sleep_desc" = "Uyku analizi ve kalitesi";
+"health.category.workout" = "Antrenmanlar";
+"health.category.workout_desc" = "Workout geçmişi ve detayları";
+"health.category.nutrition" = "Beslenme";
+"health.category.nutrition_desc" = "Kalori, makro besinler";
+
+// Score Details
+"health.score.sleep" = "Uyku Skoru";
+"health.score.hrv" = "HRV Skoru";
+"health.score.workload" = "Yük Skoru";
+"health.score.resting_hr" = "Dinlenim Nabzı";
+
+// Metrics
+"health.metrics.steps" = "Adımlar";
+"health.metrics.weight" = "Kilo";
+"health.metrics.heart_rate" = "Nabız";
+"health.units.steps" = "adım";
+"health.units.weight" = "kg";
+"health.units.heart_rate" = "bpm";
+
+// Workout Trends
+"health.workout_trends.title" = "Antrenman Trendleri";
+"health.activity_breakdown.title" = "Aktivite Dağılımı";
+"health.chart.week" = "Hafta";
+"health.chart.workout" = "Antrenman";
+"health.chart.date" = "Tarih";
+"health.chart.value" = "Değer";
+
+// Current Health Data
+"health.current_data.title" = "Güncel Sağlık Verileri";
+"health.today_steps.title" = "Bugün Adım";
+"health.active_calories.title" = "Aktif Kalori";
+"health.current_weight.title" = "Mevcut Kilo";
+"health.resting_heart_rate.title" = "Dinlenim Nabzı";
+
+// Empty States
+"health.data_not_found.message" = "verisi bulunamadı";
+"health.loading_data.message" = "Sağlık verileri yükleniyor...";
+
+// MARK: - Time Units 
+"time.hour_unit" = "sa";
+"time.minute_unit" = "dk";
+"time.second_unit" = "sn";
+"time.hours" = "saat";
+"time.minutes" = "dakika";
+"time.seconds" = "saniye";
+
+// MARK: - Cardio Time Periods
+"cardio.time_periods.this_week" = "Bu Hafta";
+"cardio.time_periods.this_month" = "Bu Ay";
+"cardio.time_periods.latest" = "En Son";
+
+// MARK: - Cardio Heart Rate
+"cardio.heart_rate.average" = "Ortalama";
+"cardio.heart_rate.maximum" = "Maksimum";
+"cardio.heart_rate.resting" = "Dinlenme";
+
+// MARK: - Cardio Actions
+"cardio.actions.save" = "Kaydet";
+"cardio.actions.cancel" = "İptal";
+"cardio.actions.rescan" = "Yeniden Tara";
+"cardio.actions.retry" = "Tekrar Dene";
+
+// MARK: - Cardio Time Units
+"cardio.time_units.hour" = "Saat";
+"cardio.time_units.minute" = "Dakika";
+"cardio.time_units.second" = "Saniye";
+"cardio.time_units.hours" = "saat";
+"cardio.time_units.minutes" = "dakika";
+"cardio.time_units.seconds" = "saniye";
+
+// MARK: - Cardio Form Labels
+"cardio.form.repetition" = "Tekrar";
+"cardio.form.repetitions" = "Tekrarlar";
+"cardio.form.step" = "Adım";
+"cardio.form.completed" = "Tamamlandı";
+"cardio.form.progress_format" = "% Tamamlandı";
+
+// MARK: - Training Analytics Extended
+"training.analytics.total_prs" = "Toplam PR";
+"training.analytics.latest_pr" = "En Son";
+"training.analytics.strength_profile" = "Kuvvet Profili";
+"training.analytics.level_guide" = "Seviye Rehberi";
+"training.analytics.general_score" = "Genel Skor";
+"training.analytics.record_first_pr" = "İlk PR'ını Kaydet";
+"training.analytics.start_strength_test" = "Kuvvet Testi Başlat";
+"training.analytics.start_first_cardio" = "İlk Kardio Seansını Başlat";
+"training.analytics.update_one_rms" = "1RM'leri Güncelle";
+"training.analytics.strength" = "Kuvvet";
+"training.analytics.volume" = "Hacim";
+
+// MARK: - Health Recovery Categories
+"health.recovery.excellent" = "Mükemmel";
+"health.recovery.good" = "İyi";
+"health.recovery.moderate" = "Orta";
+"health.recovery.poor" = "Düşük";
+"health.recovery.critical" = "Kritik";
+
+// MARK: - Health Insight Types
+"health.insight.workout" = "Antrenman";
+"health.insight.sleep" = "Uyku";
+"health.insight.nutrition" = "Beslenme";
+"health.insight.recovery" = "Toparlanma";
+"health.insight.heart_health" = "Kalp Sağlığı";
+"health.insight.weight" = "Kilo";
+"health.insight.steps" = "Aktivite";
+
+// MARK: - Health Priority Levels
+"health.priority.high" = "Yüksek";
+"health.priority.medium" = "Orta";
+"health.priority.low" = "Düşük";
+
+// MARK: - Health Fitness Levels
+"health.fitness.beginner" = "Başlangıç";
+"health.fitness.intermediate" = "Orta";
+"health.fitness.advanced" = "İleri";
+"health.fitness.elite" = "Elit";
+
+// MARK: - Heart Rate Zones
+"heart_rate.resting" = "Dinlenme";
+"heart_rate.zone1" = "Zona 1: Isınma";
+"heart_rate.zone2" = "Zona 2: Yağ Yakımı";
+"heart_rate.zone3" = "Zona 3: Aerobik";
+"heart_rate.zone4" = "Zona 4: Anaerobik";
+"heart_rate.zone5" = "Zona 5: Maksimum";
+
+// MARK: - Common UI
+"common.new" = "YENİ";
+
+// MARK: - Accessibility
+"accessibility.enter_name" = "İsminizi girin";
+
+// MARK: - Activity Status
+"activity.status.completed" = "tamamlandı";
+"activity.status.started" = "başladı";
+"activity.status.will_continue" = "sürecek";
+"activity.status.workout_count" = "antrenman";
+"activity.status.in_duration" = "sürede";
+"activity.status.personal_record" = "Rekor!";
+"activity.status.previous_record" = "Önceki rekor:";
+"activity.status.new_record" = "Yeni rekor:";
+"activity.status.strength_test_completed" = "Kuvvet testi tamamlandı";
+"activity.status.level" = "Seviye:";
+"activity.status.record" = "rekor";
+
+// MARK: - Activity Types
+"activity.type.running" = "Koşu";
+"activity.type.cycling" = "Bisiklet";
+"activity.type.swimming" = "Yüzme";
+"activity.type.walking" = "Yürüyüş";
+"activity.type.traditional_strength_training" = "Güç Antrenmanı";
+"activity.type.cross_training" = "CrossTraining/WOD";
+"activity.type.rowing" = "Kürek";
+"activity.type.elliptical" = "Eliptik";
+"activity.type.yoga" = "Yoga";
+"activity.type.functional_strength_training" = "Fonksiyonel Antrenman";
+"activity.type.core_training" = "Core Antrenmanı";
+"activity.type.flexibility" = "Esneklik";
+"activity.type.hiit" = "HIIT";
+"activity.type.jump_rope" = "İp Atlama";
+"activity.type.stairs" = "Merdiven";
+"activity.type.kickboxing" = "Kickboks";
+"activity.type.pilates" = "Pilates";
+"activity.type.dance" = "Dans";
+"activity.type.tai_chi" = "Tai Chi";
+"activity.type.barre" = "Barre";
+"activity.type.wrestling" = "Güreş";
+"activity.type.boxing" = "Boks";
+"activity.type.martial_arts" = "Dövüş Sanatları";
+"activity.type.other" = "Diğer";
+
+// MARK: - Time Formatting
+"time.minutes_ago" = "dk önce";
+"time.hours_ago" = "saat önce";
+"time.yesterday" = "dün";
+
+// MARK: - Unit Labels
+"units.kcal" = "kcal";
+"units.meters" = "metre";
+"units.kilometers" = "kilometre";
+"units.kg" = "kg";
+"units.lb" = "lb";
+"units.bpm" = "bpm";
+"units.minutes" = "dakika";
+"units.hours" = "saat";
+"units.seconds" = "saniye";
+"units.days" = "gün";
+"units.weeks" = "hafta";
+"units.months" = "ay";
+"units.meters_short" = "m";
+"units.kilometers_short" = "km";
+
+// MARK: - Bluetooth Signal Strength
+"bluetooth.signal.strong" = "Güçlü";
+"bluetooth.signal.medium" = "Orta";
+"bluetooth.signal.weak" = "Zayıf";
+
+// MARK: - Language Display Names
+"language.names.system" = "Sistem";
+"language.names.turkish" = "Türkçe";
+"language.names.english" = "İngilizce";
+"language.names.spanish" = "Español";
+"language.names.german" = "Deutsch";
+"language.names.italian" = "Italiano";
+"language.names.french" = "Français";
+"language.names.portuguese" = "Português";
+"language.names.indonesian" = "Bahasa Indonesia";
+"language.names.polish" = "Polski";

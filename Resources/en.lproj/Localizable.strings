@@ -1417,10 +1417,353 @@
 "progress_charts.workout_chart" = "Workout Chart";
 "progress_charts.nutrition_chart" = "Nutrition Chart";
 "progress_charts.time_range" = "Time Range";
+
+// MARK: - Health Intelligence
+// Recovery Recommendations
+"health.recovery.recommendation.excellent" = "Excellent recovery! Ready for intense training.";
+"health.recovery.recommendation.good" = "You're in good shape. You can train at normal intensity.";
+"health.recovery.recommendation.moderate" = "Moderate recovery level. Light to moderate training recommended.";
+"health.recovery.recommendation.poor" = "Low recovery level. Rest or light activity recommended.";
+"health.recovery.recommendation.critical" = "Critical condition. Complete rest required.";
+
+// Fitness Level Descriptions
+"health.fitness.description.beginner" = "At the start of your fitness journey";
+"health.fitness.description.intermediate" = "Training regularly";
+"health.fitness.description.advanced" = "In good fitness condition";
+"health.fitness.description.elite" = "Superior athletic performance";
+
+// Health Insight Titles
+"health.insight.title.low_recovery" = "Low Recovery Score";
+"health.insight.title.sleep_quality" = "Sleep Quality";
+"health.insight.title.workout_frequency" = "Decreasing Workout Frequency";
+"health.insight.title.intense_training" = "Very Intense Training";
+"health.insight.title.low_activity" = "Low Daily Activity";
+"health.insight.title.weight_change" = "Weight Change";
+
+// Health Insight Messages
+"health.insight.message.low_recovery" = "Your recovery score is low. Consider taking a rest day.";
+"health.insight.message.sleep_quality" = "Your sleep duration is insufficient. Aim for 7-9 hours for recovery.";
+"health.insight.message.workout_frequency" = "Your workout frequency has been decreasing recently.";
+"health.insight.message.intense_training" = "Consider adding rest days.";
+"health.insight.message.low_activity" = "Aim for 10,000 steps.";
+"health.insight.message.weight_change" = "There has been a change in your weight recently.";
+
+// Health Insight Actions
+"health.insight.action.low_recovery" = "Take complete rest or light walk today";
+"health.insight.action.sleep_quality" = "Establish an early bedtime routine";
+"health.insight.action.workout_frequency" = "Create a weekly workout plan";
+"health.insight.action.intense_training" = "Add 1-2 rest days per week";
+"health.insight.action.low_activity" = "Take 2,000 more steps per day";
+"health.insight.action.weight_change" = "Review your nutrition and training plan";
+
+// Weight Change Directions
+"health.weight.direction.increase" = "increase";
+"health.weight.direction.decrease" = "decrease";
+
+// MARK: - User Validation Errors
+"validation.user.name.empty" = "Name cannot be empty";
+"validation.user.name.min_length" = "Name must be at least 2 characters";
+"validation.user.name.max_length" = "Name can be at most 50 characters";
+"validation.user.age.minimum" = "Age must be at least 13";
+"validation.user.age.maximum" = "Age can be at most 120";
+"validation.user.height.minimum" = "Height must be at least 100 cm";
+"validation.user.weight.minimum" = "Weight must be at least 30 kg";
+"validation.user.invalid_data" = "Invalid input data";
+"validation.user.height.maximum" = "Height cannot exceed 250 cm";
+"validation.user.weight.maximum" = "Weight cannot exceed 300 kg";
+"validation.ffmi.average" = "Average";
+"validation.ffmi.elite" = "Elite";
+
+// Body Measurements Validation
+"validation.measurement.chest.range" = "Must be between 50-200 cm";
+"validation.measurement.waist.range" = "Must be between 40-200 cm";
+"validation.measurement.hip.range" = "Must be between 50-200 cm";
+"validation.measurement.neck.range" = "Must be between 20-60 cm";
+"validation.measurement.bicep.range" = "Must be between 15-70 cm";
+"validation.measurement.thigh.range" = "Must be between 30-100 cm";
+"validation.measurement.invalid" = "Invalid measurement values";
+
+// FFMI Categories
+"validation.ffmi.not_calculable" = "Not calculable";
+"validation.ffmi.low" = "Low";
+"validation.ffmi.below_average" = "Below average";
+"validation.ffmi.good" = "Good";
+"validation.ffmi.very_good" = "Very good";
+"validation.ffmi.excellent" = "Excellent";
+
+// Database Errors
+"validation.database.not_found" = "Database connection not found";
+"validation.database.user_not_found" = "User not found";
+
+// Error Type Prefixes
+"error.type.age" = "Age error";
+"error.type.height" = "Height error";
+"error.type.weight" = "Weight error";
+"error.type.name" = "Name error";
+"error.type.measurement" = "error";
+
+// Health Insight Message Components
+"health.insight.weekly_workouts" = "Weekly";
+"health.insight.workouts_doing" = "workouts you're doing";
+"health.insight.daily_average_steps" = "Daily average steps";
+"health.insight.weight_change_period" = "Recent weight";
+"health.insight.weight_change_exists" = "change";
+
+// Body Part Names
+"body.part.chest" = "Chest";
+"body.part.waist" = "Waist";
+"body.part.hip" = "Hip";
+"body.part.neck" = "Neck";
+"body.part.bicep" = "Bicep";
+"body.part.thigh" = "Thigh";
+"body.part.measurements" = "Measurements";
+
+// MARK: - Cardio Session Summary
+// Navigation titles
+"cardio.session.workout_summary_title" = "Workout Summary";
+"cardio.session.edit_duration_title" = "Edit Duration";
+"cardio.session.edit_distance_title" = "Edit Distance";
+"cardio.session.edit_heart_rate_title" = "Edit Heart Rate";
+"cardio.session.edit_calories_title" = "Edit Calories";
+
+// Main messages
+"cardio.session.workout_completed" = "You completed your workout";
+"cardio.session.how_do_you_feel" = "How Do You Feel?";
+"cardio.session.notes_placeholder" = "Notes about your workout...";
+"cardio.session.exit_without_saving" = "Exit Without Saving";
+
+// Route section
+"cardio.session.your_route" = "Your Route";
+"cardio.session.start_marker" = "Start";
+"cardio.session.finish_marker" = "Finish";
+
+// Stats section
+"cardio.session.detailed_statistics" = "Detailed Statistics";
+"cardio.session.perceived_effort" = "Perceived Effort";
+"cardio.session.heart_rate_stats" = "Heart Rate Statistics";
+"cardio.session.add_heart_rate_data" = "Add Heart Rate Data";
+"cardio.session.edited" = "EDITED";
+
+// Edit sections
+"cardio.session.edit_duration" = "Edit Duration";
+"cardio.session.edit_distance" = "Edit Distance";
+"cardio.session.edit_heart_rate" = "Edit Heart Rate";
+"cardio.session.edit_calories" = "Edit Calories";
+
+// Edit descriptions
+"cardio.session.duration_description" = "Adjust your workout duration";
+"cardio.session.distance_description" = "Adjust your workout distance in %@";
+"cardio.session.heart_rate_description" = "Enter your average and maximum heart rate";
+"cardio.session.calories_description" = "Enter the amount of calories you burned";
+
+// Form labels
+"cardio.session.duration_label" = "Duration";
+"cardio.session.average_heart_rate" = "Average Heart Rate (BPM)";
+"cardio.session.maximum_heart_rate" = "Maximum Heart Rate (BPM)";
+"cardio.session.burned_calories" = "Burned Calories";
+
+// Tips
+"cardio.session.tip_icon" = "💡 Tip";
+"cardio.session.heart_rate_tip" = "Normal resting heart rate is 60-100 BPM, maximum heart rate is approximately (220 - age)";
+"cardio.session.calories_tip" = "On average, running burns 60-100 kcal/km, cycling burns 30-50 kcal/km";
+"cardio.session.average_heart_rate_bpm" = "Average Heart Rate (BPM)";
+"cardio.session.maximum_heart_rate_bpm" = "Maximum Heart Rate (BPM)";
+"cardio.session.edit_calories_title" = "Edit Calories";
+"cardio.session.edit_calories_description" = "Enter the amount of calories you burned";
+"cardio.session.calories_burned_label" = "Calories Burned";
+
+// Share text components
+"cardio.session.share_workout_completed" = "🏃 I completed my workout!";
+"cardio.session.share_duration_prefix" = "⏱ Duration:";
+
+// MARK: - Navy Method Calculator
+"calculator.navy_method.title" = "Navy Method Calculator";
+"calculator.navy_method.subtitle" = "Calculate your body fat percentage with measurements";
+"calculator.navy_method.measurements_section" = "Measurements";
+"calculator.navy_method.results_section" = "Results";
+"calculator.navy_method.about_section" = "About Navy Method";
+"calculator.navy_method.age_label" = "Age";
+"calculator.navy_method.inches_label" = "Inches";
+"calculator.navy_method.waist_circumference" = "Waist Circumference";
+"calculator.navy_method.neck_circumference" = "Neck Circumference";
+"calculator.navy_method.hip_circumference" = "Hip Circumference";
+"calculator.navy_method.body_fat_percentage_title" = "Your Body Fat Percentage";
+"calculator.navy_method.body_fat_scale_title" = "Body Fat Scale";
+"calculator.navy_method.reliability_title" = "Reliability";
+"calculator.navy_method.reliability_description" = "Scientifically proven method developed by the US Navy";
+"calculator.navy_method.accuracy_title" = "Accuracy";
+"calculator.navy_method.accuracy_description" = "Provides quite accurate results with ±3-4% margin of error";
+"calculator.navy_method.important_note_title" = "Important Note";
+"calculator.navy_method.important_note_description" = "Measurement precision directly affects the result, measure carefully";
+"calculator.navy_method.tracking_title" = "Tracking";
+"calculator.navy_method.tracking_description" = "You can track your progress with regular measurements";
+"calculator.navy_method.gender.male" = "Male";
+"calculator.navy_method.gender.female" = "Female";
+"calculator.body_fat.category.essential" = "Essential Fat";
+"calculator.body_fat.category.athlete" = "Athlete";
+"calculator.body_fat.category.fitness" = "Fitness";
+"calculator.body_fat.category.average" = "Average";
+"calculator.body_fat.category.obese" = "Obese";
+"calculator.body_fat.description.essential" = "Minimum fat required for essential body functions";
+"calculator.body_fat.description.athlete" = "Ideal level for professional athletes";
+"calculator.body_fat.description.fitness" = "Ideal for active and healthy individuals";
+"calculator.body_fat.description.average" = "Normal level considered healthy";
+"calculator.body_fat.description.obese" = "Health risks may occur, consider losing weight";
+
+// MARK: - Common Actions
+"common.actions.save" = "Save";
+"common.actions.cancel" = "Cancel";
+"common.actions.retry" = "Retry";
+"common.actions.continue" = "Continue";
+"common.actions.done" = "Done";
+"common.actions.share" = "Share";
+
+// MARK: - Exercise Categories & Types
+"exercise.type.compound" = "Compound";
+"exercise.type.isolation" = "Isolation";
+"exercise.type.other" = "Other";
+"exercise.category.push.description" = "Chest, shoulder, triceps movements";
+"exercise.category.pull.description" = "Back, biceps movements";
+"exercise.category.legs.description" = "Leg and hip movements";
+"exercise.category.core.description" = "Abdominal and core movements";
+"exercise.category.cardio.description" = "Cardiovascular exercises";
+"exercise.category.functional.description" = "Functional movement patterns";
+"exercise.category.isolation.description" = "Isolation and auxiliary movements";
+"exercise.category.strength.description" = "Strength-focused multi-joint movements";
+"exercise.category.flexibility.description" = "Flexibility and mobility work";
+"exercise.category.plyometric.description" = "Explosive power and jumping exercises";
+"exercise.category.other.description" = "Other exercise types";
+"exercise.equipment.bodyweight" = "Bodyweight";
+"exercise.equipment.band" = "Resistance Band";
+"exercise.equipment.pullup_bar" = "Pullup Bar";
+"exercise.equipment.other" = "Other";
+"exercise.format.for_time.description" = "Complete the movements in the shortest time possible";
+"exercise.format.amrap.description" = "Do as many reps/rounds as possible in the given time";
+"exercise.format.emom.description" = "Do the movements at the beginning of every minute";
+"exercise.format.tabata.description" = "Work 20 seconds, rest 10 seconds - 8 rounds";
+"exercise.format.rounds.description" = "Complete the specified number of rounds";
+"exercise.format.ladder.description" = "Progress by increasing or decreasing reps";
+"exercise.format.chipper.description" = "Complete high-rep movements in sequence";
+"exercise.format.custom.description" = "Custom format";
+"exercise.difficulty.beginner" = "Beginner";
+"exercise.difficulty.intermediate" = "Intermediate";
+"exercise.difficulty.advanced" = "Advanced";
+"exercise.experience.intermediate" = "6 months - 2 years experience";
+"exercise.experience.advanced" = "2+ years experience";
+"exercise.experience.elite" = "Professional/Competitive";
+"exercise.goal.recomp.description" = "Burn fat and gain muscle simultaneously";
+"exercise.goal.performance.description" = "Improve athletic performance";
+"exercise.meal.breakfast" = "Breakfast";
+"exercise.meal.lunch" = "Lunch";
+"exercise.meal.dinner" = "Dinner";
+"exercise.meal.snack" = "Snack";
+"exercise.meal.preworkout" = "Pre-workout";
+"exercise.meal.postworkout" = "Post-workout";
+
+// MARK: - Activity Status
+"activity.status.completed" = "completed";
+"activity.status.started" = "started";
+"activity.status.will_last" = "will last";
+"activity.status.completed_exclamation" = "completed!";
+"activity.unit.workout" = "workout";
+"activity.status.in_duration" = "in duration";
+"activity.strength_test.completed" = "Strength test completed";
+
+// MARK: - Time Format
+"time.format.minutes_ago" = "min ago";
+"time.format.hours_ago" = "hours ago";
+"time.format.yesterday" = "yesterday";
+"time.format.now" = "now";
+
+// MARK: - Records
+"records.previous_record" = "Previous record";
+
+// MARK: - Units
+"units.kcal" = "kcal";
+"units.meters" = "m";
+
+// MARK: - Activity Types
+"activity.type.running" = "Running";
+"activity.type.swimming" = "Swimming";
+"activity.type.walking" = "Walking";
+"activity.type.strength_training" = "Strength Training";
+"activity.type.rowing" = "Rowing";
+"activity.type.core_training" = "Core Training";
+"activity.type.hiit" = "HIIT";
+"activity.type.jump_rope" = "Jump Rope";
+"activity.type.wrestling" = "Wrestling";
+"activity.type.martial_arts" = "Martial Arts";
+"activity.type.other" = "Other";
 "progress_charts.week" = "Week";
 "progress_charts.month" = "Month";
 "progress_charts.year" = "Year";
 "progress_charts.all_time" = "All Time";
+
+// MARK: - Progress & Analytics
+"analytics.category.endurance" = "Endurance";
+"analytics.pr_data_loading" = "PR data loading...";
+"analytics.no_pr_records" = "No PR Records Yet";
+"analytics.start_breaking" = "category to start breaking PRs";
+"analytics.date.today" = "Today";
+"analytics.date.yesterday" = "Yesterday";
+
+// MARK: - Strength Test
+"strength_test.weight" = "Weight";
+"strength_test.previous" = "Previous";
+"strength_test.error.weight_reps" = "Enter weight and rep count";
+
+// MARK: - Cardio Analytics
+"cardio.analytics.one_month" = "Last 1 Month";
+"cardio.analytics.three_months" = "Last 3 Months";
+"cardio.analytics.six_months" = "Last 6 Months";
+"cardio.analytics.last_year" = "Last 1 Year";
+"cardio.analytics.all_time" = "All Time";
+"cardio.analytics.heart_rate" = "Heart Rate";
+"cardio.analytics.cardio_title" = "🏃‍♂️ Cardiovascular Development";
+"cardio.analytics.subtitle" = "Distance, Pace & Heart Rate Analytics";
+"cardio.analytics.data_loading" = "Cardio data loading...";
+"cardio.analytics.no_data_title" = "No Cardio Data Yet";
+"cardio.analytics.no_data_description" = "Start tracking endurance development by recording cardio sessions";
+
+// MARK: - Strength Analytics
+"strength.analytics.strength_title" = "💪 Strength Development";
+"strength.analytics.no_1rm_data" = "No 1RM Data Yet";
+"strength.analytics.no_1rm_description" = "Start tracking strength development by doing strength tests";
+"strength.analytics.one_year" = "Last 1 Year";
+"strength.analytics.all_time" = "All Time";
+
+// MARK: - Test Results  
+"training.test_results.not_ready" = "Test results are not ready yet.";
+"training.test_results.analysis_complete" = "Recommendations will appear here when your analysis is complete.";
+"training.test_results.recommendation_title" = "Recommendation";
+"training.test_results.base_standards" = "Base standards: 25 years, 80kg male";
+"training.test_results.demographic_adjustment" = "Demographic adjustment applied for you";
+"training.test_results.percentile_explanation" = "Percentile: Your position within the level";
+"training.test_results.beginner_description" = "New to fitness journey";
+"training.test_results.intermediate_description" = "Athletes with regular training";
+"training.test_results.advanced_description" = "Advanced experienced athletes";
+"training.test_results.upper_body_dominant" = "Upper Body";
+"training.test_results.lower_body_dominant" = "Lower Body";
+"training.test_results.unknown_dominance" = "Unknown";
+"training.test_results.reps_goal_format" = "reps";
+"training.test_results.weight_goal_format" = "kg";
+"training.test_results.novice_description" = "Novice level athletes";
+"training.test_results.expert_description" = "Expert level athletes";
+"training.test_results.elite_description" = "Elite level athletes";
+"training.test_results.current_level" = "Current Level";
+"training.test_results.exercise" = "Exercise";
+"training.test_results.personal_record" = "Personal Record";
+"training.test_results.balanced" = "Balanced";
+"training.test_results.unknown" = "Unknown";
+"training.test_results.novice_description" = "Novice level athletes";
+"training.test_results.expert_description" = "Expert level athletes";
+"training.test_results.elite_description" = "Elite level athletes";
+"training.test_results.current_level" = "Current Level";
+"training.test_results.exercise" = "Exercise";
+"training.test_results.personal_record" = "Personal Record";
+"training.test_results.balanced" = "Balanced";
+"training.test_results.completed" = "Completed";
+"training.test_results.next_target" = "Next Target";
 "progress_charts.no_data" = "No Data";
 "progress_charts.no_data_desc" = "Add some data to see your progress charts";
 
@@ -2829,3 +3172,256 @@
 "training.workoutTypes.forTimeWithCap" = "For Time • %@ min cap";
 "training.workoutTypes.amrapMinutes" = "AMRAP • %@ minutes";
 "training.workoutTypes.emomMinutes" = "EMOM • %@ minutes";
+
+// MARK: - HealthKit Integration
+"health.intelligence.title" = "Health Intelligence";
+"health.recovery_score.title" = "Recovery Score";
+"health.recovery_score.subtitle" = "Daily performance assessment";
+"health.fitness_level.title" = "Fitness Level";
+"health.insights.title" = "Health Insights";
+"health.overall_level.title" = "Overall Level";
+"health.consistency.title" = "Consistency";
+"health.cardio.title" = "Cardiovascular";
+"health.strength.title" = "Strength";
+"health.loading.message" = "Analyzing health data...";
+"health.unavailable.title" = "Data Unavailable";
+"health.unavailable.message" = "Your HealthKit data is not sufficient yet. Please collect more health data.";
+"health.no_insights.title" = "You're doing great!";
+"health.no_insights.message" = "No important health alerts at this time.";
+
+// Health Trends
+"health.trends.title" = "Health Trends";
+"health.trends.subtitle" = "Historical performance analysis";
+"health.trends.steps" = "Steps";
+"health.trends.heart_rate" = "Heart Rate";
+"health.trends.weight" = "Weight";
+"health.trends.last_30_days" = "Last 30 Days";
+"health.trends.last_90_days" = "Last 90 Days";
+"health.trends.no_data" = "No data found";
+
+// Authorization
+"health.authorization.title" = "HealthKit Permissions";
+"health.authorization.subtitle" = "Health data access status";
+"health.authorization.refresh" = "Refresh Permissions";
+"health.authorization.open_app" = "Open Health App";
+"health.authorization.detailed" = "Detailed Permissions";
+"health.authorization.authorized" = "Authorized";
+"health.authorization.denied" = "Denied";
+"health.authorization.not_determined" = "Not Determined";
+
+// Categories
+"health.category.activity" = "Activity";
+"health.category.activity_desc" = "Steps, calories, distance tracking";
+"health.category.heart" = "Heart Health";
+"health.category.heart_desc" = "Heart rate, HRV, VO2 Max";
+"health.category.body" = "Body Measurements";
+"health.category.body_desc" = "Weight, height, BMI, body fat";
+"health.category.sleep" = "Sleep";
+"health.category.sleep_desc" = "Sleep analysis and quality";
+"health.category.workout" = "Workouts";
+"health.category.workout_desc" = "Workout history and details";
+"health.category.nutrition" = "Nutrition";
+"health.category.nutrition_desc" = "Calories, macronutrients";
+
+// Score Details
+"health.score.sleep" = "Sleep Score";
+"health.score.hrv" = "HRV Score";
+"health.score.workload" = "Workload Score";
+"health.score.resting_hr" = "Resting HR";
+
+// Metrics
+"health.metrics.steps" = "Steps";
+"health.metrics.weight" = "Weight";
+"health.metrics.heart_rate" = "Heart Rate";
+"health.units.steps" = "steps";
+"health.units.weight" = "kg";
+"health.units.heart_rate" = "bpm";
+
+// Workout Trends
+"health.workout_trends.title" = "Workout Trends";
+"health.activity_breakdown.title" = "Activity Breakdown";
+"health.chart.week" = "Week";
+"health.chart.workout" = "Workout";
+"health.chart.date" = "Date";
+"health.chart.value" = "Value";
+
+// Current Health Data
+"health.current_data.title" = "Current Health Data";
+"health.today_steps.title" = "Today's Steps";
+"health.active_calories.title" = "Active Calories";
+"health.current_weight.title" = "Current Weight";
+"health.resting_heart_rate.title" = "Resting Heart Rate";
+
+// Empty States
+"health.data_not_found.message" = "data not found";
+"health.loading_data.message" = "Loading health data...";
+
+// MARK: - Time Units 
+"time.hour_unit" = "h";
+"time.minute_unit" = "m";
+"time.second_unit" = "s";
+"time.hours" = "hours";
+"time.minutes" = "minutes";
+"time.seconds" = "seconds";
+
+// MARK: - Cardio Time Periods
+"cardio.time_periods.this_week" = "This Week";
+"cardio.time_periods.this_month" = "This Month";
+"cardio.time_periods.latest" = "Latest";
+
+// MARK: - Cardio Heart Rate
+"cardio.heart_rate.average" = "Average";
+"cardio.heart_rate.maximum" = "Maximum";
+"cardio.heart_rate.resting" = "Resting";
+
+// MARK: - Cardio Actions
+"cardio.actions.save" = "Save";
+"cardio.actions.cancel" = "Cancel";
+"cardio.actions.rescan" = "Rescan";
+"cardio.actions.retry" = "Retry";
+
+// MARK: - Cardio Time Units
+"cardio.time_units.hour" = "Hour";
+"cardio.time_units.minute" = "Minute";
+"cardio.time_units.second" = "Second";
+"cardio.time_units.hours" = "hours";
+"cardio.time_units.minutes" = "minutes";
+"cardio.time_units.seconds" = "seconds";
+
+// MARK: - Cardio Form Labels
+"cardio.form.repetition" = "Rep";
+"cardio.form.repetitions" = "Reps";
+"cardio.form.step" = "Step";
+"cardio.form.completed" = "Completed";
+"cardio.form.progress_format" = "% Completed";
+
+// MARK: - Training Analytics Extended
+"training.analytics.total_prs" = "Total PRs";
+"training.analytics.latest_pr" = "Latest";
+"training.analytics.strength_profile" = "Strength Profile";
+"training.analytics.level_guide" = "Level Guide";
+"training.analytics.general_score" = "General Score";
+"training.analytics.record_first_pr" = "Record First PR";
+"training.analytics.start_strength_test" = "Start Strength Test";
+"training.analytics.start_first_cardio" = "Start First Cardio Session";
+"training.analytics.update_one_rms" = "Update 1RMs";
+"training.analytics.strength" = "Strength";
+"training.analytics.volume" = "Volume";
+
+// MARK: - Health Recovery Categories
+"health.recovery.excellent" = "Excellent";
+"health.recovery.good" = "Good";
+"health.recovery.moderate" = "Moderate";
+"health.recovery.poor" = "Poor";
+"health.recovery.critical" = "Critical";
+
+// MARK: - Health Insight Types
+"health.insight.workout" = "Workout";
+"health.insight.sleep" = "Sleep";
+"health.insight.nutrition" = "Nutrition";
+"health.insight.recovery" = "Recovery";
+"health.insight.heart_health" = "Heart Health";
+"health.insight.weight" = "Weight";
+"health.insight.steps" = "Activity";
+
+// MARK: - Health Priority Levels
+"health.priority.high" = "High";
+"health.priority.medium" = "Medium";
+"health.priority.low" = "Low";
+
+// MARK: - Health Fitness Levels
+"health.fitness.beginner" = "Beginner";
+"health.fitness.intermediate" = "Intermediate";
+"health.fitness.advanced" = "Advanced";
+"health.fitness.elite" = "Elite";
+
+// MARK: - Heart Rate Zones
+"heart_rate.resting" = "Resting";
+"heart_rate.zone1" = "Zone 1: Warm-up";
+"heart_rate.zone2" = "Zone 2: Fat Burn";
+"heart_rate.zone3" = "Zone 3: Aerobic";
+"heart_rate.zone4" = "Zone 4: Anaerobic";
+"heart_rate.zone5" = "Zone 5: Maximum";
+
+// MARK: - Common UI
+"common.new" = "NEW";
+
+// MARK: - Accessibility
+"accessibility.enter_name" = "Enter your name";
+
+// MARK: - Activity Status
+"activity.status.completed" = "completed";
+"activity.status.started" = "started";
+"activity.status.will_continue" = "to go";
+"activity.status.workout_count" = "workouts";
+"activity.status.in_duration" = "in";
+"activity.status.personal_record" = "Record!";
+"activity.status.previous_record" = "Previous record:";
+"activity.status.new_record" = "New record:";
+"activity.status.strength_test_completed" = "Strength test completed";
+"activity.status.level" = "Level:";
+"activity.status.record" = "record";
+
+// MARK: - Activity Types
+"activity.type.running" = "Running";
+"activity.type.cycling" = "Cycling";
+"activity.type.swimming" = "Swimming";
+"activity.type.walking" = "Walking";
+"activity.type.traditional_strength_training" = "Strength Training";
+"activity.type.cross_training" = "CrossTraining/WOD";
+"activity.type.rowing" = "Rowing";
+"activity.type.elliptical" = "Elliptical";
+"activity.type.yoga" = "Yoga";
+"activity.type.functional_strength_training" = "Functional Training";
+"activity.type.core_training" = "Core Training";
+"activity.type.flexibility" = "Flexibility";
+"activity.type.hiit" = "HIIT";
+"activity.type.jump_rope" = "Jump Rope";
+"activity.type.stairs" = "Stairs";
+"activity.type.kickboxing" = "Kickboxing";
+"activity.type.pilates" = "Pilates";
+"activity.type.dance" = "Dance";
+"activity.type.tai_chi" = "Tai Chi";
+"activity.type.barre" = "Barre";
+"activity.type.wrestling" = "Wrestling";
+"activity.type.boxing" = "Boxing";
+"activity.type.martial_arts" = "Martial Arts";
+"activity.type.other" = "Other";
+
+// MARK: - Time Formatting
+"time.minutes_ago" = "min ago";
+"time.hours_ago" = "hours ago";
+"time.yesterday" = "yesterday";
+
+// MARK: - Unit Labels
+"units.kcal" = "kcal";
+"units.meters" = "meters";
+"units.kilometers" = "kilometers";
+"units.kg" = "kg";
+"units.lb" = "lb";
+"units.bpm" = "bpm";
+"units.minutes" = "minutes";
+"units.hours" = "hours";
+"units.seconds" = "seconds";
+"units.days" = "days";
+"units.weeks" = "weeks";
+"units.months" = "months";
+"units.meters_short" = "m";
+"units.kilometers_short" = "km";
+
+// MARK: - Bluetooth Signal Strength
+"bluetooth.signal.strong" = "Strong";
+"bluetooth.signal.medium" = "Medium";
+"bluetooth.signal.weak" = "Weak";
+
+// MARK: - Language Display Names
+"language.names.system" = "System";
+"language.names.turkish" = "Türkçe";
+"language.names.english" = "English";
+"language.names.spanish" = "Español";
+"language.names.german" = "Deutsch";
+"language.names.italian" = "Italiano";
+"language.names.french" = "Français";
+"language.names.portuguese" = "Português";
+"language.names.indonesian" = "Bahasa Indonesia";
+"language.names.polish" = "Polski";

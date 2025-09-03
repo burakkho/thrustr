@@ -24,27 +24,33 @@ class LanguageManager: ObservableObject {
         case italian = "it"
         case french = "fr"
         case portuguese = "pt"
+        case indonesian = "id"
+        case polish = "pl"
         
         var id: String { rawValue }
         
         var displayName: String {
             switch self {
             case .system:
-                return "Sistem"
+                return CommonKeys.LanguageNames.system.localized
             case .turkish:
-                return "Türkçe"
+                return CommonKeys.LanguageNames.turkish.localized
             case .english:
-                return "İngilizce"
+                return CommonKeys.LanguageNames.english.localized
             case .spanish:
-                return "Español"
+                return CommonKeys.LanguageNames.spanish.localized
             case .german:
-                return "Deutsch"
+                return CommonKeys.LanguageNames.german.localized
             case .italian:
-                return "Italiano"
+                return CommonKeys.LanguageNames.italian.localized
             case .french:
-                return "Français"
+                return CommonKeys.LanguageNames.french.localized
             case .portuguese:
-                return "Português"
+                return CommonKeys.LanguageNames.portuguese.localized
+            case .indonesian:
+                return CommonKeys.LanguageNames.indonesian.localized
+            case .polish:
+                return CommonKeys.LanguageNames.polish.localized
             }
         }
         
@@ -66,6 +72,10 @@ class LanguageManager: ObservableObject {
                 return "🇫🇷"
             case .portuguese:
                 return "🇵🇹"
+            case .indonesian:
+                return "🇮🇩"
+            case .polish:
+                return "🇵🇱"
             }
         }
     }
@@ -113,6 +123,10 @@ class LanguageManager: ObservableObject {
                 return .french
             case "pt":
                 return .portuguese
+            case "id":
+                return .indonesian
+            case "pl":
+                return .polish
             default:
                 continue
             }
@@ -189,6 +203,24 @@ class LanguageManager: ObservableObject {
                 print("❌ Portuguese bundle not found")
             }
             UserDefaults.standard.set(["pt"], forKey: "AppleLanguages")
+        case .indonesian:
+            if let path = Bundle.main.path(forResource: "id", ofType: "lproj"),
+               let bundle = Bundle(path: path) {
+                customBundle = bundle
+                print("✅ Indonesian bundle found at: \(path)")
+            } else {
+                print("❌ Indonesian bundle not found")
+            }
+            UserDefaults.standard.set(["id"], forKey: "AppleLanguages")
+        case .polish:
+            if let path = Bundle.main.path(forResource: "pl", ofType: "lproj"),
+               let bundle = Bundle(path: path) {
+                customBundle = bundle
+                print("✅ Polish bundle found at: \(path)")
+            } else {
+                print("❌ Polish bundle not found")
+            }
+            UserDefaults.standard.set(["pl"], forKey: "AppleLanguages")
         }
         
         UserDefaults.standard.synchronize()

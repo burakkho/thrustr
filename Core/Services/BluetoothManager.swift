@@ -45,19 +45,30 @@ class BluetoothManager: NSObject {
         let rssi: Int
         
         var signalStrength: String {
-            if rssi > -60 { return "Güçlü" }
-            else if rssi > -80 { return "Orta" }
-            else { return "Zayıf" }
+            if rssi > -60 { return CommonKeys.BluetoothSignal.strong.localized }
+            else if rssi > -80 { return CommonKeys.BluetoothSignal.medium.localized }
+            else { return CommonKeys.BluetoothSignal.weak.localized }
         }
     }
     
     enum HeartRateZone: String, CaseIterable {
-        case resting = "Dinlenme"
-        case zone1 = "Zone 1: Isınma"
-        case zone2 = "Zone 2: Yağ Yakımı"
-        case zone3 = "Zone 3: Aerobik"
-        case zone4 = "Zone 4: Anaerobik"
-        case zone5 = "Zone 5: Maksimum"
+        case resting = "resting"
+        case zone1 = "zone1"
+        case zone2 = "zone2"
+        case zone3 = "zone3"
+        case zone4 = "zone4"
+        case zone5 = "zone5"
+        
+        var localizedName: String {
+            switch self {
+            case .resting: return "heart_rate.resting".localized
+            case .zone1: return "heart_rate.zone1".localized
+            case .zone2: return "heart_rate.zone2".localized
+            case .zone3: return "heart_rate.zone3".localized
+            case .zone4: return "heart_rate.zone4".localized
+            case .zone5: return "heart_rate.zone5".localized
+            }
+        }
         
         var color: Color {
             switch self {

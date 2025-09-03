@@ -174,6 +174,57 @@ enum CommonKeys {
         static let hoursRange = "validation.time.hoursRange"
         static let minutesRange = "validation.time.minutesRange"
         static let secondsRange = "validation.time.secondsRange"
+        
+        // User validation
+        static let nameEmpty = "validation.user.name.empty"
+        static let nameMinLength = "validation.user.name.min_length"
+        static let nameMaxLength = "validation.user.name.max_length"
+        static let ageMinimum = "validation.user.age.minimum"
+        static let ageMaximum = "validation.user.age.maximum"
+        static let heightMinimum = "validation.user.height.minimum"
+        static let weightMinimum = "validation.user.weight.minimum"
+        static let invalidData = "validation.user.invalid_data"
+        static let heightMaximum = "validation.user.height.maximum"
+        static let weightMaximum = "validation.user.weight.maximum"
+        static let ffmiAverage = "validation.ffmi.average"
+        static let ffmiElite = "validation.ffmi.elite"
+        
+        // Body measurements validation
+        static let chestRange = "validation.measurement.chest.range"
+        static let waistRange = "validation.measurement.waist.range"
+        static let hipRange = "validation.measurement.hip.range"
+        static let neckRange = "validation.measurement.neck.range"
+        static let bicepRange = "validation.measurement.bicep.range"
+        static let thighRange = "validation.measurement.thigh.range"
+        static let invalidMeasurements = "validation.measurement.invalid"
+        
+        // FFMI Categories
+        static let ffmiNotCalculable = "validation.ffmi.not_calculable"
+        static let ffmiLow = "validation.ffmi.low"
+        static let ffmiBelowAverage = "validation.ffmi.below_average"
+        static let ffmiGood = "validation.ffmi.good"
+        static let ffmiVeryGood = "validation.ffmi.very_good"
+        static let ffmiExcellent = "validation.ffmi.excellent"
+        
+        // Database errors
+        static let databaseNotFound = "validation.database.not_found"
+        static let userNotFound = "validation.database.user_not_found"
+        
+        // Error type prefixes
+        static let ageError = "error.type.age"
+        static let heightError = "error.type.height"
+        static let weightError = "error.type.weight"
+        static let nameError = "error.type.name"
+        static let measurementError = "error.type.measurement"
+        
+        // Body part names
+        static let chestName = "body.part.chest"
+        static let waistName = "body.part.waist"
+        static let hipName = "body.part.hip"
+        static let neckName = "body.part.neck"
+        static let bicepName = "body.part.bicep"
+        static let thighName = "body.part.thigh"
+        static let measurementsName = "body.part.measurements"
     }
     
     // MARK: - Heart Rate Zones
@@ -345,6 +396,7 @@ enum CommonKeys {
             static let continueAnyway = "common.continue_anyway"
             static let search = "common.search"
             static let all = "common.all"
+            static let completed = "common.completed"
         }
     }
     
@@ -402,6 +454,12 @@ enum CommonKeys {
         static let yesterday = "time.yesterday"
         static let hoursShort = "time.hours_short"
         static let minutesShort = "time.minutes_short"
+        static let hourUnit = "time.hour_unit"
+        static let minuteUnit = "time.minute_unit"
+        static let secondUnit = "time.second_unit"
+        static let hours = "time.hours"
+        static let minutes = "time.minutes"
+        static let seconds = "time.seconds"
     }
     
     // MARK: - Training Actions
@@ -418,5 +476,278 @@ enum CommonKeys {
         static let dashboardProgressTargets = "training.dashboard_progress_targets"
         static let notesOptional = "training.notes_optional"
         static let calculateStartingWeights = "training.calculate_starting_weights"
+    }
+    
+    // MARK: - HealthKit Integration
+    enum HealthKit {
+        // Health Intelligence
+        static let healthIntelligenceTitle = "health.intelligence.title"
+        static let recoveryScoreTitle = "health.recovery_score.title"
+        static let recoveryScoreSubtitle = "health.recovery_score.subtitle"
+        static let fitnessLevelTitle = "health.fitness_level.title"
+        static let healthInsightsTitle = "health.insights.title"
+        static let overallLevelTitle = "health.overall_level.title"
+        static let consistencyTitle = "health.consistency.title"
+        static let cardioTitle = "health.cardio.title"
+        static let strengthTitle = "health.strength.title"
+        static let loadingMessage = "health.loading.message"
+        static let unavailableTitle = "health.unavailable.title"
+        static let unavailableMessage = "health.unavailable.message"
+        static let noInsightsTitle = "health.no_insights.title"
+        static let noInsightsMessage = "health.no_insights.message"
+        
+        // Health Trends
+        static let trendsTitle = "health.trends.title"
+        static let trendsSubtitle = "health.trends.subtitle"
+        static let stepsTitle = "health.trends.steps"
+        static let heartRateTitle = "health.trends.heart_rate"
+        static let weightTitle = "health.trends.weight"
+        static let last30Days = "health.trends.last_30_days"
+        static let last90Days = "health.trends.last_90_days"
+        static let noTrendsData = "health.trends.no_data"
+        
+        // Authorization
+        static let authorizationTitle = "health.authorization.title"
+        static let authorizationSubtitle = "health.authorization.subtitle"
+        static let refreshPermissions = "health.authorization.refresh"
+        static let openHealthApp = "health.authorization.open_app"
+        static let detailedPermissions = "health.authorization.detailed"
+        static let authorized = "health.authorization.authorized"
+        static let denied = "health.authorization.denied"
+        static let notDetermined = "health.authorization.not_determined"
+        
+        // Categories
+        static let activityCategory = "health.category.activity"
+        static let activityDescription = "health.category.activity_desc"
+        static let heartCategory = "health.category.heart"
+        static let heartDescription = "health.category.heart_desc"
+        static let bodyCategory = "health.category.body"
+        static let bodyDescription = "health.category.body_desc"
+        static let sleepCategory = "health.category.sleep"
+        static let sleepDescription = "health.category.sleep_desc"
+        static let workoutCategory = "health.category.workout"
+        static let workoutDescription = "health.category.workout_desc"
+        static let nutritionCategory = "health.category.nutrition"
+        static let nutritionDescription = "health.category.nutrition_desc"
+        
+        // Score Details
+        static let sleepScore = "health.score.sleep"
+        static let hrvScore = "health.score.hrv"
+        static let workloadScore = "health.score.workload"
+        static let restingHRScore = "health.score.resting_hr"
+        
+        // Metrics
+        static let stepsMetric = "health.metrics.steps"
+        static let weightMetric = "health.metrics.weight"
+        static let heartRateMetric = "health.metrics.heart_rate"
+        static let stepsUnit = "health.units.steps"
+        static let weightUnit = "health.units.weight"
+        static let heartRateUnit = "health.units.heart_rate"
+        
+        // Workout Trends
+        static let workoutTrendsTitle = "health.workout_trends.title"
+        static let activityBreakdownTitle = "health.activity_breakdown.title"
+        static let weekLabel = "health.chart.week"
+        static let workoutLabel = "health.chart.workout"
+        static let dateLabel = "health.chart.date"
+        static let valueLabel = "health.chart.value"
+        
+        // Current Health Data
+        static let currentHealthDataTitle = "health.current_data.title"
+        static let todayStepsTitle = "health.today_steps.title"
+        static let activeCaloriesTitle = "health.active_calories.title"
+        static let currentWeightTitle = "health.current_weight.title"
+        static let restingHeartRateTitle = "health.resting_heart_rate.title"
+        
+        // Empty States
+        static let dataNotFoundMessage = "health.data_not_found.message"
+        static let loadingDataMessage = "health.loading_data.message"
+        
+        // Recovery Recommendations
+        static let recoveryExcellentMessage = "health.recovery.recommendation.excellent"
+        static let recoveryGoodMessage = "health.recovery.recommendation.good"
+        static let recoveryModerateMessage = "health.recovery.recommendation.moderate"
+        static let recoveryPoorMessage = "health.recovery.recommendation.poor"
+        static let recoveryCriticalMessage = "health.recovery.recommendation.critical"
+        
+        // Fitness Level Descriptions
+        static let fitnessBeginnerDesc = "health.fitness.description.beginner"
+        static let fitnessIntermediateDesc = "health.fitness.description.intermediate"
+        static let fitnessAdvancedDesc = "health.fitness.description.advanced"
+        static let fitnessEliteDesc = "health.fitness.description.elite"
+        
+        // Health Insight Titles
+        static let insightLowRecoveryTitle = "health.insight.title.low_recovery"
+        static let insightSleepQualityTitle = "health.insight.title.sleep_quality"
+        static let insightWorkoutFrequencyTitle = "health.insight.title.workout_frequency"
+        static let insightIntenseTrainingTitle = "health.insight.title.intense_training"
+        static let insightLowActivityTitle = "health.insight.title.low_activity"
+        static let insightWeightChangeTitle = "health.insight.title.weight_change"
+        
+        // Health Insight Messages
+        static let insightLowRecoveryMessage = "health.insight.message.low_recovery"
+        static let insightSleepQualityMessage = "health.insight.message.sleep_quality"
+        static let insightWorkoutFrequencyMessage = "health.insight.message.workout_frequency"
+        static let insightIntenseTrainingMessage = "health.insight.message.intense_training"
+        static let insightLowActivityMessage = "health.insight.message.low_activity"
+        static let insightWeightChangeMessage = "health.insight.message.weight_change"
+        
+        // Health Insight Actions
+        static let insightLowRecoveryAction = "health.insight.action.low_recovery"
+        static let insightSleepQualityAction = "health.insight.action.sleep_quality"
+        static let insightWorkoutFrequencyAction = "health.insight.action.workout_frequency"
+        static let insightIntenseTrainingAction = "health.insight.action.intense_training"
+        static let insightLowActivityAction = "health.insight.action.low_activity"
+        static let insightWeightChangeAction = "health.insight.action.weight_change"
+        
+        // Weight Change Directions
+        static let weightIncrease = "health.weight.direction.increase"
+        static let weightDecrease = "health.weight.direction.decrease"
+        
+        // Health Insight Message Components
+        static let weeklyWorkouts = "health.insight.weekly_workouts"
+        static let workoutsDoing = "health.insight.workouts_doing"
+        static let dailyAverageSteps = "health.insight.daily_average_steps"
+        static let weightChangePeriod = "health.insight.weight_change_period"
+        static let weightChangeExists = "health.insight.weight_change_exists"
+    }
+    
+    // MARK: - Navy Method Calculator
+    enum Calculator {
+        // Main interface
+        static let navyMethodTitle = "calculator.navy_method.title"
+        static let navyMethodSubtitle = "calculator.navy_method.subtitle"
+        static let measurementsSection = "calculator.navy_method.measurements_section"
+        static let resultsSection = "calculator.navy_method.results_section"
+        static let aboutSection = "calculator.navy_method.about_section"
+        
+        // Form labels
+        static let ageLabel = "calculator.navy_method.age_label"
+        static let inchesLabel = "calculator.navy_method.inches_label"
+        static let waistCircumference = "calculator.navy_method.waist_circumference"
+        static let neckCircumference = "calculator.navy_method.neck_circumference"
+        static let hipCircumference = "calculator.navy_method.hip_circumference"
+        
+        // Results
+        static let bodyFatPercentageTitle = "calculator.navy_method.body_fat_percentage_title"
+        static let bodyFatScaleTitle = "calculator.navy_method.body_fat_scale_title"
+        
+        // About section
+        static let reliabilityTitle = "calculator.navy_method.reliability_title"
+        static let reliabilityDescription = "calculator.navy_method.reliability_description"
+        static let accuracyTitle = "calculator.navy_method.accuracy_title"
+        static let accuracyDescription = "calculator.navy_method.accuracy_description"
+        static let importantNoteTitle = "calculator.navy_method.important_note_title"
+        static let importantNoteDescription = "calculator.navy_method.important_note_description"
+        static let trackingTitle = "calculator.navy_method.tracking_title"
+        static let trackingDescription = "calculator.navy_method.tracking_description"
+        
+        // Gender display names
+        static let maleGender = "calculator.navy_method.gender.male"
+        static let femaleGender = "calculator.navy_method.gender.female"
+        
+        // Body fat categories
+        static let bodyFatEssential = "calculator.body_fat.category.essential"
+        static let bodyFatAthlete = "calculator.body_fat.category.athlete"
+        static let bodyFatFitness = "calculator.body_fat.category.fitness"
+        static let bodyFatAverage = "calculator.body_fat.category.average"
+        static let bodyFatObese = "calculator.body_fat.category.obese"
+        
+        // Body fat descriptions
+        static let bodyFatEssentialDesc = "calculator.body_fat.description.essential"
+        static let bodyFatAthleteDesc = "calculator.body_fat.description.athlete"
+        static let bodyFatFitnessDesc = "calculator.body_fat.description.fitness"
+        static let bodyFatAverageDesc = "calculator.body_fat.description.average"
+        static let bodyFatObeseDesc = "calculator.body_fat.description.obese"
+    }
+    
+    // MARK: - Common Actions
+    enum Actions {
+        static let save = "common.actions.save"
+        static let cancel = "common.actions.cancel"
+        static let retry = "common.actions.retry"
+        static let continueAction = "common.actions.continue"
+        static let done = "common.actions.done"
+        static let share = "common.actions.share"
+    }
+    
+    // MARK: - Activity Status
+    enum Activity {
+        static let completed = "activity.status.completed"
+        static let started = "activity.status.started"
+        static let willContinue = "activity.status.will_continue"
+        static let workoutCount = "activity.status.workout_count"
+        static let inDuration = "activity.status.in_duration"
+        static let personalRecord = "activity.status.personal_record"
+        static let previousRecord = "activity.status.previous_record"
+        static let newRecord = "activity.status.new_record"
+        static let strengthTestCompleted = "activity.status.strength_test_completed"
+        static let level = "activity.status.level"
+        static let record = "activity.status.record"
+        
+        // Activity type display names
+        static let running = "activity.type.running"
+        static let cycling = "activity.type.cycling"
+        static let swimming = "activity.type.swimming"
+        static let walking = "activity.type.walking"
+        static let traditionalStrengthTraining = "activity.type.traditional_strength_training"
+        static let crossTraining = "activity.type.cross_training"
+        static let rowing = "activity.type.rowing"
+        static let elliptical = "activity.type.elliptical"
+        static let yoga = "activity.type.yoga"
+        static let functionalStrengthTraining = "activity.type.functional_strength_training"
+        static let coreTraining = "activity.type.core_training"
+        static let flexibility = "activity.type.flexibility"
+        static let highIntensityIntervalTraining = "activity.type.hiit"
+        static let jumpRope = "activity.type.jump_rope"
+        static let stairs = "activity.type.stairs"
+        static let kickboxing = "activity.type.kickboxing"
+        static let pilates = "activity.type.pilates"
+        static let dance = "activity.type.dance"
+        static let taiChi = "activity.type.tai_chi"
+        static let barre = "activity.type.barre"
+        static let wrestling = "activity.type.wrestling"
+        static let boxing = "activity.type.boxing"
+        static let martialArts = "activity.type.martial_arts"
+        static let other = "activity.type.other"
+    }
+    
+    // MARK: - Units
+    enum Units {
+        static let kcal = "units.kcal"
+        static let meters = "units.meters"
+        static let kilometers = "units.kilometers"
+        static let kg = "units.kg"
+        static let lb = "units.lb"
+        static let bpm = "units.bpm"
+        static let minutes = "units.minutes"
+        static let hours = "units.hours"
+        static let seconds = "units.seconds"
+        static let days = "units.days"
+        static let weeks = "units.weeks"
+        static let monthsUnit = "units.months"
+        static let metersShort = "units.meters_short"
+        static let kilometersShort = "units.kilometers_short"
+    }
+    
+    // MARK: - Bluetooth Signal Strength
+    enum BluetoothSignal {
+        static let strong = "bluetooth.signal.strong"
+        static let medium = "bluetooth.signal.medium"
+        static let weak = "bluetooth.signal.weak"
+    }
+    
+    // MARK: - Language Display Names
+    enum LanguageNames {
+        static let system = "language.names.system"
+        static let turkish = "language.names.turkish"
+        static let english = "language.names.english"
+        static let spanish = "language.names.spanish"
+        static let german = "language.names.german"
+        static let italian = "language.names.italian"
+        static let french = "language.names.french"
+        static let portuguese = "language.names.portuguese"
+        static let indonesian = "language.names.indonesian"
+        static let polish = "language.names.polish"
     }
 }
