@@ -3,6 +3,7 @@ import SwiftUI
 struct HealthIntelligenceView: View {
     @StateObject private var healthKitService = HealthKitService.shared
     @Environment(\.theme) private var theme
+    @StateObject private var unitSettings = UnitSettings.shared
     @State private var isLoading = true
     @State private var healthReport: HealthReport?
     
@@ -28,7 +29,7 @@ struct HealthIntelligenceView: View {
                 .padding(.horizontal, 20)
                 .padding(.top, 10)
             }
-            .navigationTitle("Sağlık Zekası")
+            .navigationTitle(CommonKeys.HealthKit.healthIntelligenceTitle.localized)
             .navigationBarTitleDisplayMode(.large)
             .refreshable {
                 await loadHealthIntelligence()
@@ -62,12 +63,12 @@ struct RecoveryScoreCard: View {
             // Header
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("Toparlanma Skoru")
+                    Text(CommonKeys.HealthKit.recoveryScoreTitle.localized)
                         .font(theme.typography.headline)
                         .fontWeight(.semibold)
                         .foregroundColor(theme.colors.textPrimary)
                     
-                    Text("Bugünkü durumun")
+                    Text(CommonKeys.HealthKit.recoveryScoreSubtitle.localized)
                         .font(theme.typography.caption)
                         .foregroundColor(theme.colors.textSecondary)
                 }
@@ -122,10 +123,10 @@ struct RecoveryScoreCard: View {
             
             // Detailed Scores
             VStack(spacing: 8) {
-                ScoreDetailRow(title: "Uyku", score: recoveryScore.sleepScore)
-                ScoreDetailRow(title: "Kalp Atış Hızı Var.", score: recoveryScore.hrvScore)
-                ScoreDetailRow(title: "Antrenman Yükü", score: recoveryScore.workoutLoadScore)
-                ScoreDetailRow(title: "Dinlenim Nabzı", score: recoveryScore.restingHeartRateScore)
+                ScoreDetailRow(title: CommonKeys.HealthKit.sleepScore.localized, score: recoveryScore.sleepScore)
+                ScoreDetailRow(title: CommonKeys.HealthKit.hrvScore.localized, score: recoveryScore.hrvScore)
+                ScoreDetailRow(title: CommonKeys.HealthKit.workloadScore.localized, score: recoveryScore.workoutLoadScore)
+                ScoreDetailRow(title: CommonKeys.HealthKit.restingHRScore.localized, score: recoveryScore.restingHeartRateScore)
             }
             .padding(.top, 8)
         }
@@ -181,14 +182,14 @@ struct FitnessAssessmentCard: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("Fitness Seviyesi")
+            Text(CommonKeys.HealthKit.fitnessLevelTitle.localized)
                 .font(theme.typography.headline)
                 .fontWeight(.semibold)
                 .foregroundColor(theme.colors.textPrimary)
             
             HStack(spacing: 16) {
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("Genel Seviye")
+                    Text(CommonKeys.HealthKit.overallLevelTitle.localized)
                         .font(theme.typography.subheadline)
                         .fontWeight(.medium)
                         .foregroundColor(theme.colors.textPrimary)
@@ -217,7 +218,7 @@ struct FitnessAssessmentCard: View {
                             .foregroundColor(Color(assessment.progressTrend.color))
                     }
                     
-                    Text("Tutarlılık: \(Int(assessment.consistencyScore))%")
+                    Text("\(CommonKeys.HealthKit.consistencyTitle.localized): \(Int(assessment.consistencyScore))%")
                         .font(theme.typography.caption)
                         .foregroundColor(theme.colors.textSecondary)
                 }
@@ -226,13 +227,13 @@ struct FitnessAssessmentCard: View {
             // Detailed breakdown
             VStack(spacing: 12) {
                 FitnessLevelRow(
-                    title: "Kardiyo",
+                    title: CommonKeys.HealthKit.cardioTitle.localized,
                     level: assessment.cardioLevel,
                     icon: "heart.fill"
                 )
                 
                 FitnessLevelRow(
-                    title: "Güç",
+                    title: CommonKeys.HealthKit.strengthTitle.localized,
                     level: assessment.strengthLevel,
                     icon: "dumbbell.fill"
                 )
@@ -280,7 +281,7 @@ struct HealthInsightsSection: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("Sağlık İçgörüleri")
+            Text(CommonKeys.HealthKit.healthInsightsTitle.localized)
                 .font(theme.typography.headline)
                 .fontWeight(.semibold)
                 .foregroundColor(theme.colors.textPrimary)
@@ -370,12 +371,12 @@ struct EmptyIntelligenceView: View {
                 .font(.system(size: 48))
                 .foregroundColor(theme.colors.textSecondary)
             
-            Text("Sağlık Zekası Kullanılamıyor")
+            Text(CommonKeys.HealthKit.unavailableTitle.localized)
                 .font(theme.typography.title2)
                 .fontWeight(.semibold)
                 .foregroundColor(theme.colors.textPrimary)
             
-            Text("HealthKit verilerini etkinleştirin ve birkaç gün antrenman verisi toplayın")
+            Text(CommonKeys.HealthKit.unavailableMessage.localized)
                 .font(theme.typography.body)
                 .foregroundColor(theme.colors.textSecondary)
                 .multilineTextAlignment(.center)
@@ -394,12 +395,12 @@ struct EmptyInsightsView: View {
                 .font(.title)
                 .foregroundColor(.green)
             
-            Text("Harika gidiyorsun!")
+            Text(CommonKeys.HealthKit.noInsightsTitle.localized)
                 .font(theme.typography.subheadline)
                 .fontWeight(.medium)
                 .foregroundColor(theme.colors.textPrimary)
             
-            Text("Şu anda herhangi bir sağlık uyarısı bulunmuyor")
+            Text(CommonKeys.HealthKit.noInsightsMessage.localized)
                 .font(theme.typography.body)
                 .foregroundColor(theme.colors.textSecondary)
                 .multilineTextAlignment(.center)
@@ -416,7 +417,7 @@ struct HealthLoadingView: View {
             ProgressView()
                 .scaleEffect(1.5)
             
-            Text("Sağlık verilerin analiz ediliyor...")
+            Text(CommonKeys.HealthKit.loadingMessage.localized)
                 .font(theme.typography.body)
                 .foregroundColor(theme.colors.textSecondary)
         }

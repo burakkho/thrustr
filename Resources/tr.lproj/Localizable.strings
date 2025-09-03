@@ -1636,6 +1636,7 @@
 // MARK: - Units
 "units.kcal" = "kcal";
 "units.meters" = "m";
+"units.foods" = "yiyecek";
 
 // MARK: - Activity Types  
 "activity.type.running" = "Koşu";
@@ -3500,3 +3501,15 @@
 "language.names.portuguese" = "Português";
 "language.names.indonesian" = "Bahasa Indonesia";
 "language.names.polish" = "Polski";
+
+// MARK: - HealthKit Statistics (WorkoutHistoryView)
+"health.statistics.title" = "HealthKit İstatistikleri (Son 30 Gün)";
+"health.statistics.total_duration" = "Toplam Süre";
+
+// MARK: - Units (HealthKitService)
+"units.steps" = "adım";
+
+// MARK: - Activity Types (HealthKitService Turkish matching)
+"activity.type.cycling" = "bisiklet";
+"activity.type.walking" = "yürüyüş";
+"activity.type.rowing" = "kürek";

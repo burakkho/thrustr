@@ -152,7 +152,7 @@ struct TestResultSummary: View {
             // Section header
             HStack {
                 VStack(alignment: .leading, spacing: theme.spacing.xs) {
-                    Text("Kuvvet Profili")
+                    Text(TrainingKeys.Analytics.strengthProfile.localized)
                         .font(.system(.title2, design: .rounded, weight: .bold))
                         .foregroundColor(theme.colors.textPrimary)
                     
@@ -196,7 +196,7 @@ struct TestResultSummary: View {
             // Section header
             HStack {
                 VStack(alignment: .leading, spacing: theme.spacing.xs) {
-                    Text("Seviye Rehberi")
+                    Text(TrainingKeys.Analytics.levelGuide.localized)
                         .font(.system(.title2, design: .rounded, weight: .bold))
                         .foregroundColor(theme.colors.textPrimary)
                     
@@ -315,7 +315,7 @@ struct TestResultSummary: View {
                         Image(systemName: "square.and.arrow.up")
                             .font(.subheadline)
                         
-                        Text("Share")
+                        Text(CommonKeys.Actions.share.localized)
                     }
                     .frame(maxWidth: .infinity)
                 }
@@ -329,7 +329,7 @@ struct TestResultSummary: View {
                         Image(systemName: "chart.bar.doc.horizontal")
                             .font(.subheadline)
                         
-                        Text("Detaylar")
+                        Text(TrainingKeys.TestResults.details.localized)
                     }
                     .frame(maxWidth: .infinity)
                 }
@@ -389,13 +389,13 @@ struct TestResultSummary: View {
     private func safeGenerateRecommendations() -> [String] {
         // Check if test is properly completed
         guard !strengthTest.results.isEmpty else {
-            return ["Test sonuçları henüz hazır değil."]
+            return [TrainingKeys.TestResults.resultsNotReady.localized]
         }
         
         let recommendations = TestScoringService.shared.generateRecommendations(for: strengthTest)
         
         if recommendations.isEmpty {
-            return ["Analiziniz tamamlandığında öneriler burada görünecek."]
+            return [TrainingKeys.TestResults.analysisComplete.localized]
         }
         
         return recommendations
@@ -431,7 +431,7 @@ struct TestResultSummary: View {
             }
             
             VStack(alignment: .leading, spacing: theme.spacing.xs) {
-                Text("Mevcut Seviyeniz: \(currentLevel.name)")
+                Text("\(TrainingKeys.TestResults.currentLevel.localized): \(currentLevel.name)")
                     .font(.system(.headline, design: .rounded, weight: .semibold))
                     .foregroundColor(theme.colors.textPrimary)
                 
@@ -495,9 +495,9 @@ struct TestResultSummary: View {
                 .foregroundColor(theme.colors.textPrimary)
             
             VStack(alignment: .leading, spacing: theme.spacing.s) {
-                contextRow(icon: "person", text: "Base standartlar: 25 yaş, 80kg erkek")
-                contextRow(icon: "slider.horizontal.3", text: "Sizin için demografik ayarlama uygulandı")
-                contextRow(icon: "chart.bar", text: "Percentile: Seviye içindeki pozisyonunuz")
+                contextRow(icon: "person", text: TrainingKeys.TestResults.baseStandards.localized)
+                contextRow(icon: "slider.horizontal.3", text: TrainingKeys.TestResults.demographicAdjustment.localized)
+                contextRow(icon: "chart.bar", text: TrainingKeys.TestResults.percentileExplanation.localized)
             }
         }
         .padding(theme.spacing.l)
@@ -523,17 +523,17 @@ struct TestResultSummary: View {
     private func levelDescription(for level: StrengthLevel) -> String {
         switch level {
         case .beginner:
-            return "Fitness journey'ine yeni başlayanlar"
+            return TrainingKeys.TestResults.beginnerDescription.localized
         case .novice:
-            return "Temel antrenman deneyimi olanlar"
+            return TrainingKeys.TestResults.noviceDescription.localized
         case .intermediate:
-            return "Düzenli antrenman yapan sporcular"
+            return TrainingKeys.TestResults.intermediateDescription.localized
         case .advanced:
-            return "İleri seviye deneyimli sporcular"
+            return TrainingKeys.TestResults.advancedDescription.localized
         case .expert:
-            return "Uzman seviyede performans"
+            return TrainingKeys.TestResults.expertDescription.localized
         case .elite:
-            return "Competitive/profesyonel seviye"
+            return TrainingKeys.TestResults.eliteDescription.localized
         }
     }
     
@@ -584,7 +584,7 @@ private extension TestResultSummary {
                         .font(.system(.largeTitle, design: .rounded, weight: .bold))
                         .foregroundColor(theme.colors.textPrimary)
                     
-                    Text("Genel Skor")
+                    Text(TrainingKeys.Analytics.generalScore.localized)
                         .font(.system(.caption, design: .rounded, weight: .medium))
                         .foregroundColor(theme.colors.textSecondary)
                 }
@@ -675,20 +675,20 @@ private extension TestResultSummary {
 private extension TestResultSummary {
     var metricsCardsSection: some View {
         let profile = strengthTest.strengthProfile
-        let profileText = profile == "balanced" ? "Dengeli" : 
-                         profile == "upper_dominant" ? "Üst Vücut" : 
-                         profile == "lower_dominant" ? "Alt Vücut" : "Bilinmiyor"
+        let profileText = profile == "balanced" ? TrainingKeys.TestResults.balanced.localized : 
+                         profile == "upper_dominant" ? TrainingKeys.TestResults.upperBodyDominant.localized : 
+                         profile == "lower_dominant" ? TrainingKeys.TestResults.lowerBodyDominant.localized : TrainingKeys.TestResults.unknownDominance.localized
         let resultsCount = strengthTest.results.count
         
         return HStack(spacing: theme.spacing.m) {
             SummaryMetricCard(
-                title: "Kuvvet Profili",
+                title: TrainingKeys.Analytics.strengthProfile.localized,
                 value: profileText,
                 color: profileCardColor
             )
             
             SummaryMetricCard(
-                title: "Tamamlanan",
+                title: TrainingKeys.TestResults.completed.localized,
                 value: "\(resultsCount)/5",
                 color: .green
             )
@@ -797,7 +797,7 @@ private struct ModernExerciseResultCard: View {
                             HStack(spacing: 4) {
                                 Image(systemName: "star.fill")
                                     .font(.caption2)
-                                Text("PR")
+                                Text(TrainingKeys.TestResults.personalRecord.localized)
                                     .font(.system(.caption2, design: .rounded, weight: .bold))
                             }
                             .foregroundColor(.white)
@@ -826,7 +826,7 @@ private struct ModernExerciseResultCard: View {
                     
                     // Next level target
                     if let nextTarget = nextLevelTarget {
-                        Text("Sonraki: \(nextTarget)")
+                        Text("\(TrainingKeys.TestResults.nextTarget.localized): \(nextTarget)")
                             .font(.system(.caption2, design: .rounded))
                             .foregroundColor(theme.colors.accent)
                     }
@@ -853,7 +853,7 @@ private struct ModernExerciseResultCard: View {
                         .foregroundColor(theme.colors.textPrimary)
                 }
                 
-                Text("%")
+                Text(TrainingKeys.TestResults.percentageSymbol.localized)
                     .font(.system(.caption2, design: .rounded))
                     .foregroundColor(theme.colors.textSecondary)
             }
@@ -870,7 +870,7 @@ private struct ModernExerciseResultCard: View {
     
     private var safeExerciseName: String {
         guard let exerciseType = StrengthExerciseType(rawValue: result.exerciseType) else {
-            return "Egzersiz"
+            return TrainingKeys.TestResults.exercise.localized
         }
         return exerciseType.name
     }
@@ -893,7 +893,7 @@ private struct ModernExerciseResultCard: View {
     
     private var safeStrengthLevelName: String {
         guard let level = StrengthLevel(rawValue: result.strengthLevel) else {
-            return "Bilinmiyor"
+            return TrainingKeys.TestResults.unknown.localized
         }
         return level.name
     }
@@ -921,9 +921,9 @@ private struct ModernExerciseResultCard: View {
         
         // Format based on exercise type
         if exerciseType == .pullUp {
-            return "\(Int(nextLevelValue)) tekrar (\(nextLevel.name))"
+            return "\(Int(nextLevelValue)) \(TrainingKeys.TestResults.repsGoalFormat.localized) (\(nextLevel.name))"
         } else {
-            return "\(Int(nextLevelValue))kg (\(nextLevel.name))"
+            return "\(Int(nextLevelValue))\(TrainingKeys.TestResults.weightGoalFormat.localized) (\(nextLevel.name))"
         }
     }
 }
@@ -998,7 +998,7 @@ private struct ModernRecommendationItem: View {
             
             // Text content
             VStack(alignment: .leading, spacing: theme.spacing.xs) {
-                Text("Öneri \(index + 1)")
+                Text("\(TrainingKeys.TestResults.recommendationTitle.localized) \(index + 1)")
                     .font(.system(.caption, design: .rounded, weight: .semibold))
                     .foregroundColor(accentColor)
                     .textCase(.uppercase)

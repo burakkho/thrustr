@@ -90,7 +90,7 @@ struct CardioSessionSummaryView: View {
                 }
                 .padding(theme.spacing.m)
             }
-            .navigationTitle("Antrenman Özeti")
+            .navigationTitle(CardioKeys.SessionSummary.workoutSummaryTitle.localized)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
@@ -152,7 +152,7 @@ struct CardioSessionSummaryView: View {
                 .fontWeight(.bold)
                 .foregroundColor(theme.colors.textPrimary)
             
-            Text("Antrenmanını tamamladın")
+            Text(CardioKeys.SessionSummary.workoutCompleted.localized)
                 .font(theme.typography.body)
                 .foregroundColor(theme.colors.textSecondary)
         }
@@ -206,7 +206,7 @@ struct CardioSessionSummaryView: View {
             HStack {
                 Image(systemName: "map.fill")
                     .foregroundColor(theme.colors.accent)
-                Text("Rotanız")
+                Text(CardioKeys.SessionSummary.yourRoute.localized)
                     .font(theme.typography.headline)
                     .fontWeight(.semibold)
                     .foregroundColor(theme.colors.textPrimary)
@@ -218,12 +218,12 @@ struct CardioSessionSummaryView: View {
                     .stroke(.blue, lineWidth: 4)
                 
                 if let start = routeCoordinates.first {
-                    Marker("Başlangıç", coordinate: start)
+                    Marker(CardioKeys.SessionSummary.startMarker.localized, coordinate: start)
                         .tint(.green)
                 }
                 
                 if let end = routeCoordinates.last {
-                    Marker("Bitiş", coordinate: end)
+                    Marker(CardioKeys.SessionSummary.finishMarker.localized, coordinate: end)
                         .tint(.red)
                 }
             }
@@ -245,7 +245,7 @@ struct CardioSessionSummaryView: View {
             HStack {
                 Image(systemName: "chart.bar.fill")
                     .foregroundColor(theme.colors.accent)
-                Text("Detaylı İstatistikler")
+                Text(CardioKeys.SessionSummary.detailedStatistics.localized)
                     .font(theme.typography.headline)
                     .fontWeight(.semibold)
                     .foregroundColor(theme.colors.textPrimary)
@@ -264,7 +264,7 @@ struct CardioSessionSummaryView: View {
                 
                 if let effort = session.perceivedEffort {
                     Divider()
-                    DetailStatRow(label: "Algılanan Zorluk", value: "\(effort)/10")
+                    DetailStatRow(label: CardioKeys.SessionSummary.perceivedEffort.localized, value: "\(effort)/10")
                 }
             }
         }
@@ -279,13 +279,13 @@ struct CardioSessionSummaryView: View {
                     .foregroundColor(theme.colors.error)
                 
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("Nabız İstatistikleri")
+                    Text(CardioKeys.SessionSummary.heartRateStats.localized)
                         .font(theme.typography.headline)
                         .fontWeight(.semibold)
                         .foregroundColor(theme.colors.textPrimary)
                     
                     if isHeartRateEdited {
-                        Text("DÜZENLENDI")
+                        Text(CardioKeys.SessionSummary.edited.localized)
                             .font(.caption2)
                             .fontWeight(.bold)
                             .foregroundColor(.white)
@@ -312,7 +312,7 @@ struct CardioSessionSummaryView: View {
                 // Show existing heart rate data
                 HStack(spacing: theme.spacing.xl) {
                     VStack(alignment: .leading, spacing: 4) {
-                        Text("Ortalama")
+                        Text(CardioKeys.HeartRateStats.average.localized)
                             .font(theme.typography.caption)
                             .foregroundColor(theme.colors.textSecondary)
                         HStack(alignment: .lastTextBaseline, spacing: 4) {
@@ -326,7 +326,7 @@ struct CardioSessionSummaryView: View {
                     }
                     
                     VStack(alignment: .leading, spacing: 4) {
-                        Text("Maksimum")
+                        Text(CardioKeys.HeartRateStats.maximum.localized)
                             .font(theme.typography.caption)
                             .foregroundColor(theme.colors.textSecondary)
                         HStack(alignment: .lastTextBaseline, spacing: 4) {
@@ -350,7 +350,7 @@ struct CardioSessionSummaryView: View {
                     HStack {
                         Image(systemName: "plus.circle.fill")
                             .foregroundColor(theme.colors.accent)
-                        Text("Nabız Verisi Ekle")
+                        Text(CardioKeys.SessionSummary.addHeartRateData.localized)
                             .font(theme.typography.body)
                             .foregroundColor(theme.colors.accent)
                         Spacer()
@@ -371,7 +371,7 @@ struct CardioSessionSummaryView: View {
     // MARK: - Feeling Section
     private var feelingSection: some View {
         VStack(alignment: .leading, spacing: theme.spacing.m) {
-            Text("Nasıl Hissediyorsun?")
+            Text(CardioKeys.SessionSummary.howDoYouFeel.localized)
                 .font(theme.typography.headline)
                 .fontWeight(.semibold)
                 .foregroundColor(theme.colors.textPrimary)
@@ -408,7 +408,7 @@ struct CardioSessionSummaryView: View {
                 .fontWeight(.medium)
                 .foregroundColor(theme.colors.textPrimary)
             
-            TextField("Antrenman hakkında notlarınız...", text: $notes, axis: .vertical)
+            TextField(CardioKeys.SessionSummary.notesPlaceholder.localized, text: $notes, axis: .vertical)
                 .textFieldStyle(.plain)
                 .padding(theme.spacing.m)
                 .background(theme.colors.backgroundSecondary)
@@ -424,7 +424,7 @@ struct CardioSessionSummaryView: View {
                 HStack {
                     Image(systemName: "checkmark.circle.fill")
                         .font(.title3)
-                    Text("Kaydet")
+                    Text(CardioKeys.Actions.save.localized)
                         .font(theme.typography.headline)
                         .fontWeight(.semibold)
                 }
@@ -436,7 +436,7 @@ struct CardioSessionSummaryView: View {
             }
             
             Button(action: discardSession) {
-                Text("Kaydetmeden Çık")
+                Text(CardioKeys.SessionSummary.exitWithoutSaving.localized)
                     .font(theme.typography.body)
                     .foregroundColor(theme.colors.textSecondary)
             }
@@ -477,8 +477,7 @@ struct CardioSessionSummaryView: View {
         session.sessionNotes = notes.isEmpty ? nil : notes
         session.completeSession()
         
-        // Save to context
-        modelContext.insert(session)
+        // Session is already in context, no need to insert
         
         // Update user stats
         user.addCardioSession(
@@ -537,8 +536,8 @@ struct CardioSessionSummaryView: View {
     }
     
     private func createShareText() -> String {
-        var text = "🏃 Antrenmanımı tamamladım!\n\n"
-        text += "⏱ Süre: \(session.formattedDuration)\n"
+        var text = "\(CardioKeys.SessionSummary.shareWorkoutCompleted.localized)\n\n"
+        text += "\(CardioKeys.SessionSummary.shareDurationPrefix.localized) \(session.formattedDuration)\n"
         text += "📍 Mesafe: \(session.formattedDistance(using: unitSettings.unitSystem))\n"
         text += "🔥 Kalori: \(session.totalCaloriesBurned ?? 0) kcal\n"
         
@@ -581,13 +580,8 @@ struct CardioSessionSummaryView: View {
             
             session.totalDuration = newDuration
             
-            // Save to database
-            do {
-                try modelContext.save()
-                Logger.info("Cardio session duration updated successfully")
-            } catch {
-                Logger.error("Failed to save cardio session duration: \(error)")
-            }
+            // No need to save manually - SwiftData auto-saves @Model changes
+            Logger.info("Cardio session duration updated successfully")
         }
         
         showingDurationEdit = false
@@ -631,17 +625,12 @@ struct CardioSessionSummaryView: View {
             // Recalculate dependent metrics
             session.calculateTotals()
             
-            // Save to database
-            do {
-                try modelContext.save()
-                Logger.info("Cardio session distance updated successfully")
-                
-                // Force UI refresh by triggering objectWillChange
-                DispatchQueue.main.async {
-                    self.unitSettings.objectWillChange.send()
-                }
-            } catch {
-                Logger.error("Failed to save cardio session distance: \(error)")
+            // No need to save manually - SwiftData auto-saves @Model changes
+            Logger.info("Cardio session distance updated successfully")
+            
+            // Force UI refresh by triggering objectWillChange
+            DispatchQueue.main.async {
+                self.unitSettings.objectWillChange.send()
             }
         }
         
@@ -662,13 +651,8 @@ struct CardioSessionSummaryView: View {
             session.averageHeartRate = editAvgHeartRate > 0 ? editAvgHeartRate : nil
             session.maxHeartRate = editMaxHeartRate > 0 ? editMaxHeartRate : nil
             
-            // Save to database
-            do {
-                try modelContext.save()
-                Logger.info("Cardio session heart rate updated successfully")
-            } catch {
-                Logger.error("Failed to save cardio session heart rate: \(error)")
-            }
+            // No need to save manually - SwiftData auto-saves @Model changes
+            Logger.info("Cardio session heart rate updated successfully")
         }
         
         showingHeartRateEdit = false
@@ -685,13 +669,8 @@ struct CardioSessionSummaryView: View {
             isCaloriesEdited = true
             session.totalCaloriesBurned = editCalories > 0 ? editCalories : nil
             
-            // Save to database
-            do {
-                try modelContext.save()
-                Logger.info("Cardio session calories updated successfully")
-            } catch {
-                Logger.error("Failed to save cardio session calories: \(error)")
-            }
+            // No need to save manually - SwiftData auto-saves @Model changes
+            Logger.info("Cardio session calories updated successfully")
         }
         
         showingCaloriesEdit = false
@@ -728,7 +707,7 @@ struct MainStatCard: View {
                     Spacer()
                     Button(action: onEdit) {
                         Image(systemName: "pencil.circle.fill")
-                            .font(.caption)
+                            .font(.title3)
                             .foregroundColor(theme.colors.accent)
                     }
                 }
@@ -744,7 +723,7 @@ struct MainStatCard: View {
                     .foregroundColor(theme.colors.textSecondary)
                 
                 if isEdited {
-                    Text("DÜZENLENDI")
+                    Text(CardioKeys.SessionSummary.edited.localized)
                         .font(.caption2)
                         .fontWeight(.bold)
                         .foregroundColor(.white)
@@ -801,12 +780,12 @@ struct DurationEditSheet: View {
                         .font(.system(size: 40))
                         .foregroundColor(theme.colors.accent)
                     
-                    Text("Süre Düzenle")
+                    Text(CardioKeys.SessionSummary.editDuration.localized)
                         .font(theme.typography.title2)
                         .fontWeight(.bold)
                         .foregroundColor(theme.colors.textPrimary)
                     
-                    Text("Antrenman sürenizi ayarlayın")
+                    Text(CardioKeys.SessionSummary.durationDescription.localized)
                         .font(theme.typography.body)
                         .foregroundColor(theme.colors.textSecondary)
                 }
@@ -814,7 +793,7 @@ struct DurationEditSheet: View {
                 
                 // Time Picker
                 VStack(spacing: theme.spacing.m) {
-                    Text("Süre")
+                    Text(CardioKeys.SessionSummary.durationLabel.localized)
                         .font(theme.typography.headline)
                         .fontWeight(.semibold)
                         .foregroundColor(theme.colors.textPrimary)
@@ -822,7 +801,7 @@ struct DurationEditSheet: View {
                     HStack(spacing: theme.spacing.m) {
                         // Hours
                         VStack(spacing: theme.spacing.xs) {
-                            Text("Saat")
+                            Text(CardioKeys.TimeUnits.hour.localized)
                                 .font(theme.typography.caption)
                                 .foregroundColor(theme.colors.textSecondary)
                             
@@ -843,7 +822,7 @@ struct DurationEditSheet: View {
                         
                         // Minutes
                         VStack(spacing: theme.spacing.xs) {
-                            Text("Dakika")
+                            Text(CardioKeys.TimeUnits.minute.localized)
                                 .font(theme.typography.caption)
                                 .foregroundColor(theme.colors.textSecondary)
                             
@@ -864,7 +843,7 @@ struct DurationEditSheet: View {
                         
                         // Seconds
                         VStack(spacing: theme.spacing.xs) {
-                            Text("Saniye")
+                            Text(CardioKeys.TimeUnits.second.localized)
                                 .font(theme.typography.caption)
                                 .foregroundColor(theme.colors.textSecondary)
                             
@@ -889,7 +868,7 @@ struct DurationEditSheet: View {
                         HStack {
                             Image(systemName: "checkmark.circle.fill")
                                 .font(.title3)
-                            Text("Kaydet")
+                            Text(CardioKeys.Actions.save.localized)
                                 .font(theme.typography.headline)
                                 .fontWeight(.semibold)
                         }
@@ -901,18 +880,18 @@ struct DurationEditSheet: View {
                     }
                     
                     Button(action: onCancel) {
-                        Text("İptal")
+                        Text(CardioKeys.Actions.cancel.localized)
                             .font(theme.typography.body)
                             .foregroundColor(theme.colors.textSecondary)
                     }
                 }
             }
             .padding(theme.spacing.m)
-            .navigationTitle("Süre Düzenle")
+            .navigationTitle(CardioKeys.SessionSummary.editDurationTitle.localized)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("İptal", action: onCancel)
+                    Button(CardioKeys.Actions.cancel.localized, action: onCancel)
                 }
             }
         }
@@ -944,12 +923,12 @@ struct DistanceEditSheet: View {
                         .font(.system(size: 40))
                         .foregroundColor(theme.colors.success)
                     
-                    Text("Mesafe Düzenle")
+                    Text(CardioKeys.SessionSummary.editDistance.localized)
                         .font(theme.typography.title2)
                         .fontWeight(.bold)
                         .foregroundColor(theme.colors.textPrimary)
                     
-                    Text("Antrenman mesafenizi \(unitDescription) cinsinden ayarlayın")
+                    Text(String(format: CardioKeys.SessionSummary.distanceDescription.localized, unitDescription))
                         .font(theme.typography.body)
                         .foregroundColor(theme.colors.textSecondary)
                         .multilineTextAlignment(.center)
@@ -990,7 +969,7 @@ struct DistanceEditSheet: View {
                         HStack {
                             Image(systemName: "checkmark.circle.fill")
                                 .font(.title3)
-                            Text("Kaydet")
+                            Text(CardioKeys.Actions.save.localized)
                                 .font(theme.typography.headline)
                                 .fontWeight(.semibold)
                         }
@@ -1002,18 +981,18 @@ struct DistanceEditSheet: View {
                     }
                     
                     Button(action: onCancel) {
-                        Text("İptal")
+                        Text(CardioKeys.Actions.cancel.localized)
                             .font(theme.typography.body)
                             .foregroundColor(theme.colors.textSecondary)
                     }
                 }
             }
             .padding(theme.spacing.m)
-            .navigationTitle("Mesafe Düzenle")
+            .navigationTitle(CardioKeys.SessionSummary.editDistanceTitle.localized)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("İptal", action: onCancel)
+                    Button(CardioKeys.Actions.cancel.localized, action: onCancel)
                 }
             }
         }
@@ -1037,12 +1016,12 @@ struct HeartRateEditSheet: View {
                         .font(.system(size: 40))
                         .foregroundColor(theme.colors.error)
                     
-                    Text("Nabız Düzenle")
+                    Text(CardioKeys.SessionSummary.editHeartRate.localized)
                         .font(theme.typography.title2)
                         .fontWeight(.bold)
                         .foregroundColor(theme.colors.textPrimary)
                     
-                    Text("Ortalama ve maksimum nabız değerlerinizi girin")
+                    Text(CardioKeys.SessionSummary.heartRateDescription.localized)
                         .font(theme.typography.body)
                         .foregroundColor(theme.colors.textSecondary)
                         .multilineTextAlignment(.center)
@@ -1053,7 +1032,7 @@ struct HeartRateEditSheet: View {
                 VStack(spacing: theme.spacing.xl) {
                     // Average Heart Rate
                     VStack(spacing: theme.spacing.s) {
-                        Text("Ortalama Nabız (BPM)")
+                        Text(CardioKeys.SessionSummary.averageHeartRateBpm.localized)
                             .font(theme.typography.headline)
                             .fontWeight(.semibold)
                             .foregroundColor(theme.colors.textPrimary)
@@ -1071,7 +1050,7 @@ struct HeartRateEditSheet: View {
                     
                     // Maximum Heart Rate
                     VStack(spacing: theme.spacing.s) {
-                        Text("Maksimum Nabız (BPM)")
+                        Text(CardioKeys.SessionSummary.maximumHeartRateBpm.localized)
                             .font(theme.typography.headline)
                             .fontWeight(.semibold)
                             .foregroundColor(theme.colors.textPrimary)
@@ -1091,12 +1070,12 @@ struct HeartRateEditSheet: View {
                 
                 // Info
                 VStack(spacing: theme.spacing.xs) {
-                    Text("💡 İpucu")
+                    Text(CardioKeys.SessionSummary.tipIcon.localized)
                         .font(theme.typography.caption)
                         .fontWeight(.semibold)
                         .foregroundColor(theme.colors.accent)
                     
-                    Text("Normal dinlenme nabzı 60-100 BPM, maksimum nabız yaklaşık (220 - yaş) formülü ile hesaplanır")
+                    Text(CardioKeys.SessionSummary.heartRateTip.localized)
                         .font(theme.typography.caption)
                         .foregroundColor(theme.colors.textSecondary)
                         .multilineTextAlignment(.center)
@@ -1113,7 +1092,7 @@ struct HeartRateEditSheet: View {
                         HStack {
                             Image(systemName: "checkmark.circle.fill")
                                 .font(.title3)
-                            Text("Kaydet")
+                            Text(CardioKeys.Actions.save.localized)
                                 .font(theme.typography.headline)
                                 .fontWeight(.semibold)
                         }
@@ -1125,18 +1104,18 @@ struct HeartRateEditSheet: View {
                     }
                     
                     Button(action: onCancel) {
-                        Text("İptal")
+                        Text(CardioKeys.Actions.cancel.localized)
                             .font(theme.typography.body)
                             .foregroundColor(theme.colors.textSecondary)
                     }
                 }
             }
             .padding(theme.spacing.m)
-            .navigationTitle("Nabız Düzenle")
+            .navigationTitle(CardioKeys.SessionSummary.editHeartRateTitle.localized)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("İptal", action: onCancel)
+                    Button(CardioKeys.Actions.cancel.localized, action: onCancel)
                 }
             }
         }
@@ -1159,12 +1138,12 @@ struct CaloriesEditSheet: View {
                         .font(.system(size: 40))
                         .foregroundColor(theme.colors.warning)
                     
-                    Text("Kalori Düzenle")
+                    Text(CardioKeys.SessionSummary.editCaloriesTitle.localized)
                         .font(theme.typography.title2)
                         .fontWeight(.bold)
                         .foregroundColor(theme.colors.textPrimary)
                     
-                    Text("Yaktığınız kalori miktarını girin")
+                    Text(CardioKeys.SessionSummary.editCaloriesDescription.localized)
                         .font(theme.typography.body)
                         .foregroundColor(theme.colors.textSecondary)
                 }
@@ -1172,7 +1151,7 @@ struct CaloriesEditSheet: View {
                 
                 // Calories Input
                 VStack(spacing: theme.spacing.m) {
-                    Text("Yakılan Kalori")
+                    Text(CardioKeys.SessionSummary.caloriesBurnedLabel.localized)
                         .font(theme.typography.headline)
                         .fontWeight(.semibold)
                         .foregroundColor(theme.colors.textPrimary)
@@ -1198,12 +1177,12 @@ struct CaloriesEditSheet: View {
                 
                 // Info
                 VStack(spacing: theme.spacing.xs) {
-                    Text("💡 İpucu")
+                    Text(CardioKeys.SessionSummary.tipIcon.localized)
                         .font(theme.typography.caption)
                         .fontWeight(.semibold)
                         .foregroundColor(theme.colors.accent)
                     
-                    Text("Ortalama olarak koşu 60-100 kcal/km, bisiklet 30-50 kcal/km yakar")
+                    Text(CardioKeys.SessionSummary.caloriesTip.localized)
                         .font(theme.typography.caption)
                         .foregroundColor(theme.colors.textSecondary)
                         .multilineTextAlignment(.center)
@@ -1220,7 +1199,7 @@ struct CaloriesEditSheet: View {
                         HStack {
                             Image(systemName: "checkmark.circle.fill")
                                 .font(.title3)
-                            Text("Kaydet")
+                            Text(CardioKeys.Actions.save.localized)
                                 .font(theme.typography.headline)
                                 .fontWeight(.semibold)
                         }
@@ -1232,18 +1211,18 @@ struct CaloriesEditSheet: View {
                     }
                     
                     Button(action: onCancel) {
-                        Text("İptal")
+                        Text(CardioKeys.Actions.cancel.localized)
                             .font(theme.typography.body)
                             .foregroundColor(theme.colors.textSecondary)
                     }
                 }
             }
             .padding(theme.spacing.m)
-            .navigationTitle("Kalori Düzenle")
+            .navigationTitle(CardioKeys.SessionSummary.editCaloriesTitle.localized)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("İptal", action: onCancel)
+                    Button(CardioKeys.Actions.cancel.localized, action: onCancel)
                 }
             }
         }

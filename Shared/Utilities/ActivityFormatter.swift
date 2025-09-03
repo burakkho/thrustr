@@ -410,7 +410,7 @@ struct ActivityFormatter {
         ]
         
         let subtitle = foodCount > 1 ? 
-            "\(foodCount) yiyecek • \(Int(totalCalories)) kcal" :
+            "\(foodCount) \(CommonKeys.Units.foods.localized) • \(Int(totalCalories)) kcal" :
             "\(Int(totalCalories)) kcal"
         
         let groupedActivity = ActivityEntry(

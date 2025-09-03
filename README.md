@@ -16,7 +16,7 @@ Thrustr is a comprehensive iOS fitness tracking application built with SwiftUI a
 - **Multi-Modal Training**: Strength training, cardio workouts, and CrossFit-style WODs
 - **Nutrition Tracking**: Barcode scanning, meal logging, and macro tracking
 - **HealthKit Integration**: Seamless sync with Apple Health for steps, calories, and weight
-- **Multi-Language Support**: 7 languages currently supported with 3 more planned (Turkish, English, German, Spanish, Italian, French, Portuguese + Dutch, Swedish, Norwegian)
+- **Multi-Language Support**: 8 languages currently supported with 3 more planned (Turkish, English, German, Spanish, Italian, French, Portuguese, Indonesian + Dutch, Swedish, Norwegian)
 - **Smart Analytics**: Progress tracking, PR monitoring, and performance insights
 - **Comprehensive Tools**: Body fat calculators, 1RM calculators, and fitness assessments
 
@@ -109,7 +109,7 @@ The app requests the following HealthKit permissions:
 
 ## 🌍 Localization
 
-### Currently Supported Languages (7):
+### Currently Supported Languages (8):
 - **Turkish** (tr) - Primary language 🇹🇷
 - **English** (en) - Base localization 🇺🇸
 - **German** (de) - Completed 🇩🇪
@@ -117,11 +117,12 @@ The app requests the following HealthKit permissions:
 - **Italian** (it) - Completed 🇮🇹
 - **French** (fr) - Completed 🇫🇷
 - **Portuguese** (pt) - Completed 🇵🇹
+- **Indonesian** (id) - Completed 🇮🇩
 
 ### Planned Languages (Roadmap):
-- **Dutch** (nl) - Sprint 4 🇳🇱
-- **Swedish** (sv) - Sprint 5 🇸🇪
-- **Norwegian** (no) - Sprint 6 🇳🇴
+- **Dutch** (nl) - Sprint 5 🇳🇱
+- **Swedish** (sv) - Sprint 6 🇸🇪
+- **Norwegian** (no) - Sprint 7 🇳🇴
 
 ### Translation Coverage:
 - **2,831 localization keys** per language
@@ -141,12 +142,13 @@ The app requests the following HealthKit permissions:
 - **Sprint 1 (Italian)**: ✅ Completed - 2,831 keys translated
 - **Sprint 2 (French)**: ✅ Completed - 2,831 keys translated  
 - **Sprint 3 (Portuguese)**: ✅ Completed - 2,831 keys translated
-- **Sprint 4 (Dutch)**: 🎯 Next - Planning phase
-- **Sprint 5 (Swedish)**: ⏳ Planned - Future sprint
-- **Sprint 6 (Norwegian)**: ⏳ Planned - Future sprint
+- **Sprint 4 (Indonesian)**: ✅ Completed - 2,831 keys translated
+- **Sprint 5 (Dutch)**: 🎯 Next - Planning phase
+- **Sprint 6 (Swedish)**: ⏳ Planned - Future sprint
+- **Sprint 7 (Norwegian)**: ⏳ Planned - Future sprint
 
 ### Target: 10 Total Languages
-**Current**: 7 languages | **Goal**: 10 languages | **Progress**: 70% complete
+**Current**: 8 languages | **Goal**: 10 languages | **Progress**: 80% complete
 
 The app is designed to serve a global fitness community with authentic, culturally-adapted fitness terminology in each supported language.
 

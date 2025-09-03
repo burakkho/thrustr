@@ -36,6 +36,8 @@
 		411001A12E67743B00F30AE2 /* PRTimelineCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4110019F2E67743B00F30AE2 /* PRTimelineCard.swift */; };
 		411001A42E67744200F30AE2 /* StrengthProgressOverview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 411001A22E67744200F30AE2 /* StrengthProgressOverview.swift */; };
 		411001A52E67744200F30AE2 /* TrainingConsistencyRing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 411001A32E67744200F30AE2 /* TrainingConsistencyRing.swift */; };
+		411001AD2E677F3400F30AE2 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 411001AB2E677F3400F30AE2 /* Localizable.strings */; };
+		411001B12E6797A600F30AE2 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 411001AF2E6797A600F30AE2 /* Localizable.strings */; };
 		412659D12E5FA5C000FAB9E8 /* UnitsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 412659C92E5FA5C000FAB9E8 /* UnitsTests.swift */; };
 		412659D22E5FA5C000FAB9E8 /* DashboardViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 412659CB2E5FA5C000FAB9E8 /* DashboardViewModelTests.swift */; };
 		412659D32E5FA5C000FAB9E8 /* UserModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 412659C42E5FA5C000FAB9E8 /* UserModelTests.swift */; };
@@ -280,6 +282,7 @@
 		4151B9232E5E1C2600A4E11E /* ButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4151B9202E5E1C2600A4E11E /* ButtonStyle.swift */; };
 		419B889C2E65887000EB3FD5 /* 531-beginner.json in Resources */ = {isa = PBXBuildFile; fileRef = 419B889A2E65887000EB3FD5 /* 531-beginner.json */; };
 		419B889D2E65887000EB3FD5 /* starting-strength.json in Resources */ = {isa = PBXBuildFile; fileRef = 419B889B2E65887000EB3FD5 /* starting-strength.json */; };
+		4ECC1006497A48EB89FCE36E /* CardioKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AA4A34FFB504ABB847436D2 /* CardioKeys.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -300,6 +303,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		3AA4A34FFB504ABB847436D2 /* CardioKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardioKeys.swift; sourceTree = "<group>"; };
 		411001322E665DE500F30AE2 /* icf5x5.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = icf5x5.json; sourceTree = "<group>"; };
 		411001442E6661C500F30AE2 /* CardioLiveTrackingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardioLiveTrackingView.swift; sourceTree = "<group>"; };
 		411001452E6661C500F30AE2 /* CardioMainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardioMainView.swift; sourceTree = "<group>"; };
@@ -329,6 +333,8 @@
 		4110019F2E67743B00F30AE2 /* PRTimelineCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRTimelineCard.swift; sourceTree = "<group>"; };
 		411001A22E67744200F30AE2 /* StrengthProgressOverview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StrengthProgressOverview.swift; sourceTree = "<group>"; };
 		411001A32E67744200F30AE2 /* TrainingConsistencyRing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainingConsistencyRing.swift; sourceTree = "<group>"; };
+		411001AA2E677F3400F30AE2 /* id */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = id; path = Localizable.strings; sourceTree = "<group>"; };
+		411001AE2E6797A600F30AE2 /* pl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pl; path = Localizable.strings; sourceTree = "<group>"; };
 		412659BE2E5FA5C000FAB9E8 /* HealthCalculatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthCalculatorTests.swift; sourceTree = "<group>"; };
 		412659C02E5FA5C000FAB9E8 /* MockHealthKitService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockHealthKitService.swift; sourceTree = "<group>"; };
 		412659C12E5FA5C000FAB9E8 /* MockUserService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockUserService.swift; sourceTree = "<group>"; };
@@ -645,13 +651,6 @@
 			path = es.lproj;
 			sourceTree = "<group>";
 		};
-		411001712E671FD600F30AE2 /* it.lproj */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = it.lproj;
-			sourceTree = "<group>";
-		};
 		411001792E671FED00F30AE2 /* tr.lproj */ = {
 			isa = PBXGroup;
 			children = (
@@ -690,6 +689,22 @@
 				411001982E6771A300F30AE2 /* Localizable.strings */,
 			);
 			path = pt.lproj;
+			sourceTree = "<group>";
+		};
+		411001AC2E677F3400F30AE2 /* id.lproj */ = {
+			isa = PBXGroup;
+			children = (
+				411001AB2E677F3400F30AE2 /* Localizable.strings */,
+			);
+			path = id.lproj;
+			sourceTree = "<group>";
+		};
+		411001B02E6797A600F30AE2 /* pl.lproj */ = {
+			isa = PBXGroup;
+			children = (
+				411001AF2E6797A600F30AE2 /* Localizable.strings */,
+			);
+			path = pl.lproj;
 			sourceTree = "<group>";
 		};
 		412659BF2E5FA5C000FAB9E8 /* Calculators */ = {
@@ -800,6 +815,7 @@
 		41265A042E608C3400FAB9E8 /* Localization */ = {
 			isa = PBXGroup;
 			children = (
+				3AA4A34FFB504ABB847436D2 /* CardioKeys.swift */,
 				412659FF2E608C3400FAB9E8 /* CommonKeys.swift */,
 				41265A002E608C3400FAB9E8 /* DashboardKeys.swift */,
 				41265A012E608C3400FAB9E8 /* NutritionKeys.swift */,
@@ -1003,6 +1019,8 @@
 		4151B7072E5A59C100A4E11E /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				411001B02E6797A600F30AE2 /* pl.lproj */,
+				411001AC2E677F3400F30AE2 /* id.lproj */,
 				4110019B2E6771A300F30AE2 /* pt.lproj */,
 				411001842E6722AB00F30AE2 /* fr.lproj */,
 				4110017F2E67203800F30AE2 /* it.lproj */,
@@ -1010,7 +1028,6 @@
 				411001662E671FD600F30AE2 /* de.lproj */,
 				411001692E671FD600F30AE2 /* en.lproj */,
 				4110016C2E671FD600F30AE2 /* es.lproj */,
-				411001712E671FD600F30AE2 /* it.lproj */,
 				4151B8B72E5AFC2000A4E11E /* outdoor_cardio.csv */,
 				4151B6EF2E5A59C100A4E11E /* indoor_cardio.csv */,
 				4151B8B52E5AFB1600A4E11E /* ergo_cardio.csv */,
@@ -1691,6 +1708,8 @@
 				it,
 				fr,
 				pt,
+				id,
+				pl,
 			);
 			mainGroup = 41E316242E46320900A27990;
 			minimizedProjectReferenceProxies = 1;
@@ -1720,7 +1739,9 @@
 				4151B7742E5A59C100A4E11E /* metcon_exercises.csv in Resources */,
 				4151B8B82E5AFC2000A4E11E /* outdoor_cardio.csv in Resources */,
 				4151B77A2E5A59C100A4E11E /* lift_exercises.csv in Resources */,
+				411001B12E6797A600F30AE2 /* Localizable.strings in Resources */,
 				411001812E67203800F30AE2 /* Localizable.strings in Resources */,
+				411001AD2E677F3400F30AE2 /* Localizable.strings in Resources */,
 				4151B77B2E5A59C100A4E11E /* privacy_en.html in Resources */,
 				41265A1A2E60F36D00FAB9E8 /* privacy_tr.html in Resources */,
 				41265A1B2E60F36D00FAB9E8 /* terms_tr.html in Resources */,
@@ -1955,6 +1976,7 @@
 				41265A072E608C3400FAB9E8 /* NutritionKeys.swift in Sources */,
 				41265A082E608C3400FAB9E8 /* DashboardKeys.swift in Sources */,
 				41265A092E608C3400FAB9E8 /* CommonKeys.swift in Sources */,
+				4ECC1006497A48EB89FCE36E /* CardioKeys.swift in Sources */,
 				4151B89F2E5A609C00A4E11E /* WODShareView.swift in Sources */,
 				4151B9222E5E1C2600A4E11E /* CardStyle.swift in Sources */,
 				4151B9232E5E1C2600A4E11E /* ButtonStyle.swift in Sources */,
@@ -2093,6 +2115,22 @@
 			isa = PBXVariantGroup;
 			children = (
 				411001972E6771A300F30AE2 /* pt */,
+			);
+			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
+		411001AB2E677F3400F30AE2 /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				411001AA2E677F3400F30AE2 /* id */,
+			);
+			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
+		411001AF2E6797A600F30AE2 /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				411001AE2E6797A600F30AE2 /* pl */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";

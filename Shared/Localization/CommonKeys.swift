@@ -610,6 +610,10 @@ enum CommonKeys {
         static let dailyAverageSteps = "health.insight.daily_average_steps"
         static let weightChangePeriod = "health.insight.weight_change_period"
         static let weightChangeExists = "health.insight.weight_change_exists"
+        
+        // HealthKit Statistics Section
+        static let statisticsTitle = "health.statistics.title"
+        static let totalDuration = "health.statistics.total_duration"
     }
     
     // MARK: - Navy Method Calculator
@@ -716,6 +720,7 @@ enum CommonKeys {
     enum Units {
         static let kcal = "units.kcal"
         static let meters = "units.meters"
+        static let foods = "units.foods"
         static let kilometers = "units.kilometers"
         static let kg = "units.kg"
         static let lb = "units.lb"
@@ -728,6 +733,7 @@ enum CommonKeys {
         static let monthsUnit = "units.months"
         static let metersShort = "units.meters_short"
         static let kilometersShort = "units.kilometers_short"
+        static let steps = "units.steps"
     }
     
     // MARK: - Bluetooth Signal Strength

@@ -4,6 +4,7 @@ import Charts
 struct HealthTrendsView: View {
     @StateObject private var healthKitService = HealthKitService.shared
     @Environment(\.theme) private var theme
+    @StateObject private var unitSettings = UnitSettings.shared
     @State private var isLoading = true
     @State private var selectedMetric: HealthMetric = .steps
     
@@ -37,7 +38,7 @@ struct HealthTrendsView: View {
                 .padding(.horizontal, 20)
                 .padding(.top, 10)
             }
-            .navigationTitle("Sağlık Trendleri")
+            .navigationTitle(CommonKeys.HealthKit.trendsTitle.localized)
             .navigationBarTitleDisplayMode(.large)
             .refreshable {
                 await loadHealthTrendsData()
@@ -71,9 +72,17 @@ struct HealthTrendsView: View {
 
 // MARK: - Health Metric Enum
 enum HealthMetric: String, CaseIterable {
-    case steps = "Adımlar"
-    case weight = "Kilo"
-    case heartRate = "Nabız"
+    case steps
+    case weight
+    case heartRate
+    
+    var displayName: String {
+        switch self {
+        case .steps: return CommonKeys.HealthKit.stepsMetric.localized
+        case .weight: return CommonKeys.HealthKit.weightMetric.localized
+        case .heartRate: return CommonKeys.HealthKit.heartRateMetric.localized
+        }
+    }
     
     var icon: String {
         switch self {
@@ -91,11 +100,15 @@ enum HealthMetric: String, CaseIterable {
         }
     }
     
-    var unit: String {
+    func unit(for unitSystem: UnitSystem) -> String {
         switch self {
-        case .steps: return "adım"
-        case .weight: return "kg"
-        case .heartRate: return "bpm"
+        case .steps: return CommonKeys.HealthKit.stepsUnit.localized
+        case .weight: 
+            switch unitSystem {
+            case .metric: return "kg"
+            case .imperial: return "lb"
+            }
+        case .heartRate: return CommonKeys.HealthKit.heartRateUnit.localized
         }
     }
 }
@@ -115,7 +128,7 @@ struct MetricSelector: View {
                         Image(systemName: metric.icon)
                             .font(.caption)
                         
-                        Text(metric.rawValue)
+                        Text(metric.displayName)
                             .font(theme.typography.caption)
                             .fontWeight(.medium)
                     }
@@ -137,12 +150,13 @@ struct HealthMetricChart: View {
     let metric: HealthMetric
     let dataPoints: [HealthDataPoint]
     @Environment(\.theme) private var theme
+    @StateObject private var unitSettings = UnitSettings.shared
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
-                    Text(metric.rawValue)
+                    Text(metric.displayName)
                         .font(theme.typography.headline)
                         .fontWeight(.semibold)
                         .foregroundColor(theme.colors.textPrimary)
@@ -164,12 +178,12 @@ struct HealthMetricChart: View {
                 
                 if let latestValue = dataPoints.last?.value {
                     VStack(alignment: .trailing, spacing: 4) {
-                        Text(String(format: "%.0f", latestValue))
+                        Text(formatValue(latestValue, for: metric))
                             .font(theme.typography.title2)
                             .fontWeight(.bold)
                             .foregroundColor(metric.color)
                         
-                        Text(metric.unit)
+                        Text(metric.unit(for: unitSettings.unitSystem))
                             .font(theme.typography.caption)
                             .foregroundColor(theme.colors.textSecondary)
                     }
@@ -177,19 +191,19 @@ struct HealthMetricChart: View {
             }
             
             if dataPoints.isEmpty {
-                HealthEmptyChartView(message: "\(metric.rawValue) verisi bulunamadı")
+                HealthEmptyChartView(message: "\(metric.displayName) \(CommonKeys.HealthKit.dataNotFoundMessage.localized)")
             } else {
                 Chart(dataPoints) { point in
                     LineMark(
-                        x: .value("Tarih", point.date),
-                        y: .value("Değer", point.value)
+                        x: .value(CommonKeys.HealthKit.dateLabel.localized, point.date),
+                        y: .value(CommonKeys.HealthKit.valueLabel.localized, point.value)
                     )
                     .foregroundStyle(metric.color)
                     .interpolationMethod(.catmullRom)
                     
                     AreaMark(
-                        x: .value("Tarih", point.date),
-                        y: .value("Değer", point.value)
+                        x: .value(CommonKeys.HealthKit.dateLabel.localized, point.date),
+                        y: .value(CommonKeys.HealthKit.valueLabel.localized, point.value)
                     )
                     .foregroundStyle(metric.color.opacity(0.1))
                     .interpolationMethod(.catmullRom)
@@ -229,6 +243,23 @@ struct HealthMetricChart: View {
         case .stable: return .gray
         }
     }
+    
+    private func formatValue(_ value: Double, for metric: HealthMetric) -> String {
+        switch metric {
+        case .steps:
+            return String(format: "%.0f", value)
+        case .weight:
+            switch unitSettings.unitSystem {
+            case .metric:
+                return String(format: "%.1f", value)
+            case .imperial:
+                let lbs = UnitsConverter.kgToLbs(value)
+                return String(format: "%.1f", lbs)
+            }
+        case .heartRate:
+            return String(format: "%.0f", value)
+        }
+    }
 }
 
 // MARK: - Workout Trends Section
@@ -238,7 +269,7 @@ struct WorkoutTrendsSection: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("Antrenman Trendleri")
+            Text(CommonKeys.HealthKit.workoutTrendsTitle.localized)
                 .font(theme.typography.headline)
                 .fontWeight(.semibold)
                 .foregroundColor(theme.colors.textPrimary)
@@ -247,8 +278,8 @@ struct WorkoutTrendsSection: View {
             if !trends.weeklyWorkouts.isEmpty {
                 Chart(trends.weeklyWorkouts) { weekData in
                     BarMark(
-                        x: .value("Hafta", weekData.weekString),
-                        y: .value("Antrenman", weekData.workoutCount)
+                        x: .value(CommonKeys.HealthKit.weekLabel.localized, weekData.weekString),
+                        y: .value(CommonKeys.HealthKit.workoutLabel.localized, weekData.workoutCount)
                     )
                     .foregroundStyle(.blue)
                 }
@@ -265,7 +296,7 @@ struct WorkoutTrendsSection: View {
             // Activity type breakdown
             if !trends.activityTypeBreakdown.isEmpty {
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("Aktivite Dağılımı")
+                    Text(CommonKeys.HealthKit.activityBreakdownTitle.localized)
                         .font(theme.typography.subheadline)
                         .fontWeight(.medium)
                         .foregroundColor(theme.colors.textPrimary)
@@ -300,10 +331,11 @@ struct WorkoutTrendsSection: View {
 struct HealthQuickStatsGrid: View {
     @StateObject private var healthKitService = HealthKitService.shared
     @Environment(\.theme) private var theme
+    @StateObject private var unitSettings = UnitSettings.shared
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("Güncel Sağlık Verileri")
+            Text(CommonKeys.HealthKit.currentHealthDataTitle.localized)
                 .font(theme.typography.headline)
                 .fontWeight(.semibold)
                 .foregroundColor(theme.colors.textPrimary)
@@ -313,15 +345,15 @@ struct HealthQuickStatsGrid: View {
                 GridItem(.flexible())
             ], spacing: 12) {
                 HealthStatCard(
-                    title: "Bugün Adım",
+                    title: CommonKeys.HealthKit.todayStepsTitle.localized,
                     value: String(format: "%.0f", healthKitService.todaySteps),
-                    unit: "adım",
+                    unit: CommonKeys.HealthKit.stepsUnit.localized,
                     icon: "figure.walk",
                     color: .blue
                 )
                 
                 HealthStatCard(
-                    title: "Aktif Kalori",
+                    title: CommonKeys.HealthKit.activeCaloriesTitle.localized,
                     value: String(format: "%.0f", healthKitService.todayActiveCalories),
                     unit: "kcal",
                     icon: "flame.fill",
@@ -330,9 +362,9 @@ struct HealthQuickStatsGrid: View {
                 
                 if let weight = healthKitService.currentWeight {
                     HealthStatCard(
-                        title: "Mevcut Kilo",
-                        value: String(format: "%.1f", weight),
-                        unit: "kg",
+                        title: CommonKeys.HealthKit.currentWeightTitle.localized,
+                        value: formatWeight(weight),
+                        unit: weightUnit,
                         icon: "scalemass.fill",
                         color: .green
                     )
@@ -340,9 +372,9 @@ struct HealthQuickStatsGrid: View {
                 
                 if let hr = healthKitService.restingHeartRate {
                     HealthStatCard(
-                        title: "Dinlenim Nabzı",
+                        title: CommonKeys.HealthKit.restingHeartRateTitle.localized,
                         value: String(format: "%.0f", hr),
-                        unit: "bpm",
+                        unit: CommonKeys.HealthKit.heartRateUnit.localized,
                         icon: "heart.fill",
                         color: .red
                     )
@@ -353,6 +385,23 @@ struct HealthQuickStatsGrid: View {
         .background(theme.colors.cardBackground)
         .cornerRadius(12)
         .shadow(color: theme.shadows.card.opacity(0.05), radius: 2)
+    }
+    
+    private func formatWeight(_ kg: Double) -> String {
+        switch unitSettings.unitSystem {
+        case .metric:
+            return String(format: "%.1f", kg)
+        case .imperial:
+            let lbs = UnitsConverter.kgToLbs(kg)
+            return String(format: "%.1f", lbs)
+        }
+    }
+    
+    private var weightUnit: String {
+        switch unitSettings.unitSystem {
+        case .metric: return "kg"
+        case .imperial: return "lb"
+        }
     }
 }
 
@@ -401,7 +450,7 @@ struct LoadingChartView: View {
     
     var body: some View {
         VStack(spacing: 16) {
-            ProgressView("Sağlık verileri yükleniyor...")
+            ProgressView(CommonKeys.HealthKit.loadingDataMessage.localized)
                 .frame(height: 200)
         }
         .padding(20)

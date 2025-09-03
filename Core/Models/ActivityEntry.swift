@@ -185,7 +185,7 @@ extension ActivityEntry {
         
         return ActivityEntry(
             type: ActivityType.mealCompleted,
-            title: "\(mealType) tamamlandı",
+            title: "\(mealType) \(CommonKeys.Activity.completed.localized)",
             subtitle: subtitle,
             icon: ActivityType.mealCompleted.iconForMeal(mealType),
             metadata: metadata,
@@ -210,12 +210,12 @@ extension ActivityEntry {
         
         let improvement = previousPR != nil ? value - previousPR! : 0
         let subtitle = previousPR != nil 
-            ? "Önceki rekor: \(String(format: "%.1f", previousPR!)) \(unit) (+\(String(format: "%.1f", improvement)))"
-            : "Yeni rekor: \(String(format: "%.1f", value)) \(unit)"
+            ? "\(CommonKeys.Activity.previousRecord.localized) \(String(format: "%.1f", previousPR!)) \(unit) (+\(String(format: "%.1f", improvement)))"
+            : "\(CommonKeys.Activity.newRecord.localized) \(String(format: "%.1f", value)) \(unit)"
         
         return ActivityEntry(
             type: ActivityType.personalRecord,
-            title: "\(exerciseName) Rekor!",
+            title: "\(exerciseName) \(CommonKeys.Activity.personalRecord.localized)",
             subtitle: subtitle,
             icon: "trophy.fill",
             metadata: metadata,
@@ -236,8 +236,8 @@ extension ActivityEntry {
         
         return ActivityEntry(
             type: ActivityType.programStarted,
-            title: "\(programName) başladı",
-            subtitle: "\(duration) sürecek",
+            title: "\(programName) \(CommonKeys.Activity.started.localized)",
+            subtitle: "\(duration) \(CommonKeys.Activity.willContinue.localized)",
             icon: "play.circle.fill",
             metadata: metadata,
             user: user
@@ -258,8 +258,8 @@ extension ActivityEntry {
         
         return ActivityEntry(
             type: ActivityType.programCompleted,
-            title: "\(programName) tamamlandı!",
-            subtitle: "\(totalWorkouts) antrenman, \(duration) sürede",
+            title: "\(programName) \(CommonKeys.Activity.completed.localized)!",
+            subtitle: "\(totalWorkouts) \(CommonKeys.Activity.workoutCount.localized), \(duration) \(CommonKeys.Activity.inDuration.localized)",
             icon: "checkmark.seal.fill",
             metadata: metadata,
             user: user
@@ -279,8 +279,8 @@ extension ActivityEntry {
         
         return ActivityEntry(
             type: ActivityType.strengthTestCompleted,
-            title: "Kuvvet testi tamamlandı",
-            subtitle: "Seviye: \(strengthLevel) (\(String(format: "%.0f", overallScore))%)",
+            title: CommonKeys.Activity.strengthTestCompleted.localized,
+            subtitle: "\(CommonKeys.Activity.level.localized) \(strengthLevel) (\(String(format: "%.0f", overallScore))%)",
             icon: "chart.bar.fill", 
             metadata: metadata,
             user: user
@@ -297,14 +297,14 @@ struct ActivityTimeFormatter {
         
         if interval < 3600 { // Less than 1 hour
             let minutes = Int(interval / 60)
-            return "\(minutes) dk önce"
+            return "\(minutes) \(CommonKeys.TimeFormatting.minutesAgo.localized)"
         } else if interval < 86400 { // Less than 1 day
             let hours = Int(interval / 3600)
-            return "\(hours) saat önce"
+            return "\(hours) \(CommonKeys.TimeFormatting.hoursAgo.localized)"
         } else if Calendar.current.isDateInYesterday(date) {
             let formatter = DateFormatter()
             formatter.timeStyle = .short
-            return "dün \(formatter.string(from: date))"
+            return "\(CommonKeys.TimeFormatting.yesterday.localized) \(formatter.string(from: date))"
         } else {
             let formatter = DateFormatter()
             formatter.dateStyle = .short

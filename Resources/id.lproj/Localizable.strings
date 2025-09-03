@@ -1,0 +1,2831 @@
+// MARK: - Common Actions
+"common.ok" = "OK";
+"common.cancel" = "Batal";
+"common.save" = "Simpan";
+"common.edit" = "Edit";
+"common.done" = "Selesai";
+"common.back" = "Kembali";
+"common.retry" = "Coba Lagi";
+"common.finish" = "Selesai";
+"common.add" = "Tambah";
+"common.change" = "Ubah";
+"common.continue_anyway" = "Lanjutkan Saja";
+"common.confirm_discard" = "Buang perubahan?";
+"common.discard" = "Buang";
+"common.discard_message" = "Perubahan yang tidak disimpan akan hilang.";
+
+// MARK: - Navigation Titles
+"navigation.program_setup" = "Pengaturan Program";
+"navigation.starting_weights" = "Berat Awal";
+"navigation.workout_preview" = "Pratinjau Latihan";
+"navigation.notes" = "Catatan";
+"navigation.summary" = "Ringkasan";
+"navigation.log_lift_result" = "Catat Hasil Angkat";
+"navigation.new_cardio" = "Cardio Baru";
+"navigation.add_movement" = "Tambah Gerakan";
+"navigation.wod_history_format" = "Riwayat %@";
+"navigation.enter_best_sets" = "Masukkan set terbaik terbaru Anda";
+
+// MARK: - Error Handling
+"error.database" = "Kesalahan Database";
+"error.network" = "Kesalahan Koneksi";
+"error.healthkit" = "Kesalahan HealthKit";
+"error.data_corruption" = "Data Rusak";
+"error.unknown" = "Kesalahan Tidak Diketahui";
+"error.database.recovery" = "Coba restart aplikasi. Jika masalah berlanjut, instal ulang aplikasi.";
+"error.network.recovery" = "Periksa koneksi internet Anda dan coba lagi.";
+"error.healthkit.recovery" = "Periksa izin HealthKit dan coba lagi.";
+"error.data_corruption.recovery" = "Data akan dimuat ulang. Ini mungkin memakan waktu beberapa menit.";
+"error.unknown.recovery" = "Silakan coba lagi. Jika masalah berlanjut, hubungi dukungan.";
+"error.ok_button" = "OK";
+"error.retry_button" = "Coba Lagi";
+/*
+   Localizable.strings (Indonesian)
+   Thrustr - Indonesian Localization
+*/
+
+// MARK: - Tab Bar
+"tab.dashboard" = "Dasbor";
+"tab.training" = "Latihan";
+"tab.nutrition" = "Nutrisi";
+"tab.profile" = "Profil";
+
+// MARK: - Dashboard
+"dashboard.title" = "Dasbor";
+"dashboard.todayStats" = "Statistik Hari Ini";
+"dashboard.quickActions" = "Aksi Cepat";
+"dashboard.startWorkout" = "Mulai Latihan";
+"dashboard.addMeal" = "Tambah Makanan";
+
+// MARK: - Training
+"training.title" = "Latihan";
+"training.newWorkout" = "Latihan Baru";
+"training.history" = "Riwayat";
+
+// MARK: - Training Analytics & Dashboard
+"training.analytics.title" = "Analitik";
+"training.dashboard.title" = "Dasbor";
+"training.dashboard.thisWeek" = "Minggu Ini";
+"training.dashboard.quickActions" = "Aksi Cepat";
+"training.dashboard.streak" = "Streak";
+"training.dashboard.noRecentActivity" = "Tidak ada aktivitas terbaru";
+
+// MARK: - Notifications
+"notifications.enabled" = "Notifikasi Push";
+"notifications.enabled_desc" = "Dapatkan pengingat dan alert pencapaian";
+"notifications.workout_reminders" = "Pengingat Latihan";
+"notifications.workout_desc" = "Motivasi latihan harian";
+"notifications.achievements" = "Alert Pencapaian";
+"notifications.achievements_desc" = "Rayakan milestone Anda";
+"notifications.goals" = "Pengingat Target";
+"notifications.goals_desc" = "Tetap pada jalur target Anda";
+"notifications.open_settings" = "Buka Pengaturan";
+
+// MARK: - Notification Status
+"notifications.status.not_determined" = "Belum Dikonfigurasi";
+"notifications.status.denied" = "Ditolak";
+"notifications.status.authorized" = "Sepenuhnya Aktif";
+"notifications.status.provisional" = "Mode Senyap";
+"notifications.status.ephemeral" = "Sementara";
+"notifications.status.unknown" = "Tidak Diketahui";
+"notifications.provisional.title" = "Notifikasi Senyap Aktif";
+"notifications.provisional.description" = "Notifikasi muncul dengan tenang di Pusat Notifikasi";
+"notifications.upgrade.title" = "Aktifkan Suara & Banner";
+"notifications.upgrade.description" = "Dapatkan alert dengan suara dan banner di layar";
+
+// MARK: - Notification Content
+"notifications.workout.title" = "Waktunya Latihan!";
+"notifications.workout.body" = "Saatnya hancurkan target fitness Anda. Ayo bergerak!";
+"notifications.goal.title" = "Cek Target Harian";
+"notifications.goal.body" = "Bagaimana perkembangan target fitness harian Anda?";
+
+// MARK: - Onboarding Notifications
+"onboarding.notifications.title" = "Tetap Termotivasi";
+"onboarding.notifications.subtitle" = "Dapatkan pengingat personal untuk membantu mencapai target fitness";
+"onboarding.notifications.workout_reminders" = "Pengingat latihan pintar";
+"onboarding.notifications.achievement_alerts" = "Perayaan pencapaian";
+"onboarding.notifications.goal_tracking" = "Update progress target";
+"onboarding.notifications.enable" = "Aktifkan Notifikasi";
+"onboarding.notifications.skip" = "Nanti saja";
+
+// MARK: - Goals
+"goals.progress" = "Progress Target";
+
+// MARK: - Onboarding Consent Notifications
+"onboarding.consent.notifications" = "Notifikasi Push";
+"onboarding.consent.notifications.desc" = "Dapatkan pengingat latihan dan alert pencapaian";
+
+// MARK: - Profile OneRM Calculator
+"profile.oneRM.title" = "Kalkulator 1RM";
+"profile.oneRM.subtitle" = "Kalkulator One Rep Max";
+"profile.oneRM.calculate" = "Hitung";
+"profile.oneRM.trainingInfo" = "Informasi Latihan";
+"profile.oneRM.results" = "Hasil";
+"profile.oneRM.about" = "Tentang 1RM";
+"profile.oneRM.weightLifted" = "Berat yang Diangkat";
+"profile.oneRM.repCount" = "Repetisi";
+"profile.oneRM.calculationFormula" = "Formula";
+"profile.oneRM.oneRMValue" = "Nilai 1RM";
+"profile.oneRM.percentageTable" = "Tabel Persentase";
+"profile.oneRM.safety" = "Keamanan Pertama";
+"profile.oneRM.safetyDesc" = "Jangan pernah mencoba 1RM yang sebenarnya tanpa pengawasan dan pengalaman yang tepat. Gunakan nilai yang dihitung untuk panduan latihan.";
+"profile.oneRM.accuracy" = "Catatan Akurasi";
+"profile.oneRM.accuracyDesc" = "Kalkulasi 1RM adalah perkiraan berdasarkan angkatan submaksimal. Variasi individual tetap ada.";
+"profile.oneRM.howToUse" = "Cara Menggunakan";
+"profile.oneRM.howToUseDesc" = "Masukkan berat yang bisa Anda angkat untuk beberapa rep (1-10) untuk memperkirakan 1RM Anda untuk tujuan programming.";
+
+// MARK: - Profile Navy Method Calculator
+"profile.navy.title" = "Kalkulator Metode Navy";
+"profile.navy.calculate" = "Hitung";
+
+// MARK: - Profile FFMI Calculator
+"profile.ffmi.title" = "Kalkulator FFMI";
+"profile.ffmi.subtitle" = "Indeks Massa Bebas Lemak";
+"profile.ffmi.calculate" = "Hitung";
+"profile.ffmi.measurements" = "Pengukuran";
+"profile.ffmi.results" = "Hasil";
+"profile.ffmi.scale" = "Skala FFMI";
+"profile.ffmi.about" = "Tentang FFMI";
+"profile.ffmi.height" = "Tinggi";
+"profile.ffmi.weight" = "Berat";
+"profile.ffmi.bodyFat" = "Lemak Tubuh %";
+"profile.ffmi.resultsTitle" = "Hasil";
+"profile.ffmi.score" = "Skor FFMI";
+"profile.ffmi.normalizedScore" = "FFMI Ternormalisasi";
+"profile.ffmi.interpretation" = "Interpretasi";
+"profile.ffmi.category" = "Kategori";
+"profile.ffmi.leanMass" = "Massa Tanpa Lemak";
+"profile.ffmi.bodyFatMass" = "Massa Lemak Tubuh";
+"profile.ffmi.ffmiValue" = "Nilai FFMI";
+"profile.ffmi.whatIsFFMI" = "Apa itu FFMI?";
+"profile.ffmi.whatIsFFMIDesc" = "Fat-Free Mass Index (FFMI) adalah pengukuran yang memperkirakan jumlah massa otot relatif terhadap tinggi, memberikan wawasan tentang potensi pembentukan otot alami dan komposisi tubuh.";
+"profile.ffmi.naturalLimit" = "Batas Alami";
+"profile.ffmi.naturalLimitDesc" = "FFMI 25 umumnya dianggap sebagai batas atas yang dapat dicapai secara alami tanpa zat peningkat performa.";
+"profile.ffmi.targets" = "Target FFMI";
+"profile.ffmi.targetsDesc" = "Gunakan FFMI untuk menetapkan target pembentukan otot yang realistis. Bidik kemajuan stabil dalam rentang alami untuk hasil yang berkelanjutan.";
+"profile.ffmi.note" = "Catatan Penting";
+"profile.ffmi.noteDesc" = "Kalkulasi FFMI adalah perkiraan. Variasi individual ada dan nilai harus digunakan sebagai panduan umum bersama penilaian kesehatan dan fitness lainnya.";
+
+// MARK: - FFMI Categories
+"profile.ffmi.belowAverage" = "Di Bawah Rata-rata";
+"profile.ffmi.average" = "Rata-rata";
+"profile.ffmi.aboveAverage" = "Di Atas Rata-rata";
+"profile.ffmi.excellent" = "Sangat Baik";
+"profile.ffmi.superior" = "Superior";
+"profile.ffmi.suspicious" = "Mencurigakan";
+
+// MARK: - Lift Training
+"training.lift.title" = "Latihan Angkat Beban";
+"training.lift.tabs.workouts" = "Latihan";
+"training.lift.tabs.programs" = "Program";
+"training.lift.tabs.routines" = "Rutinitas";
+"training.lift.tabs.history" = "Riwayat";
+
+// MARK: - Lift Quick Start
+"training.lift.quickStart" = "Mulai Cepat";
+"training.lift.emptyWorkout" = "Latihan Kosong";
+"training.lift.emptyWorkout.subtitle" = "Tambahkan sambil jalan";
+"training.lift.pickRoutine" = "Pilih Rutinitas";
+"training.lift.pickRoutine.subtitle" = "Dari template";
+"training.lift.startProgram" = "Mulai Program";
+"training.lift.startProgram.subtitle" = "Rencana terstruktur";
+
+// MARK: - Lift Program
+"training.lift.startWorkout" = "MULAI LATIHAN";
+"training.lift.viewDetails" = "Lihat Detail Program";
+"training.lift.pauseProgram" = "Jeda Program";
+"training.lift.resumeProgram" = "Lanjutkan Program";
+"training.lift.browsePrograms" = "Jelajahi Program";
+"training.lift.browsePrograms.subtitle" = "Dapatkan latihan terstruktur dan hasil yang lebih baik";
+
+// MARK: - Routine
+"routine.title" = "Rutinitas";
+"routine.templates" = "Template";
+"routine.custom" = "Kustom";
+"routine.createNew" = "Buat Rutinitas Baru";
+"routine.createNew.subtitle" = "Bangun rencana latihan kustom";
+"routine.copyCustomize" = "Salin & Kustomisasi";
+"routine.ourTemplates" = "Template Kami";
+"routine.myCustomRoutines" = "Rutinitas Kustom Saya";
+"routine.featuredTemplates" = "Template Unggulan";
+"routine.favorites" = "Favorit";
+"routine.exercises" = "latihan";
+"routine.empty.custom.title" = "Belum Ada Rutinitas Kustom";
+"routine.empty.custom.subtitle" = "Buat rutinitas pertama Anda untuk memulai";
+
+// MARK: - Routine Creation
+"routine.create.title" = "Buat Rutinitas Baru";
+"routine.create.method" = "Bagaimana Anda ingin membuat rutinitas?";
+"routine.create.fromScratch" = "Mulai dari Awal";
+"routine.create.fromScratch.desc" = "Bangun rutinitas latihan demi latihan";
+"routine.create.fromTemplate" = "Salin dari Template";
+"routine.create.fromTemplate.desc" = "Mulai dengan template terbukti kami";
+"routine.create.save" = "Simpan Rutinitas";
+
+// MARK: - Template Cards
+"routine.template.exercises" = "Latihan";
+"routine.template.duration" = "Durasi";
+"routine.template.sets" = "Set";
+"routine.template.start" = "Mulai";
+"routine.template.customize" = "Kustomisasi";
+
+// MARK: - Lift Stats
+"training.lift.stats.thisWeek" = "Minggu Ini";
+"training.lift.stats.streak" = "Streak";
+"training.lift.stats.remaining" = "Tersisa";
+"training.lift.stats.completed" = "selesai";
+"training.lift.stats.workouts" = "latihan";
+"training.lift.stats.weeks" = "minggu";
+
+// MARK: - Cardio Summary
+"cardio.summary.congratulations" = "Selamat!";
+"cardio.summary.workoutCompleted" = "Anda telah menyelesaikan latihan";
+"cardio.summary.duration" = "Durasi";
+"cardio.summary.distance" = "Jarak";
+"cardio.summary.calories" = "Kalori";
+"cardio.summary.yourRoute" = "Rute Anda";
+"cardio.summary.routeStart" = "Mulai";
+"cardio.summary.routeEnd" = "Selesai";
+"cardio.summary.detailedStats" = "Statistik Detail";
+"cardio.summary.averagePace" = "Pace Rata-rata";
+"cardio.summary.averageSpeed" = "Kecepatan Rata-rata";
+"cardio.summary.elevation" = "Elevasi";
+"cardio.summary.perceivedEffort" = "Usaha yang Dirasakan";
+"cardio.summary.heartRateStats" = "Statistik Detak Jantung";
+"cardio.summary.average" = "Rata-rata";
+"cardio.summary.maximum" = "Maksimum";
+"cardio.summary.bpm" = "bpm";
+"cardio.summary.howAreYouFeeling" = "Bagaimana perasaan Anda?";
+"cardio.summary.notesOptional" = "Catatan (Opsional)";
+"cardio.summary.notesPlaceholder" = "Catatan latihan Anda...";
+"cardio.summary.saveButton" = "Simpan";
+"cardio.summary.exitWithoutSaving" = "Keluar Tanpa Menyimpan";
+
+// MARK: - Cardio Preparation
+"cardio.preparation.preparation" = "Persiapan";
+"cardio.preparation.preparingWorkout" = "Bersiap sebelum latihan dimulai";
+"cardio.preparation.gpsStatus" = "Status GPS";
+"cardio.preparation.gpsSearching" = "Mencari GPS...";
+"cardio.preparation.gpsReady" = "GPS siap";
+"cardio.preparation.gpsWeak" = "Sinyal GPS lemah";
+"cardio.preparation.gpsNoSignal" = "Tidak ada sinyal GPS";
+"cardio.preparation.gpsNotNeeded" = "Indoor - GPS tidak perlu";
+"cardio.preparation.stepCounter" = "Step Counter";
+"cardio.preparation.stepCounterChecking" = "Mengecek step counter...";
+"cardio.preparation.stepCounterReady" = "Step counter siap";
+"cardio.preparation.stepCounterNotAvailable" = "Step counter tidak didukung";
+"cardio.preparation.stepCounterDenied" = "Izin motion diperlukan";
+"cardio.preparation.iphoneAppleWatch" = "iPhone/Apple Watch";
+"cardio.preparation.settings" = "Pengaturan";
+"cardio.preparation.heartRateBand" = "Heart Rate Band";
+"cardio.preparation.heartRateBandNotConnected" = "Heart rate band tidak terhubung";
+"cardio.preparation.heartRateBandScanning" = "Mencari perangkat...";
+"cardio.preparation.heartRateBandConnected" = "Heart rate band terhubung";
+"cardio.preparation.allReady" = "Semua Siap!";
+"cardio.preparation.canStartWorkout" = "Anda bisa mulai latihan";
+"cardio.preparation.preparing" = "Bersiap...";
+"cardio.preparation.start" = "Mulai";
+"cardio.preparation.connect" = "Hubungkan";
+"cardio.preparation.retry" = "Coba Lagi";
+"cardio.preparation.scanningDevices" = "Scanning heart rate band...";
+"cardio.preparation.pairingInstructions" = "Aktifkan mode pairing di heart rate band Anda";
+"cardio.preparation.deviceNotFound" = "Perangkat tidak ditemukan";
+"cardio.preparation.ensureDeviceOn" = "Pastikan heart rate band Anda nyala";
+"cardio.preparation.selectHeartRateBand" = "Pilih Heart Rate Band";
+"cardio.preparation.rescan" = "Scan Ulang";
+"cardio.preparation.signal" = "Sinyal";
+"cardio.preparation.waitingGps" = "Menunggu sinyal GPS...";
+"cardio.preparation.pleaseWait" = "Mohon tunggu...";
+"cardio.preparation.cancel" = "Batal";
+
+// MARK: - Lift Sections
+"training.lift.recentWorkouts" = "Latihan Terbaru";
+"training.lift.workoutRoutines" = "Rutinitas Latihan";
+"training.lift.featuredPrograms" = "Program Unggulan";
+"training.lift.myPrograms" = "Program Saya";
+"training.lift.lastWorkout" = "Latihan terakhir";
+
+// MARK: - Lift Empty States
+"training.lift.noRoutines.title" = "Belum Ada Rutinitas";
+"training.lift.noRoutines.message" = "Buat rutinitas latihan pertama Anda untuk memulai";
+"training.lift.noRoutines.action" = "Buat Rutinitas";
+
+// MARK: - Training Start Actions
+"training.start.title" = "Mulai Latihan";
+"training.start.new" = "Latihan Baru";
+"training.start.new.subtitle" = "Buat latihan kosong";
+"training.start.program" = "Pilih Program";
+"training.start.program.subtitle" = "Mulai dari template";
+"training.start.wod" = "Lakukan METCON";
+"training.start.wod.subtitle" = "Kondisioning metabolik";
+"training.start.lift" = "Sesi Angkat Beban";
+"training.start.lift.subtitle" = "Kekuatan dan powerlifting";
+"training.start.cardio" = "Latihan Cardio";
+"training.start.cardio.subtitle" = "Lari, rowing, daya tahan";
+"training.start.action.hint" = "Ketuk untuk pilih opsi ini";
+"training.lift.title" = "Angkat Beban";
+"training.cardio.title" = "Cardio";
+"training.lift.search" = "Cari angkat beban...";
+"training.cardio.search" = "Cari cardio...";
+"training.lift.empty.custom" = "Tidak Ada Angkat Beban Kustom";
+"training.lift.empty.custom.message" = "Buat latihan angkat beban pertama Anda";
+"training.lift.empty.benchmark" = "Tidak Ada Benchmark Angkat Beban";
+"training.lift.empty.benchmark.message" = "Coba pencarian yang berbeda";
+"training.cardio.empty.custom" = "Tidak Ada Cardio Kustom";
+"training.cardio.empty.custom.message" = "Buat latihan cardio pertama Anda";
+"training.cardio.empty.benchmark" = "Tidak Ada Benchmark Cardio";
+"training.cardio.empty.benchmark.message" = "Coba pencarian yang berbeda";
+
+// Cardio Activities
+"training.cardio.running" = "Lari";
+"training.cardio.walking" = "Jalan";
+"training.cardio.cycling" = "Bersepeda";
+"training.cardio.train" = "Latih";
+"training.cardio.quickStart" = "Mulai Cepat";
+"training.cardio.quickStartDesc" = "Mulai sesi cardio";
+"training.cardio.viewHistory" = "Lihat Riwayat";
+"training.cardio.viewHistoryDesc" = "Sesi sebelumnya";
+"training.cardio.recentSessions" = "Sesi Terbaru";
+"training.cardio.sessionInProgress" = "Sesi sedang berlangsung";
+"training.cardio.distance" = "Jarak";
+"training.cardio.avgSpeed" = "Kecepatan Rata-rata";
+"training.cardio.pace" = "Pace";
+"training.cardio.averagePace" = "Pace Rata-rata";
+"training.cardio.calories" = "Kalori";
+"training.cardio.personalRecord" = "PR";
+"training.lift.create" = "Buat Angkat Beban";
+"training.cardio.create" = "Buat Cardio";
+"training.lift.name" = "Nama Angkat Beban";
+"training.lift.name.placeholder" = "mis., Power Pagi";
+"training.lift.description" = "Deskripsi";
+"training.lift.description.placeholder" = "mis., Gerakan compound berat";
+"training.lift.sets" = "Set";
+"training.lift.reps" = "Rep";
+"training.lift.exercises" = "Latihan";
+"training.lift.exercises.empty" = "Belum ada latihan ditambahkan";
+"training.lift.log_result" = "Catat Hasil";
+"training.lift.result.title" = "Catat Hasil Angkat Beban";
+"training.lift.result.saved" = "Hasil Tersimpan!";
+"training.lift.result.pr_message" = "Selamat! Anda telah membuat PR baru: %dkg! 🎉";
+"training.lift.result.success_message" = "Latihan Anda telah dicatat dengan sukses.";
+"training.lift.result.total_volume" = "Volume Total";
+"training.lift.result.best_set" = "Set Terbaik";
+"training.lift.result.save" = "Simpan Hasil";
+"training.lift.result.notes" = "Catatan (Opsional)";
+"training.lift.result.current_pr" = "PR Saat Ini: %dkg";
+
+// Missing Lift Keys
+"training.lift.noPrograms" = "Belum Ada Program";
+"training.lift.noProgramsMessage" = "Jelajahi program unggulan kami atau buat sendiri";
+"training.lift.activeProgram" = "Program Aktif";
+"training.lift.stats.progress" = "Progress";
+"training.lift.stats.volume" = "Volume";
+"training.lift.stats.sets" = "Set";
+"training.lift.stats.exercises" = "Latihan";
+"training.lift.noHistory" = "Belum Ada Riwayat";
+"training.lift.noHistoryMessage" = "Mulai latihan pertama Anda untuk mulai tracking";
+
+"training.cardio.name" = "Nama Cardio";
+"training.cardio.name.placeholder" = "mis., Lari Pagi";
+"training.cardio.description" = "Deskripsi";
+"training.cardio.description.placeholder" = "mis., Cardio pace mudah";
+"training.cardio.type" = "Tipe";
+"training.cardio.type.distance" = "Jarak";
+"training.cardio.type.time" = "Waktu";
+"training.cardio.exercise" = "Latihan";
+"training.cardio.exercise.select" = "Pilih Latihan";
+"training.cardio.distance" = "Jarak (meter)";
+"training.cardio.time" = "Waktu (menit)";
+"training.exercise.search" = "Cari latihan...";
+"training.exercise.done" = "Selesai";
+
+// MARK: - Cardio Training
+"training.cardio.templates" = "Template";
+"training.cardio.history" = "Riwayat";
+"training.cardio.lastSession" = "Sesi Terakhir";
+"training.cardio.customSessions" = "Sesi Kustom";
+"training.cardio.exerciseTypes" = "Tipe Latihan";
+"training.cardio.noExerciseTypes" = "Tidak Ada Tipe Latihan";
+"training.cardio.noHistory" = "Tidak Ada Riwayat";
+"training.cardio.noHistoryMessage" = "Mulai sesi cardio pertama Anda untuk mulai tracking";
+"training.cardio.adjustSearch" = "Coba sesuaikan pencarian Anda";
+"training.cardio.startSession" = "Mulai Sesi";
+"training.cardio.clearSearch" = "Hapus Pencarian";
+"training.cardio.neverAttempted" = "Belum Pernah Dicoba";
+"training.cardio.browseTemplates" = "Jelajahi Template";
+
+// MARK: - Training Conflict
+"training.conflict.title" = "Latihan Aktif Ada";
+"training.conflict.message" = "Anda memiliki latihan aktif yang sedang berlangsung. Apa yang ingin Anda lakukan?";
+"training.conflict.continue" = "Lanjutkan";
+"training.conflict.finish_start" = "Selesai & Mulai Baru";
+"training.conflict.started_at" = "Dimulai pada:";
+"training.conflict.unnamed_workout" = "Latihan Tanpa Nama";
+
+// MARK: - Training Templates
+"training.templates.empty.hint" = "Selesaikan latihan dan simpan sebagai template";
+
+// MARK: - Nutrition
+"nutrition.title" = "Nutrisi";
+"nutrition.addFood" = "Tambah Makanan";
+"nutrition.calories" = "Kalori";
+"nutrition.scanBarcode" = "Pindai barcode";
+
+// Empty States - Nutrition
+"nutrition.empty.first.title" = "Mulai tracking nutrisi";
+"nutrition.empty.first.message" = "Tambahkan makanan untuk tracking kalori dan makro harian.";
+"nutrition.empty.addMeal" = "Tambah Makanan";
+"nutrition.empty.addCustomFood" = "Buat Makanan Kustom";
+"nutrition.empty.loadingFoods" = "Memuat database makanan...";
+"nutrition.empty.today.title" = "Tidak ada makanan ditambahkan hari ini";
+"nutrition.empty.today.message" = "Pilih dari daftar atau buat makanan kustom untuk menambah makanan.";
+"nutrition.empty.todayTitle" = "Anda belum makan apa pun hari ini";
+"nutrition.empty.todayMessage" = "Mulai hari Anda dengan menambahkan makanan pertama! 🌅";
+
+// MARK: - Profile
+"profile.title" = "Profil";
+"profile.edit_profile" = "Edit Profil";
+"profile.personal_info" = "Informasi Personal";
+"profile.measurements" = "Pengukuran";
+"profile.tools" = "Tools";
+"profile.progress_reports" = "Laporan Progress";
+"profile.settings" = "Pengaturan";
+"profile.premium" = "Premium";
+"profile.help" = "Bantuan";
+"profile.logout" = "Keluar";
+"profile.version" = "Versi";
+
+// Profile - Personal Info
+"profile.name" = "Nama";
+"profile.age" = "Umur";
+"profile.height" = "Tinggi";
+"profile.weight" = "Berat";
+"profile.gender" = "Jenis Kelamin";
+"profile.male" = "Laki-laki";
+"profile.female" = "Perempuan";
+"profile.fitness_goal" = "Target Fitness";
+"profile.activity_level" = "Level Aktivitas";
+
+// Profile - Goals
+"profile.goal.cut" = "Cutting";
+"profile.goal.bulk" = "Bulking";
+"profile.goal.maintain" = "Maintain";
+
+// Profile - Activity Levels
+"profile.activity.sedentary" = "Tidak Aktif";
+"profile.activity.lightly_active" = "Sedikit Aktif";
+"profile.activity.moderately_active" = "Cukup Aktif";
+"profile.activity.very_active" = "Sangat Aktif";
+"profile.activity.extremely_active" = "Extremely Aktif";
+
+// Profile - Subtitles
+"profile.personal_info_subtitle" = "Kelola informasi personal Anda";
+"profile.account_management" = "Manajemen Akun";
+"profile.account_subtitle" = "Kelola pengaturan akun Anda";
+"profile.body_tracking" = "Tracking Tubuh";
+"profile.weight_tracking" = "Tracking Berat";
+"profile.weight_subtitle" = "Tracking perubahan berat Anda";
+"profile.measurements_subtitle" = "Tracking pengukuran tubuh Anda";
+"profile.progress_photos" = "Foto Progress";
+"profile.photos_subtitle" = "Tracking progress Anda dengan foto";
+"profile.settings_subtitle" = "Preferensi dan pengaturan aplikasi";
+"profile.progress_charts" = "Chart Progress";
+"profile.charts_subtitle" = "Visualisasikan progress Anda";
+"profile.achievements_subtitle" = "Tracking pencapaian Anda";
+"profile.goal_tracking" = "Tracking Target";
+"profile.goals_subtitle" = "Set dan tracking target Anda";
+
+// Profile - Lifetime Achievements
+"profile.lifetime_achievements.title" = "Pencapaian Seumur Hidup";
+"profile.lifetime_achievements.subtitle" = "Total performa Anda sejauh ini";
+"profile.lifetime_achievements.total_weight" = "Total Berat";
+"profile.lifetime_achievements.total_distance" = "Total Jarak";
+"profile.lifetime_achievements.total_workouts" = "Total Latihan";
+"profile.lifetime_achievements.active_days" = "Hari Aktif";
+
+// Profile - Units
+"profile.units.kg" = "kg";
+"profile.units.lb" = "lb";
+"profile.units.tons" = "t";
+"profile.units.km" = "km";
+"profile.units.mi" = "mi";
+"profile.units.cm" = "cm";
+"profile.units.inch" = "in";
+"profile.units.percent" = "%";
+
+// Profile - Messages
+"profile.messages.measurements_saved" = "Pengukuran Tersimpan!";
+"profile.messages.measurements_saved_desc" = "Pengukuran Navy Method Anda telah disimpan dengan sukses";
+"profile.messages.calculation_error" = "Kesalahan Kalkulasi";
+"profile.messages.validation_error" = "Harap isi semua field dengan benar";
+"profile.messages.save_error" = "Terjadi kesalahan saat menyimpan";
+
+// MARK: - Settings
+"settings.title" = "Pengaturan";
+"settings.app_preferences" = "Preferensi Aplikasi";
+"settings.language" = "Bahasa";
+"settings.units" = "Satuan";
+"settings.theme" = "Tema";
+"settings.notifications" = "Notifikasi";
+"settings.system_theme" = "Sistem";
+"settings.light_mode" = "Terang";
+"settings.dark_mode" = "Gelap";
+"settings.metric" = "Metrik";
+"settings.imperial" = "Imperial";
+"settings.allow_notifications" = "Izinkan Notifikasi";
+"settings.workout_reminders" = "Pengingat Latihan";
+"settings.nutrition_reminders" = "Pengingat Nutrisi";
+"settings.version" = "Versi";
+"settings.privacy_policy" = "Kebijakan Privasi";
+"settings.terms_of_service" = "Syarat Layanan";
+
+// MARK: - Common
+"action.save" = "Simpan";
+"action.cancel" = "Batal";
+
+// MARK: - Onboarding
+"onboarding.back" = "Kembali";
+"onboarding.next" = "Selanjutnya";
+"onboarding.skip" = "Lewati";
+
+// Welcome Step
+"onboarding.welcome.title" = "Selamat datang di\nThrustr! 💪";
+"onboarding.welcome.subtitle" = "Kami bersama Anda dalam perjalanan fitness.\nAyo mulai!";
+"onboarding.welcome.start" = "Ayo Mulai!";
+"onboarding.feature.workout" = "Tracking latihan pintar";
+"onboarding.feature.progress" = "Analisis progress";
+"onboarding.feature.nutrition" = "Kontrol nutrisi";
+"onboarding.feature.goals" = "Target personal";
+
+// Progress
+"onboarding.progress.step" = "Langkah %d/%d";
+
+// Personal Info Step
+"onboarding.personalInfo.title" = "Info Personal";
+"onboarding.personalInfo.subtitle" = "Mari berkenalan lebih dekat";
+"onboarding.personalInfo.name" = "Nama";
+"onboarding.personalInfo.name.placeholder" = "mis., John";
+"onboarding.personalInfo.age" = "Umur";
+"onboarding.personalInfo.age.years" = "%d tahun";
+"onboarding.personalInfo.gender" = "Jenis Kelamin";
+"onboarding.personalInfo.gender.male" = "Laki-laki";
+"onboarding.personalInfo.gender.female" = "Perempuan";
+"onboarding.personalInfo.height" = "Tinggi";
+"onboarding.personalInfo.weight" = "Berat";
+"onboarding.continue" = "Lanjutkan";
+
+// Consent Step
+"onboarding.consent.title" = "Persetujuan";
+"onboarding.consent.subtitle" = "Harap tinjau dan terima dokumen untuk melanjutkan.";
+"onboarding.consent.terms.title" = "Terima Syarat Layanan";
+"onboarding.consent.terms.desc" = "Anda perlu menerima Syarat Layanan untuk menggunakan aplikasi.";
+"onboarding.consent.viewTerms" = "Lihat Syarat Layanan";
+"onboarding.consent.privacy.title" = "Terima Kebijakan Privasi";
+"onboarding.consent.privacy.desc" = "Harap tinjau dan terima Kebijakan Privasi kami.";
+"onboarding.consent.viewPrivacy" = "Lihat Kebijakan Privasi";
+"onboarding.consent.marketing" = "Saya ingin menerima update produk dan tips";
+
+// Goals Step
+"onboarding.goals.title" = "Target Anda";
+"onboarding.goals.subtitle" = "Arah mana yang ingin Anda tuju untuk progress?";
+"onboarding.goals.mainGoal" = "Target Utama";
+"onboarding.goals.activityLevel" = "Level Aktivitas";
+"onboarding.goals.targetWeight" = "Target Berat (Opsional)";
+"onboarding.goals.targetWeight.toggle" = "Set target berat";
+
+// Goal Options
+"onboarding.goals.cut.title" = "Fat Loss";
+"onboarding.goals.cut.subtitle" = "Turunkan berat dan kurangi lemak tubuh";
+"onboarding.goals.bulk.title" = "Muscle Gain";
+"onboarding.goals.bulk.subtitle" = "Bangun massa otot dan jadi lebih kuat";
+"onboarding.goals.maintain.title" = "Maintain";
+"onboarding.goals.maintain.subtitle" = "Pertahankan berat saat ini sambil jadi lebih kuat";
+
+// Activity Levels
+"onboarding.activity.sedentary" = "Tidak Aktif";
+"onboarding.activity.sedentary.desc" = "Kerja meja, sedikit bergerak";
+"onboarding.activity.light" = "Sedikit Aktif";
+"onboarding.activity.light.desc" = "1-2 latihan per minggu";
+"onboarding.activity.moderate" = "Cukup Aktif";
+"onboarding.activity.moderate.desc" = "3-4 latihan per minggu";
+"onboarding.activity.active" = "Aktif";
+"onboarding.activity.active.desc" = "5-6 latihan per minggu";
+"onboarding.activity.veryActive" = "Sangat Aktif";
+"onboarding.activity.veryActive.desc" = "Latihan harian, kerja fisik";
+
+// Measurements Step
+"onboarding.measurements.title" = "Pengukuran Tubuh";
+"onboarding.measurements.subtitle" = "Pengukuran opsional untuk analisis yang lebih akurat";
+"onboarding.measurements.navyMethod" = "Metode Navy";
+"onboarding.measurements.navyMethod.desc" = "Dengan pengukuran ini kami bisa menghitung persentase lemak tubuh Anda. Anda bisa skip dan tambahkan nanti dari Profil.";
+"onboarding.measurements.neck" = "Lingkar Leher (Di bawah jakun)";
+"onboarding.measurements.waist.male" = "Lingkar Pinggang (Pada level pusar)";
+"onboarding.measurements.waist.female" = "Lingkar Pinggang (Pada titik tersempit)";
+"onboarding.measurements.hip" = "Lingkar Pinggul (Pada titik terlebar)";
+"onboarding.measurements.bodyFat.title" = "Lemak Tubuh Terhitung %";
+"onboarding.measurements.bodyFat.navy" = "Metode Navy:";
+"onboarding.measurements.optional.info" = "Pengukuran ini sepenuhnya opsional";
+"onboarding.measurements.optional.desc" = "Anda bisa skip dan tambahkan nanti dari pengaturan Profil.";
+"onboarding.measurements.skip" = "Lewati Langkah Ini";
+"onboarding.measurements.optional" = "Opsional";
+
+// MARK: - Missing Onboarding Measurements Keys
+"onboarding.measurements.navyMethod.title" = "Metode Navy";
+"onboarding.measurements.navyMethod.desc" = "Dengan pengukuran ini kami bisa menghitung persentase lemak tubuh Anda. Anda bisa skip dan tambahkan nanti dari Profil.";
+"onboarding.measurements.neck.label" = "Lingkar Leher (Di bawah jakun)";
+"onboarding.measurements.waist.male.label" = "Lingkar Pinggang (Pada level pusar)";
+"onboarding.measurements.waist.female.label" = "Lingkar Pinggang (Pada titik tersempit)";
+"onboarding.measurements.hip.label" = "Lingkar Pinggul (Pada titik terlebar)";
+"onboarding.measurements.bodyFat.title" = "Lemak Tubuh Terhitung %";
+"onboarding.measurements.bodyFat.navy" = "Metode Navy:";
+"onboarding.measurements.optional.info" = "Pengukuran ini sepenuhnya opsional";
+"onboarding.measurements.optional.desc" = "Anda bisa skip dan tambahkan nanti dari pengaturan Profil.";
+"onboarding.measurements.skipStep" = "Lewati Langkah Ini";
+
+// Summary Step
+"onboarding.summary.title" = "Rencana Anda Siap! 🎉";
+"onboarding.summary.subtitle" = "Nilai dihitung berdasarkan informasi Anda";
+"onboarding.summary.profile" = "Ringkasan Profil";
+"onboarding.summary.goals" = "Target";
+"onboarding.summary.calculatedValues" = "Nilai Terhitung";
+"onboarding.summary.macroGoals" = "Target Makro";
+"onboarding.summary.info.title" = "Info";
+"onboarding.summary.info.withNavy" = "Karena persentase lemak tubuh Anda dihitung menggunakan Metode Navy, formula Katch-McArdle yang lebih akurat digunakan. Anda bisa mengubah ini kapan saja dari pengaturan profil.";
+"onboarding.summary.info.withoutNavy" = "Karena pengukuran tubuh tidak diberikan, formula Mifflin-St Jeor digunakan. Untuk kalkulasi yang lebih akurat, Anda bisa menambahkan pengukuran dari pengaturan profil.";
+"onboarding.summary.startApp" = "Mulai Aplikasi";
+
+// Preferences Step (Theme & Language)
+"onboarding.preferences.title" = "Pilih Preferensi Anda";
+"onboarding.preferences.language" = "Bahasa";
+"onboarding.preferences.theme" = "Tema";
+
+// Summary Labels
+"onboarding.summary.label.name" = "Nama";
+"onboarding.summary.label.age" = "Umur";
+"onboarding.summary.label.gender" = "Jenis Kelamin";
+"onboarding.summary.label.height" = "Tinggi";
+"onboarding.summary.label.weight" = "Berat";
+"onboarding.summary.label.targetWeight" = "Target Berat";
+"onboarding.summary.label.mainGoal" = "Target Utama";
+"onboarding.summary.label.activity" = "Aktivitas";
+"onboarding.summary.label.bmr" = "BMR";
+"onboarding.summary.label.bmr.katch" = "BMR (Katch-McArdle)";
+"onboarding.summary.label.bmr.mifflin" = "BMR (Mifflin-St Jeor)";
+"onboarding.summary.label.lbm" = "Massa Tubuh Tanpa Lemak (LBM)";
+"onboarding.summary.label.bodyFat" = "Lemak Tubuh % (Navy)";
+"onboarding.summary.label.tdee" = "TDEE (Pengeluaran Harian)";
+"onboarding.summary.label.dailyCalorie" = "Target Kalori Harian";
+"onboarding.summary.label.protein" = "Protein";
+"onboarding.summary.label.carbs" = "Karbo";
+"onboarding.summary.label.fat" = "Lemak";
+
+// MARK: - Dashboard
+// duplicate removed
+"dashboard.welcome" = "Halo, %@!";
+"dashboard.howFeeling" = "Bagaimana perasaan Anda hari ini?";
+
+// Dashboard Greetings
+"dashboard.greeting.goodMorning" = "Selamat pagi";
+"dashboard.greeting.goodAfternoon" = "Selamat siang";
+"dashboard.greeting.goodEvening" = "Selamat sore";
+"dashboard.greeting.goodNight" = "Selamat malam";
+
+// duplicate removed
+"dashboard.recentWorkouts" = "Latihan Terbaru";
+"dashboard.thisWeek" = "Minggu Ini";
+"dashboard.seeAll" = "Lihat Semua";
+
+// Stats
+"dashboard.stats.today" = "Hari Ini";
+"dashboard.stats.steps" = "langkah";
+"dashboard.stats.calories" = "Kalori";
+"dashboard.stats.kcal" = "kkal";
+"dashboard.stats.consumed" = "Dikonsumsi";
+"dashboard.stats.weight" = "Berat";
+"dashboard.stats.lastMeasurement" = "pengukuran terakhir";
+"dashboard.stats.bmi" = "BMI";
+
+// Quick Actions
+"dashboard.actions.startWorkout" = "Mulai Latihan";
+"dashboard.actions.startWorkout.desc" = "Buat latihan baru dan tracking latihan Anda";
+"dashboard.actions.logWeight" = "Catat Berat";
+"dashboard.actions.logWeight.desc" = "Catat berat saat ini dan tracking progress";
+"dashboard.actions.nutrition" = "Tracking Nutrisi";
+"dashboard.actions.nutrition.desc" = "Catat kalori harian dan makronutrien";
+
+// Empty States
+"dashboard.noWorkouts.title" = "Belum ada latihan";
+"dashboard.noWorkouts.subtitle" = "Ketuk tombol di atas untuk mulai latihan pertama!";
+
+// Weekly Stats
+"dashboard.weekly.workoutCount" = "Jumlah Latihan";
+"dashboard.weekly.totalVolume" = "Total Volume";
+"dashboard.weekly.totalTime" = "Total Waktu";
+
+// Workout Card
+"dashboard.workout.defaultName" = "Latihan";
+"dashboard.workout.duration" = "Durasi";
+"dashboard.workout.volume" = "Volume";
+
+// Weight Entry
+"dashboard.weightEntry.title" = "Masukkan Berat Saat Ini";
+"dashboard.weightEntry.label" = "Berat (kg)";
+"dashboard.weightEntry.placeholder" = "mis., 70.5";
+"dashboard.weightEntry.save" = "Simpan";
+"dashboard.weightEntry.cancel" = "Batal";
+
+// Time Formats
+"dashboard.time.hours" = "j";
+"dashboard.time.minutes" = "mnt";
+
+// HealthKit Alerts & Permissions
+"dashboard.healthkit.infoTitle" = "Info HealthKit";
+"dashboard.healthkit.stepsInfoMessage" = "Target langkah diambil dari aplikasi Health. Untuk mengubah target, gunakan aplikasi Health.";
+"dashboard.healthkit.caloriesInfoMessage" = "Target kalori aktif diambil dari aplikasi Health. Untuk mengubah target, gunakan aplikasi Health.";
+"dashboard.healthPermission.message" = "Izinkan akses untuk menampilkan data kesehatan.";
+"dashboard.healthPermission.allow" = "Izinkan";
+
+// MARK: - Training Module
+"training.title" = "Latihan";
+"training.history" = "Riwayat";
+"training.active" = "Aktif";
+"training.templates" = "Template";
+
+// MARK: - Dashboard Activities
+"dashboard.activities.title" = "Aktivitas Terbaru";
+"dashboard.activities.seeAll" = "Lihat Semua";
+"dashboard.activities.empty" = "Belum ada aktivitas";
+"dashboard.activities.empty.desc" = "Mulai latihan pertama atau catat nutrisi";
+"dashboard.activities.today" = "Hari Ini";
+"dashboard.activities.yesterday" = "Kemarin";
+"dashboard.activities.thisWeek" = "Minggu Ini";
+
+// General labels
+"dashboard.general.streakLabel" = "Streak";
+
+// Activity Types
+"dashboard.activities.workoutCompleted" = "Latihan selesai";
+"dashboard.activities.cardioCompleted" = "Cardio selesai";
+"dashboard.activities.wodCompleted" = "WOD selesai";
+"dashboard.activities.nutritionLogged" = "dicatat";
+"dashboard.activities.measurementUpdated" = "diupdate";
+"dashboard.activities.goalCompleted" = "selesai";
+"dashboard.activities.personalRecord" = "Rekor personal!";
+"dashboard.activities.programStarted" = "Program baru dimulai";
+"dashboard.activities.settingsUpdated" = "diupdate";
+
+// MARK: - Workout History
+"training.history.empty.title" = "Belum ada latihan";
+"training.history.empty.subtitle" = "Ketuk tombol + untuk mulai latihan pertama!";
+"training.history.defaultName" = "Latihan";
+"training.history.noParts" = "Tidak ada bagian";
+"training.history.totalVolume" = "Total Volume: %d kg";
+"training.history.seeMore" = "Lihat Lebih";
+"training.history.repeat" = "Ulangi latihan ini";
+
+// MARK: - Active Workout
+"training.active.empty.title" = "Tidak Ada Latihan Aktif";
+"training.active.empty.subtitle" = "Ketuk tombol + untuk mulai latihan baru";
+"training.active.empty.startButton" = "Mulai Latihan";
+"training.active.title" = "Latihan Aktif";
+"training.active.duration" = "Durasi";
+"training.active.continue" = "Lanjutkan";
+"training.active.finish" = "Selesai";
+"training.active.status.active" = "Aktif";
+"training.active.status.completed" = "Selesai";
+"training.active.multiple.title" = "Latihan Aktif";
+
+// MARK: - Workout Stats
+"training.stats.parts" = "Bagian";
+"training.stats.sets" = "Set";
+"training.stats.volume" = "Volume";
+"training.stats.duration" = "Durasi";
+
+// MARK: - New Workout
+"training.new.title" = "Latihan Baru";
+"training.new.subtitle" = "Bagaimana Anda ingin memulai latihan?";
+"training.new.nameLabel" = "Nama Latihan";
+"training.new.namePlaceholder" = "mis., Push Day, Leg Day";
+"training.new.quickStart" = "Mulai Cepat";
+"training.new.empty.title" = "Latihan Kosong";
+"training.new.empty.subtitle" = "Mulai dari awal";
+"training.new.functional.title" = "Latihan Fungsional";
+"training.new.functional.subtitle" = "Gerakan fitness fungsional";
+"training.new.cardio.title" = "Cardio";
+"training.new.cardio.subtitle" = "Latihan kardiovaskular";
+"training.new.cancel" = "Batal";
+
+// MARK: - Templates
+"training.templates.title" = "Template";
+"training.templates.programsHeader" = "Program";
+"training.templates.emptyPrograms" = "Belum ada template program";
+"training.templates.empty" = "Template latihan siap pakai segera hadir!";
+"training.templates.saveAsTemplate" = "Simpan sebagai Template";
+"training.templates.removeFromTemplates" = "Hapus dari Template";
+
+// MARK: - Workout Detail
+"training.detail.back" = "Kembali";
+"training.detail.finish" = "Selesai";
+"training.detail.finishWorkout" = "Selesaikan Latihan";
+"training.detail.defaultName" = "Latihan";
+"training.detail.empty.title" = "Mulai Latihan Anda";
+"training.detail.empty.subtitle" = "Tambahkan bagian pertama untuk mulai training";
+"training.detail.empty.addPart" = "Tambah Bagian";
+"training.detail.addPart" = "Tambah Bagian";
+
+// MARK: - Workout Parts
+"training.part.powerStrength" = "Power & Kekuatan";
+"training.part.metcon" = "Metcon";
+"training.part.accessory" = "Aksesori";
+"training.part.cardio" = "Cardio";
+
+"training.part.powerStrength.desc" = "Angkat beban dan Olympic lift";
+"training.part.metcon.desc" = "METCON dan conditioning";
+"training.part.accessory.desc" = "Gerakan isolasi dan assistance";
+"training.part.cardio.desc" = "Lari, rowing dan bersepeda";
+
+"training.part.status.completed" = "Selesai";
+"training.part.status.inProgress" = "Sedang Berlangsung";
+"training.part.noExercise" = "Belum ada latihan ditambahkan";
+"training.part.addExercise" = "Tambah Latihan";
+"training.part.result" = "Hasil:";
+
+// MARK: - Cardio Training
+"training.cardio.outdoor" = "Outdoor";
+"training.cardio.indoor" = "Indoor";
+"training.cardio.effort" = "Effort";
+"training.cardio.zone" = "Zone";
+"training.cardio.bpm" = "BPM";
+"training.cardio.rpe" = "RPE";
+"training.cardio.time" = "Waktu";
+"training.cardio.quickStart" = "Mulai Cepat";
+"training.cardio.activityType" = "Jenis Aktivitas";
+"training.cardio.selectActivityToStart" = "Pilih jenis aktivitas dan mulai";
+"training.cardio.location" = "Lokasi";
+"training.cardio.features" = "Fitur";
+"training.cardio.start" = "Mulai";
+"training.cardio.cancel" = "Batal";
+"training.cardio.gpsRealTimeTracking" = "Pelacakan jarak GPS real-time";
+"training.cardio.routeMapAfterWorkout" = "Peta rute setelah latihan";
+"training.cardio.instantSpeedPace" = "Tampilan kecepatan dan pace instan";
+"training.cardio.elevationChanges" = "Perekaman perubahan elevasi";
+"training.cardio.timeTracking" = "Pelacakan waktu";
+"training.cardio.estimatedCalories" = "Kalkulasi estimasi kalori";
+"training.cardio.heartRateSupport" = "Dukungan heart rate band";
+"training.cardio.manualDistanceInput" = "Input jarak manual setelah latihan";
+
+// MARK: - WOD / METCON
+"training.wod.title" = "METCON";
+"training.wod.movements" = "Gerakan";
+"training.wod.manualCreate" = "Buat Manual";
+"training.wod.start" = "Mulai";
+"training.wod.scoreTitle" = "Skor METCON";
+"training.wod.round" = "Ronde %@";
+"training.wod.time.mm" = "MM";
+"training.wod.time.ss" = "DD";
+"training.wod.result" = "Hasil METCON";
+"training.wod.add" = "+ METCON";
+"training.wod.addResult" = "Tambah Hasil METCON";
+"training.wod.editResult" = "Edit Hasil METCON";
+"training.wod.favorites" = "Favorit";
+"training.wod.benchmarks" = "Benchmark";
+"training.wod.forTime" = "For Time";
+"training.wod.amrap" = "AMRAP";
+"training.wod.emom" = "EMOM";
+"training.wod.custom" = "Kustom";
+"training.wod.customResult" = "Hasil Kustom";
+"training.wod.enterTime" = "Masukkan waktu (MM:DD)";
+"training.wod.rounds" = "Ronde";
+"training.wod.reps" = "Rep";
+"training.wod.emomCompleted" = "Ronde EMOM Selesai";
+"training.wod.total" = "Total";
+"training.wod.create" = "Buat METCON";
+"training.wod.builder.namePlaceholder" = "Nama METCON (opsional)";
+"training.wod.builder.schemePlaceholderForTime" = "Skema rep (mis., 21-15-9)";
+"training.wod.builder.schemePlaceholderAmrap" = "Rep per gerakan (mis., 10)";
+"training.wod.builder.movementsPlaceholder" = "Gerakan, dipisah koma (mis., Thruster, Burpee)";
+"training.wod.builder.schemeHintForTime" = "mis., 21-15-9 atau 10-10-10";
+"training.wod.builder.schemeHintAmrap" = "mis., 10 (setiap gerakan 10 rep per round)";
+"training.wod.builder.movementsHint" = "mis., Thruster, Burpee";
+"training.wod.builder.start" = "Mulai";
+"training.wod.builder.title" = "Buat METCON";
+"training.wod.runner.undo" = "Undo";
+"training.wod.runner.addRound" = "Tambah Round";
+"training.wod.runner.extraReps" = "Extra: %d rep";
+"training.wod.runner.scoreButton" = "Masukkan Skor";
+"training.wod.runner.finish" = "Selesai";
+"training.wod.runner.scoreTitle" = "Waktu (MM:SS)";
+"training.wod.runner.roundsLabel" = "Round: %d";
+"training.wod.runner.stepsProgress" = "%d/%d";
+"training.wod.runner.tipTitle" = "Cara kerja";
+"training.wod.runner.tipBody" = "Ketuk ikon centang di kanan untuk menyelesaikan langkah. Setelah selesai, ketuk Masukkan Skor.";
+
+// MARK: - Add Part
+"training.addPart.title" = "Tambah Bagian";
+"training.addPart.subtitle" = "Tipe bagian apa yang ingin Anda tambahkan?";
+"training.addPart.nameLabel" = "Nama Bagian";
+"training.addPart.namePlaceholder" = "mis., Pemanasan, Kekuatan";
+"training.addPart.typeLabel" = "Tipe Bagian";
+"training.addPart.add" = "Tambah Bagian";
+"training.addPart.cancel" = "Batal";
+
+// MARK: - Exercise Selection
+"training.exercise.title" = "Pilih Latihan";
+"training.exercise.searchPlaceholder" = "Cari latihan...";
+"training.exercise.clear" = "Hapus";
+"training.exercise.all" = "Semua";
+"training.exercise.cancel" = "Batal";
+"training.exercise.addCustom" = "Tambah Kustom";
+"training.exercise.empty.title" = "Tidak Ada Latihan Ditemukan";
+"training.exercise.empty.subtitle" = "Gunakan pencarian atau favorit";
+"training.exercise.empty.searchTitle" = "Tidak ada hasil untuk '%@'";
+"training.exercise.empty.searchSubtitle" = "Coba kata kunci yang berbeda";
+
+// MARK: - Exercise Categories
+"training.category.push" = "Push";
+"training.category.pull" = "Pull";
+"training.category.legs" = "Kaki";
+"training.category.core" = "Core";
+"training.category.cardio" = "Cardio";
+"training.category.olympic" = "Olympic";
+"training.category.functional" = "Fungsional";
+"training.category.isolation" = "Isolasi";
+"training.category.other" = "Lainnya";
+
+// MARK: - Set Tracking
+"training.set.back" = "Kembali";
+"training.set.save" = "Simpan";
+"training.set.equipment" = "Peralatan:";
+"training.set.reorder" = "Susun Ulang";
+"training.set.quickFill" = "Isi Cepat";
+"training.set.bulkAdd" = "Tambah Massal";
+"training.set.noDataToSave" = "Tidak ada data untuk disimpan. Harap tambahkan setidaknya satu set atau catatan.";
+"training.set.advancedEdit" = "Edit Lanjutan";
+"training.set.advancedEditDescription" = "Tracking lanjutan dengan RPE, catatan, dan metrik detail";
+"training.part.copyPart" = "Salin Bagian";
+"training.part.copyToNewWorkout" = "Salin ke Latihan Baru";
+"training.activeConflict.title" = "Latihan aktif ada";
+"training.activeConflict.message" = "Apakah Anda ingin melanjutkan latihan saat ini, atau selesaikan dan mulai yang baru?";
+"training.activeConflict.continue" = "Lanjutkan";
+"training.activeConflict.finishAndStart" = "Selesai dan Mulai Baru";
+"training.set.header.set" = "Set";
+"training.set.header.weight" = "Berat";
+"training.set.header.reps" = "Rep";
+"training.set.header.time" = "Waktu";
+"training.set.header.distance" = "Jarak";
+"training.set.header.rpe" = "RPE";
+"training.set.addSet" = "Tambah Set";
+"training.set.notes" = "Catatan";
+"training.set.notesPlaceholder" = "Catatan tentang latihan ini...";
+"training.set.rest" = "Istirahat";
+"training.set.finishExercise" = "Selesaikan Latihan";
+
+// MARK: - Set Values
+"training.set.kg" = "kg";
+"training.set.lb" = "lb";
+"training.exercise.pr" = "PR";
+"training.wod.builder.exampleName" = "mis., Fran";
+"training.wod.builder.exampleType" = "mis., For Time / AMRAP / EMOM";
+"training.wod.builder.exampleMovements" = "mis., 21-15-9\nThruster\nBurpees";
+"training.set.reps" = "rep";
+"training.set.meters" = "m";
+"training.set.completed" = "✓";
+
+// MARK: - Rest Timer
+"training.rest.title" = "Istirahat";
+"training.rest.close" = "Tutup";
+"training.rest.remaining" = "tersisa";
+"training.rest.reset" = "Reset";
+"training.rest.start" = "Mulai";
+"training.rest.pause" = "Jeda";
+"training.rest.skip" = "Lewati";
+
+// MARK: - Rest Timer Presets
+"training.rest.preset.title" = "Durasi Istirahat";
+"training.rest.preset.subtitle" = "Pilih waktu istirahat yang sesuai untuk tipe latihan Anda";
+"training.rest.preset.cancel" = "Batal";
+"training.rest.preset.short" = "Istirahat Pendek";
+"training.rest.preset.short.desc" = "Untuk latihan ringan";
+"training.rest.preset.medium" = "Istirahat Sedang";
+"training.rest.preset.medium.desc" = "Untuk latihan beban sedang";
+"training.rest.preset.long" = "Istirahat Panjang";
+"training.rest.preset.long.desc" = "Untuk gerakan compound berat";
+"training.rest.preset.power" = "Istirahat Power";
+"training.rest.preset.power.desc" = "Untuk 1RM dan set maksimal";
+"training.rest.preset.custom" = "Kustom";
+"training.rest.preset.custom.desc" = "Set durasi manual";
+
+// MARK: - Custom Timer
+"training.rest.custom.title" = "Durasi Istirahat Kustom";
+"training.rest.custom.label" = "Durasi:";
+"training.rest.custom.minutes" = "%d menit";
+"training.rest.custom.set" = "Set Durasi";
+"training.rest.custom.cancel" = "Batal";
+
+// MARK: - Time Units
+"training.time.hours" = "j";
+"training.time.minutes" = "m";
+"training.time.seconds" = "d";
+
+// MARK: - Exercise Display
+"training.exercise.setCount" = "%d/%d";
+"training.exercise.addSet" = "+ Set";
+"training.exercise.setNumber" = "Set %d:";
+"training.exercise.moreSets" = "... dan %d set lagi";
+"training.exercise.noSets" = "Tidak ada set";
+"training.exercise.sets" = "set";
+
+// MARK: - Nutrition Module
+"nutrition.title" = "Nutrisi";
+"nutrition.addFood" = "Tambah Makanan";
+"nutrition.calories" = "Kalori";
+
+// MARK: - Daily Summary
+"nutrition.dailySummary.title" = "Makanan Hari Ini";
+"nutrition.dailySummary.total" = "Total:";
+"nutrition.dailySummary.protein" = "Protein";
+"nutrition.dailySummary.carbs" = "Karbo";
+"nutrition.dailySummary.fat" = "Lemak";
+
+// MARK: - Daily Goals
+"nutrition.dailyGoals.title" = "Target Harian";
+"nutrition.dailyGoals.per100g" = "per 100g";
+"nutrition.dailyGoals.achievementMessage" = "Bagus! Anda mendekati target! 🎉";
+
+// MARK: - Food Selection
+"nutrition.foodSelection.title" = "Pilih Makanan";
+"nutrition.foodSelection.searchPlaceholder" = "Cari makanan...";
+"nutrition.foodSelection.clear" = "Hapus";
+"nutrition.foodSelection.all" = "Semua";
+"nutrition.foodSelection.cancel" = "Batal";
+"nutrition.foodSelection.addNew" = "Tambah Baru";
+"nutrition.foodSelection.noResults" = "Tidak ada makanan ditemukan";
+"nutrition.foodSelection.noResultsForSearch" = "Tidak ada hasil untuk '%@'";
+"nutrition.foodSelection.tryDifferentTerms" = "Coba kata kunci yang berbeda";
+
+// Scan toasts
+"nutrition.scan.scanned" = "Produk ditemukan";
+"nutrition.scan.cached" = "Dimuat dari cache";
+"nutrition.scan.existing" = "Sudah ada di makanan Anda";
+"nutrition.scan.notFound" = "Tidak ditemukan. Anda bisa tambahkan manual";
+"nutrition.scan.networkError" = "Kesalahan jaringan. Silakan coba lagi";
+"nutrition.scan.rateLimited" = "Terlalu banyak permintaan. Harap tunggu";
+
+// MARK: - Meal Entry
+"nutrition.mealEntry.title" = "Tambah ke Makanan";
+"nutrition.mealEntry.addToMeal" = "Tambah ke Makanan";
+"nutrition.mealEntry.cancel" = "Batal";
+"nutrition.mealEntry.portion" = "Porsi (gram)";
+"nutrition.mealEntry.portionGrams" = "Gram";
+"nutrition.mealEntry.meal" = "Makanan";
+"nutrition.mealEntry.total" = "Total: %d kkal";
+"nutrition.mealEntry.per100gCalories" = "per 100g: %d kkal";
+"nutrition.mealEntry.portionOz" = "Porsi (oz)";
+"nutrition.mealEntry.portionOunces" = "Ons";
+
+// MARK: - Portion Input
+"nutrition.portionInput.grams" = "Gram";
+"nutrition.portionInput.serving" = "Sajian";
+"nutrition.portionInput.title" = "Porsi Cepat";
+"nutrition.portionInput.custom" = "Kustom";
+"nutrition.portionInput.customAmount" = "Jumlah Kustom";
+"nutrition.portionInput.set" = "Set";
+
+// Nutrition - Custom Food
+"nutrition.customFood.per100gImperial" = "Per 3.5oz (100g)";
+
+// Nutrition - Test
+"nutrition.test.addedSuccessfully" = "Makanan test berhasil ditambahkan";
+"nutrition.test.clearedSuccessfully" = "Semua data berhasil dibersihkan";
+
+// MARK: - Meal Types
+"nutrition.mealEntry.mealTypes.breakfast" = "Sarapan";
+"nutrition.mealEntry.mealTypes.lunch" = "Makan Siang";
+"nutrition.mealEntry.mealTypes.dinner" = "Makan Malam";
+"nutrition.mealEntry.mealTypes.snack" = "Snack";
+
+// MARK: - Custom Food Entry
+"nutrition.customFood.title" = "Makanan Baru";
+"nutrition.customFood.newFood" = "Tambah Makanan Baru";
+"nutrition.customFood.addNewFood" = "Tambah Makanan";
+"nutrition.customFood.subtitle" = "Untuk makanan rumahan atau makanan yang tidak bisa ditemukan";
+"nutrition.customFood.basicInfo" = "Informasi Dasar";
+"nutrition.customFood.foodName" = "Nama Makanan *";
+"nutrition.customFood.foodNameRequired" = "Nama Makanan *";
+"nutrition.customFood.foodNamePlaceholder" = "mis., Telur Orak-arik Rumahan";
+"nutrition.customFood.brand" = "Merek (Opsional)";
+"nutrition.customFood.brandOptional" = "Merek (Opsional)";
+"nutrition.customFood.brandPlaceholder" = "mis., Rumahan";
+"nutrition.customFood.category" = "Kategori";
+"nutrition.customFood.nutritionValues" = "Nilai Nutrisi";
+"nutrition.customFood.per100g" = "per 100g";
+"nutrition.customFood.caloriesRequired" = "Kalori *";
+"nutrition.customFood.protein" = "Protein";
+"nutrition.customFood.carbs" = "Karbo";
+"nutrition.customFood.fat" = "Lemak";
+"nutrition.customFood.preview" = "Pratinjau";
+"nutrition.customFood.addFood" = "Tambah Makanan";
+"nutrition.customFood.cancel" = "Batal";
+"nutrition.customFood.error" = "Error";
+"nutrition.customFood.ok" = "OK";
+
+// MARK: - Favorites Section
+"nutrition.favorites.favorites" = "Favorit";
+"nutrition.favorites.recent" = "Baru Digunakan";
+"nutrition.favorites.popular" = "Populer";
+"nutrition.favorites.timesUsed" = "digunakan %d kali";
+"nutrition.favorites.emptyFavorites" = "Belum ada makanan favorit";
+"nutrition.favorites.emptyRecent" = "Belum ada makanan terbaru\nSaat Anda menambah makanan, akan muncul di sini";
+"nutrition.favorites.emptyFavoritesDesc" = "Tap ikon hati untuk tambah favorit";
+"nutrition.common.addFood" = "Tambah Makanan";
+"nutrition.favorites.emptyRecentDesc" = "Saat Anda menambah makanan, item terbaru akan muncul di sini";
+
+// MARK: - Analytics
+"nutrition.analytics.title" = "Analisis Mingguan";
+"nutrition.analytics.weeklyAnalysis" = "Analisis Mingguan";
+"nutrition.analytics.dailyCalories" = "Kalori Harian";
+
+// Quick Status Cards
+"dashboard.quickStatus.weeklyVolume" = "volume mingguan";
+"dashboard.quickStatus.weeklyDistance" = "jarak mingguan";
+"dashboard.quickStatus.dailyCalories" = "kalori harian";
+"dashboard.quickStatus.todayVolume" = "volume hari ini";
+"dashboard.quickStatus.todayDistance" = "jarak hari ini";
+"dashboard.quickStatus.todayCalories" = "kalori hari ini";
+"dashboard.quickStatus.weeklyAverage" = "rata-rata mingguan";
+"dashboard.quickStatus.monthlyAverage" = "rata-rata bulanan";
+
+// Time Formatting
+"time.now" = "sekarang";
+"time.minutes_ago" = "%d mnt lalu";
+"time.hours_ago" = "%d jam lalu";
+"time.yesterday" = "kemarin %@";
+"time.hours_short" = "j";
+"time.minutes_short" = "mnt";
+"nutrition.analytics.weeklyAverage" = "Rata-rata Mingguan";
+
+// MARK: - Test & Debug
+"nutrition.test.addTestFood" = "Tambah Makanan Test";
+"nutrition.test.clear" = "Hapus";
+
+// MARK: - Units
+"nutrition.units.kcal" = "kcal";
+"nutrition.units.grams" = "gram";
+"nutrition.units.g" = "g";
+"nutrition.units.oz" = "oz";
+
+// MARK: - Day Names (Short)
+"nutrition.days.sunday" = "Min";
+"nutrition.days.monday" = "Sen";
+"nutrition.days.tuesday" = "Sel";
+"nutrition.days.wednesday" = "Rab";
+"nutrition.days.thursday" = "Kam";
+"nutrition.days.friday" = "Jum";
+"nutrition.days.saturday" = "Sab";
+
+// MARK: - Measurements
+"measurements.title" = "Pengukuran";
+"measurements.body_measurements" = "Pengukuran Tubuh";
+"measurements.add_measurement" = "Tambah Pengukuran";
+"measurements.edit_measurement" = "Edit Pengukuran";
+"measurements.date" = "Tanggal";
+"measurements.weight" = "Berat";
+"measurements.body_fat" = "Lemak Tubuh";
+"measurements.neck" = "Leher";
+"measurements.waist" = "Pinggang";
+"measurements.hips" = "Pinggul";
+"measurements.notes" = "Catatan";
+"measurements.save" = "Simpan";
+"measurements.cancel" = "Batal";
+"measurements.delete" = "Hapus";
+"measurements.confirm_delete" = "Konfirmasi Hapus";
+"measurements.delete_message" = "Apakah Anda yakin ingin menghapus pengukuran ini?";
+"measurements.no_measurements" = "Belum ada pengukuran";
+"measurements.add_first_measurement" = "Tambahkan pengukuran pertama Anda";
+"measurements.kg" = "kg";
+"measurements.cm" = "cm";
+"measurements.percent" = "%";
+
+// MARK: - Analytics
+"analytics.title" = "Analitik";
+"analytics.progress_analytics" = "Analitik Progress";
+"analytics.goals" = "Target";
+"analytics.achievements" = "Pencapaian";
+"analytics.weekly_progress" = "Progress Mingguan";
+"analytics.body_composition" = "Komposisi Tubuh";
+"analytics.performance_metrics" = "Metrik Performa";
+"analytics.no_data" = "Tidak ada data";
+"analytics.add_data_to_see_analytics" = "Tambahkan data untuk melihat analitik";
+"analytics.current_goals" = "Target Saat Ini";
+"analytics.goal_progress" = "Progress Target";
+"analytics.weight_goal" = "Target Berat";
+"analytics.fitness_goal" = "Target Fitness";
+"analytics.daily_calories" = "Kalori Harian";
+"analytics.weekly_workouts" = "Latihan Mingguan";
+"analytics.target_weight" = "Target Berat";
+"analytics.current_weight" = "Berat Saat Ini";
+"analytics.total_workouts" = "Total Latihan";
+"analytics.total_duration" = "Total Durasi";
+"analytics.average_workout" = "Rata-rata Latihan";
+"analytics.personal_records" = "Rekor Personal";
+"analytics.streak_days" = "Hari Streak";
+"analytics.calories_burned" = "Kalori Terbakar";
+"analytics.this_week" = "Minggu Ini";
+"analytics.this_month" = "Bulan Ini";
+"analytics.last_30_days" = "30 Hari Terakhir";
+"analytics.all_time" = "Sepanjang Waktu";
+
+// MARK: - Calculators
+"calculators.title" = "Kalkulator";
+"calculators.fitness_calculators" = "Kalkulator Fitness";
+"calculators.navy_method" = "Metode Navy";
+"calculators.ffmi_calculator" = "Kalkulator FFMI";
+"calculators.one_rm_calculator" = "Kalkulator 1RM";
+"calculators.bmr_calculator" = "Kalkulator BMR";
+"calculators.tdee_calculator" = "Kalkulator TDEE";
+"calculators.body_fat_calculator" = "Kalkulator Lemak Tubuh";
+"calculators.body_fat_percentage" = "Persentase Lemak Tubuh";
+"calculators.neck_circumference" = "Lingkar Leher";
+"calculators.waist_circumference" = "Lingkar Pinggang";
+"calculators.hip_circumference" = "Lingkar Pinggul";
+"calculators.calculate" = "Hitung";
+"calculators.result" = "Hasil";
+"calculators.interpretation" = "Interpretasi";
+"calculators.ffmi_title" = "Indeks Massa Bebas Lemak";
+"calculators.fat_free_mass_index" = "Indeks Massa Bebas Lemak";
+"calculators.ffmi_score" = "Skor FFMI";
+"calculators.ffmi_category" = "Kategori FFMI";
+"calculators.one_rep_max" = "One Rep Max";
+"calculators.weight" = "Berat";
+"calculators.reps" = "Rep";
+"calculators.estimated_one_rm" = "Perkiraan 1RM";
+"calculators.exercise" = "Latihan";
+"calculators.basal_metabolic_rate" = "Tingkat Metabolisme Basal";
+"calculators.total_daily_energy_expenditure" = "Total Pengeluaran Energi Harian";
+"calculators.calories_per_day" = "Kalori/Hari";
+"calculators.activity_multiplier" = "Multiplikator Aktivitas";
+"calculators.excellent" = "Sangat Baik";
+"calculators.good" = "Baik";
+"calculators.average" = "Rata-rata";
+"calculators.below_average" = "Di Bawah Rata-rata";
+"calculators.low" = "Rendah";
+"calculators.very_low" = "Sangat Rendah";
+"calculators.high" = "Tinggi";
+"calculators.very_high" = "Sangat Tinggi";
+"calculators.enter_valid_value" = "Masukkan nilai yang valid";
+"calculators.all_fields_required" = "Semua field wajib diisi";
+"calculators.select_exercise" = "Pilih latihan";
+
+// MARK: - Achievements
+"achievements.title" = "Pencapaian";
+"achievements.subtitle" = "Tracking progress dan buka badge";
+"achievements.no_achievements" = "Belum ada pencapaian";
+"achievements.no_achievements_desc" = "Mulai workout untuk membuka pencapaian pertama!";
+"achievements.recent_achievements" = "Pencapaian Terbaru";
+"achievements.all_achievements" = "Semua Pencapaian";
+"achievements.unlocked" = "Terbuka";
+"achievements.locked" = "Terkunci";
+"achievements.progress" = "Progress";
+"achievements.points" = "Poin";
+"achievements.level" = "Level";
+"achievements.next_level" = "Level Selanjutnya";
+"achievements.total_points" = "Total Poin";
+"achievements.category.all" = "Semua";
+"achievements.category.workout" = "Latihan";
+"achievements.category.weight" = "Berat";
+"achievements.category.nutrition" = "Nutrisi";
+"achievements.category.streak" = "Streak";
+"achievements.category.social" = "Sosial";
+
+// Achievements items
+"achievements.item.first_workout.title" = "Latihan Pertama";
+"achievements.item.first_workout.desc" = "Selesaikan latihan pertama Anda";
+"achievements.item.workout_10.title" = "10 Latihan";
+"achievements.item.workout_10.desc" = "Selesaikan 10 latihan";
+"achievements.item.workout_50.title" = "50 Latihan";
+"achievements.item.workout_50.desc" = "Selesaikan 50 latihan";
+"achievements.item.workout_100.title" = "100 Latihan";
+"achievements.item.workout_100.desc" = "Selesaikan 100 latihan";
+"achievements.item.weekend_warrior.title" = "Pejuang Weekend";
+"achievements.item.weekend_warrior.desc" = "10 latihan weekend";
+"achievements.item.weight_hunter.title" = "Pemburu Berat";
+"achievements.item.weight_hunter.desc" = "10,000 kg total volume";
+
+"achievements.item.first_weight.title" = "First Weight Log";
+"achievements.item.first_weight.desc" = "Add your first weight log";
+"achievements.item.tracker_30.title" = "Tracker";
+"achievements.item.tracker_30.desc" = "30 days of weight tracking";
+
+"achievements.item.first_meal.title" = "First Meal Log";
+"achievements.item.first_meal.desc" = "Log your first meal";
+"achievements.item.nutrition_100.title" = "Nutrition Expert";
+"achievements.item.nutrition_100.desc" = "Log 100 meals";
+
+"achievements.item.streak_3.title" = "3-Day Streak";
+"achievements.item.streak_3.desc" = "Work out 3 days in a row";
+"achievements.item.streak_7.title" = "Weekly Streak";
+"achievements.item.streak_7.desc" = "Work out 7 days in a row";
+
+"achievements.item.sharer.title" = "Sharer";
+"achievements.item.sharer.desc" = "First progress photo";
+"achievements.item.motivator_5.title" = "Motivator";
+"achievements.item.motivator_5.desc" = "Share 5 progress photos";
+
+// MARK: - Common
+"common.completed" = "Completed";
+"common.category" = "Category";
+"common.category_stats" = "Category Statistics";
+
+// MARK: - Goal Tracking
+"goal_tracking.title" = "Goal Tracking";
+"goal_tracking.subtitle" = "Set and track your fitness goals";
+"goal_tracking.current_goals" = "Current Goals";
+"goal_tracking.completed_goals" = "Completed Goals";
+"goal_tracking.add_goal" = "Add Goal";
+"goal_tracking.edit_goal" = "Edit Goal";
+"goal_tracking.delete_goal" = "Delete Goal";
+"goal_tracking.goal_type" = "Goal Type";
+"goal_tracking.goal_target" = "Goal Target";
+"goal_tracking.goal_deadline" = "Goal Deadline";
+"goal_tracking.goal_progress" = "Goal Progress";
+"goal_tracking.goal_completed" = "Goal Completed";
+"goal_tracking.goal_failed" = "Goal Failed";
+"goal_tracking.goal_in_progress" = "Goal In Progress";
+
+// MARK: - Progress Charts
+"progress_charts.title" = "Progress Charts";
+"progress_charts.subtitle" = "Track your performance visually";
+"progress_charts.time_range" = "Time Range";
+"progress_charts.chart_type" = "Chart Type";
+"progress_charts.range_1w" = "1 Week";
+"progress_charts.range_1m" = "1 Month";
+"progress_charts.range_3m" = "3 Months";
+"progress_charts.range_6m" = "6 Months";
+"progress_charts.range_1y" = "1 Year";
+"progress_charts.type.weight_change" = "Weight Change";
+"progress_charts.type.workout_volume" = "Workout Volume";
+"progress_charts.type.workout_frequency" = "Workout Frequency";
+"progress_charts.type.body_measurements" = "Body Measurements";
+"progress_charts.empty.weight_change" = "No weight records yet";
+"progress_charts.empty.workout_volume" = "No workout data yet";
+"progress_charts.empty.workout_frequency" = "No workout data yet";
+"progress_charts.empty.body_measurements" = "No body measurements yet";
+"progress_charts.axis.date" = "Date";
+"progress_charts.axis.weight" = "Weight";
+"progress_charts.axis.week" = "Week";
+"progress_charts.axis.volume" = "Volume";
+"progress_charts.axis.frequency" = "Frequency";
+"progress_charts.fallback_requires_ios16" = "Charts require iOS 16+";
+"progress_charts.stats.title" = "Summary Statistics";
+"progress_charts.stats.weight_change" = "Total Change";
+"progress_charts.stats.average_weight" = "Average Weight";
+"progress_charts.stats.entry_count" = "Entry Count";
+"progress_charts.stats.latest" = "Latest";
+"progress_charts.stats.total_workouts" = "Total Workouts";
+"progress_charts.stats.weekly_avg" = "Weekly Average";
+"progress_charts.stats.total_volume" = "Total Volume";
+"progress_charts.stats.average_volume" = "Average Volume";
+"progress_charts.insights.title" = "Insights";
+"progress_charts.insights.insufficient_data" = "Insufficient data";
+"progress_charts.insights.trend_up" = "Weight trending up";
+"progress_charts.insights.trend_down" = "Weight trending down";
+"progress_charts.insights.trend_stable" = "Weight stable";
+"progress_charts.insights.weight_trend" = "Weight Trend";
+"progress_charts.insights.workout_consistency" = "Workout Consistency";
+"progress_charts.insights.consistency.excellent" = "Excellent consistency!";
+"progress_charts.insights.consistency.good" = "Good consistency";
+"progress_charts.insights.consistency.average" = "Average consistency";
+"progress_charts.insights.consistency.low" = "You could be more consistent";
+"progress_charts.insights.empty_desc" = "As you add data, insights will appear here";
+"progress_charts.body_measurements.info" = "Use the chart section in BodyMeasurementsView for detailed graphs";
+
+// Fitness Calculators view specific helper strings
+"fitness_calculators.card.one_rm.details" = "Evaluate your exercise performance";
+"fitness_calculators.card.ffmi.details" = "Learn your natural potential";
+"fitness_calculators.card.navy.details" = "Estimate body fat using simple measurements";
+"calculators.info.title" = "Info";
+"calculators.info.accuracy" = "Accuracy";
+"calculators.info.accuracy_desc" = "Calculations are based on scientific formulas";
+"calculators.info.estimated" = "Estimated Results";
+"calculators.info.estimated_desc" = "Results are approximate; individual differences may apply";
+"calculators.info.health_warning" = "Health Warning";
+"calculators.info.health_warning_desc" = "Consult a doctor for serious health decisions";
+"progress_charts.subtitle" = "Visualize your fitness journey";
+"progress_charts.weight_chart" = "Weight Chart";
+"progress_charts.body_fat_chart" = "Body Fat Chart";
+"progress_charts.muscle_chart" = "Muscle Chart";
+"progress_charts.workout_chart" = "Workout Chart";
+"progress_charts.nutrition_chart" = "Nutrition Chart";
+"progress_charts.time_range" = "Time Range";
+"progress_charts.week" = "Week";
+"progress_charts.month" = "Month";
+"progress_charts.year" = "Year";
+"progress_charts.all_time" = "All Time";
+"progress_charts.no_data" = "No Data";
+"progress_charts.no_data_desc" = "Add some data to see your progress charts";
+
+// MARK: - Weight Tracking
+"weight_tracking.title" = "Weight Tracking";
+"weight_tracking.subtitle" = "Track your weight changes over time";
+"weight_tracking.add_weight" = "Add Weight";
+"weight_tracking.edit_weight" = "Edit Weight";
+"weight_tracking.delete_weight" = "Delete Weight";
+"weight_tracking.weight_entry" = "Weight Entry";
+"weight_tracking.weight_unit" = "Weight Unit";
+"weight_tracking.date" = "Date";
+"weight_tracking.notes" = "Notes";
+"weight_tracking.notes_placeholder" = "Add notes about this weight entry...";
+"weight_tracking.current_weight" = "Current Weight";
+"weight_tracking.starting_weight" = "Starting Weight";
+"weight_tracking.goal_weight" = "Goal Weight";
+"weight_tracking.weight_change" = "Weight Change";
+"weight_tracking.average_weight" = "Average Weight";
+"weight_tracking.trend" = "Trend";
+"weight_tracking.gaining" = "Gaining";
+"weight_tracking.losing" = "Losing";
+"weight_tracking.maintaining" = "Maintaining";
+
+// MARK: - Body Tracking
+"body_tracking.title" = "Body Tracking";
+"body_tracking.subtitle" = "Track your body composition";
+"body_tracking.body_composition" = "Body Composition";
+"body_tracking.body_fat" = "Body Fat";
+"body_tracking.muscle_mass" = "Muscle Mass";
+"body_tracking.water_weight" = "Water Weight";
+"body_tracking.bone_mass" = "Bone Mass";
+"body_tracking.visceral_fat" = "Visceral Fat";
+"body_tracking.bmi" = "BMI";
+"body_tracking.bmr" = "BMR";
+"body_tracking.tdee" = "TDEE";
+"body_tracking.lbm" = "LBM";
+"body_tracking.ffmi" = "FFMI";
+
+// MARK: - Help & Support
+"help.title" = "Help & Support";
+"help.subtitle" = "Get help and contact support";
+"help.faq" = "Frequently Asked Questions";
+"help.contact" = "Contact Support";
+"help.feedback" = "Send Feedback";
+"help.bug_report" = "Report a Bug";
+"help.feature_request" = "Request a Feature";
+"help.email" = "Email";
+"help.website" = "Website";
+"help.privacy_policy" = "Privacy Policy";
+"help.terms_of_service" = "Terms of Service";
+"help.about" = "About";
+"help.version" = "Version";
+"help.build" = "Build";
+
+// MARK: - Logout
+"logout.title" = "Logout";
+"logout.message" = "Are you sure you want to logout?";
+"logout.confirm" = "Logout";
+"logout.cancel" = "Cancel";
+"logout.success" = "Successfully logged out";
+"logout.error" = "Error logging out";
+
+// MARK: - Tools
+"tools.title" = "Tools";
+"tools.subtitle" = "Fitness tools and utilities";
+"tools.calculators" = "Calculators";
+"tools.converters" = "Converters";
+"tools.planners" = "Planners";
+"tools.trackers" = "Trackers";
+
+// MARK: - Progress Reports
+"progress_reports.title" = "Progress Reports";
+"progress_reports.subtitle" = "Generate detailed progress reports";
+"progress_reports.generate_report" = "Generate Report";
+"progress_reports.weekly_report" = "Weekly Report";
+"progress_reports.monthly_report" = "Monthly Report";
+"progress_reports.custom_report" = "Laporan Kustom";
+"progress_reports.export_report" = "Ekspor Laporan";
+"progress_reports.share_report" = "Bagikan Laporan";
+"progress_reports.report_date" = "Tanggal Laporan";
+"progress_reports.report_period" = "Periode Laporan";
+
+// MARK: - Edit Profile
+"edit_profile.title" = "Edit Profil";
+"edit_profile.subtitle" = "Update informasi profil Anda";
+"edit_profile.save_changes" = "Simpan Perubahan";
+"edit_profile.discard_changes" = "Buang Perubahan";
+"edit_profile.changes_saved" = "Perubahan Tersimpan";
+"edit_profile.error_saving" = "Kesalahan Menyimpan Perubahan";
+
+// MARK: - Calculator Specific
+"ffmi_calculator.title" = "Kalkulator FFMI";
+"ffmi_calculator.subtitle" = "Hitung Indeks Massa Bebas Lemak Anda";
+"ffmi_calculator.height" = "Tinggi";
+"ffmi_calculator.weight" = "Berat";
+"ffmi_calculator.body_fat" = "Lemak Tubuh %";
+"ffmi_calculator.calculate" = "Hitung";
+"ffmi_calculator.result" = "Hasil";
+"ffmi_calculator.interpretation" = "Interpretasi";
+
+"one_rm_calculator.title" = "Kalkulator 1RM";
+"one_rm_calculator.subtitle" = "Hitung One Rep Max Anda";
+"one_rm_calculator.exercise" = "Latihan";
+"one_rm_calculator.weight" = "Berat";
+"one_rm_calculator.reps" = "Rep";
+"one_rm_calculator.calculate" = "Hitung";
+"one_rm_calculator.result" = "Hasil";
+"one_rm_calculator.formula" = "Formula";
+
+"navy_method_calculator.title" = "Kalkulator Metode Navy";
+"navy_method_calculator.subtitle" = "Hitung lemak tubuh menggunakan Metode Navy";
+"navy_method_calculator.height" = "Tinggi";
+"navy_method_calculator.neck" = "Leher";
+"navy_method_calculator.waist" = "Pinggang";
+"navy_method_calculator.hip" = "Pinggul";
+"navy_method_calculator.gender" = "Jenis Kelamin";
+"navy_method_calculator.calculate" = "Hitung";
+"navy_method_calculator.result" = "Hasil";
+"navy_method_calculator.body_fat_percentage" = "Persentase Lemak Tubuh";
+
+"fitness_calculators.title" = "Kalkulator Fitness";
+"fitness_calculators.subtitle" = "Berbagai kalkulator fitness";
+"fitness_calculators.bmr" = "Kalkulator BMR";
+"fitness_calculators.tdee" = "Kalkulator TDEE";
+"fitness_calculators.bmi" = "Kalkulator BMI";
+"fitness_calculators.body_fat" = "Kalkulator Lemak Tubuh";
+"fitness_calculators.one_rm" = "Kalkulator 1RM";
+"fitness_calculators.ffmi" = "Kalkulator FFMI";
+
+// MARK: - BMI Categories
+"bmi_underweight" = "Kurus";
+"bmi_normal" = "Normal";
+"bmi_overweight" = "Kelebihan Berat";
+"bmi_obese" = "Obesitas";
+"bmi_unknown" = "Tidak Diketahui";
+
+// MARK: - Goal Status
+"goal_status_completed" = "Selesai";
+"goal_status_expired" = "Kedaluwarsa";
+"goal_status_days_remaining" = "%d hari tersisa";
+"goal_status_ends_today" = "Berakhir hari ini";
+"goal_status_active" = "Aktif";
+
+// MARK: - Goal Units
+"goal_unit_weight" = "kg";
+"goal_unit_body_fat" = "%";
+"goal_unit_muscle" = "kg";
+"goal_unit_workout" = "latihan";
+"goal_unit_nutrition" = "kalori";
+
+// MARK: - Goal Types
+"goal_type_weight" = "Target Berat";
+"goal_type_body_fat" = "Target Lemak Tubuh";
+"goal_type_muscle" = "Target Otot";
+"goal_type_workout" = "Target Latihan";
+"goal_type_nutrition" = "Target Nutrisi";
+
+// MARK: - Measurement Categories
+"measurement_category_body_composition" = "Komposisi Tubuh";
+"measurement_category_body_measurements" = "Pengukuran Tubuh";
+"measurement_category_performance" = "Performa";
+"measurement_category_nutrition" = "Nutrisi";
+
+// MARK: - Measurements
+"measurement_weight" = "Berat";
+"measurement_body_fat" = "Lemak Tubuh";
+"measurement_muscle" = "Otot";
+"measurement_chest" = "Dada";
+"measurement_waist" = "Pinggang";
+"measurement_hips" = "Pinggul";
+"measurement_left_arm" = "Lengan Kiri";
+"measurement_right_arm" = "Lengan Kanan";
+"measurement_left_thigh" = "Paha Kiri";
+"measurement_right_thigh" = "Paha Kanan";
+"measurement_neck" = "Leher";
+
+// Extra measurement types
+"measurement_forearm" = "Lengan Bawah";
+"measurement_calf" = "Betis";
+"measurement_shoulders" = "Bahu";
+
+// MARK: - Photo Types
+"photo_type_front" = "Depan";
+"photo_type_back" = "Belakang";
+"photo_type_side" = "Samping";
+"photo_type_progress" = "Progress";
+
+// MARK: - Photo Instructions
+"photo_instruction_front" = "Ambil foto dari depan";
+"photo_instruction_back" = "Ambil foto dari belakang";
+"photo_instruction_side" = "Ambil foto dari samping";
+"photo_instruction_progress" = "Ambil foto progress untuk melacak perjalanan fitness Anda";
+
+// MARK: - Language
+"language.change_title" = "Ubah Bahasa";
+"language.change_message" = "App akan restart untuk menerapkan perubahan bahasa. Semua data yang belum disimpan akan hilang.";
+"language.change_confirm" = "Ubah Bahasa";
+"language.change_cancel" = "Batal";
+"language.restart_required" = "Perlu Restart";
+"language.restart_message" = "Silakan restart app untuk perubahan bahasa berlaku.";
+
+// MARK: - Preferences Extended
+"preferences.auto_language" = "Mengikuti pengaturan bahasa perangkat Anda";
+"preferences.system_default" = "Mengikuti pengaturan tema perangkat Anda";
+"preferences.always_light" = "Selalu gunakan tema terang";
+"preferences.always_dark" = "Selalu gunakan tema gelap";
+"preferences.notifications_all" = "Izinkan semua notifikasi dari app";
+"preferences.workout_reminders_desc" = "Dapatkan pengingat tentang latihan yang dijadwalkan";
+"preferences.nutrition_reminders_desc" = "Dapatkan pengingat untuk mencatat makanan";
+"preferences.sound_effects" = "Efek Suara";
+"preferences.timer_sounds" = "Putar suara selama timer latihan";
+"preferences.haptic_feedback" = "Feedback Haptic";
+"preferences.vibration_feedback" = "Getar pada aksi penting";
+"PREFERENCES.SOUND_EFFECTS" = "EFEK SUARA";
+"PREFERENCES.APP_INFO" = "INFO APP";
+
+// MARK: - Progress Photos Extended
+"progress_photos.title" = "Foto Progress";
+"progress_photos.subtitle" = "Lacak perjalanan fitness Anda dengan foto";
+"progress_photos.add_first" = "Tambah Foto Pertama Anda";
+
+// MARK: - Body Measurements Extended
+"body_measurements.subtitle" = "Lacak pengukuran tubuh Anda dari waktu ke waktu";
+"body_measurements.current_measurements" = "Pengukuran Saat Ini";
+
+// MARK: - Personal Info Extended
+"personal_info.update_title" = "Update Informasi Personal";
+"personal_info.update_subtitle" = "Perbarui informasi Anda untuk kalkulasi yang akurat";
+"personal_info.basic_info" = "Informasi Dasar";
+"personal_info.name" = "Nama";
+"personal_info.age" = "Umur";
+"personal_info.gender" = "Jenis Kelamin";
+"personal_info.physical_measurements" = "Pengukuran Fisik";
+"personal_info.height" = "Tinggi";
+"personal_info.current_weight" = "Berat Saat Ini";
+"personal_info.goals_activity" = "Target & Aktivitas";
+"personal_info.fitness_goal" = "Target Fitness";
+"personal_info.activity_level" = "Level Aktivitas";
+"personal_info.calculated_values" = "Nilai Kalkulasi";
+"personal_info.basal_metabolism" = "Metabolisme Basal";
+"personal_info.daily_expenditure" = "Pengeluaran Energi Harian";
+"personal_info.calorie_goal" = "Target Kalori";
+"personal_info.daily_target" = "Target Harian";
+"personal_info.info_updated" = "Informasi Diperbarui";
+"personal_info.update_success" = "Informasi Anda berhasil diperbarui!";
+
+// MARK: - Gender
+"gender.male" = "Pria";
+"gender.female" = "Wanita";
+
+// MARK: - Account Management
+"account.title" = "Manajemen Akun";
+"account.info" = "Informasi Akun";
+"account.local_account" = "Akun Lokal";
+"account.registration_date" = "Tanggal Registrasi";
+"account.current_weight" = "Berat Saat Ini";
+"account.goal" = "Target";
+"account.activity" = "Aktivitas";
+"account.data_management" = "Manajemen Data";
+"account.backup_data" = "Backup Data";
+"account.export_desc" = "Ekspor semua data Anda";
+"account.app_info" = "Informasi App";
+"account.version" = "Versi 1.0 - Beta";
+"account.dangerous_actions" = "Aksi Berbahaya";
+"account.reset_data" = "Reset Semua Data";
+"account.reset_desc" = "Hapus data latihan dan nutrisi";
+"account.delete_account" = "Hapus Akun";
+"account.delete_desc" = "Hapus permanen akun dan semua data";
+"account.cannot_undo" = "Aksi ini tidak dapat dibatalkan.";
+
+// MARK: - Goal Types Extended
+"goal_type_strength" = "Target Kekuatan";
+"goal_type_endurance" = "Target Daya Tahan";
+"goal_type_flexibility" = "Target Fleksibilitas";
+"new_goal.title" = "Tambah Target Baru";
+"add_goal.title" = "Tambah Target";
+"goal.title" = "Judul Target";
+"goal.description" = "Deskripsi";
+"goal.value" = "Nilai Target";
+"goal.set_end_date" = "Set Tanggal Akhir";
+"goal.title_placeholder" = "mis.: Turun 5 kg";
+"goal.description_placeholder" = "Detail tentang target";
+
+// MARK: - Profile
+
+// MARK: - Common (missing)
+"common.save" = "Simpan";
+"common.cancel" = "Batal";
+"common.delete" = "Hapus";
+"common.edit" = "Edit";
+"common.add" = "Tambah";
+"common.reps" = "rep";
+"common.close" = "Tutup";
+"common.done" = "Selesai";
+"common.ok" = "OK";
+"common.yes" = "Ya";
+"common.no" = "Tidak";
+"common.error" = "Error";
+"common.success" = "Berhasil";
+"common.loading" = "Memuat";
+"common.retry" = "Coba Lagi";
+"common.user" = "Pengguna";
+"common.search" = "Cari";
+"common.all" = "Semua";
+"common.share" = "Bagikan";
+"common.confirm_delete" = "Konfirmasi Hapus";
+
+// MARK: - Preferences (base titles)
+"preferences.title" = "Preferensi";
+"preferences.language" = "Bahasa";
+"preferences.theme" = "Tema";
+"preferences.units" = "Unit";
+"preferences.notifications" = "Notifikasi";
+"preferences.app_info" = "Info App";
+
+// MARK: - Progress Photos (missing set)
+"progress_photos.add_photo" = "Tambah Foto";
+"progress_photos.photo_type" = "Jenis Foto";
+"progress_photos.select_photo" = "Pilih Foto";
+"progress_photos.camera_gallery" = "Kamera / Galeri";
+"progress_photos.notes_optional" = "Catatan (Opsional)";
+"progress_photos.notes_placeholder" = "Tambahkan catatan tentang foto ini...";
+"progress_photos.select_source" = "Pilih Sumber";
+"progress_photos.camera" = "Kamera";
+"progress_photos.gallery" = "Galeri";
+"progress_photos.delete_photo" = "Hapus Foto";
+"progress_photos.delete_message" = "Apakah Anda yakin ingin menghapus foto ini?";
+"progress_photos.photo_types" = "Jenis Foto";
+"progress_photos.no_photo" = "Tidak ada foto";
+"progress_photos.photos_count" = "foto";
+"progress_photos.timeline" = "Timeline";
+"progress_photos.full_screen" = "Layar Penuh";
+
+// MARK: - Body Measurements (missing set)
+"body_measurements.measurement_saved" = "Pengukuran Disimpan";
+"body_measurements.saved_message" = "Pengukuran Anda berhasil disimpan.";
+"body_measurements.progress_summary" = "Ringkasan Progress";
+"body_measurements.total_measurements" = "Total Pengukuran";
+"body_measurements.last_6_months" = "6 Bulan Terakhir";
+"body_measurements.weight_entries" = "Entri Berat";
+"body_measurements.last_measurement" = "Pengukuran Terakhir";
+"body_measurements.active_tracking" = "Jenis Pengukuran Aktif";
+"body_measurements.measurement_types" = "Jenis Pengukuran";
+"body_measurements.recent_entries" = "Entri Terbaru";
+"body_measurements.no_measurements" = "Belum ada pengukuran";
+"body_measurements.first_tip" = "Tips";
+"body_measurements.measurement_tips" = "Tips Pengukuran";
+"body_measurements.correct_timing" = "Waktu yang Tepat";
+"body_measurements.timing_desc" = "Ukur pada waktu yang sama setiap hari untuk konsistensi.";
+"body_measurements.correct_technique" = "Teknik yang Benar";
+"body_measurements.technique_desc" = "Gunakan teknik dan postur yang konsisten.";
+"body_measurements.regular_tracking" = "Pelacakan Rutin";
+"body_measurements.tracking_desc" = "Lacak secara rutin untuk melihat tren yang bermakna.";
+"body_measurements.trend_focus" = "Fokus pada Tren";
+"body_measurements.trend_desc" = "Fluktuasi jangka pendek adalah normal; fokus pada tren jangka panjang.";
+"body_measurements.add_new" = "Tambah Baru";
+
+// MARK: - Error Messages
+"error.food_not_selected" = "Error: Tidak ada makanan yang dipilih";
+
+// MARK: - Camera & Permissions
+"camera.settings" = "Pengaturan";
+"camera.permission_required" = "Izin kamera diperlukan untuk scanning barcode.";
+
+// MARK: - Body Composition
+"body_composition.title" = "Komposisi Tubuh";
+"body_composition.ffmi" = "FFMI";
+"body_composition.body_fat" = "Lemak Tubuh";
+"body_composition.fitness_level" = "Level Fitness";
+"body_composition.measurement_required" = "Pengukuran diperlukan";
+"body_composition.insufficient_data" = "Data tidak cukup";
+
+// MARK: - WOD Builder
+"wod.name_label" = "Nama METCON";
+"wod.enter_name_placeholder" = "Masukkan nama METCON";
+"wod.type_label" = "Jenis";
+"wod.rep_scheme_label" = "Skema Rep";
+"wod.rep_scheme_placeholder" = "mis., 21-15-9 atau 5 ronde";
+"wod.rep_scheme_examples" = "Contoh: '21-15-9' untuk rep menurun, '5' untuk 5 ronde";
+"wod.duration_label" = "Durasi (menit)";
+"wod.total_minutes_label" = "Total Menit";
+"wod.duration_placeholder" = "mis., 20";
+"wod.movements_label" = "Gerakan";
+"wod.add_movements" = "Tambah gerakan ke METCON Anda";
+"wod.create_title" = "Buat METCON";
+"wod.description_label" = "Deskripsi METCON";
+"wod.score_result_label" = "Skor/Hasil";
+"wod.score_placeholder" = "mis., 12:45 atau 5 ronde";
+"wod.add_title" = "Tambah METCON";
+"wod.movement_section" = "Gerakan";
+"wod.movement_name_placeholder" = "Nama gerakan";
+"wod.reps_optional_section" = "Rep (opsional)";
+"wod.number_of_reps_placeholder" = "Jumlah rep";
+"wod.rx_weight_optional_section" = "Berat RX (opsional)";
+"wod.male_weight_placeholder" = "Pria (mis., 43kg)";
+"wod.female_weight_placeholder" = "Wanita (mis., 30kg)";
+"wod.add_movement_title" = "Tambah Gerakan";
+"wod.edit_movement_title" = "Edit Gerakan";
+"wod.rx_prefix" = "RX";
+"wod.score_prefix" = "Skor";
+"wod.rx" = "RX";
+"wod.rep_scheme" = "Skema Rep";
+"wod.time_cap" = "Time Cap";
+"wod.progress" = "Progress";
+"wod.rounds" = "Ronde";
+"wod.current" = "Saat Ini";
+"wod.complete_round" = "Selesaikan Ronde";
+"wod.movements" = "Gerakan";
+"wod.start" = "Mulai";
+"wod.resume" = "Lanjutkan";
+"wod.pause" = "Jeda";
+"wod.finish" = "Selesai";
+"wod.save_result" = "Simpan Hasil";
+"wod.timer_title" = "Timer METCON";
+"wod.result_section" = "Hasil METCON";
+"wod.extra_reps" = "Rep Ekstra";
+"wod.notes_optional" = "Catatan (opsional)";
+"wod.completed_rx" = "Ini diselesaikan dengan RX";
+
+// MARK: - Training
+"training.set.complete_set" = "Selesaikan Set";
+"training.set.cannot_delete_last" = "Tidak bisa hapus set terakhir";
+"training.set.same_as_last" = "Sama dengan Set Terakhir";
+"training.quick_rep_selection" = "Pilihan Rep Cepat";
+
+// MARK: - Workout Completion
+"workout.completion.congratulations" = "Selamat! 🎉";
+"workout.stats.total_sets" = "Total Set";
+"workout.stats.volume" = "Volume";
+
+// MARK: - Units
+"units.metric" = "Metrik";
+"units.imperial" = "Imperial";
+"units.metric_format" = "format cm, kg";
+"units.imperial_format" = "format ft, lbs";
+"units.feet" = "Kaki";
+"units.inches" = "Inci";
+"units.lbs" = "lbs";
+
+// MARK: - Onboarding
+"onboarding.unit_system" = "Sistem Unit";
+
+// MARK: - Validation
+"validation.invalid_value" = "Nilai tidak valid";
+
+// MARK: - Accessibility
+"accessibility.back_step" = "Kembali ke langkah sebelumnya";
+
+// MARK: - HealthKit
+"healthkit.permission_denied" = "Izin HealthKit ditolak";
+
+// MARK: - Nutrition
+"nutrition.portion_input.grams" = "Gram";
+"nutrition.portion_input.serving" = "Porsi";
+"nutrition.portion_input.count" = "Jumlah";
+"nutrition.loading_product" = "Memuat produk...";
+"nutrition.openfoodfacts_section" = "OpenFoodFacts";
+
+// MARK: - Analytics
+"analytics.change" = "Perubahan";
+"analytics.calculating" = "Menghitung";
+"analytics.average" = "Rata-rata";
+
+// MARK: - Common Extensions
+"common.retry" = "Coba Lagi";
+"common.repeat" = "Ulangi";
+"common.duplicate" = "Duplikasi";
+"common.share" = "Bagikan";
+
+// MARK: - Time
+"time.minutes_short" = "MM";
+"time.seconds_short" = "DD";
+
+// MARK: - Quick Portions
+"quick_portions.title" = "Porsi Cepat";
+"quick_portions.custom" = "Kustom";
+"quick_portions.custom_amount" = "Jumlah Kustom (g)";
+"quick_portions.set" = "Set";
+
+// MARK: - FFMI Calculator
+"ffmi_calculator.title" = "Kalkulator FFMI";
+"ffmi_calculator.subtitle" = "Hitung Indeks Massa Bebas Lemak Anda";
+"ffmi_calculator.calculate" = "Hitung";
+"ffmi_calculator.measurements" = "Pengukuran Tubuh";
+"ffmi_calculator.results" = "Hasil";
+"ffmi_calculator.scale" = "Skala FFMI";
+"ffmi_calculator.about" = "Tentang FFMI";
+"ffmi_calculator.weight_label" = "Berat Badan (kg)";
+"ffmi_calculator.height_label" = "Tinggi (cm)";
+"ffmi_calculator.body_fat_label" = "Persentase Lemak Tubuh (%)";
+"ffmi_calculator.ffmi_value" = "Nilai FFMI Anda";
+"ffmi_calculator.lean_mass" = "Massa Bebas Lemak";
+"ffmi_calculator.what_is_ffmi" = "Apa itu FFMI?";
+"ffmi_calculator.what_is_ffmi_desc" = "Indeks Massa Bebas Lemak mengevaluasi komposisi tubuh Anda";
+"ffmi_calculator.natural_limit" = "Batas Natural";
+"ffmi_calculator.natural_limit_desc" = "Nilai di atas 25 biasanya menunjukkan penggunaan steroid";
+"ffmi_calculator.targets" = "Target";
+"ffmi_calculator.targets_desc" = "18-22 untuk pria, 14-17 untuk wanita dianggap ideal";
+"ffmi_calculator.note" = "Catatan";
+"ffmi_calculator.note_desc" = "Akurasi persentase lemak tubuh sangat mempengaruhi hasil";
+"ffmi_calculator.below_average" = "Di Bawah Rata-rata";
+"ffmi_calculator.average" = "Rata-rata";
+"ffmi_calculator.above_average" = "Di Atas Rata-rata";
+"ffmi_calculator.excellent" = "Excellent";
+"ffmi_calculator.superior" = "Superior";
+"ffmi_calculator.suspicious" = "Mencurigakan";
+"ffmi_calculator.below_average_desc" = "Kerja keras membangun massa otot";
+"ffmi_calculator.average_desc" = "Massa otot normal";
+"ffmi_calculator.above_average_desc" = "Perkembangan otot yang baik";
+"ffmi_calculator.excellent_desc" = "Massa otot sangat baik";
+"ffmi_calculator.superior_desc" = "Mendekati maksimum natural";
+"ffmi_calculator.suspicious_desc" = "Mungkin melebihi batas natural";
+
+// MARK: - OneRM Calculator
+"one_rm_calculator.title" = "Kalkulator 1RM";
+"one_rm_calculator.subtitle" = "Hitung berat maksimum satu repetisi Anda";
+"one_rm_calculator.calculate" = "Hitung";
+"one_rm_calculator.training_info" = "Informasi Latihan";
+"one_rm_calculator.results" = "Hasil";
+"one_rm_calculator.about" = "Tentang 1RM";
+"one_rm_calculator.weight_lifted" = "Berat yang Diangkat (kg)";
+"one_rm_calculator.rep_count" = "Jumlah Repetisi (1-15)";
+"one_rm_calculator.calculation_formula" = "Formula Kalkulasi";
+"one_rm_calculator.one_rm_value" = "Nilai 1RM Anda";
+"one_rm_calculator.what_is_one_rm" = "Apa itu 1RM?";
+"one_rm_calculator.what_is_one_rm_desc" = "Berat maksimum yang bisa Anda angkat dalam satu repetisi";
+"one_rm_calculator.how_to_use" = "Cara Menggunakan";
+"one_rm_calculator.how_to_use_desc" = "Bekerja dalam rentang repetisi yang aman (3-10) dan hitung";
+"one_rm_calculator.accuracy" = "Akurasi";
+"one_rm_calculator.accuracy_desc" = "Memberikan hasil paling akurat dalam rentang 3-10 repetisi";
+"one_rm_calculator.safety" = "Keamanan";
+"one_rm_calculator.safety_desc" = "Tes 1RM nyata bisa berisiko, kalkulasi lebih aman";
+"one_rm_calculator.percentage_table" = "Intensitas Latihan";
+
+// MARK: - Formula Info
+"formula_info.title" = "Informasi Formula";
+"formula_info.brzycki_desc" = "Paling banyak digunakan, ideal untuk 1-10 repetisi";
+"formula_info.epley_desc" = "Dipilih di powerlifting, lebih konservatif";
+"formula_info.lander_desc" = "Hasil lebih akurat pada repetisi tinggi";
+
+// MARK: - Profile Messages
+"profile.messages.save_to_profile" = "Simpan ke Profil";
+
+// MARK: - Training Cardio
+"training.cardio.templates" = "Template";
+"training.cardio.history" = "Riwayat";
+"training.cardio.type" = "Jenis";
+"training.cardio.activity" = "Aktivitas";
+"training.cardio.flexibility" = "Fleksibilitas";
+"training.cardio.anyDistanceTime" = "Jarak/waktu apa saja";
+"training.cardio.equipment" = "Peralatan";
+"training.cardio.personalRecord" = "Rekor Personal";
+"training.cardio.statistics" = "Statistik";
+"training.cardio.recentSessions" = "Sesi Terbaru";
+"training.cardio.workoutDetails" = "Detail Latihan";
+"training.cardio.startWorkout" = "Mulai Latihan";
+"training.cardio.duplicate" = "Duplikasi";
+"training.cardio.delete" = "Hapus";
+"training.cardio.newSession" = "Sesi Baru";
+"training.cardio.setGoal" = "Set target Anda untuk sesi ini";
+"training.cardio.sessionType" = "Jenis Sesi";
+"training.cardio.target" = "Target";
+"training.cardio.notes" = "Catatan";
+"training.cardio.notesPlaceholder" = "Catatan opsional untuk sesi ini...";
+"training.cardio.equipmentOptions" = "Opsi Peralatan";
+"training.cardio.startSession" = "Mulai Sesi";
+"training.cardio.distanceGoal" = "Target Jarak";
+"training.cardio.timeGoal" = "Target Waktu";
+"training.cardio.quickSelect" = "Pilih Cepat";
+"training.cardio.customDistance" = "Jarak Kustom";
+"training.cardio.customDuration" = "Durasi Kustom";
+"training.cardio.sessionTracking" = "Pelacakan Sesi";
+"training.cardio.logResults" = "Catat hasil Anda";
+"training.cardio.targetProgress" = "Progress Target";
+"training.cardio.duration" = "Durasi";
+"training.cardio.distance" = "Jarak";
+"training.cardio.performance" = "Performa";
+"training.cardio.additionalInfo" = "Info Tambahan";
+"training.cardio.heartRate" = "Detak Jantung";
+"training.cardio.feeling" = "Perasaan";
+"training.cardio.sessionNotes" = "Catatan Sesi";
+"training.cardio.sessionNotesPlaceholder" = "Bagaimana sesi ini berjalan?";
+"training.cardio.completeSession" = "Selesaikan Sesi";
+"training.cardio.saveSession" = "Simpan sesi ini ke riwayat Anda?";
+"training.cardio.customSessions" = "Tidak Ada Sesi Kustom";
+"training.cardio.noExerciseTypes" = "Tidak Ada Jenis Latihan";
+"training.cardio.noHistoryMessage" = "Sesi cardio Anda akan muncul di sini";
+"training.cardio.adjustSearch" = "Coba sesuaikan pencarian Anda";
+"training.cardio.clearSearch" = "Hapus Pencarian";
+"training.cardio.noHistory" = "Belum Ada Sesi";
+"training.cardio.browseTemplates" = "Telusuri Template";
+
+// Quick Start and UI
+"training.cardio.quickStart" = "Mulai Cepat";
+"training.cardio.selectActivityAndStart" = "Pilih jenis aktivitas dan mulai";
+"training.cardio.location" = "Lokasi";
+"training.cardio.indoor" = "Indoor";
+"training.cardio.ergometer" = "Ergometer";
+"training.cardio.selectActivity" = "Pilih Aktivitas";
+"training.cardio.noActivities" = "Tidak Ada Aktivitas";
+"training.cardio.noActivitiesDescription" = "Tidak ada aktivitas tersedia untuk lokasi ini";
+"training.cardio.start" = "Mulai";
+"training.cardio.features" = "Fitur";
+
+// Feature descriptions
+"training.cardio.gpsTracking" = "Pelacakan GPS";
+"training.cardio.routeMapping" = "Pemetaan rute";
+"training.cardio.autoDistance" = "Pelacakan jarak otomatis";
+"training.cardio.heartRateMonitoring" = "Monitoring detak jantung";
+"training.cardio.timerTracking" = "Pelacakan timer";
+"training.cardio.manualDistanceEntry" = "Entri jarak manual";
+"training.cardio.calorieEstimation" = "Estimasi kalori";
+"training.cardio.pm5Compatible" = "Kompatibel PM5";
+"training.cardio.powerMetrics" = "Metrik power";
+"training.cardio.splitTracking" = "Pelacakan split";
+"training.cardio.neverAttempted" = "Belum pernah dicoba";
+
+// MARK: - Cardio Exercise Types
+"training.cardio.exercise.running" = "Lari";
+"training.cardio.exercise.cycling" = "Bersepeda";
+"training.cardio.exercise.rowing" = "Mendayung";
+"training.cardio.exercise.skiing" = "Ski Erg";
+"training.cardio.exercise.walking" = "Jalan";
+
+// MARK: - Cardio Equipment
+"training.cardio.equipment.outdoor" = "Outdoor";
+"training.cardio.equipment.treadmill" = "Treadmill";
+"training.cardio.equipment.rowErg" = "Row Erg";
+"training.cardio.equipment.bikeErg" = "Bike Erg";
+"training.cardio.equipment.skiErg" = "Ski Erg";
+
+// MARK: - Cardio Session Feelings
+"training.cardio.feeling.terrible" = "Buruk Sekali";
+"training.cardio.feeling.bad" = "Buruk";
+"training.cardio.feeling.okay" = "Cukup";
+"training.cardio.feeling.good" = "Baik";
+"training.cardio.feeling.great" = "Luar Biasa";
+
+// MARK: - Search & Placeholders
+"search.wods_placeholder" = "Cari METCON...";
+"time.minutes_short" = "MM";
+"time.seconds_short" = "DD";
+
+// MARK: - Training Analytics (Additional Keys)
+"training.analytics.trackProgress" = "Lacak progress dan pencapaian Anda";
+"training.analytics.thisWeek" = "Minggu Ini";
+"training.analytics.sessions" = "Sesi";
+"training.analytics.totalTime" = "Total Waktu";
+"training.analytics.streak" = "Streak";
+"training.analytics.prs" = "PR";
+"training.analytics.days" = "hari";
+"training.analytics.monthlyGoals" = "Target Bulanan";
+"training.analytics.editGoals" = "Edit Target";
+"training.analytics.distance" = "Jarak";
+"training.analytics.viewAll" = "Lihat Semua";
+"training.analytics.recentPRs" = "PR Terbaru";
+"training.analytics.noPRsYet" = "Belum Ada PR";
+"training.analytics.noPRsMessage" = "Selesaikan latihan untuk mulai melacak rekor personal";
+"training.analytics.startTraining" = "Mulai Latihan";
+"training.analytics.noUserProfile" = "Tidak Ada Profil User";
+"training.analytics.setupProfileMessage" = "Lengkapi setup profil Anda untuk melihat analytics";
+"training.analytics.setupProfile" = "Setup Profil";
+
+// MARK: - Training Lift (Additional Keys)
+"training.lift.train" = "Latihan";
+"training.lift.programs" = "Program";
+"training.lift.routines" = "Rutinitas";
+"training.lift.history" = "Riwayat";
+"training.lift.sessionInProgress" = "Sesi sedang berlangsung";
+"training.lift.newWorkout" = "Latihan Baru";
+"training.lift.cancel" = "Batal";
+"training.lift.close" = "Tutup";
+"training.lift.done" = "Selesai";
+"training.lift.save" = "Simpan";
+"training.lift.delete" = "Hapus";
+"training.lift.edit" = "Edit";
+"training.lift.seeAll" = "Lihat Semua";
+"training.lift.noWorkouts" = "Belum Ada Latihan";
+"training.lift.noWorkoutsDesc" = "Mulai latihan pertama Anda untuk mulai melacak progress strength training";
+"training.lift.startFirstWorkout" = "Mulai Latihan Pertama";
+
+// MARK: - Loading View
+"loading.title" = "Thrustr Sedang Bersiap";
+"loading.subtitle" = "Memuat data...";
+
+// MARK: - Strength Tests
+"strength.main.title" = "Tes Kekuatan";
+"strength.test.title" = "Tes Kekuatan";
+
+// MARK: - Strength Exercises
+"strength.exercise.benchPress" = "Bench Press";
+"strength.exercise.overheadPress" = "Overhead Press";
+"strength.exercise.pullUp" = "Pull-up";
+"strength.exercise.backSquat" = "Back Squat";
+"strength.exercise.deadlift" = "Deadlift";
+
+// MARK: - Muscle Groups
+"strength.muscleGroup.chest" = "Dada";
+"strength.muscleGroup.shoulders" = "Bahu";
+"strength.muscleGroup.back" = "Punggung";
+"strength.muscleGroup.legs" = "Kaki";
+"strength.muscleGroup.hips" = "Pinggul";
+
+// MARK: - Strength Levels
+"strength.level.beginner" = "Pemula";
+"strength.level.novice" = "Novice";
+"strength.level.intermediate" = "Menengah";
+"strength.level.advanced" = "Lanjutan";
+"strength.level.expert" = "Ahli";
+"strength.level.elite" = "Elite";
+
+// MARK: - Units
+"strength.unit.reps" = "rep";
+"strength.unit.kg" = "kg";
+
+// MARK: - Strength Main Screen
+"strength.main.empty.title" = "Temukan Level Kekuatan Anda";
+"strength.main.empty.subtitle" = "Tes kekuatan Anda di 5 gerakan fundamental dan lacak progress Anda.";
+"strength.main.empty.benefit1" = "Temukan kekuatan dan kelemahan";
+"strength.main.empty.benefit1Description" = "Pelajari grup otot mana yang terkuat";
+"strength.main.empty.benefit2" = "Lacak progress";
+"strength.main.empty.benefit2Description" = "Visualisasikan peningkatan Anda dari waktu ke waktu";
+"strength.main.empty.benefit3" = "Rekomendasi latihan cerdas";
+"strength.main.empty.benefit3Description" = "Dapatkan program personal berdasarkan hasil tes";
+"strength.main.empty.startTest" = "Mulai Tes Pertama Anda";
+
+"strength.main.currentProfile" = "Profil Kekuatan Saat Ini";
+"strength.main.retestRecommended" = "Disarankan tes ulang";
+"strength.main.lastTest" = "Tes terakhir";
+"strength.main.score" = "Skor";
+"strength.main.quickActions" = "Aksi Cepat";
+"strength.main.actions.newTest" = "Tes Baru";
+"strength.main.actions.newTestSubtitle" = "Ukur level Anda saat ini";
+"strength.main.actions.history" = "Riwayat";
+"strength.main.actions.historySubtitle" = "Lihat tes sebelumnya";
+"strength.main.history" = "Riwayat Tes";
+
+// MARK: - Strength Test Interface
+"strength.test.finish" = "Selesai";
+"strength.test.submitExercise" = "Selesaikan Latihan";
+"strength.test.allCompleted" = "Semua Latihan Selesai!";
+"strength.test.completionMessage" = "Selesaikan tes untuk melihat hasil Anda";
+"strength.test.exercisesCompleted" = "Selesai";
+"strength.test.personalRecords" = "Rekor Personal";
+"strength.test.timeSpent" = "Durasi";
+"strength.test.seeResults" = "Lihat Hasil";
+
+// MARK: - Strength Cards
+"strength.card.previousBest" = "Terbaik Sebelumnya";
+"strength.card.completed" = "Selesai";
+"strength.card.personalRecord" = "Rekor Personal";
+"strength.card.weight" = "Berat";
+
+// MARK: - Strength Input
+"strength.input.pullUpType" = "Jenis Pull-up";
+"strength.input.bodyweight" = "Berat Badan";
+"strength.input.weighted" = "Dengan Beban";
+"strength.input.reps" = "Rep";
+"strength.input.additionalWeight" = "Beban Tambahan";
+"strength.input.effectiveWeight" = "Berat Efektif";
+
+// MARK: - Progress & Recommendations
+"strength.progress.exercisesCompleted" = "{completed}/{total} latihan selesai";
+"strength.recommendation.nextExercise" = "Selanjutnya: {exercise}";
+
+// MARK: - Test Results
+"strength.results.title" = "Hasil Tes";
+"strength.results.subtitle" = "Anda telah berhasil menyelesaikan tes kekuatan";
+"strength.results.overallScore" = "Skor Keseluruhan";
+"strength.results.profile" = "Profil";
+"strength.results.exercises" = "Latihan";
+"strength.results.exerciseBreakdown" = "Detail Latihan";
+"strength.results.strengthProfile" = "Profil Kekuatan";
+"strength.results.recommendations" = "Rekomendasi";
+"strength.results.saveResults" = "Simpan Hasil";
+"strength.results.shareResults" = "Bagikan Hasil";
+
+// MARK: - Strength Profiles
+"strength.profile.balanced.title" = "Kekuatan Seimbang";
+"strength.profile.balanced.description" = "Kekuatan tubuh bagian atas dan bawah Anda seimbang. Fondasi yang bagus!";
+"strength.profile.upperDominant.title" = "Dominan Tubuh Atas";
+"strength.profile.upperDominant.description" = "Tubuh bagian atas Anda kuat. Fokus mengembangkan kekuatan tubuh bagian bawah.";
+"strength.profile.lowerDominant.title" = "Dominan Tubuh Bawah";
+"strength.profile.lowerDominant.description" = "Tubuh bagian bawah Anda kuat. Fokus mengembangkan kekuatan tubuh bagian atas.";
+"strength.profile.unknown.title" = "Profil Tidak Diketahui";
+"strength.profile.unknown.description" = "Diperlukan lebih banyak data tes.";
+
+// MARK: - Exercise Instructions
+"strength.instructions.title" = "Instruksi Latihan";
+"strength.instructions.navigationTitle" = "Instruksi";
+"strength.instructions.safetyTitle" = "Tips Keamanan";
+"strength.instructions.warmUp" = "Jangan lewatkan pemanasan";
+"strength.instructions.properForm" = "Jaga form yang benar";
+"strength.instructions.spotter" = "Gunakan spotter untuk beban berat";
+
+"strength.instructions.benchPress" = "Berbaring rata di bench, genggam bar selebar bahu. Sentuh bar ke dada, tekan ke atas.";
+"strength.instructions.overheadPress" = "Berdiri tegak, mulai dengan bar di level bahu. Tekan ke atas kepala.";
+"strength.instructions.pullUp" = "Gantung dari bar, tarik dagu ke level bar. Turun dengan kontrol.";
+"strength.instructions.backSquat" = "Bar di bahu, squat turun sampai lutut mencapai 90 derajat.";
+"strength.instructions.deadlift" = "Angkat bar dari tanah, jaga punggung lurus, dorong pinggul ke depan.";
+
+// MARK: - Test History
+"strength.history.latest" = "Terbaru";
+"strength.history.empty.title" = "Belum ada tes";
+"strength.history.empty.subtitle" = "Mulai dengan tes kekuatan pertama Anda";
+"strength.history.empty.startTest" = "Mulai Tes";
+
+// MARK: - Errors & Validation
+"strength.error.title" = "Error";
+"strength.error.noUser" = "Profil user tidak ditemukan";
+"strength.error.noUserSubtitle" = "Buat profil terlebih dahulu";
+"strength.error.invalidInput" = "Nilai tidak valid";
+"strength.error.noResults" = "Tidak ada hasil ditemukan";
+"strength.error.noResultsSubtitle" = "Lanjutkan tes";
+"strength.error.positiveValue" = "Nilai harus lebih dari nol";
+"strength.error.saveFailure" = "Error simpan";
+
+"strength.validation.positiveValue" = "Nilai harus positif";
+"strength.validation.pullUpMax" = "Tidak bisa melebihi 100 rep";
+"strength.validation.weightMax" = "Tidak bisa melebihi 500kg";
+"strength.validation.weightMin" = "Tidak bisa kurang dari 5kg";
+"strength.validation.ohpSanity" = "Overhead press tidak bisa melebihi 2x berat badan";
+"strength.validation.benchSanity" = "Bench press tidak bisa melebihi 3x berat badan";
+
+// MARK: - Legend & Comparisons
+"strength.legend.title" = "Indikator Level";
+
+"strength.comparison.significantImprovement" = "Peningkatan signifikan: %{percentage}";
+"strength.comparison.slightImprovement" = "Peningkatan sedikit";
+"strength.comparison.decline" = "Menurun";
+"strength.comparison.stable" = "Stabil";
+
+// MARK: - Insights
+"strength.insights.personalRecords" = "Rekor Personal";
+"strength.insights.personalRecordsDescription" = "Anda mencapai {count} rekor personal baru!";
+"strength.insights.profile" = "Profil Kekuatan";
+"strength.insights.progress" = "Tren Progress";
+"strength.insights.balancedDescription" = "Profil kekuatan yang seimbang";
+"strength.insights.upperDominantDescription" = "Profil fokus tubuh bagian atas";
+"strength.insights.lowerDominantDescription" = "Profil fokus tubuh bagian bawah";
+
+// MARK: - Recommendations
+"strength.recommendations.focusOn" = "Fokus pada {exercise}";
+"strength.recommendations.lowerBodyFocus" = "Tingkatkan latihan tubuh bagian bawah";
+"strength.recommendations.upperBodyFocus" = "Tingkatkan latihan tubuh bagian atas";
+"strength.recommendations.maintainBalance" = "Pertahankan perkembangan yang seimbang";
+"strength.recommendations.beginnerProgram" = "Program pemula disarankan";
+"strength.recommendations.intermediateProgram" = "Program menengah disarankan";
+"strength.recommendations.advancedProgram" = "Program lanjutan disarankan";
+
+// MARK: - Standards & Descriptions
+"strength.standards.benchPress.description" = "Indikator kekuatan otot dada";
+"strength.standards.overheadPress.description" = "Indikator stabilitas bahu dan core";
+"strength.standards.pullUp.description" = "Indikator kekuatan punggung dan lengan";
+"strength.standards.backSquat.description" = "Indikator kekuatan tubuh bagian bawah";
+"strength.standards.deadlift.description" = "Indikator kekuatan tubuh keseluruhan";
+
+// MARK: - Summary
+"strength.summary.incomplete" = "Tes tidak lengkap";
+"strength.summary.overallLevel" = "Level Keseluruhan";
+"strength.summary.profile" = "Profil";
+"strength.summary.score" = "Skor";
+"strength.summary.results" = "Hasil";
+"strength.summary.recommendations" = "Rekomendasi";
+
+// MARK: - Time References
+"strength.results.daysAgo" = "{days} hari yang lalu";
+"strength.results.weeksAgo" = "{weeks} minggu yang lalu";
+
+// MARK: - Trends
+"strength.trend.improving" = "Meningkat";
+"strength.trend.stable" = "Stabil";
+"strength.trend.declining" = "Menurun";
+
+// MARK: - Dashboard New Keys
+
+// Dashboard Activities
+"dashboard.activities.activity" = "aktivitas";
+"dashboard.activities.moreActivities" = "aktivitas lainnya";
+"dashboard.activities.startWorkout" = "Mulai Latihan";
+"dashboard.activities.logNutrition" = "Catat Nutrisi";
+"dashboard.activities.logWeight" = "Catat Berat";
+
+// All Activities View
+"dashboard.activities.allActivitiesTitle" = "Semua Aktivitas";
+"dashboard.activities.filterAll" = "Semua";
+"dashboard.activities.filterWorkouts" = "Latihan";
+"dashboard.activities.filterNutrition" = "Nutrisi";
+"dashboard.activities.filterMeasurements" = "Pengukuran";
+"dashboard.activities.searchPlaceholder" = "Cari aktivitas...";
+"dashboard.activities.totalActivities" = "Total %d aktivitas";
+"dashboard.activities.thisWeekStats" = "%d aktivitas minggu ini";
+"dashboard.activities.noResultsTitle" = "Tidak ada hasil";
+"dashboard.activities.noResultsDesc" = "Coba hapus filter dan cari lagi";
+"dashboard.activities.clearFilters" = "Hapus Filter";
+
+// Motivational messages
+"dashboard.activities.morningMotivation" = "Mulai hari Anda dengan energi! 🌅";
+"dashboard.activities.afternoonMotivation" = "Pertahankan momentum! ⚡";
+"dashboard.activities.eveningMotivation" = "Waktu untuk refleksi hari Anda! 🌙";
+"dashboard.activities.weekendMotivation" = "Tetap aktif di akhir pekan juga! 🎯";
+"dashboard.activities.nightMotivation" = "Hari yang bagus hari ini! Tetap aktif besok juga! 💤";
+
+// Contextual Empty State Messages
+"dashboard.activities.weekend.title" = "Aktivitas Akhir Pekan";
+"dashboard.activities.morning.title" = "Selamat pagi! Belum ada aktivitas";
+"dashboard.activities.afternoon.title" = "Waktu aktivitas siang";
+"dashboard.activities.evening.title" = "Rencanakan aktivitas malam Anda";
+"dashboard.activities.night.title" = "Bagaimana hari Anda?";
+
+"dashboard.activities.weekend.desc" = "Catat aktivitas Anda untuk tetap fit di akhir pekan juga";
+"dashboard.activities.morning.desc" = "Mulai hari Anda dengan energi dengan latihan pertama";
+"dashboard.activities.afternoon.desc" = "Terus lacak aktivitas Anda sepanjang hari";
+"dashboard.activities.evening.desc" = "Waktu untuk evaluasi hari Anda dan tinjau target";
+"dashboard.activities.night.desc" = "Buat rencana untuk besok dan lengkapi hari Anda";
+
+// Additional Activity Keys
+"dashboard.activities.close" = "Tutup";
+"dashboard.activities.oneFood" = "1 makanan";
+"dashboard.activities.multipleFood" = "%d makanan";
+"dashboard.activities.measurement" = "Pengukuran";
+"dashboard.activities.goal" = "Target";
+"dashboard.activities.setting" = "Pengaturan";
+"dashboard.activities.goalAchieved" = "Target tercapai ✅";
+"dashboard.activities.personalRecordTitle" = "PR %@!";
+"dashboard.activities.newProgramStarted" = "Program baru dimulai";
+"dashboard.activities.roundsFormat" = "%d ronde";
+"dashboard.activities.completed" = "Selesai";
+"dashboard.activities.calorieGoalReached" = "Target kalori tercapai";
+"dashboard.activities.bodyFatUpdated" = "Lemak tubuh diperbarui";
+"dashboard.activities.streakMilestone" = "Milestone streak";
+"dashboard.activities.weeklyGoalReached" = "Target mingguan tercapai";
+"dashboard.activities.stepsGoalReached" = "Target langkah tercapai";
+"dashboard.activities.healthDataSynced" = "Data kesehatan tersinkron";
+"dashboard.activities.sleepLogged" = "Data tidur dicatat";
+"dashboard.activities.planUpdated" = "Rencana diperbarui";
+"dashboard.activities.profileUpdated" = "Profil diperbarui";
+"dashboard.activities.unitSystemChanged" = "Sistem unit diubah";
+
+// Meal Types
+"dashboard.meals.meal" = "Makanan";
+
+// MARK: - Nutrition Error Messages
+"nutrition.error.noFoodSelected" = "Error: Tidak ada makanan dipilih";
+"nutrition.error.noFoodSelectedDesc" = "Silakan coba lagi";
+"nutrition.error.pleaseTryAgain" = "Terlalu banyak permintaan, silakan coba lagi";
+"nutrition.error.invalidBarcode" = "Barcode tidak valid";
+"nutrition.error.productNotFound" = "Produk tidak ditemukan";
+"nutrition.error.networkUnavailable" = "Koneksi jaringan tidak tersedia";
+"nutrition.error.decodingFailed" = "Data tidak bisa didecode";
+"nutrition.error.invalidResponse" = "Response tidak valid";
+"nutrition.error.serverError" = "Error server (%d)";
+
+// MARK: - Nutrition Actions
+"nutrition.actions.close" = "Tutup";
+"nutrition.actions.retry" = "Coba Lagi";
+"nutrition.actions.tryAgain" = "Coba Lagi";
+"nutrition.actions.cancel" = "Batal";
+"nutrition.actions.scanAgain" = "Scan Lagi";
+
+// MARK: - Training Navigation
+"training.navigation.wodDetails" = "Detail WOD";
+"training.navigation.wodHistory" = "Riwayat %@";
+"training.navigation.newCardio" = "Cardio Baru";
+"training.navigation.selectExercise" = "Pilih Latihan";
+"training.navigation.shareWOD" = "Bagikan WOD";
+"training.navigation.workoutSummary" = "Ringkasan Latihan";
+"training.navigation.heartRateSelect" = "Pilih Monitor Detak Jantung";
+"training.navigation.strengthTest" = "Tes Kekuatan";
+"training.navigation.getReady" = "Bersiap!";
+
+// MARK: - Training Common
+"training.common.cancel" = "Batal";
+"training.common.done" = "Selesai";
+"training.common.create" = "Buat";
+"training.common.startProgram" = "Mulai Program";
+"training.common.back" = "Kembali";
+"training.common.details" = "Detail";
+"training.common.updateOneRMs" = "Update 1RM";
+"training.common.congratulations" = "Selamat!";
+"training.common.finishedProgram" = "Selamat telah menyelesaikan program Anda!";
+"training.common.scanAgain" = "Scan Lagi";
+
+// Dashboard Profile
+"dashboard.profile.height" = "Tinggi";
+"dashboard.profile.weight" = "Berat";
+"dashboard.profile.bodyFat" = "Lemak Tubuh";
+"dashboard.profile.strengthLevel" = "Level";
+"dashboard.profile.takeTest" = "Ambil Tes";
+"dashboard.profile.testHint" = "Tap untuk mulai tes kekuatan";
+"dashboard.profile.profileMetrics" = "Metrik Profil";
+
+// Dashboard Quick Actions
+"dashboard.quickActions.lift" = "Lift";
+"dashboard.quickActions.cardio" = "Cardio";
+"dashboard.quickActions.calories" = "Kalori";
+"dashboard.quickActions.quickStatus" = "Kartu Status Cepat";
+
+// Dashboard Strength Levels
+"dashboard.strengthLevels.beginner" = "Pemula";
+"dashboard.strengthLevels.novice" = "Novice";
+"dashboard.strengthLevels.intermediate" = "Menengah";
+"dashboard.strengthLevels.advanced" = "Lanjutan";
+"dashboard.strengthLevels.expert" = "Ahli";
+"dashboard.strengthLevels.elite" = "Elite";
+"dashboard.strengthLevels.beginnerShort" = "Pem";
+"dashboard.strengthLevels.noviceShort" = "Nov";
+"dashboard.strengthLevels.intermediateShort" = "Men";
+"dashboard.strengthLevels.advancedShort" = "Lan";
+"dashboard.strengthLevels.expertShort" = "Ahl";
+"dashboard.strengthLevels.eliteShort" = "Eli";
+
+// MARK: - Training New Keys
+
+// Training Tests
+"training.tests.title" = "Tes";
+"training.tests.strength.title" = "Tes Kekuatan";
+"training.tests.newTest" = "Tes Baru";
+"training.tests.takeTest" = "Ambil Tes";
+"training.tests.results" = "Hasil Tes";
+"training.tests.noTests" = "Belum Ada Tes";
+"training.tests.noTestsDesc" = "Mulai dengan tes kekuatan pertama Anda";
+"training.tests.lastTest" = "Tes Terakhir";
+"training.tests.overallScore" = "Skor Keseluruhan";
+"training.tests.strengthLevel" = "Level Kekuatan";
+"training.tests.testHistory" = "Riwayat Tes";
+"training.tests.viewDetails" = "Lihat Detail";
+
+// Strength Tests
+"strength.main.title" = "Tes Kekuatan";
+"strength.error.title" = "Error";
+"strength.error.noUser" = "User Tidak Ditemukan";
+"strength.error.noUserSubtitle" = "Silakan lengkapi profil Anda terlebih dahulu";
+"strength.testCompleted" = "Tes Selesai";
+"strength.level" = "Level";
+"strength.score" = "Skor";
+"strength.exercises" = "Latihan";
+"strength.testDate" = "Tanggal Tes";
+"strength.retakeTest" = "Tes Ulang";
+"strength.viewHistory" = "Lihat Riwayat";
+
+// MARK: - Dashboard Additional Keys
+
+// Dashboard General
+"dashboard.general.comingSoon" = "Fitur ini segera hadir!";
+"dashboard.general.tapForDetails" = "Tap untuk lihat detail";
+"dashboard.general.sectionLabel" = "Bagian";
+
+// Dashboard Meals
+"dashboard.meals.breakfast" = "Sarapan";
+"dashboard.meals.lunch" = "Makan Siang";
+"dashboard.meals.dinner" = "Makan Malam";
+"dashboard.meals.snack" = "Snack";
+
+
+// MARK: - Training Additional Keys
+
+// Training Analytics Additional
+"training.analytics.thisWeekLower" = "minggu ini";
+"training.analytics.thisMonth" = "bulan ini";
+"training.analytics.subtitle" = "Lacak progress dan pencapaian Anda";
+"training.analytics.weekly" = "Mingguan";
+"training.analytics.monthly" = "Bulanan";
+"training.analytics.noActivityData" = "Tidak Ada Data Aktivitas";
+"training.analytics.noActivityDesc" = "Selesaikan beberapa latihan untuk melihat chart aktivitas mingguan";
+"training.analytics.thisWeekActivity" = "Aktivitas Minggu Ini";
+"training.analytics.day" = "Hari";
+"training.analytics.liftSessions" = "Sesi Lift";
+"training.analytics.cardioSessions" = "Sesi Cardio";
+
+// Training Cardio Live Tracking
+"training.cardio.finishAndSave" = "Selesai dan Simpan";
+"training.cardio.confirmFinishMessage" = "Apakah Anda yakin ingin menyelesaikan latihan?";
+"training.cardio.start" = "MULAI!";
+"training.cardio.heartRate" = "Detak Jantung";
+"training.cardio.connectHeartRate" = "Hubungkan Detak Jantung";
+"training.cardio.heartRateNotConnected" = "Monitor detak jantung tidak terhubung";
+"training.cardio.intervals" = "Interval";
+"training.cardio.searchingDevices" = "Mencari perangkat...";
+"training.cardio.steps" = "Langkah";
+
+// Training Tests Results
+"training.tests.testCompleted" = "Tes Kekuatan Selesai!";
+"training.tests.performanceAnalysis" = "Berikut analisis performa Anda";
+"training.tests.exerciseDetails" = "Detail Latihan";
+"training.tests.exerciseAnalysisDesc" = "Analisis performa untuk setiap latihan";
+"training.tests.bodyBalanceAnalysis" = "Analisis keseimbangan tubuh atas dan bawah";
+"training.tests.strengthLevelsMeaning" = "Makna level kekuatan";
+"training.tests.recommendations" = "Rekomendasi";
+"training.tests.personalizedRecommendations" = "Rekomendasi personal untuk peningkatan";
+"training.tests.loadingRecommendations" = "Memuat rekomendasi...";
+"training.tests.saveResults" = "Simpan Hasil";
+"training.tests.levelScale" = "Skala Level";
+"training.tests.aboutStandards" = "Tentang Standar";
+
+// MARK: - Profile Body Fat Categories
+"profile.bodyFat.essential" = "Lemak Esensial";
+"profile.bodyFat.athlete" = "Atlet";
+"profile.bodyFat.fitness" = "Fitness";
+"profile.bodyFat.average" = "Rata-rata";
+"profile.bodyFat.obese" = "Obesitas";
+
+// MARK: - Profile Fitness Levels
+"profile.fitness.beginner" = "Pemula";
+"profile.fitness.intermediate" = "Menengah";
+"profile.fitness.good" = "Baik";
+"profile.fitness.advanced" = "Lanjutan";
+"profile.fitness.elite" = "Elite";
+
+// MARK: - Profile FFMI Categories
+"profile.ffmi.belowAverage" = "Di Bawah Rata-rata";
+"profile.ffmi.average" = "Rata-rata";
+"profile.ffmi.aboveAverage" = "Di Atas Rata-rata";
+"profile.ffmi.excellent" = "Excellent";
+"profile.ffmi.superior" = "Superior";
+"profile.ffmi.suspicious" = "Mencurigakan";
+
+// MARK: - Navigation
+"navigation.program_details" = "Detail Program";
+"navigation.save_result" = "Simpan Hasil";
+"navigation.training_goals" = "Target Latihan";
+
+// MARK: - Empty States
+"empty_state.no_workouts.title" = "Belum Ada Latihan";
+"empty_state.no_workouts.subtitle" = "Mulai latihan pertama Anda";
+"empty_state.no_results.title" = "Tidak Ada Hasil";
+"empty_state.no_results.subtitle" = "Coba istilah pencarian lain";
+"empty_state.no_custom_metcon.title" = "Tidak Ada METCON Kustom";
+"empty_state.no_custom_metcon.subtitle" = "Buat latihan kustom pertama Anda";
+"empty_state.no_metcon_found.title" = "METCON Tidak Ditemukan";
+"empty_state.no_metcon_found.subtitle" = "Coba filter lain";
+
+// MARK: - Training Actions
+"training.edit_wod" = "Edit WOD";
+"training.next_deadline" = "Deadline Selanjutnya";
+"training.days" = "hari";
+"training.none" = "Tidak ada";
+"training.background_content" = "Konten Background";
+"training.normal_feeling" = "Normal";
+"training.sessions" = "Sesi Latihan";
+"training.save_goals" = "Simpan Target";
+"training.weekly_goals" = "🎯 Target Mingguan";
+"training.dashboard_progress_targets" = "Target progress dashboard";
+"training.notes_optional" = "Catatan (opsional)";
+"training.calculate_starting_weights" = "Hitung Berat Awal";
+"training.timer.cancel" = "Batal";
+
+// MARK: - Training Alerts
+"training.alerts.cancelWorkout" = "Batal Latihan";
+"training.alerts.cancelWorkoutMessage" = "Apakah Anda yakin ingin membatalkan latihan ini?";
+"training.alerts.keepTraining" = "Lanjut Latihan";
+"training.alerts.cancelWorkoutAction" = "Batal";
+"training.alerts.deleteSet" = "Hapus Set";
+"training.alerts.deleteWorkout" = "Hapus Latihan";
+"training.alerts.resultSaved" = "Hasil Disimpan";
+"training.alerts.newPRCongrats" = "PR Baru! Selamat!";
+"training.alerts.workoutRecorded" = "Latihan Tercatat";
+"training.alerts.finishWorkout" = "Selesaikan Latihan";
+"training.alerts.ok" = "OK";
+"training.alerts.delete" = "Hapus";
+
+// Training Dashboard
+"training.dashboard.welcomeBack" = "Selamat datang kembali, %@!";
+"training.dashboard.motivationalMessage" = "Kerja bagus! Pertahankan momentum! 🔥";
+"training.dashboard.workouts" = "Latihan";
+"training.dashboard.dayStreak" = "Streak Hari";
+"training.dashboard.duration" = "Durasi";
+"training.dashboard.when" = "Kapan";
+"training.dashboard.quickLift" = "Lift Cepat";
+"training.dashboard.quickCardio" = "Cardio Cepat";
+"training.dashboard.dailyWOD" = "WOD Harian";
+"training.dashboard.browsePrograms" = "Telusuri Program";
+"training.dashboard.startStrengthTraining" = "Mulai strength training";
+"training.dashboard.startCardioSession" = "Mulai sesi cardio";
+"training.dashboard.todaysWorkout" = "Latihan hari ini";
+"training.dashboard.findProgram" = "Cari program";
+"training.dashboard.startWorkout" = "Mulai Latihan";
+"training.dashboard.seeAll" = "Lihat Semua";
+"training.dashboard.lastWorkout" = "Latihan Terakhir";
+"training.dashboard.recentActivity" = "Aktivitas Terbaru";
+"training.dashboard.totalTime" = "Total Waktu";
+"training.dashboard.emptyStateDescription" = "Mulai latihan pertama Anda untuk melihat progress di sini!";
+
+// MARK: - Training Goals
+"training.goals.setMonthlyGoals" = "Set Target Bulanan";
+"training.goals.trackProgress" = "Lacak Progress";
+"training.goals.trainingSessions" = "Sesi Latihan";
+"training.goals.cardioDistance" = "Jarak Cardio";
+"training.goals.liftSessions" = "Sesi Lift";
+"training.goals.cardioSessions" = "Sesi Cardio";
+"training.goals.weeklyDistance" = "Jarak Mingguan";
+"training.goals.saveGoals" = "Simpan Target";
+"training.goals.sessions" = "sesi";
+"training.goals.weeklyTarget" = "Target Mingguan";
+"training.goals.cardioTarget" = "Target Cardio";
+
+// MARK: - Training Status
+"training.status.preparing" = "Bersiap";
+"training.status.ready" = "Siap";
+"training.status.inProgress" = "Sedang Berlangsung";
+"training.status.paused" = "Dijeda";
+"training.status.completed" = "Selesai";
+
+// MARK: - Training OneRM
+"training.oneRM.enterWeight" = "Masukkan Berat";
+"training.oneRM.estimateHelp" = "Masukkan berat maksimum saat ini untuk estimasi 1RM";
+"training.oneRM.underestimateWarning" = "Underestimasi aman - Anda selalu bisa naikkan";
+"training.oneRM.previous" = "Sebelumnya";
+"training.oneRM.next" = "Selanjutnya";
+"training.oneRM.calculateWeights" = "Hitung Berat";
+
+// MARK: - Training Programs
+"training.programs.chooseProgramDesc" = "Pilih program terstruktur untuk target Anda";
+"training.programs.prsThisWeek" = "PR Minggu Ini";
+"training.programs.finishedProgramCongrats" = "Program Selesai! Selamat!";
+
+// MARK: - Training WOD Categories
+"training.wod.benchmark" = "Benchmark";
+"training.wod.custom" = "Kustom";
+"training.wod.history" = "Riwayat";
+
+// Missing WOD Keys
+"wod.search_placeholder" = "Cari latihan...";
+"wod.create_new_metcon" = "Buat METCON Baru";
+"wod.build_custom_workout" = "Bangun latihan kustom";
+"wod.scan_qr" = "Scan QR Code";
+"wod.import_shared_workouts" = "Import latihan yang dibagikan";
+"wod.no_custom_metcon" = "Tidak Ada METCON Kustom";
+"wod.create_first_metcon" = "Buat METCON kustom pertama Anda";
+"wod.create_metcon" = "Buat METCON";
+"training.wod.myWODs" = "WOD Saya";
+"training.wod.theGirls" = "The Girls";
+"training.wod.heroWODs" = "Hero WOD";
+"training.wod.openWODs" = "Open WOD";
+
+// MARK: - Training Charts
+"training.charts.sessionsThisWeek" = "Sesi Minggu Ini";
+"training.charts.of" = "dari";
+"training.charts.oneRMProgression" = "Progresi 1RM";
+"training.charts.weightChange" = "Perubahan Berat";
+"training.charts.kg" = "kg";
+
+// MARK: - Nutrition Scan
+"nutrition.scan.invalidBarcode" = "Barcode tidak valid";
+
+// MARK: - Nutrition Categories
+"nutrition.categories.all" = "Semua";
+"nutrition.categories.meat" = "Daging";
+"nutrition.categories.dairy" = "Susu";
+"nutrition.categories.grains" = "Gandum";
+"nutrition.categories.vegetables" = "Sayuran";
+"nutrition.categories.fruits" = "Buah";
+"nutrition.categories.nuts" = "Kacang";
+"nutrition.categories.beverages" = "Minuman";
+"nutrition.categories.snacks" = "Snack";
+"nutrition.categories.other" = "Lainnya";
+
+// MARK: - Nutrition Labels
+"nutrition.labels.off" = "OpenFoodFacts";
+"nutrition.labels.serving" = "Porsi";
+"nutrition.labels.servingSize" = "Ukuran Porsi";
+"nutrition.labels.portionEntry" = "Entri Porsi";
+
+// MARK: - Nutrition Camera
+"nutrition.camera.failedToStart" = "Gagal memulai kamera";
+"nutrition.camera.permissionRequired" = "Izin kamera diperlukan";
+"nutrition.camera.openSettings" = "Buka Pengaturan";
+
+// MARK: - Analytics Keys
+"analytics.time_range" = "Rentang Waktu";
+"analytics.chart_type" = "Jenis Chart";
+"analytics.statistics" = "Statistik";
+"analytics.insights" = "Insights";
+"analytics.weekly_progress" = "Progress Mingguan";
+"analytics.average_progress" = "Progress Rata-rata";
+"analytics.next_deadline" = "Deadline Selanjutnya";
+"analytics.completed_this_month" = "Selesai Bulan Ini";
+"analytics.success_rate" = "Tingkat Keberhasilan";
+"analytics.current_goals" = "Target Saat Ini";
+"analytics.completed_goals" = "Target Selesai";
+"analytics.goal_setting_tips" = "Tips Setting Target";
+"analytics.smart_goals" = "Target SMART";
+"analytics.smart_goals_desc" = "Set target Spesifik, Terukur, Dapat Dicapai, Realistis dan Terikat Waktu";
+"analytics.small_steps" = "Langkah Kecil";
+"analytics.small_steps_desc" = "Pecah target besar menjadi bagian kecil yang dapat dikelola";
+"analytics.regular_tracking" = "Pelacakan Rutin";
+"analytics.regular_tracking_desc" = "Tinjau progress secara rutin dan sesuaikan bila perlu";
+"analytics.motivation" = "Motivasi";
+"analytics.motivation_desc" = "Rayakan pencapaian dan beri reward pada diri sendiri";
+"analytics.no_data_available" = "Tidak ada data tersedia";
+"analytics.weight_change" = "Perubahan Berat";
+"analytics.average_weight" = "Berat Rata-rata";
+"analytics.entries" = "Entri";
+"analytics.latest" = "Terbaru";
+"analytics.total_workouts" = "Total Latihan";
+"analytics.weekly_average" = "Rata-rata Mingguan";
+"analytics.total_volume" = "Total Volume";
+"analytics.average_volume" = "Volume Rata-rata";
+"analytics.weight_trend" = "Tren Berat";
+"analytics.workout_consistency" = "Konsistensi Latihan";
+"analytics.trending_upward" = "Tren naik";
+"analytics.trending_downward" = "Tren turun";
+"analytics.stable_trend" = "Tren stabil";
+"analytics.excellent_consistency" = "Konsistensi excellent";
+"analytics.good_consistency" = "Konsistensi baik";
+"analytics.average_consistency" = "Konsistensi rata-rata";
+"analytics.low_consistency" = "Konsistensi rendah";
+"analytics.insufficient_data" = "Data tidak cukup untuk insights";
+"analytics.category_stats" = "Statistik Kategori";
+"analytics.calculating" = "Menghitung";
+"analytics.chart_type.weight_change" = "Perubahan Berat";
+"analytics.chart_type.workout_volume" = "Volume Latihan";
+"analytics.chart_type.workout_frequency" = "Frekuensi Latihan";
+"analytics.chart_type.body_measurements" = "Pengukuran Tubuh";
+"analytics.time_range.week1" = "1 Minggu";
+"analytics.time_range.month1" = "1 Bulan";
+"analytics.time_range.month3" = "3 Bulan";
+"analytics.time_range.month6" = "6 Bulan";
+"analytics.time_range.year1" = "1 Tahun";
+"training.cardio.elevation" = "Elevasi";
+
+// MARK: - Status Messages
+"training.status.preparing" = "Bersiap";
+"training.status.ready" = "Siap";
+"training.status.inProgress" = "Sedang Berlangsung";
+"training.status.paused" = "Dijeda";
+"training.status.completed" = "Selesai";
+"training.status.finishWorkout" = "Selesaikan Latihan";
+"training.status.finishAndSave" = "Selesai dan Simpan";
+"training.status.confirmFinishMessage" = "Apakah Anda yakin ingin menyelesaikan latihan?";
+"training.status.start" = "Mulai";
+"training.status.resume" = "Lanjutkan";
+"training.status.pause" = "Jeda";
+"training.status.stop" = "Stop";
+"training.status.finish" = "Selesai";
+"training.status.cancel" = "Batal";
+
+// MARK: - Units and Measurements
+"training.units.sessions" = "sesi";
+"training.units.minutes" = "menit";
+"training.units.seconds" = "detik";
+"training.units.hours" = "jam";
+"training.units.days" = "hari";
+"training.units.weeks" = "minggu";
+"training.units.months" = "bulan";
+"training.units.rounds" = "ronde";
+"training.units.reps" = "rep";
+"training.units.bpm" = "BPM";
+"training.units.kcal" = "kcal";
+"training.units.minCap" = "min cap";
+"training.units.daysPerWeek" = "hari/minggu";
+
+// MARK: - Heart Rate & Devices
+"training.heartRate.heartRate" = "Detak Jantung";
+"training.heartRate.bpm" = "BPM";
+"training.heartRate.connect" = "Hubungkan";
+"training.heartRate.notConnected" = "Heart rate band tidak terhubung";
+"training.heartRate.searchingDevices" = "Mencari perangkat...";
+"training.heartRate.selectDevice" = "Pilih Heart Rate Band";
+"training.heartRate.rescan" = "Scan Ulang";
+"training.heartRate.signal" = "Sinyal";
+"training.heartRate.battery" = "Baterai";
+
+// MARK: - Search & Results
+"training.search.noResults" = "Tidak ada hasil";
+"training.search.tryDifferentTerm" = "Coba istilah pencarian lain";
+"training.search.placeholder" = "Cari...";
+
+// MARK: - Intervals & Splits
+"training.intervals.intervals" = "Interval";
+"training.intervals.splits" = "Split";
+
+// MARK: - Program Completion
+"training.program.completed" = "Program Selesai!";
+"training.program.congratulations" = "Selamat telah menyelesaikan program Anda!";
+"training.program.readyToStart" = "Siap Memulai Program?";
+"training.program.chooseFromPrograms" = "Pilih dari program strength dan muscle building yang terbukti";
+"training.program.browsePrograms" = "Telusuri Program";
+"training.program.weekOf" = "Minggu";
+
+// MARK: - Welcome Messages
+"training.welcome.welcomeBack" = "Selamat datang kembali, %@!";
+"training.welcome.quickLift" = "Lift Cepat";
+"training.welcome.quickCardio" = "Cardio Cepat";
+"training.welcome.dailyWOD" = "WOD Harian";
+"training.welcome.startStrengthTraining" = "Mulai strength training";
+"training.welcome.startCardioSession" = "Mulai sesi cardio";
+"training.welcome.todaysWorkout" = "Latihan hari ini";
+"training.welcome.findProgram" = "Cari program";
+
+// MARK: - Warmup
+"training.warmup.lightCardio" = "5-10 menit cardio ringan";
+"training.warmup.dynamicStretching" = "Dynamic stretching untuk grup otot utama";
+"training.warmup.majorMuscleGroups" = "grup otot utama";
+
+// MARK: - Goals Descriptions
+"training.goalsDesc.workoutSessionsPerMonth" = "Berapa sesi latihan per bulan?";
+"training.goalsDesc.totalRunningCyclingDistance" = "Total jarak lari/bersepeda per bulan";
+
+// MARK: - Workout Types
+"training.workoutTypes.forTime" = "For Time";
+"training.workoutTypes.amrap" = "AMRAP";
+"training.workoutTypes.emom" = "EMOM";
+"training.workoutTypes.customFormat" = "Format Kustom";
+"training.workoutTypes.forTimeWithCap" = "For Time • %@ min cap";
+"training.workoutTypes.amrapMinutes" = "AMRAP • %@ menit";
+"training.workoutTypes.emomMinutes" = "EMOM • %@ menit";

@@ -327,11 +327,11 @@ struct InteractiveProgressBar: View {
             }
             .frame(height: 20)
             HStack {
-                Text("Adım \(currentStep) / \(totalSteps)")
+                Text("\(CommonKeys.Onboarding.step.localized) \(currentStep) / \(totalSteps)")
                     .font(.system(size: 14, weight: .medium, design: .rounded))
                     .foregroundColor(.secondary)
                 Spacer()
-                Text("\(Int(progress * 100))% Tamamlandı")
+                Text("\(Int(progress * 100))% \(CommonKeys.Onboarding.Common.completed.localized)")
                     .font(.system(size: 14, weight: .semibold, design: .rounded))
                     .foregroundColor(.primary)
             }

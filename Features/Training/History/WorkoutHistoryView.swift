@@ -287,7 +287,7 @@ struct HealthKitWorkoutStatsCard: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("HealthKit İstatistikleri (Son 30 Gün)")
+            Text(CommonKeys.HealthKit.statisticsTitle.localized)
                 .font(theme.typography.headline)
                 .fontWeight(.semibold)
                 .foregroundColor(theme.colors.textPrimary)
@@ -310,7 +310,7 @@ struct HealthKitWorkoutStatsCard: View {
                         .fontWeight(.bold)
                         .foregroundColor(.green)
                     
-                    Text("Toplam Süre")
+                    Text(CommonKeys.HealthKit.totalDuration.localized)
                         .font(theme.typography.caption)
                         .foregroundColor(theme.colors.textSecondary)
                 }

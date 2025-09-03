@@ -19,16 +19,16 @@ enum ExerciseCategory: String, CaseIterable, Codable {
         switch self {
         case .push: return "Push"
         case .pull: return "Pull"
-        case .legs: return "Bacak"
+        case .legs: return TrainingKeys.Category.legs.localized
         case .core: return "Core"
-        case .cardio: return "Kardiyo"
+        case .cardio: return TrainingKeys.Category.cardio.localized
         case .olympic: return "Olympic"
-        case .functional: return "Fonksiyonel"
-        case .isolation: return "İzolasyon"
+        case .functional: return TrainingKeys.Category.functional.localized
+        case .isolation: return TrainingKeys.Exercise.isolation.localized
         case .strength: return "Strength"
-        case .flexibility: return "Esneklik"
-        case .plyometric: return "Pliometrik"
-        case .other: return "Diğer"
+        case .flexibility: return TrainingKeys.Category.flexibility.localized
+        case .plyometric: return TrainingKeys.Category.plyometric.localized
+        case .other: return TrainingKeys.Exercise.other.localized
         }
     }
 
@@ -68,18 +68,18 @@ enum ExerciseCategory: String, CaseIterable, Codable {
 
     var description: String {
         switch self {
-        case .push: return "Göğüs, omuz, triceps hareketleri"
-        case .pull: return "Sırt, biceps hareketleri"
-        case .legs: return "Bacak ve kalça hareketleri"
-        case .core: return "Karın ve core hareketleri"
-        case .cardio: return "Kardiyovasküler egzersizler"
-        case .olympic: return "Olympic weightlifting hareketleri"
-        case .functional: return "Fonksiyonel hareket kalıpları"
-        case .isolation: return "İzolasyon ve yardımcı hareketler"
-        case .strength: return "Kuvvet odaklı çok eklemli hareketler"
-        case .flexibility: return "Esneklik ve mobilite çalışmaları"
-        case .plyometric: return "Patlayıcı güç ve sıçrama çalışmaları"
-        case .other: return "Diğer egzersiz türleri"
+        case .push: return TrainingKeys.Exercise.pushDescription.localized
+        case .pull: return TrainingKeys.Exercise.pullDescription.localized
+        case .legs: return TrainingKeys.Exercise.legsDescription.localized
+        case .core: return TrainingKeys.Exercise.coreDescription.localized
+        case .cardio: return TrainingKeys.Exercise.cardioDescription.localized
+        case .olympic: return TrainingKeys.Exercise.olympicDescription.localized
+        case .functional: return TrainingKeys.Exercise.functionalDescription.localized
+        case .isolation: return TrainingKeys.Exercise.isolationDescription.localized
+        case .strength: return TrainingKeys.Exercise.strengthDescription.localized
+        case .flexibility: return TrainingKeys.Exercise.flexibilityDescription.localized
+        case .plyometric: return TrainingKeys.Exercise.plyometricDescription.localized
+        case .other: return TrainingKeys.Exercise.otherDescription.localized
         }
     }
 
@@ -127,11 +127,11 @@ enum ExerciseEquipment: String, CaseIterable {
         case .barbell: return "Barbell"
         case .dumbbell: return "Dumbbell"
         case .kettlebell: return "Kettlebell"
-        case .bodyweight: return "Vücut Ağırlığı"
+        case .bodyweight: return TrainingKeys.Exercise.bodyweight.localized
         case .machine: return "Makine"
         case .cable: return "Kablo"
-        case .band: return "Direnç Bandı"
-        case .pullupBar: return "Barfiks Barı"
+        case .band: return TrainingKeys.Exercise.band.localized
+        case .pullupBar: return TrainingKeys.Exercise.pullupBar.localized
         case .bench: return "Bench"
         case .squat_rack: return "Squat Rack"
         case .platform: return "Platform"
@@ -140,7 +140,7 @@ enum ExerciseEquipment: String, CaseIterable {
         case .rope: return "Rope"
         case .sled: return "Sled"
         case .tire: return "Tire"
-        case .other: return "Diğer"
+        case .other: return TrainingKeys.Exercise.otherEquipment.localized
         }
     }
 
@@ -193,14 +193,14 @@ enum WODFormat: String, CaseIterable {
 
     var description: String {
         switch self {
-        case .forTime: return "Belirlenen hareketleri mümkün olan en kısa sürede tamamla"
-        case .amrap: return "Belirlenen sürede mümkün olduğunca çok tekrar/round yap"
-        case .emom: return "Her dakikanın başında belirlenen hareketleri yap"
-        case .tabata: return "20 saniye çalış, 10 saniye dinlen - 8 round"
-        case .rounds: return "Belirlenen sayıda round tamamla"
-        case .ladder: return "Tekrar sayısını artırarak veya azaltarak ilerle"
-        case .chipper: return "Yüksek tekrarlı hareketleri sırayla bitir"
-        case .custom: return "Özel format"
+        case .forTime: return TrainingKeys.Exercise.forTimeDescription.localized
+        case .amrap: return TrainingKeys.Exercise.amrapDescription.localized
+        case .emom: return TrainingKeys.Exercise.emomDescription.localized
+        case .tabata: return TrainingKeys.Exercise.tabataDescription.localized
+        case .rounds: return TrainingKeys.Exercise.roundsDescription.localized
+        case .ladder: return TrainingKeys.Exercise.ladderDescription.localized
+        case .chipper: return TrainingKeys.Exercise.chipperDescription.localized
+        case .custom: return TrainingKeys.Exercise.customDescription.localized
         }
     }
 
@@ -254,9 +254,9 @@ enum FitnessLevel: String, CaseIterable {
 
     var displayName: String {
         switch self {
-        case .beginner: return "Başlangıç"
+        case .beginner: return TrainingKeys.Exercise.beginner.localized
         case .intermediate: return "Orta"
-        case .advanced: return "İleri"
+        case .advanced: return TrainingKeys.Exercise.advanced.localized
         case .elite: return "Elite"
         }
     }
@@ -264,9 +264,9 @@ enum FitnessLevel: String, CaseIterable {
     var description: String {
         switch self {
         case .beginner: return "0-6 ay deneyim"
-        case .intermediate: return "6 ay - 2 yıl deneyim"
-        case .advanced: return "2+ yıl deneyim"
-        case .elite: return "Profesyonel/Yarışmacı"
+        case .intermediate: return TrainingKeys.Exercise.intermediateExperience.localized
+        case .advanced: return TrainingKeys.Exercise.advancedExperience.localized
+        case .elite: return TrainingKeys.Exercise.eliteExperience.localized
         }
     }
 
@@ -342,8 +342,8 @@ enum FitnessGoal: String, CaseIterable {
         case .cut: return "onboarding.goals.cut.subtitle".localized
         case .bulk: return "onboarding.goals.bulk.subtitle".localized
         case .maintain: return "onboarding.goals.maintain.subtitle".localized
-        case .recomp: return "Aynı anda yağ yak ve kas kazan"
-        case .performance: return "Atletik performansı artır"
+        case .recomp: return TrainingKeys.Exercise.recompDescription.localized
+        case .performance: return TrainingKeys.Exercise.performanceDescription.localized
         }
     }
 
@@ -404,12 +404,12 @@ enum MealType: String, CaseIterable {
 
     var displayName: String {
         switch self {
-        case .breakfast: return "Kahvaltı"
-        case .lunch: return "Öğle"
-        case .dinner: return "Akşam"
-        case .snack: return "Atıştırma"
-        case .preworkout: return "Antrenman Öncesi"
-        case .postworkout: return "Antrenman Sonrası"
+        case .breakfast: return TrainingKeys.Exercise.breakfast.localized
+        case .lunch: return TrainingKeys.Exercise.lunch.localized
+        case .dinner: return TrainingKeys.Exercise.dinner.localized
+        case .snack: return TrainingKeys.Exercise.snack.localized
+        case .preworkout: return TrainingKeys.Exercise.preworkout.localized
+        case .postworkout: return TrainingKeys.Exercise.postworkout.localized
         }
     }
 

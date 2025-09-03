@@ -128,14 +128,14 @@ extension DurationValidator {
     
     static func formatDuration(_ minutes: Int) -> String {
         if minutes < 60 {
-            return "\(minutes) dk"
+            return "\(minutes) \(CommonKeys.TimeFormatting.minuteUnit.localized)"
         } else {
             let hours = minutes / 60
             let remainingMinutes = minutes % 60
             if remainingMinutes == 0 {
-                return "\(hours) sa"
+                return "\(hours) \(CommonKeys.TimeFormatting.hourUnit.localized)"
             } else {
-                return "\(hours) sa \(remainingMinutes) dk"
+                return "\(hours) \(CommonKeys.TimeFormatting.hourUnit.localized) \(remainingMinutes) \(CommonKeys.TimeFormatting.minuteUnit.localized)"
             }
         }
     }

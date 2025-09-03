@@ -1,4 +1,5 @@
 import SwiftUI
+import Foundation
 
 /**
  * Enhanced input row with real-time validation and feedback.
@@ -156,7 +157,7 @@ struct EnhancedStrengthTestInputRow: View {
         HStack(spacing: theme.spacing.l) {
             // Weight input
             VStack(spacing: theme.spacing.xs) {
-                Text("Ağırlık")
+                Text(TrainingKeys.StrengthTest.weight.localized)
                     .font(.system(.caption, design: .rounded, weight: .medium))
                     .foregroundColor(inputLabelColor)
                 
@@ -182,7 +183,7 @@ struct EnhancedStrengthTestInputRow: View {
             
             // Reps input
             VStack(spacing: theme.spacing.xs) {
-                Text("Tekrar")
+                Text(TrainingKeys.Set.reps.localized)
                     .font(.system(.caption, design: .rounded, weight: .medium))
                     .foregroundColor(inputLabelColor)
                 
@@ -212,7 +213,7 @@ struct EnhancedStrengthTestInputRow: View {
             
             // Reps input for pull-ups
             VStack(spacing: theme.spacing.xs) {
-                Text("Tekrar")
+                Text(TrainingKeys.Set.reps.localized)
                     .font(.system(.caption, design: .rounded, weight: .medium))
                     .foregroundColor(inputLabelColor)
                 
@@ -291,7 +292,7 @@ struct EnhancedStrengthTestInputRow: View {
                                 .fill(theme.colors.accent.opacity(0.6))
                                 .frame(width: 4, height: 4)
                             
-                            Text("Önceki: \(formatPreviousBest(previousBest))")
+                            Text("\(TrainingKeys.StrengthTest.previous.localized): \(formatPreviousBest(previousBest))")
                                 .font(.system(.caption2, design: .rounded))
                                 .foregroundColor(theme.colors.textSecondary)
                         }
@@ -406,7 +407,7 @@ struct EnhancedStrengthTestInputRow: View {
                 exerciseType: .overheadPress,
                 weight: .constant(0),
                 reps: .constant(0),
-                errorMessage: "Ağırlık ve tekrar sayısı girin",
+                errorMessage: TrainingKeys.StrengthTest.errorWeightReps.localized,
                 onInstructionsTap: { }
             )
             

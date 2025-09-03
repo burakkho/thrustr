@@ -23,15 +23,15 @@ class UserService: ObservableObject {
         var errorDescription: String? {
             switch self {
             case .invalidAge(let message):
-                return "Yaş hatası: \(message)"
+                return "\(CommonKeys.Validation.ageError.localized): \(message)"
             case .invalidHeight(let message):
-                return "Boy hatası: \(message)"
+                return "\(CommonKeys.Validation.heightError.localized): \(message)"
             case .invalidWeight(let message):
-                return "Kilo hatası: \(message)"
+                return "\(CommonKeys.Validation.weightError.localized): \(message)"
             case .invalidName(let message):
-                return "İsim hatası: \(message)"
+                return "\(CommonKeys.Validation.nameError.localized): \(message)"
             case .invalidMeasurement(let field, let message):
-                return "\(field) hatası: \(message)"
+                return "\(field) \(CommonKeys.Validation.measurementError.localized): \(message)"
             }
         }
     }
@@ -276,36 +276,36 @@ class UserService: ObservableObject {
         
         // Name validation
         if name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-            validationErrors.append(.invalidName("İsim boş olamaz"))
+            validationErrors.append(.invalidName(CommonKeys.Validation.nameEmpty.localized))
         } else if name.count < 2 {
-            validationErrors.append(.invalidName("İsim en az 2 karakter olmalı"))
+            validationErrors.append(.invalidName(CommonKeys.Validation.nameMinLength.localized))
         } else if name.count > 50 {
-            validationErrors.append(.invalidName("İsim en fazla 50 karakter olabilir"))
+            validationErrors.append(.invalidName(CommonKeys.Validation.nameMaxLength.localized))
         }
         
         // Age validation
         if age < 13 {
-            validationErrors.append(.invalidAge("Yaş en az 13 olmalı"))
+            validationErrors.append(.invalidAge(CommonKeys.Validation.ageMinimum.localized))
         } else if age > 120 {
-            validationErrors.append(.invalidAge("Yaş en fazla 120 olabilir"))
+            validationErrors.append(.invalidAge(CommonKeys.Validation.ageMaximum.localized))
         }
         
         // Height validation (cm)
         if height < 100 {
-            validationErrors.append(.invalidHeight("Boy en az 100 cm olmalı"))
+            validationErrors.append(.invalidHeight(CommonKeys.Validation.heightMinimum.localized))
         } else if height > 250 {
-            validationErrors.append(.invalidHeight("Boy en fazla 250 cm olabilir"))
+            validationErrors.append(.invalidHeight(CommonKeys.Validation.heightMaximum.localized))
         }
         
         // Weight validation (kg)
         if weight < 30 {
-            validationErrors.append(.invalidWeight("Kilo en az 30 kg olmalı"))
+            validationErrors.append(.invalidWeight(CommonKeys.Validation.weightMinimum.localized))
         } else if weight > 300 {
-            validationErrors.append(.invalidWeight("Kilo en fazla 300 kg olabilir"))
+            validationErrors.append(.invalidWeight(CommonKeys.Validation.weightMaximum.localized))
         }
         
         if !validationErrors.isEmpty {
-            throw ValidationError.invalidName("Geçersiz giriş verileri")
+            throw ValidationError.invalidName(CommonKeys.Validation.invalidData.localized)
         }
     }
     
@@ -320,31 +320,31 @@ class UserService: ObservableObject {
         validationErrors = []
         
         if let chest = chest, chest < 50 || chest > 200 {
-            validationErrors.append(.invalidMeasurement("Göğüs", "50-200 cm arasında olmalı"))
+            validationErrors.append(.invalidMeasurement(CommonKeys.Validation.chestName.localized, CommonKeys.Validation.chestRange.localized))
         }
         
         if let waist = waist, waist < 40 || waist > 200 {
-            validationErrors.append(.invalidMeasurement("Bel", "40-200 cm arasında olmalı"))
+            validationErrors.append(.invalidMeasurement(CommonKeys.Validation.waistName.localized, CommonKeys.Validation.waistRange.localized))
         }
         
         if let hips = hips, hips < 50 || hips > 200 {
-            validationErrors.append(.invalidMeasurement("Kalça", "50-200 cm arasında olmalı"))
+            validationErrors.append(.invalidMeasurement(CommonKeys.Validation.hipName.localized, CommonKeys.Validation.hipRange.localized))
         }
         
         if let neck = neck, neck < 20 || neck > 60 {
-            validationErrors.append(.invalidMeasurement("Boyun", "20-60 cm arasında olmalı"))
+            validationErrors.append(.invalidMeasurement(CommonKeys.Validation.neckName.localized, CommonKeys.Validation.neckRange.localized))
         }
         
         if let bicep = bicep, bicep < 15 || bicep > 70 {
-            validationErrors.append(.invalidMeasurement("Bicep", "15-70 cm arasında olmalı"))
+            validationErrors.append(.invalidMeasurement(CommonKeys.Validation.bicepName.localized, CommonKeys.Validation.bicepRange.localized))
         }
         
         if let thigh = thigh, thigh < 30 || thigh > 100 {
-            validationErrors.append(.invalidMeasurement("Uyluk", "30-100 cm arasında olmalı"))
+            validationErrors.append(.invalidMeasurement(CommonKeys.Validation.thighName.localized, CommonKeys.Validation.thighRange.localized))
         }
         
         if !validationErrors.isEmpty {
-            throw ValidationError.invalidMeasurement("Ölçümler", "Geçersiz ölçüm değerleri")
+            throw ValidationError.invalidMeasurement(CommonKeys.Validation.measurementsName.localized, CommonKeys.Validation.invalidMeasurements.localized)
         }
     }
     
@@ -406,23 +406,23 @@ class UserService: ObservableObject {
     }
     
     private func categorizeFFMI(_ ffmi: Double?) -> String {
-        guard let ffmi = ffmi else { return "Hesaplanamıyor" }
+        guard let ffmi = ffmi else { return CommonKeys.Validation.ffmiNotCalculable.localized }
         
         switch ffmi {
         case ..<16:
-            return "Düşük"
+            return CommonKeys.Validation.ffmiLow.localized
         case 16..<18:
-            return "Ortalama altı"
+            return CommonKeys.Validation.ffmiBelowAverage.localized
         case 18..<20:
-            return "Ortalama"
+            return CommonKeys.Validation.ffmiAverage.localized
         case 20..<22:
-            return "İyi"
+            return CommonKeys.Validation.ffmiGood.localized
         case 22..<24:
-            return "Çok iyi"
+            return CommonKeys.Validation.ffmiVeryGood.localized
         case 24..<26:
-            return "Mükemmel"
+            return CommonKeys.Validation.ffmiExcellent.localized
         default:
-            return "Elite"
+            return CommonKeys.Validation.ffmiElite.localized
         }
     }
 }
@@ -456,11 +456,11 @@ enum ServiceError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .contextNotAvailable:
-            return "Veritabanı bağlantısı bulunamadı"
+            return CommonKeys.Validation.databaseNotFound.localized
         case .userNotFound:
-            return "Kullanıcı bulunamadı"
+            return CommonKeys.Validation.userNotFound.localized
         case .invalidData(let message):
-            return "Geçersiz veri: \(message)"
+            return "\(CommonKeys.Validation.invalidData.localized): \(message)"
         }
     }
 }

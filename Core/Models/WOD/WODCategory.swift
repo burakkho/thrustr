@@ -5,6 +5,7 @@ enum WODCategory: String, CaseIterable {
     case girls = "girls"
     case heroes = "heroes"
     case opens = "opens"
+    case history = "history"
     
     var displayName: String {
         switch self {
@@ -16,6 +17,8 @@ enum WODCategory: String, CaseIterable {
             return TrainingKeys.WOD.heroWODs.localized
         case .opens:
             return TrainingKeys.WOD.openWODs.localized
+        case .history:
+            return TrainingKeys.WOD.history.localized
         }
     }
     
@@ -29,6 +32,8 @@ enum WODCategory: String, CaseIterable {
             return "star.fill"
         case .opens:
             return "trophy.fill"
+        case .history:
+            return "clock.fill"
         }
     }
     
@@ -42,6 +47,8 @@ enum WODCategory: String, CaseIterable {
             return TrainingKeys.WOD.heroesDesc.localized
         case .opens:
             return TrainingKeys.WOD.opensDesc.localized
+        case .history:
+            return TrainingKeys.WOD.historyDesc.localized
         }
     }
 }

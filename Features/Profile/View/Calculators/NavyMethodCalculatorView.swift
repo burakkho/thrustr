@@ -306,7 +306,7 @@ struct NavyMethodHeaderSection: View {
                     .font(.title2)
                     .fontWeight(.semibold)
                 
-                Text("Vücut yağ oranınızı ölçümlerle hesaplayın")
+                Text(CommonKeys.Calculator.navyMethodSubtitle.localized)
                     .font(.subheadline)
                     .foregroundColor(.secondary)
                     .multilineTextAlignment(.center)
@@ -325,7 +325,7 @@ struct NavyGenderSection: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("Cinsiyet")
+            Text(CommonKeys.PersonalInfoExtended.gender.localized)
                 .font(.headline)
                 .fontWeight(.semibold)
             
@@ -373,7 +373,7 @@ struct NavyInputSection: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
-            Text("Ölçümler")
+            Text(CommonKeys.Calculator.measurementsSection.localized)
                 .font(.headline)
                 .fontWeight(.semibold)
             
@@ -383,7 +383,7 @@ struct NavyInputSection: View {
                     HStack {
                         Image(systemName: "calendar")
                             .foregroundColor(.blue)
-                        Text("Yaş")
+                        Text(CommonKeys.Calculator.ageLabel.localized)
                             .fontWeight(.medium)
                     }
                     
@@ -398,7 +398,7 @@ struct NavyInputSection: View {
                     HStack {
                         Image(systemName: "ruler.fill")
                             .foregroundColor(.green)
-                        Text(unitSystem == .metric ? "Boy (cm)" : "Boy (ft'in\")")
+                        Text(unitSystem == .metric ? CommonKeys.PersonalInfoExtended.height.localized + " (cm)" : CommonKeys.PersonalInfoExtended.height.localized + " (ft'in\")")
                             .fontWeight(.medium)
                     }
                     
@@ -420,7 +420,7 @@ struct NavyInputSection: View {
                                     .font(.title3)
                             }
                             VStack {
-                                Text("Inches")
+                                Text(CommonKeys.Calculator.inchesLabel.localized)
                                     .font(.caption)
                                     .foregroundColor(.secondary)
                                 TextField("10", text: $heightInches)
@@ -437,7 +437,7 @@ struct NavyInputSection: View {
                     HStack {
                         Image(systemName: "oval.fill")
                             .foregroundColor(.orange)
-                        Text(unitSystem == .metric ? "Bel Çevresi (cm)" : "Bel Çevresi (in)")
+                        Text(unitSystem == .metric ? CommonKeys.Calculator.waistCircumference.localized + " (cm)" : CommonKeys.Calculator.waistCircumference.localized + " (in)")
                             .fontWeight(.medium)
                     }
                     
@@ -452,7 +452,7 @@ struct NavyInputSection: View {
                     HStack {
                         Image(systemName: "person.crop.circle")
                             .foregroundColor(.purple)
-                        Text(unitSystem == .metric ? "Boyun Çevresi (cm)" : "Boyun Çevresi (in)")
+                        Text(unitSystem == .metric ? CommonKeys.Calculator.neckCircumference.localized + " (cm)" : CommonKeys.Calculator.neckCircumference.localized + " (in)")
                             .fontWeight(.medium)
                     }
                     
@@ -468,7 +468,7 @@ struct NavyInputSection: View {
                         HStack {
                             Image(systemName: "circle.fill")
                                 .foregroundColor(.pink)
-                            Text(unitSystem == .metric ? "Kalça Çevresi (cm)" : "Kalça Çevresi (in)")
+                            Text(unitSystem == .metric ? CommonKeys.Calculator.hipCircumference.localized + " (cm)" : CommonKeys.Calculator.hipCircumference.localized + " (in)")
                                 .fontWeight(.medium)
                         }
                         
@@ -498,14 +498,14 @@ struct NavyResultsSection: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
-            Text("Sonuçlar")
+            Text(CommonKeys.Calculator.resultsSection.localized)
                 .font(.headline)
                 .fontWeight(.semibold)
             
             VStack(spacing: 16) {
                 // Body Fat Result
                 VStack(spacing: 8) {
-                    Text("Vücut Yağ Oranınız")
+                    Text(CommonKeys.Calculator.bodyFatPercentageTitle.localized)
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                     
@@ -542,7 +542,7 @@ struct BodyFatScaleSection: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("\(gender.displayName) Vücut Yağ Skalası")
+            Text("\(gender.displayName) " + CommonKeys.Calculator.bodyFatScaleTitle.localized)
                 .font(.headline)
                 .fontWeight(.semibold)
             
@@ -587,33 +587,33 @@ struct BodyFatScaleRow: View {
 struct NavyInfoSection: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("Navy Method Hakkında")
+            Text(CommonKeys.Calculator.aboutSection.localized)
                 .font(.headline)
                 .fontWeight(.semibold)
             
             VStack(spacing: 12) {
                 NavyInfoRow(
                     icon: "info.circle.fill",
-                    title: "Güvenilirlik",
-                    description: "ABD Donanması tarafından geliştirilen, bilimsel olarak kanıtlanmış yöntem"
+                    title: CommonKeys.Calculator.reliabilityTitle.localized,
+                    description: CommonKeys.Calculator.reliabilityDescription.localized
                 )
                 
                 NavyInfoRow(
                     icon: "ruler.fill",
-                    title: "Doğruluk",
-                    description: "±3-4% hata payı ile oldukça doğru sonuçlar verir"
+                    title: CommonKeys.Calculator.accuracyTitle.localized,
+                    description: CommonKeys.Calculator.accuracyDescription.localized
                 )
                 
                 NavyInfoRow(
                     icon: "exclamationmark.triangle.fill",
-                    title: "Önemli Not",
-                    description: "Ölçüm hassasiyeti sonucu doğrudan etkiler, dikkatli ölçün"
+                    title: CommonKeys.Calculator.importantNoteTitle.localized,
+                    description: CommonKeys.Calculator.importantNoteDescription.localized
                 )
                 
                 NavyInfoRow(
                     icon: "chart.line.uptrend.xyaxis",
-                    title: "Takip",
-                    description: "Düzenli ölçümlerle ilerlemenizi takip edebilirsiniz"
+                    title: CommonKeys.Calculator.trackingTitle.localized,
+                    description: CommonKeys.Calculator.trackingDescription.localized
                 )
             }
             .padding()
@@ -658,8 +658,8 @@ enum NavyGender: CaseIterable {
     
     var displayName: String {
         switch self {
-        case .male: return "Erkek"
-        case .female: return "Kadın"
+        case .male: return CommonKeys.Calculator.maleGender.localized
+        case .female: return CommonKeys.Calculator.femaleGender.localized
         }
     }
     
@@ -688,11 +688,11 @@ enum BodyFatCategory: CaseIterable {
     
     var description: String {
         switch self {
-        case .essential: return "Temel Yağ"
-        case .athlete: return "Atlet"
-        case .fitness: return "Fitness"
-        case .average: return "Ortalama"
-        case .obese: return "Obez"
+        case .essential: return CommonKeys.Calculator.bodyFatEssential.localized
+        case .athlete: return CommonKeys.Calculator.bodyFatAthlete.localized
+        case .fitness: return CommonKeys.Calculator.bodyFatFitness.localized
+        case .average: return CommonKeys.Calculator.bodyFatAverage.localized
+        case .obese: return CommonKeys.Calculator.bodyFatObese.localized
         }
     }
     
@@ -713,11 +713,11 @@ enum BodyFatCategory: CaseIterable {
     
     var interpretation: String {
         switch self {
-        case .essential: return "Vücudun temel işlevleri için gerekli minimum yağ"
-        case .athlete: return "Profesyonel sporcular için ideal seviye"
-        case .fitness: return "Aktif ve sağlıklı bireyler için ideal"
-        case .average: return "Sağlıklı kabul edilen normal seviye"
-        case .obese: return "Sağlık riskleri olabilir, kilo vermeyi düşünün"
+        case .essential: return CommonKeys.Calculator.bodyFatEssentialDesc.localized
+        case .athlete: return CommonKeys.Calculator.bodyFatAthleteDesc.localized
+        case .fitness: return CommonKeys.Calculator.bodyFatFitnessDesc.localized
+        case .average: return CommonKeys.Calculator.bodyFatAverageDesc.localized
+        case .obese: return CommonKeys.Calculator.bodyFatObeseDesc.localized
         }
     }
     

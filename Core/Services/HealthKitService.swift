@@ -1097,7 +1097,7 @@ class HealthKitService: ObservableObject {
                 collection?.enumerateStatistics(from: startDate, to: endDate) { statistic, _ in
                     if let sum = statistic.sumQuantity() {
                         let steps = sum.doubleValue(for: HKUnit.count())
-                        let dataPoint = HealthDataPoint(date: statistic.startDate, value: steps, unit: "adım")
+                        let dataPoint = HealthDataPoint(date: statistic.startDate, value: steps, unit: CommonKeys.Units.steps.localized)
                         dataPoints.append(dataPoint)
                     }
                 }
@@ -1615,15 +1615,15 @@ class HealthKitService: ObservableObject {
     
     private func mapCardioActivityToHKType(_ activityType: String) -> HKWorkoutActivityType {
         switch activityType.lowercased() {
-        case "running", "koşu":
+        case "running", TrainingKeys.ActivityTypes.running.localized:
             return .running
-        case "cycling", "bisiklet":
+        case "cycling", TrainingKeys.ActivityTypes.cycling.localized:
             return .cycling
-        case "swimming", "yüzme":
+        case "swimming", TrainingKeys.ActivityTypes.swimming.localized:
             return .swimming
-        case "walking", "yürüyüş":
+        case "walking", TrainingKeys.ActivityTypes.walking.localized:
             return .walking
-        case "rowing", "kürek":
+        case "rowing", TrainingKeys.ActivityTypes.rowing.localized:
             return .rowing
         case "elliptical":
             return .elliptical

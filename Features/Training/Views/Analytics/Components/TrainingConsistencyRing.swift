@@ -17,9 +17,9 @@ struct TrainingConsistencyRing: View {
         
         var displayName: String {
             switch self {
-            case .frequency: return "Sıklık"
-            case .streak: return "Seri"
-            case .goals: return "Hedefler"
+            case .frequency: return TrainingKeys.ConsistencyAnalytics.frequency.localized
+            case .streak: return TrainingKeys.ConsistencyAnalytics.streak.localized
+            case .goals: return TrainingKeys.ConsistencyAnalytics.goals.localized
             }
         }
         
@@ -86,12 +86,12 @@ struct TrainingConsistencyRing: View {
     private var headerSection: some View {
         HStack {
             VStack(alignment: .leading, spacing: 4) {
-                Text("🎯 Antrenman Tutarlılığı")
+                Text(TrainingKeys.ConsistencyAnalytics.title.localized)
                     .font(theme.typography.headline)
                     .fontWeight(.bold)
                     .foregroundColor(theme.colors.textPrimary)
                 
-                Text("Weekly Consistency & Streak Tracking")
+                Text(TrainingKeys.ConsistencyAnalytics.subtitle.localized)
                     .font(theme.typography.caption)
                     .foregroundColor(theme.colors.textSecondary)
             }
@@ -147,7 +147,7 @@ struct TrainingConsistencyRing: View {
                 .progressViewStyle(CircularProgressViewStyle())
                 .scaleEffect(1.2)
             
-            Text("Tutarlılık verileri yükleniyor...")
+            Text(TrainingKeys.ConsistencyAnalytics.dataLoading.localized)
                 .font(theme.typography.body)
                 .foregroundColor(theme.colors.textSecondary)
         }
@@ -211,14 +211,14 @@ struct TrainingConsistencyRing: View {
     private var weeklyBreakdown: some View {
         VStack(spacing: theme.spacing.s) {
             HStack {
-                Text("Son 12 Hafta")
+                Text(TrainingKeys.ConsistencyAnalytics.last12Weeks.localized)
                     .font(.caption)
                     .fontWeight(.semibold)
                     .foregroundColor(theme.colors.textPrimary)
                 
                 Spacer()
                 
-                Text("⚡ \(perfectWeeksCount) mükemmel hafta")
+                Text("⚡ \(perfectWeeksCount) " + TrainingKeys.ConsistencyAnalytics.perfectWeeks.localized)
                     .font(.caption2)
                     .foregroundColor(theme.colors.success)
             }
@@ -257,7 +257,7 @@ struct TrainingConsistencyRing: View {
             
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("Bu Hafta")
+                    Text(TrainingKeys.ConsistencyAnalytics.thisWeek.localized)
                         .font(.caption)
                         .foregroundColor(theme.colors.textSecondary)
                     
@@ -270,7 +270,7 @@ struct TrainingConsistencyRing: View {
                 Spacer()
                 
                 VStack(alignment: .center, spacing: 4) {
-                    Text("Ortalama")
+                    Text(TrainingKeys.ConsistencyAnalytics.average.localized)
                         .font(.caption)
                         .foregroundColor(theme.colors.textSecondary)
                     
@@ -283,7 +283,7 @@ struct TrainingConsistencyRing: View {
                 Spacer()
                 
                 VStack(alignment: .trailing, spacing: 4) {
-                    Text("En İyi")
+                    Text(TrainingKeys.ConsistencyAnalytics.best.localized)
                         .font(.caption)
                         .foregroundColor(theme.colors.textSecondary)
                     
@@ -323,11 +323,11 @@ struct TrainingConsistencyRing: View {
     private var currentMetricLabel: String {
         switch selectedMetric {
         case .frequency:
-            return "Bu hafta\nseans"
+            return TrainingKeys.ConsistencyAnalytics.thisWeekSessions.localized
         case .streak:
-            return "Günlük\nseri"
+            return TrainingKeys.ConsistencyAnalytics.dailyStreak.localized
         case .goals:
-            return "Haftalık\nhedef"
+            return TrainingKeys.ConsistencyAnalytics.weeklyGoal.localized
         }
     }
     

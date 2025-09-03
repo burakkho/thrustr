@@ -136,7 +136,7 @@ Central user profile with:
 
 ### Localization
 - Uses custom `LocalizationKeys` enum with `.localized` extension
-- Supports multiple languages: Turkish (tr), English (en), German (de), Spanish (es), Italian (it), French (fr)
+- Supports multiple languages: Turkish (tr), English (en), German (de), Spanish (es), Italian (it), French (fr), Portuguese (pt), Indonesian (id), Polish (pl)
 - LanguageManager handles runtime language switching
 - Localized strings stored in respective .lproj directories
 

@@ -38,8 +38,6 @@ class TrainingCoordinator {
     var selectedWorkoutType: WorkoutType = .dashboard
     var navigationPath = NavigationPath()
     
-    // WOD Navigation State
-    var wodSelectedTab: String = "benchmark"
     
     // Shared UI State
     var showingNewWorkout = false
@@ -82,7 +80,6 @@ class TrainingCoordinator {
     
     func navigateToWODHistory() {
         selectedWorkoutType = .wod
-        wodSelectedTab = "history"
     }
     
     func navigateToHistory() {

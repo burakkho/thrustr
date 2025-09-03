@@ -102,7 +102,7 @@ struct PRTimelineCard: View {
                     .fontWeight(.bold)
                     .foregroundColor(theme.colors.textPrimary)
                 
-                Text("Recent PR Achievement Timeline")
+                Text(TrainingKeys.PRCategories.subtitle.localized)
                     .font(theme.typography.caption)
                     .foregroundColor(theme.colors.textSecondary)
             }
@@ -362,11 +362,11 @@ struct PRTimelineCard: View {
         
         // Generate strength PRs from user's 1RM data
         let strengthExercises: [(String, Double?, String)] = [
-            ("Back Squat", user.squatOneRM, "kg"),
-            ("Bench Press", user.benchPressOneRM, "kg"),
-            ("Deadlift", user.deadliftOneRM, "kg"),
-            ("Overhead Press", user.overheadPressOneRM, "kg"),
-            ("Pull-up", user.pullUpOneRM, "kg")
+            (TrainingKeys.PRCategories.backSquat.localized, user.squatOneRM, "kg"),
+            (TrainingKeys.PRCategories.benchPress.localized, user.benchPressOneRM, "kg"),
+            (TrainingKeys.PRCategories.deadlift.localized, user.deadliftOneRM, "kg"),
+            (TrainingKeys.PRCategories.overheadPress.localized, user.overheadPressOneRM, "kg"),
+            (TrainingKeys.PRCategories.pullUp.localized, user.pullUpOneRM, "kg")
         ]
         
         for (index, (name, value, unit)) in strengthExercises.enumerated() {
@@ -401,9 +401,9 @@ struct PRTimelineCard: View {
         let enduranceMetrics: [(String, Double?, String, Double?)] = [
             ("5K Best Time", calculateBest5KTime(), "min", nil),
             ("10K Best Time", calculateBest10KTime(), "min", nil),
-            ("Longest Run", user.longestRun, "km", Double.random(in: 8.0...12.0)),
-            ("Best Average Pace", calculateBestPace(), "min/km", Double.random(in: 3.0...8.0)),
-            ("Max Distance Week", calculateMaxWeeklyDistance(), "km", Double.random(in: 15.0...25.0))
+            (TrainingKeys.PRCategories.longestRun.localized, user.longestRun, "km", Double.random(in: 8.0...12.0)),
+            (TrainingKeys.PRCategories.bestAveragePace.localized, calculateBestPace(), "min/km", Double.random(in: 3.0...8.0)),
+            (TrainingKeys.PRCategories.maxDistanceWeek.localized, calculateMaxWeeklyDistance(), "km", Double.random(in: 15.0...25.0))
         ]
         
         for (index, (name, value, unit, mockImprovement)) in enduranceMetrics.enumerated() {
@@ -432,11 +432,11 @@ struct PRTimelineCard: View {
         
         // Generate volume PRs from user stats
         let volumeMetrics: [(String, Double?, String, Double?)] = [
-            ("Most Sets in Day", Double(user.maxSetsInSingleWorkout), "sets", Double.random(in: 10.0...20.0)),
-            ("Weekly Volume", calculateWeeklyVolume(), "kg", Double.random(in: 12.0...18.0)),
-            ("Most Reps Single Set", Double(user.maxRepsInSingleSet), "reps", Double.random(in: 5.0...15.0)),
-            ("Longest Workout", user.longestWorkoutDuration / 60.0, "min", Double.random(in: 8.0...15.0)),
-            ("Sessions This Month", Double(user.totalWorkouts), "sessions", Double.random(in: 20.0...30.0))
+            (TrainingKeys.PRCategories.mostSetsInDay.localized, Double(user.maxSetsInSingleWorkout), "sets", Double.random(in: 10.0...20.0)),
+            (TrainingKeys.PRCategories.weeklyVolume.localized, calculateWeeklyVolume(), "kg", Double.random(in: 12.0...18.0)),
+            (TrainingKeys.PRCategories.mostRepsSet.localized, Double(user.maxRepsInSingleSet), "reps", Double.random(in: 5.0...15.0)),
+            (TrainingKeys.PRCategories.longestWorkout.localized, user.longestWorkoutDuration / 60.0, "min", Double.random(in: 8.0...15.0)),
+            (TrainingKeys.PRCategories.sessionsThisMonth.localized, Double(user.totalWorkouts), "sessions", Double.random(in: 20.0...30.0))
         ]
         
         for (index, (name, value, unit, mockImprovement)) in volumeMetrics.enumerated() {

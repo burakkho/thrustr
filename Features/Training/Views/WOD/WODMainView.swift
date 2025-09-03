@@ -21,40 +21,6 @@ struct WODMainView: View {
     ) private var benchmarkWODs: [WOD]
     
     @State private var selectedCategory: WODCategory = .custom
-    private var selectedTab: WODTab {
-        get {
-            switch coordinator.wodSelectedTab {
-            case "history": return .history
-            case "custom": return .custom
-            default: return .benchmark
-            }
-        }
-        set {
-            coordinator.wodSelectedTab = newValue.rawValue.lowercased()
-        }
-    }
-    
-    private enum WODTab: String, CaseIterable {
-        case benchmark = "Benchmark"
-        case custom = "Custom" 
-        case history = "History"
-        
-        var localizedTitle: String {
-            switch self {
-            case .benchmark: return TrainingKeys.WOD.benchmark.localized
-            case .custom: return TrainingKeys.WOD.custom.localized
-            case .history: return TrainingKeys.WOD.history.localized
-            }
-        }
-        
-        var icon: String {
-            switch self {
-            case .benchmark: return "star.circle.fill"
-            case .custom: return "plus.circle.fill"
-            case .history: return "clock.fill"
-            }
-        }
-    }
     @State private var searchText = ""
     @State private var selectedWOD: WOD?
     @State private var showingNewWOD = false
@@ -65,31 +31,32 @@ struct WODMainView: View {
     }
     
     private var filteredWODs: [WOD] {
+        // History is handled separately - return empty for WOD list
+        guard selectedCategory != .history else { return [] }
+        
         let categoryWODs: [WOD]
         
         switch selectedCategory {
         case .custom:
-            categoryWODs = customWODs // Already filtered by @Query
-        case .girls, .heroes:
+            categoryWODs = customWODs
+        case .girls, .heroes, .opens:
             categoryWODs = benchmarkWODs.filter { wod in
                 wod.category == selectedCategory.rawValue
             }
-        default:
+        case .history:
             categoryWODs = []
         }
         
-        // Early return for empty search
         guard !searchText.isEmpty else {
-            return Array(categoryWODs.prefix(20)) // Limit initial results
+            return Array(categoryWODs.prefix(20))
         }
         
-        // Optimized search with prefix limiting
         let searchResults = categoryWODs.filter { wod in
             wod.name.localizedCaseInsensitiveContains(searchText) ||
             wod.movements.contains { $0.name.localizedCaseInsensitiveContains(searchText) }
         }
         
-        return Array(searchResults.prefix(15)) // Limit search results
+        return Array(searchResults.prefix(15))
     }
     
     // MARK: - UI Components
@@ -129,49 +96,6 @@ struct WODMainView: View {
         .padding(.vertical, theme.spacing.m)
     }
     
-    private var tabSelector: some View {
-        HStack(spacing: 0) {
-            ForEach(WODTab.allCases, id: \.self) { tab in
-                Button {
-                    withAnimation(.easeInOut(duration: 0.2)) {
-                        coordinator.wodSelectedTab = tab.rawValue.lowercased()
-                        if tab != .history {
-                            selectedCategory = tab == .benchmark ? .girls : .custom
-                        }
-                    }
-                } label: {
-                    VStack(spacing: 6) {
-                        Image(systemName: tab.icon)
-                            .font(.caption)
-                        Text(tab.localizedTitle)
-                            .font(.caption2)
-                            .fontWeight(.medium)
-                    }
-                    .foregroundColor(selectedTab == tab ? theme.colors.accent : theme.colors.textSecondary)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 12)
-                }
-            }
-        }
-        .background(theme.colors.backgroundSecondary)
-        .overlay(
-            Rectangle()
-                .fill(theme.colors.accent)
-                .frame(height: 2)
-                .offset(x: tabIndicatorOffset, y: 0)
-                .animation(.easeInOut(duration: 0.2), value: selectedTab),
-            alignment: .bottom
-        )
-    }
-    
-    private var tabIndicatorOffset: CGFloat {
-        let tabWidth = UIScreen.main.bounds.width / 3
-        switch selectedTab {
-        case .benchmark: return -tabWidth
-        case .custom: return 0
-        case .history: return tabWidth
-        }
-    }
     
     private var categorySelector: some View {
         ScrollView(.horizontal, showsIndicators: false) {
@@ -294,37 +218,31 @@ struct WODMainView: View {
             // Header
             headerView
             
-            // Tab Selector
-            tabSelector
+            // Category Selector
+            categorySelector
             
-            // Content based on selected tab
-            if selectedTab == .history {
+            // Search Bar
+            searchBar
+            
+            // Content
+            if selectedCategory == .history {
                 WODHistoryView()
             } else {
-                VStack(spacing: 0) {
-                    // Category Selector
-                    categorySelector
-                    
-                    // Search Bar
-                    searchBar
-                    
-                    // Content
-                    ScrollView {
-                        LazyVStack(spacing: theme.spacing.m) {
-                            // Quick Actions for Custom WODs
-                            if selectedCategory == .custom {
-                                quickActionsSection
-                            }
-                            
-                            // WOD Cards
-                            if !filteredWODs.isEmpty {
-                                wodsList
-                            } else {
-                                emptyState
-                            }
+                ScrollView {
+                    LazyVStack(spacing: theme.spacing.m) {
+                        // Quick Actions for Custom WODs
+                        if selectedCategory == .custom {
+                            quickActionsSection
                         }
-                        .padding(.vertical, theme.spacing.m)
+                        
+                        // WOD Cards
+                        if !filteredWODs.isEmpty {
+                            wodsList
+                        } else {
+                            emptyState
+                        }
                     }
+                    .padding(.vertical, theme.spacing.m)
                 }
             }
         }

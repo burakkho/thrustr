@@ -33,11 +33,11 @@ struct CardioProgressChart: View {
         
         var displayTitle: String {
             switch self {
-            case .oneMonth: return "Son 1 Ay"
-            case .threeMonths: return "Son 3 Ay"
-            case .sixMonths: return "Son 6 Ay"
-            case .oneYear: return "Son 1 Yıl"
-            case .allTime: return "Tüm Zamanlar"
+            case .oneMonth: return TrainingKeys.CardioAnalytics.oneMonth.localized
+            case .threeMonths: return TrainingKeys.CardioAnalytics.threeMonths.localized
+            case .sixMonths: return TrainingKeys.CardioAnalytics.sixMonths.localized
+            case .oneYear: return TrainingKeys.CardioAnalytics.lastYear.localized
+            case .allTime: return TrainingKeys.CardioAnalytics.allTime.localized
             }
         }
     }
@@ -49,9 +49,9 @@ struct CardioProgressChart: View {
         
         var displayName: String {
             switch self {
-            case .distance: return "Mesafe"
-            case .pace: return "Pace"
-            case .heartRate: return "Nabız"
+            case .distance: return TrainingKeys.Cardio.distance.localized
+            case .pace: return TrainingKeys.Cardio.pace.localized
+            case .heartRate: return TrainingKeys.CardioAnalytics.heartRate.localized
             }
         }
         
@@ -117,12 +117,12 @@ struct CardioProgressChart: View {
     private var headerSection: some View {
         HStack {
             VStack(alignment: .leading, spacing: 4) {
-                Text("🏃‍♂️ Kardiyovasküler Gelişim")
+                Text(TrainingKeys.CardioAnalytics.cardioTitle.localized)
                     .font(theme.typography.headline)
                     .fontWeight(.bold)
                     .foregroundColor(theme.colors.textPrimary)
                 
-                Text("Distance, Pace & Heart Rate Analytics")
+                Text(TrainingKeys.CardioAnalytics.subtitle.localized)
                     .font(theme.typography.caption)
                     .foregroundColor(theme.colors.textSecondary)
             }
@@ -172,7 +172,7 @@ struct CardioProgressChart: View {
                 .progressViewStyle(CircularProgressViewStyle())
                 .scaleEffect(1.2)
             
-            Text("Kardio verileri yükleniyor...")
+            Text(TrainingKeys.CardioAnalytics.dataLoading.localized)
                 .font(theme.typography.body)
                 .foregroundColor(theme.colors.textSecondary)
         }
@@ -232,15 +232,15 @@ struct CardioProgressChart: View {
                 Chart(cardioProgressData) { dataPoint in
                     if shouldShowMetric(.distance) {
                         LineMark(
-                            x: .value("Date", dataPoint.date),
-                            y: .value("Distance", dataPoint.distance)
+                            x: .value(TrainingKeys.StrengthAnalytics.dateLabel.localized, dataPoint.date),
+                            y: .value(TrainingKeys.Cardio.distance.localized, dataPoint.distance)
                         )
                         .foregroundStyle(CardioMetric.distance.color)
                         .lineStyle(StrokeStyle(lineWidth: 2.5))
                         
                         PointMark(
-                            x: .value("Date", dataPoint.date),
-                            y: .value("Distance", dataPoint.distance)
+                            x: .value(TrainingKeys.StrengthAnalytics.dateLabel.localized, dataPoint.date),
+                            y: .value(TrainingKeys.Cardio.distance.localized, dataPoint.distance)
                         )
                         .foregroundStyle(CardioMetric.distance.color)
                         .symbolSize(selectedMetric == .distance ? 80 : 50)
@@ -248,15 +248,15 @@ struct CardioProgressChart: View {
                     
                     if shouldShowMetric(.pace) && dataPoint.averagePace > 0 {
                         LineMark(
-                            x: .value("Date", dataPoint.date),
-                            y: .value("Pace", dataPoint.averagePace)
+                            x: .value(TrainingKeys.StrengthAnalytics.dateLabel.localized, dataPoint.date),
+                            y: .value(TrainingKeys.Cardio.pace.localized, dataPoint.averagePace)
                         )
                         .foregroundStyle(CardioMetric.pace.color)
                         .lineStyle(StrokeStyle(lineWidth: 2.5, dash: [5, 3]))
                         
                         PointMark(
-                            x: .value("Date", dataPoint.date),
-                            y: .value("Pace", dataPoint.averagePace)
+                            x: .value(TrainingKeys.StrengthAnalytics.dateLabel.localized, dataPoint.date),
+                            y: .value(TrainingKeys.Cardio.pace.localized, dataPoint.averagePace)
                         )
                         .foregroundStyle(CardioMetric.pace.color)
                         .symbolSize(selectedMetric == .pace ? 80 : 50)
@@ -264,15 +264,15 @@ struct CardioProgressChart: View {
                     
                     if shouldShowMetric(.heartRate) && dataPoint.averageHeartRate > 0 {
                         LineMark(
-                            x: .value("Date", dataPoint.date),
-                            y: .value("HR", dataPoint.averageHeartRate)
+                            x: .value(TrainingKeys.StrengthAnalytics.dateLabel.localized, dataPoint.date),
+                            y: .value(TrainingKeys.CardioAnalytics.heartRate.localized, dataPoint.averageHeartRate)
                         )
                         .foregroundStyle(CardioMetric.heartRate.color)
                         .lineStyle(StrokeStyle(lineWidth: 2.5, dash: [3, 2]))
                         
                         PointMark(
-                            x: .value("Date", dataPoint.date),
-                            y: .value("HR", dataPoint.averageHeartRate)
+                            x: .value(TrainingKeys.StrengthAnalytics.dateLabel.localized, dataPoint.date),
+                            y: .value(TrainingKeys.CardioAnalytics.heartRate.localized, dataPoint.averageHeartRate)
                         )
                         .foregroundStyle(CardioMetric.heartRate.color)
                         .symbolSize(selectedMetric == .heartRate ? 80 : 50)
@@ -344,17 +344,17 @@ struct CardioProgressChart: View {
                 .font(.system(size: 48))
                 .foregroundColor(theme.colors.textSecondary.opacity(0.5))
             
-            Text("Henüz Kardio Verisi Yok")
+            Text(TrainingKeys.CardioAnalytics.noDataTitle.localized)
                 .font(theme.typography.headline)
                 .foregroundColor(theme.colors.textPrimary)
             
-            Text("Kardio seansları kaydederek endurance gelişimini takip etmeye başla")
+            Text(TrainingKeys.CardioAnalytics.noDataDescription.localized)
                 .font(theme.typography.body)
                 .foregroundColor(theme.colors.textSecondary)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal)
             
-            Button("İlk Kardio Seansını Başlat") {
+            Button(TrainingKeys.Analytics.startFirstCardio.localized) {
                 // Navigate to cardio section
             }
             .buttonStyle(.borderedProminent)

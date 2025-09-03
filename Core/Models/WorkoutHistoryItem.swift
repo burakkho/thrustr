@@ -23,53 +23,53 @@ struct WorkoutHistoryItem: Identifiable, Hashable {
     var activityDisplayName: String {
         switch activityType {
         case .running:
-            return "Koşu"
+            return TrainingKeys.ActivityTypes.running.localized
         case .cycling:
-            return "Bisiklet"
+            return CommonKeys.Activity.cycling.localized
         case .swimming:
-            return "Yüzme"
+            return TrainingKeys.ActivityTypes.swimming.localized
         case .walking:
-            return "Yürüyüş"
+            return TrainingKeys.ActivityTypes.walking.localized
         case .traditionalStrengthTraining:
-            return "Güç Antrenmanı"
+            return TrainingKeys.ActivityTypes.strengthTraining.localized
         case .crossTraining:
-            return "CrossTraining/WOD"
+            return CommonKeys.Activity.crossTraining.localized
         case .rowing:
-            return "Kürek"
+            return TrainingKeys.ActivityTypes.rowing.localized
         case .elliptical:
-            return "Eliptik"
+            return CommonKeys.Activity.elliptical.localized
         case .yoga:
-            return "Yoga"
+            return CommonKeys.Activity.yoga.localized
         case .functionalStrengthTraining:
-            return "Fonksiyonel Antrenman"
+            return CommonKeys.Activity.functionalStrengthTraining.localized
         case .coreTraining:
-            return "Core Antrenmanı"
+            return TrainingKeys.ActivityTypes.coreTraining.localized
         case .flexibility:
-            return "Esneklik"
+            return CommonKeys.Activity.flexibility.localized
         case .highIntensityIntervalTraining:
-            return "HIIT"
+            return TrainingKeys.ActivityTypes.hiit.localized
         case .jumpRope:
-            return "İp Atlama"
+            return TrainingKeys.ActivityTypes.jumpRope.localized
         case .stairs:
-            return "Merdiven"
+            return CommonKeys.Activity.stairs.localized
         case .kickboxing:
-            return "Kickboks"
+            return CommonKeys.Activity.kickboxing.localized
         case .pilates:
-            return "Pilates"
+            return CommonKeys.Activity.pilates.localized
         case .dance:
-            return "Dans"
+            return CommonKeys.Activity.dance.localized
         case .taiChi:
-            return "Tai Chi"
+            return CommonKeys.Activity.taiChi.localized
         case .barre:
-            return "Barre"
+            return CommonKeys.Activity.barre.localized
         case .wrestling:
-            return "Güreş"
+            return TrainingKeys.ActivityTypes.wrestling.localized
         case .boxing:
-            return "Boks"
+            return CommonKeys.Activity.boxing.localized
         case .martialArts:
-            return "Dövüş Sanatları"
+            return TrainingKeys.ActivityTypes.martialArts.localized
         default:
-            return "Diğer"
+            return TrainingKeys.ActivityTypes.other.localized
         }
     }
     
@@ -124,15 +124,15 @@ struct WorkoutHistoryItem: Identifiable, Hashable {
     
     var caloriesFormatted: String? {
         guard let calories = totalEnergyBurned else { return nil }
-        return "\(Int(calories)) kcal"
+        return "\(Int(calories)) \(CommonKeys.Units.kcal.localized)"
     }
     
     var distanceFormatted: String? {
         guard let distance = totalDistance, distance > 0 else { return nil }
         if distance >= 1000 {
-            return String(format: "%.1f km", distance / 1000)
+            return String(format: "%.1f \(CommonKeys.Units.kilometersShort.localized)", distance / 1000)
         } else {
-            return "\(Int(distance)) m"
+            return "\(Int(distance)) \(CommonKeys.Units.metersShort.localized)"
         }
     }
 }

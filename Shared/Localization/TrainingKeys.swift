@@ -1101,6 +1101,7 @@ enum TrainingKeys {
     // MARK: - Activity Types
     enum ActivityTypes {
         static let running = "activity.type.running"
+        static let cycling = "activity.type.cycling"
         static let swimming = "activity.type.swimming"
         static let walking = "activity.type.walking"
         static let strengthTraining = "activity.type.strength_training"
@@ -1157,5 +1158,77 @@ enum TrainingKeys {
         static let noOneRMDescription = "strength.analytics.no_1rm_description"
         static let oneYear = "strength.analytics.one_year"
         static let allTime = "strength.analytics.all_time"
+        static let subtitle = "strength.analytics.subtitle"
+        
+        // Time periods
+        static let oneMonth = "strength.analytics.one_month"
+        static let threeMonths = "strength.analytics.three_months"
+        static let sixMonths = "strength.analytics.six_months"
+        
+        // Exercise names
+        static let squat = "strength.analytics.squat"
+        static let bench = "strength.analytics.bench"
+        static let deadlift = "strength.analytics.deadlift"
+        static let ohp = "strength.analytics.ohp"
+        static let pullup = "strength.analytics.pullup"
+        
+        // Chart labels
+        static let dateLabel = "strength.analytics.date_label"
+        static let weightLabel = "strength.analytics.weight_label"
+    }
+    
+    // MARK: - Consistency Analytics
+    enum ConsistencyAnalytics {
+        static let title = "consistency.analytics.title"
+        static let subtitle = "consistency.analytics.subtitle"
+        static let dataLoading = "consistency.analytics.data_loading"
+        
+        // Metrics
+        static let frequency = "consistency.analytics.frequency"
+        static let streak = "consistency.analytics.streak"
+        static let goals = "consistency.analytics.goals"
+        
+        // Time periods
+        static let last12Weeks = "consistency.analytics.last_12_weeks"
+        static let thisWeek = "consistency.analytics.this_week"
+        static let average = "consistency.analytics.average"
+        static let best = "consistency.analytics.best"
+        static let perfectWeeks = "consistency.analytics.perfect_weeks"
+        
+        // Ring labels
+        static let thisWeekSessions = "consistency.analytics.this_week_sessions"
+        static let dailyStreak = "consistency.analytics.daily_streak"
+        static let weeklyGoal = "consistency.analytics.weekly_goal"
+    }
+    
+    // MARK: - PR Categories
+    enum PRCategories {
+        static let strength = "pr.categories.strength"
+        static let endurance = "pr.categories.endurance"
+        static let volume = "pr.categories.volume"
+        
+        // Strength exercises
+        static let backSquat = "pr.strength.back_squat"
+        static let benchPress = "pr.strength.bench_press"
+        static let deadlift = "pr.strength.deadlift"
+        static let overheadPress = "pr.strength.overhead_press"
+        static let pullUp = "pr.strength.pull_up"
+        
+        // Endurance metrics
+        static let longestRun = "pr.endurance.longest_run"
+        static let bestAveragePace = "pr.endurance.best_average_pace"
+        static let maxDistanceWeek = "pr.endurance.max_distance_week"
+        static let best5KTime = "pr.endurance.best_5k_time"
+        static let best10KTime = "pr.endurance.best_10k_time"
+        
+        // Volume metrics
+        static let mostSetsInDay = "pr.volume.most_sets_in_day"
+        static let weeklyVolume = "pr.volume.weekly_volume"
+        static let mostRepsSet = "pr.volume.most_reps_set"
+        static let longestWorkout = "pr.volume.longest_workout"
+        static let sessionsThisMonth = "pr.volume.sessions_this_month"
+        
+        // Common
+        static let subtitle = "pr.categories.subtitle"
     }
 }

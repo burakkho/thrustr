@@ -4,6 +4,7 @@ import HealthKit
 struct HealthKitAuthorizationView: View {
     @StateObject private var healthKitService = HealthKitService.shared
     @Environment(\.theme) private var theme
+    @StateObject private var unitSettings = UnitSettings.shared
     
     var body: some View {
         ScrollView {
@@ -14,11 +15,11 @@ struct HealthKitAuthorizationView: View {
                         .font(.system(size: 50))
                         .foregroundColor(theme.colors.accent)
                     
-                    Text("HealthKit İzinleri")
+                    Text(CommonKeys.HealthKit.authorizationTitle.localized)
                         .font(theme.typography.heading1)
                         .fontWeight(.bold)
                     
-                    Text("Sağlık verilerinize erişim durumu")
+                    Text(CommonKeys.HealthKit.authorizationSubtitle.localized)
                         .font(theme.typography.body)
                         .foregroundColor(theme.colors.textSecondary)
                         .multilineTextAlignment(.center)
@@ -30,7 +31,7 @@ struct HealthKitAuthorizationView: View {
                 
                 // MARK: - Detailed Permissions
                 VStack(spacing: 16) {
-                    Text("Detaylı İzin Durumu")
+                    Text(CommonKeys.HealthKit.detailedPermissions.localized)
                         .font(theme.typography.heading2)
                         .fontWeight(.semibold)
                         .frame(maxWidth: .infinity, alignment: .leading)
@@ -54,7 +55,7 @@ struct HealthKitAuthorizationView: View {
                     }) {
                         HStack {
                             Image(systemName: "arrow.clockwise")
-                            Text("İzinleri Yenile")
+                            Text(CommonKeys.HealthKit.refreshPermissions.localized)
                         }
                         .frame(maxWidth: .infinity)
                         .padding()
@@ -66,7 +67,7 @@ struct HealthKitAuthorizationView: View {
                     Button(action: openHealthApp) {
                         HStack {
                             Image(systemName: "heart.text.square")
-                            Text("Sağlık Uygulamasını Aç")
+                            Text(CommonKeys.HealthKit.openHealthApp.localized)
                         }
                         .frame(maxWidth: .infinity)
                         .padding()
@@ -79,7 +80,7 @@ struct HealthKitAuthorizationView: View {
             .padding(.horizontal, 20)
             .padding(.bottom, 20)
         }
-        .navigationTitle("HealthKit İzinleri")
+        .navigationTitle(CommonKeys.HealthKit.authorizationTitle.localized)
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {
             Task {
@@ -110,7 +111,7 @@ struct AuthorizationSummaryCard: View {
                     .fontWeight(.bold)
                     .foregroundColor(.green)
                 
-                Text("İzin Verildi")
+                Text(CommonKeys.HealthKit.authorized.localized)
                     .font(theme.typography.bodySmall)
                     .foregroundColor(theme.colors.textSecondary)
             }
@@ -124,7 +125,7 @@ struct AuthorizationSummaryCard: View {
                     .fontWeight(.bold)
                     .foregroundColor(.red)
                 
-                Text("Reddedildi")
+                Text(CommonKeys.HealthKit.denied.localized)
                     .font(theme.typography.bodySmall)
                     .foregroundColor(theme.colors.textSecondary)
             }
@@ -138,7 +139,7 @@ struct AuthorizationSummaryCard: View {
                     .fontWeight(.bold)
                     .foregroundColor(.orange)
                 
-                Text("Belirlenmedi")
+                Text(CommonKeys.HealthKit.notDetermined.localized)
                     .font(theme.typography.bodySmall)
                     .foregroundColor(theme.colors.textSecondary)
             }
@@ -247,8 +248,8 @@ struct HealthDataCategory {
 // MARK: - Health Data Categories
 let healthDataCategories: [HealthDataCategory] = [
     HealthDataCategory(
-        title: "Aktivite",
-        description: "Adım, kalori, mesafe takibi",
+        title: CommonKeys.HealthKit.activityCategory.localized,
+        description: CommonKeys.HealthKit.activityDescription.localized,
         icon: "figure.walk",
         color: .blue,
         dataTypes: [
@@ -259,8 +260,8 @@ let healthDataCategories: [HealthDataCategory] = [
         ]
     ),
     HealthDataCategory(
-        title: "Kalp Sağlığı",
-        description: "Nabız, HRV, VO2 Max",
+        title: CommonKeys.HealthKit.heartCategory.localized,
+        description: CommonKeys.HealthKit.heartDescription.localized,
         icon: "heart.fill",
         color: .red,
         dataTypes: [
@@ -271,8 +272,8 @@ let healthDataCategories: [HealthDataCategory] = [
         ]
     ),
     HealthDataCategory(
-        title: "Vücut Ölçümleri",
-        description: "Kilo, boy, BMI, yağ oranı",
+        title: CommonKeys.HealthKit.bodyCategory.localized,
+        description: CommonKeys.HealthKit.bodyDescription.localized,
         icon: "scalemass.fill",
         color: .green,
         dataTypes: [
@@ -283,8 +284,8 @@ let healthDataCategories: [HealthDataCategory] = [
         ]
     ),
     HealthDataCategory(
-        title: "Uyku",
-        description: "Uyku analizi ve kalitesi",
+        title: CommonKeys.HealthKit.sleepCategory.localized,
+        description: CommonKeys.HealthKit.sleepDescription.localized,
         icon: "bed.double.fill",
         color: .purple,
         dataTypes: [
@@ -292,8 +293,8 @@ let healthDataCategories: [HealthDataCategory] = [
         ]
     ),
     HealthDataCategory(
-        title: "Antrenmanlar",
-        description: "Workout geçmişi ve detayları",
+        title: CommonKeys.HealthKit.workoutCategory.localized,
+        description: CommonKeys.HealthKit.workoutDescription.localized,
         icon: "dumbbell.fill",
         color: .orange,
         dataTypes: [
@@ -301,8 +302,8 @@ let healthDataCategories: [HealthDataCategory] = [
         ]
     ),
     HealthDataCategory(
-        title: "Beslenme",
-        description: "Kalori, makro besinler",
+        title: CommonKeys.HealthKit.nutritionCategory.localized,
+        description: CommonKeys.HealthKit.nutritionDescription.localized,
         icon: "fork.knife",
         color: .yellow,
         dataTypes: [

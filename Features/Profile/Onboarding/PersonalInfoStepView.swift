@@ -47,7 +47,7 @@ struct PersonalInfoStepView: View {
                             .focused($focusedField, equals: .name)
                             .submitLabel(.next)
                             .accessibilityLabel(Text(CommonKeys.Onboarding.nameLabel.localized))
-                            .accessibilityHint(Text("İsminizi girin"))
+                            .accessibilityHint(Text("accessibility.enter_name".localized))
                             .onChange(of: data.name) { _, _ in
                                 // Debounce validation to avoid stutter while typing
                                 nameDebounceWork?.cancel()

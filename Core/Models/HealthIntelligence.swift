@@ -22,25 +22,35 @@ struct RecoveryScore {
     var recommendation: String {
         switch category {
         case .excellent:
-            return "Mükemmel toparlanma! Yoğun antrenmanlar için hazırsın."
+            return CommonKeys.HealthKit.recoveryExcellentMessage.localized
         case .good:
-            return "İyi durumdasın. Normal yoğunlukta antrenman yapabilirsin."
+            return CommonKeys.HealthKit.recoveryGoodMessage.localized
         case .moderate:
-            return "Orta düzeyde toparlanma. Hafif-orta yoğunlukta antrenman öneriliyor."
+            return CommonKeys.HealthKit.recoveryModerateMessage.localized
         case .poor:
-            return "Düşük toparlanma seviyesi. Dinlenme veya hafif aktivite öneriliyor."
+            return CommonKeys.HealthKit.recoveryPoorMessage.localized
         case .critical:
-            return "Kritik durum. Tam dinlenme gerekiyor."
+            return CommonKeys.HealthKit.recoveryCriticalMessage.localized
         }
     }
 }
 
 enum RecoveryCategory: String, CaseIterable {
-    case excellent = "Mükemmel"
-    case good = "İyi"
-    case moderate = "Orta"
-    case poor = "Düşük"
-    case critical = "Kritik"
+    case excellent = "excellent"
+    case good = "good"
+    case moderate = "moderate"
+    case poor = "poor"
+    case critical = "critical"
+    
+    var localizedName: String {
+        switch self {
+        case .excellent: return "health.recovery.excellent".localized
+        case .good: return "health.recovery.good".localized
+        case .moderate: return "health.recovery.moderate".localized
+        case .poor: return "health.recovery.poor".localized
+        case .critical: return "health.recovery.critical".localized
+        }
+    }
     
     var color: String {
         switch self {
@@ -75,19 +85,39 @@ struct HealthInsight {
     let action: String?
     
     enum InsightType: String, CaseIterable {
-        case workout = "Antrenman"
-        case sleep = "Uyku"
-        case nutrition = "Beslenme"
-        case recovery = "Toparlanma"
-        case heartHealth = "Kalp Sağlığı"
-        case weight = "Kilo"
-        case steps = "Aktivite"
+        case workout = "workout"
+        case sleep = "sleep"
+        case nutrition = "nutrition"
+        case recovery = "recovery"
+        case heartHealth = "heart_health"
+        case weight = "weight"
+        case steps = "steps"
+        
+        var localizedName: String {
+            switch self {
+            case .workout: return "health.insight.workout".localized
+            case .sleep: return "health.insight.sleep".localized
+            case .nutrition: return "health.insight.nutrition".localized
+            case .recovery: return "health.insight.recovery".localized
+            case .heartHealth: return "health.insight.heart_health".localized
+            case .weight: return "health.insight.weight".localized
+            case .steps: return "health.insight.steps".localized
+            }
+        }
     }
     
     enum InsightPriority: String, CaseIterable {
-        case high = "Yüksek"
-        case medium = "Orta"
-        case low = "Düşük"
+        case high = "high"
+        case medium = "medium"
+        case low = "low"
+        
+        var localizedName: String {
+            switch self {
+            case .high: return "health.priority.high".localized
+            case .medium: return "health.priority.medium".localized
+            case .low: return "health.priority.low".localized
+            }
+        }
         
         var color: String {
             switch self {
@@ -109,21 +139,30 @@ struct FitnessLevelAssessment {
     let assessmentDate: Date
     
     enum FitnessLevel: String, CaseIterable {
-        case beginner = "Başlangıç"
-        case intermediate = "Orta"
-        case advanced = "İleri"
-        case elite = "Elit"
+        case beginner = "beginner"
+        case intermediate = "intermediate"
+        case advanced = "advanced"
+        case elite = "elite"
+        
+        var localizedName: String {
+            switch self {
+            case .beginner: return "health.fitness.beginner".localized
+            case .intermediate: return "health.fitness.intermediate".localized
+            case .advanced: return "health.fitness.advanced".localized
+            case .elite: return "health.fitness.elite".localized
+            }
+        }
         
         var description: String {
             switch self {
             case .beginner:
-                return "Fitness yolculuğunun başında"
+                return CommonKeys.HealthKit.fitnessBeginnerDesc.localized
             case .intermediate:
-                return "Düzenli antrenman yapıyor"
+                return CommonKeys.HealthKit.fitnessIntermediateDesc.localized
             case .advanced:
-                return "İyi kondisyon seviyesinde"
+                return CommonKeys.HealthKit.fitnessAdvancedDesc.localized
             case .elite:
-                return "Üstün atletik performans"
+                return CommonKeys.HealthKit.fitnessEliteDesc.localized
             }
         }
         
@@ -208,12 +247,12 @@ extension HealthIntelligence {
         if recoveryScore.overallScore < 40 {
             insights.append(HealthInsight(
                 type: .recovery,
-                title: "Düşük Toparlanma Skoru",
-                message: "Toparlanma skorun düşük. Dinlenme günü alman öneriliyor.",
+                title: CommonKeys.HealthKit.insightLowRecoveryTitle.localized,
+                message: CommonKeys.HealthKit.insightLowRecoveryMessage.localized,
                 priority: .high,
                 date: Date(),
                 actionable: true,
-                action: "Bugün tam dinlenme veya hafif yürüyüş yap"
+                action: CommonKeys.HealthKit.insightLowRecoveryAction.localized
             ))
         }
         
@@ -221,12 +260,12 @@ extension HealthIntelligence {
         if recoveryScore.sleepScore < 70 {
             insights.append(HealthInsight(
                 type: .sleep,
-                title: "Uyku Kalitesi",
-                message: "Uyku süren yetersiz. Toparlanma için 7-9 saat uyku hedefle.",
+                title: CommonKeys.HealthKit.insightSleepQualityTitle.localized,
+                message: CommonKeys.HealthKit.insightSleepQualityMessage.localized,
                 priority: .medium,
                 date: Date(),
                 actionable: true,
-                action: "Erken yatma rutini oluştur"
+                action: CommonKeys.HealthKit.insightSleepQualityAction.localized
             ))
         }
         
@@ -234,22 +273,22 @@ extension HealthIntelligence {
         if workoutTrends.trendsDirection == .decreasing {
             insights.append(HealthInsight(
                 type: .workout,
-                title: "Antrenman Sıklığı Düşüyor",
-                message: "Son haftalarda antrenman sayın azalıyor.",
+                title: CommonKeys.HealthKit.insightWorkoutFrequencyTitle.localized,
+                message: CommonKeys.HealthKit.insightWorkoutFrequencyMessage.localized,
                 priority: .medium,
                 date: Date(),
                 actionable: true,
-                action: "Haftalık antrenman planı oluştur"
+                action: CommonKeys.HealthKit.insightWorkoutFrequencyAction.localized
             ))
         } else if workoutTrends.workoutsPerWeek > 6 {
             insights.append(HealthInsight(
                 type: .workout,
-                title: "Çok Yoğun Antrenman",
-                message: "Haftada \(String(format: "%.1f", workoutTrends.workoutsPerWeek)) antrenman yapıyorsun. Dinlenme günleri eklemeyi düşün.",
+                title: CommonKeys.HealthKit.insightIntenseTrainingTitle.localized,
+                message: String(format: "%@ %.1f %@. %@", CommonKeys.HealthKit.weeklyWorkouts.localized, workoutTrends.workoutsPerWeek, CommonKeys.HealthKit.workoutsDoing.localized, CommonKeys.HealthKit.insightIntenseTrainingMessage.localized),
                 priority: .medium,
                 date: Date(),
                 actionable: true,
-                action: "Haftalık 1-2 dinlenme günü ekle"
+                action: CommonKeys.HealthKit.insightIntenseTrainingAction.localized
             ))
         }
         
@@ -258,27 +297,27 @@ extension HealthIntelligence {
         if stepsTrend.average < 8000 {
             insights.append(HealthInsight(
                 type: .steps,
-                title: "Düşük Günlük Aktivite",
-                message: "Günlük ortalama adım sayın \(Int(stepsTrend.average)). 10.000 adım hedefle.",
+                title: CommonKeys.HealthKit.insightLowActivityTitle.localized,
+                message: String(format: "%@ %d. %@", CommonKeys.HealthKit.dailyAverageSteps.localized, Int(stepsTrend.average), CommonKeys.HealthKit.insightLowActivityMessage.localized),
                 priority: .low,
                 date: Date(),
                 actionable: true,
-                action: "Günde 2000 adım daha at"
+                action: CommonKeys.HealthKit.insightLowActivityAction.localized
             ))
         }
         
         // Weight insights
         let weightTrend = HealthDataTrend(dataPoints: weightHistory)
         if abs(weightTrend.percentChange) > 5 {
-            let direction = weightTrend.percentChange > 0 ? "artış" : "azalış"
+            let direction = weightTrend.percentChange > 0 ? CommonKeys.HealthKit.weightIncrease.localized : CommonKeys.HealthKit.weightDecrease.localized
             insights.append(HealthInsight(
                 type: .weight,
-                title: "Kilo Değişimi",
-                message: "Son dönemde kilonda %\(String(format: "%.1f", abs(weightTrend.percentChange))) \(direction) var.",
+                title: CommonKeys.HealthKit.insightWeightChangeTitle.localized,
+                message: String(format: "%@ %%%@ %@ %@.", CommonKeys.HealthKit.weightChangePeriod.localized, String(format: "%.1f", abs(weightTrend.percentChange)), direction, CommonKeys.HealthKit.weightChangeExists.localized),
                 priority: .medium,
                 date: Date(),
                 actionable: true,
-                action: "Beslenme ve antrenman planını gözden geçir"
+                action: CommonKeys.HealthKit.insightWeightChangeAction.localized
             ))
         }
         

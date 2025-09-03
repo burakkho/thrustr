@@ -28,11 +28,11 @@ struct StrengthProgressOverview: View {
         
         var displayTitle: String {
             switch self {
-            case .oneMonth: return "Son 1 Ay"
-            case .threeMonths: return "Son 3 Ay"
-            case .sixMonths: return "Son 6 Ay"
-            case .oneYear: return "Son 1 Yıl"
-            case .allTime: return "Tüm Zamanlar"
+            case .oneMonth: return TrainingKeys.StrengthAnalytics.oneMonth.localized
+            case .threeMonths: return TrainingKeys.StrengthAnalytics.threeMonths.localized
+            case .sixMonths: return TrainingKeys.StrengthAnalytics.sixMonths.localized
+            case .oneYear: return TrainingKeys.StrengthAnalytics.oneYear.localized
+            case .allTime: return TrainingKeys.StrengthAnalytics.allTime.localized
             }
         }
     }
@@ -61,12 +61,12 @@ struct StrengthProgressOverview: View {
     private var headerSection: some View {
         HStack {
             VStack(alignment: .leading, spacing: 4) {
-                Text("💪 Kuvvet Gelişimi")
+                Text(TrainingKeys.StrengthAnalytics.strengthTitle.localized)
                     .font(theme.typography.headline)
                     .fontWeight(.bold)
                     .foregroundColor(theme.colors.textPrimary)
                 
-                Text("1RM Progression Tracking")
+                Text(TrainingKeys.StrengthAnalytics.subtitle.localized)
                     .font(theme.typography.caption)
                     .foregroundColor(theme.colors.textSecondary)
             }
@@ -115,15 +115,15 @@ struct StrengthProgressOverview: View {
             if hasAnyStrengthData {
                 Chart(strengthProgressData) { dataPoint in
                     LineMark(
-                        x: .value("Date", dataPoint.date),
-                        y: .value("Weight", dataPoint.weight)
+                        x: .value(TrainingKeys.StrengthAnalytics.dateLabel.localized, dataPoint.date),
+                        y: .value(TrainingKeys.StrengthAnalytics.weightLabel.localized, dataPoint.weight)
                     )
                     .foregroundStyle(exerciseColor(dataPoint.exercise))
                     .lineStyle(StrokeStyle(lineWidth: 2.5))
                     
                     PointMark(
-                        x: .value("Date", dataPoint.date),
-                        y: .value("Weight", dataPoint.weight)
+                        x: .value(TrainingKeys.StrengthAnalytics.dateLabel.localized, dataPoint.date),
+                        y: .value(TrainingKeys.StrengthAnalytics.weightLabel.localized, dataPoint.weight)
                     )
                     .foregroundStyle(exerciseColor(dataPoint.exercise))
                     .symbolSize(selectedExercise == dataPoint.exercise ? 80 : 50)
@@ -194,17 +194,17 @@ struct StrengthProgressOverview: View {
                 .font(.system(size: 48))
                 .foregroundColor(theme.colors.textSecondary.opacity(0.5))
             
-            Text("Henüz 1RM Verisi Yok")
+            Text(TrainingKeys.StrengthAnalytics.noOneRMData.localized)
                 .font(theme.typography.headline)
                 .foregroundColor(theme.colors.textPrimary)
             
-            Text("Strength test yaparak kuvvet gelişimini takip etmeye başla")
+            Text(TrainingKeys.StrengthAnalytics.noOneRMDescription.localized)
                 .font(theme.typography.body)
                 .foregroundColor(theme.colors.textSecondary)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal)
             
-            Button("Strength Test Başlat") {
+            Button(TrainingKeys.Analytics.startStrengthTest.localized) {
                 // Navigate to strength test
             }
             .buttonStyle(.borderedProminent)
@@ -310,11 +310,11 @@ struct StrengthProgressOverview: View {
     
     private func exerciseDisplayName(_ exercise: String) -> String {
         switch exercise {
-        case "squat": return "Squat"
-        case "bench": return "Bench"
-        case "deadlift": return "Deadlift"
-        case "ohp": return "OHP"
-        case "pullup": return "Pull-up"
+        case "squat": return TrainingKeys.StrengthAnalytics.squat.localized
+        case "bench": return TrainingKeys.StrengthAnalytics.bench.localized
+        case "deadlift": return TrainingKeys.StrengthAnalytics.deadlift.localized
+        case "ohp": return TrainingKeys.StrengthAnalytics.ohp.localized
+        case "pullup": return TrainingKeys.StrengthAnalytics.pullup.localized
         default: return exercise.capitalized
         }
     }
