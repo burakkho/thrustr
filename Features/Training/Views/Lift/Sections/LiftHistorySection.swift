@@ -113,7 +113,7 @@ struct LiftHistorySection: View {
             primaryAction: .init(
                 title: "training.lift.startWorkout".localized,
                 icon: "play.circle.fill",
-                action: { /* Start workout */ }
+                action: { }
             )
         )
     }

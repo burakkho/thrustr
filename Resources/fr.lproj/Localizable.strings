@@ -1,6 +1,7 @@
 // MARK: - Common Actions
 "common.ok" = "OK";
 "common.cancel" = "Annuler";
+"common.onboarding.common.cancel" = "Annuler";
 "common.save" = "Enregistrer";
 "common.edit" = "Modifier";
 "common.done" = "Terminé";
@@ -2828,3 +2829,36 @@
 "training.workoutTypes.forTimeWithCap" = "For Time • %@ min cap";
 "training.workoutTypes.amrapMinutes" = "AMRAP • %@ minutes";
 "training.workoutTypes.emomMinutes" = "EMOM • %@ minutes";
+
+// MARK: - Training Analytics (Additional)
+"training.analytics.startStrengthTest" = "Effectuer un Test de Force";
+"training.analytics.startFirstCardio" = "Commencer la Première Séance Cardio";
+"training.analytics.recordFirstPR" = "Enregistrer votre Premier RP";
+
+// MARK: - Consistency Analytics
+"consistency.analytics.title" = "Analyse de Régularité";
+"consistency.analytics.subtitle" = "Suivez votre régularité d'entraînement et vos habitudes";
+"consistency.analytics.this_week_sessions" = "Séances Cette Semaine";
+"consistency.analytics.last_12_weeks" = "12 Dernières Semaines";
+"consistency.analytics.perfect_weeks" = "Semaines Parfaites";
+"consistency.analytics.this_week" = "Cette Semaine";
+"consistency.analytics.average" = "Moyenne";
+"consistency.analytics.best" = "Meilleur";
+"consistency.analytics.frequency" = "Fréquence";
+"consistency.analytics.streak" = "Série";
+"consistency.analytics.goals" = "Objectifs";
+
+// MARK: - Strength Analytics
+"strength.analytics.subtitle" = "Suivez votre progression de force et vos RP";
+"strength.analytics.squat" = "Squat";
+"strength.analytics.bench" = "Développé Couché";
+"strength.analytics.deadlift" = "Soulevé de Terre";
+"strength.analytics.ohp" = "Développé Militaire";
+"strength.analytics.pullup" = "Traction";
+
+// MARK: - Personal Records (Strength)
+"pr.strength.back_squat" = "RP Squat Arrière";
+"pr.strength.bench_press" = "RP Développé Couché";
+"pr.strength.deadlift" = "RP Soulevé de Terre";
+"pr.strength.overhead_press" = "RP Développé Militaire";
+"pr.strength.pull_up" = "RP Traction";

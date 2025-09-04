@@ -4,6 +4,7 @@ import SwiftData
 struct LiftWorkoutsSection: View {
     @Environment(\.theme) private var theme
     @Environment(\.modelContext) private var modelContext
+    @Environment(TrainingCoordinator.self) private var coordinator
     
     @Query(
         filter: #Predicate<LiftSession> { $0.isCompleted == true },
@@ -43,7 +44,7 @@ struct LiftWorkoutsSection: View {
                         primaryTitle: TrainingKeys.Lift.startFirstWorkout.localized,
                         primaryAction: { showingScratchBuilder = true },
                         secondaryTitle: TrainingKeys.Lift.browsePrograms.localized,
-                        secondaryAction: { /* Navigate to programs */ }
+                        secondaryAction: { coordinator.navigateToProgramSelection() }
                     )
                     .padding(.top, theme.spacing.xl)
                 }
@@ -86,7 +87,7 @@ struct LiftWorkoutsSection: View {
                     )
                 ],
                 cardStyle: .detailed,
-                primaryAction: { /* View details */ },
+                primaryAction: { },
                 secondaryAction: { startWorkout(execution.currentWorkout) }
             )
             .padding(.horizontal)
@@ -123,7 +124,7 @@ struct LiftWorkoutsSection: View {
                     title: "training.lift.pickRoutine".localized,
                     subtitle: "training.lift.pickRoutine.subtitle".localized,
                     color: theme.colors.success,
-                    action: { /* Navigate to routines */ }
+                    action: { }
                 )
                 
                 quickActionCard(
@@ -131,7 +132,7 @@ struct LiftWorkoutsSection: View {
                     title: "training.lift.startProgram".localized,
                     subtitle: "training.lift.startProgram.subtitle".localized,
                     color: theme.colors.warning,
-                    action: { /* Navigate to programs */ }
+                    action: { coordinator.navigateToProgramSelection() }
                 )
             }
             .padding(.horizontal)

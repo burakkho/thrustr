@@ -21,6 +21,7 @@ struct LiftSessionView: View {
     @State private var isEditingOrder = false
     @State private var showingNotes = false
     @State private var sessionNotes = ""
+    @State private var showingProgramCelebration = false
     
     private var currentUser: User? {
         user.first
@@ -104,6 +105,12 @@ struct LiftSessionView: View {
                 onCompletion: {
                     handleWorkoutCompletion()
                 }
+            )
+        }
+        .sheet(isPresented: $showingProgramCelebration) {
+            ProgramCompletionCelebrationView(
+                programName: workout.program?.localizedName ?? "Program",
+                onDismiss: { showingProgramCelebration = false }
             )
         }
         .sheet(isPresented: $showingExerciseSelection) {
@@ -466,7 +473,8 @@ struct LiftSessionView: View {
             // Check if program is completed
             if execution.isCompleted {
                 Logger.success("Program completed! \(execution.program.localizedName)")
-                // TODO: Show program completion celebration
+                showingProgramCelebration = true
+                HapticManager.shared.notification(.success)
             }
             
         } catch {

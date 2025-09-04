@@ -482,6 +482,49 @@
 "settings.privacy_policy" = "Gizlilik Politikası";
 "settings.terms_of_service" = "Kullanım Şartları";
 
+// MARK: - Training Celebration
+"training.celebration.congratulations" = "Tebrikler!";
+"training.celebration.programCompleted" = "tamamlandı!";
+"training.celebration.achievementMessage" = "Antrenman programını başarıyla tamamladın. Azmin ve kararlılığın meyvelerini verdi!";
+"training.celebration.continue" = "Antrenmana Devam";
+"training.celebration.share" = "Başarıyı Paylaş";
+"training.celebration.shareText" = "Az önce";
+
+// MARK: - Training Preview
+"training.preview.previousPerformance" = "Önceki Performans";
+"training.preview.lastPerformed" = "Son gerçekleştirme";
+"training.preview.duration" = "Süre";
+"training.preview.totalVolume" = "Hacim";
+"training.preview.sessions" = "Antrenman";
+
+// MARK: - PR Categories
+"pr.categories.subtitle" = "Kişisel rekorlarını takip et";
+"pr.categories.strength" = "Güç";
+"pr.categories.endurance" = "Dayanıklılık";
+
+// MARK: - Training Analytics Extended
+"training.analytics.bodyMetrics" = "Vücut Metrikleri";
+"training.analytics.monthlyGoalsDesc" = "Aylık antrenman hedeflerini belirle ve takip et";
+"training.analytics.weeklyGoals" = "Haftalık Hedefler";
+"training.analytics.weeklyGoalsDesc" = "Haftalık antrenman objektiflerin";
+
+// MARK: - Training OneRM
+"training.oneRM.startingWeightsMessage" = "1RM değerlerine göre %@ için başlangıç ağırlıkların";
+"training.oneRM.fallbackProgram" = "programın";
+
+// MARK: - Training Goals
+"training.goals.setMonthlyGoals" = "Aylık Hedefler";
+"training.goals.trackProgress" = "İlerlemeni takip et ve hedeflerine ulaş";
+"training.goals.trainingSessions" = "Antrenman Seansları";
+"training.goals.cardioDistance" = "Kardio Mesafesi";
+"training.goals.liftSessions" = "Ağırlık Antrenmanları";
+"training.goals.cardioSessions" = "Kardio Seansları";
+"training.goals.weeklyDistance" = "Haftalık Mesafe";
+"training.goals.saveGoals" = "Hedefleri Kaydet";
+"training.goals.sessions" = "seans";
+"training.goals.weeklyTarget" = "Haftalık hedef";
+"training.goals.cardioTarget" = "Kardio hedefi";
+
 // MARK: - Common
 "action.save" = "Kaydet";
 "action.cancel" = "İptal";
@@ -1568,6 +1611,7 @@
 // MARK: - Common Actions
 "common.actions.save" = "Kaydet";
 "common.actions.cancel" = "İptal";
+"common.onboarding.common.cancel" = "İptal";
 "common.actions.retry" = "Tekrar Dene";
 "common.actions.continue" = "Devam";
 "common.actions.done" = "Tamam";
@@ -2755,6 +2799,17 @@
 "training.dashboard.totalTime" = "Toplam Süre";
 "training.dashboard.emptyStateDescription" = "İlerlemenizi görmek için ilk antrenmanınızı başlatın!";
 
+// Dashboard Pills
+"training.dashboard.pills.overview" = "Özet";
+"training.dashboard.pills.analytics" = "Analitik";
+"training.dashboard.pills.tests" = "Testler";
+"training.dashboard.pills.goals" = "Hedefler";
+
+// Dashboard Deep Navigation
+"training.dashboard.viewDetailedAnalytics" = "Ayrıntılı Analiz";
+"training.dashboard.takeStrengthTest" = "Kuvvet Testi Yap";
+"training.dashboard.manageGoals" = "Hedefleri Yönet";
+
 // Dashboard Profile
 "dashboard.profile.height" = "Boy";
 "dashboard.profile.weight" = "Kilo";
@@ -3484,6 +3539,50 @@
 "units.months" = "ay";
 "units.meters_short" = "m";
 "units.kilometers_short" = "km";
+
+// MARK: - Missing Analytics Keys
+"training.analytics.performanceOverview" = "Performans Özeti";
+"training.analytics.monthlyTraining" = "Bu Ay Antrenman";
+"training.analytics.totalDuration" = "Toplam Süre";
+"training.analytics.thisMonthLower" = "bu ay";
+"training.analytics.weeklyTrend" = "Haftalık Trend";
+"training.analytics.consistency" = "Tutarlılık";
+"training.analytics.increasing" = "📈 Artış";
+"training.analytics.stable" = "📊 Stabil";
+"training.analytics.strong" = "🔥 Güçlü";
+"training.analytics.improving" = "💪 Gelişiyor";
+"training.analytics.viewDetailedAnalytics" = "Detaylı Analitikleri Görüntüle";
+"training.analytics.startStrengthTest" = "Güç Testi Yap";
+"training.analytics.startFirstCardio" = "İlk Cardio Seansını Başlat";
+"training.analytics.recordFirstPR" = "İlk PR'ını Kaydet";
+
+// MARK: - Consistency Analytics
+"consistency.analytics.title" = "Tutarlılık Analitiği";
+"consistency.analytics.subtitle" = "Antrenman tutarlılığını ve düzenini takip et";
+"consistency.analytics.this_week_sessions" = "Bu Hafta Seanslar";
+"consistency.analytics.last_12_weeks" = "Son 12 Hafta";
+"consistency.analytics.perfect_weeks" = "Mükemmel Haftalar";
+"consistency.analytics.this_week" = "Bu Hafta";
+"consistency.analytics.average" = "Ortalama";
+"consistency.analytics.best" = "En İyi";
+"consistency.analytics.frequency" = "Sıklık";
+"consistency.analytics.streak" = "Seri";
+"consistency.analytics.goals" = "Hedefler";
+
+// MARK: - Strength Analytics
+"strength.analytics.subtitle" = "Güç gelişimini ve PR'larını takip et";
+"strength.analytics.squat" = "Squat";
+"strength.analytics.bench" = "Bench Press";
+"strength.analytics.deadlift" = "Deadlift";
+"strength.analytics.ohp" = "Overhead Press";
+"strength.analytics.pullup" = "Pull-up";
+
+// MARK: - Personal Records (Strength)
+"pr.strength.back_squat" = "Back Squat PR";
+"pr.strength.bench_press" = "Bench Press PR";
+"pr.strength.deadlift" = "Deadlift PR";
+"pr.strength.overhead_press" = "Overhead Press PR";
+"pr.strength.pull_up" = "Pull-up PR";
 
 // MARK: - Bluetooth Signal Strength
 "bluetooth.signal.strong" = "Güçlü";

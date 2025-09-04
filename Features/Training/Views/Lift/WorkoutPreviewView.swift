@@ -7,6 +7,7 @@ struct WorkoutPreviewView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.theme) private var theme
     @Environment(\.modelContext) private var modelContext
+    @Environment(TrainingCoordinator.self) private var coordinator
     @EnvironmentObject private var unitSettings: UnitSettings
     
     let workout: LiftWorkout
@@ -14,11 +15,12 @@ struct WorkoutPreviewView: View {
     let onBeginWorkout: () -> Void
     
     @State private var showingWarmupTips = false
+    @State private var previousSessions: [LiftSession] = []
     
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(spacing: theme.spacing.l) {
+                LazyVStack(spacing: theme.spacing.l) {
                     // Header Section
                     workoutHeaderSection
                     
@@ -29,6 +31,11 @@ struct WorkoutPreviewView: View {
                     
                     // Exercise List
                     exerciseListSection
+                    
+                    // Previous Performance (if available)
+                    if !previousSessions.isEmpty {
+                        previousPerformanceSection
+                    }
                     
                     // Warm-up Tips
                     warmupSection
@@ -48,6 +55,9 @@ struct WorkoutPreviewView: View {
                     }
                 }
             }
+        }
+        .onAppear {
+            loadPreviousSessions()
         }
     }
     
@@ -280,7 +290,7 @@ struct WorkoutPreviewView: View {
             
             // Secondary Action - View Previous Sessions
             if hasPreviousSessions {
-                Button(action: { /* Show previous sessions */ }) {
+                Button(action: { coordinator.navigateToHistory() }) {
                     HStack(spacing: theme.spacing.s) {
                         Image(systemName: "clock.arrow.circlepath")
                             .font(.body)
@@ -301,8 +311,119 @@ struct WorkoutPreviewView: View {
     }
     
     private var hasPreviousSessions: Bool {
-        // TODO: Check if user has previous sessions for this workout
-        false
+        !previousSessions.isEmpty
+    }
+    
+    private func loadPreviousSessions() {
+        let workoutName = workout.name
+        let descriptor = FetchDescriptor<LiftSession>(
+            predicate: #Predicate<LiftSession> { session in
+                session.workoutName == workoutName && session.isCompleted == true
+            },
+            sortBy: [SortDescriptor(\.completedAt, order: .reverse)]
+        )
+        
+        do {
+            previousSessions = try modelContext.fetch(descriptor)
+        } catch {
+            Logger.error("Failed to load previous sessions: \(error)")
+        }
+    }
+    
+    // MARK: - Previous Performance Section
+    private var previousPerformanceSection: some View {
+        VStack(alignment: .leading, spacing: theme.spacing.m) {
+            HStack {
+                Image(systemName: "clock.arrow.circlepath")
+                    .font(.title3)
+                    .foregroundColor(theme.colors.accent)
+                
+                Text(TrainingKeys.Preview.previousPerformance.localized)
+                    .font(theme.typography.headline)
+                    .fontWeight(.semibold)
+                    .foregroundColor(theme.colors.textPrimary)
+                
+                Spacer()
+            }
+            
+            if let lastSession = previousSessions.first {
+                VStack(alignment: .leading, spacing: theme.spacing.s) {
+                    HStack {
+                        Text(TrainingKeys.Preview.lastPerformed.localized)
+                            .font(theme.typography.caption)
+                            .foregroundColor(theme.colors.textSecondary)
+                        
+                        Spacer()
+                        
+                        Text(formatRelativeDate(lastSession.completedAt ?? lastSession.startDate))
+                            .font(theme.typography.caption)
+                            .fontWeight(.medium)
+                            .foregroundColor(theme.colors.accent)
+                    }
+                    
+                    HStack(spacing: theme.spacing.m) {
+                        performanceMetric(
+                            icon: "clock",
+                            label: TrainingKeys.Preview.duration.localized,
+                            value: formatDuration(TimeInterval(lastSession.duration))
+                        )
+                        
+                        performanceMetric(
+                            icon: "dumbbell",
+                            label: TrainingKeys.Preview.totalVolume.localized,
+                            value: UnitsFormatter.formatWeight(kg: lastSession.totalVolume, system: unitSettings.unitSystem)
+                        )
+                        
+                        if previousSessions.count > 1 {
+                            performanceMetric(
+                                icon: "chart.line.uptrend.xyaxis",
+                                label: TrainingKeys.Preview.sessions.localized,
+                                value: "\(previousSessions.count)"
+                            )
+                        }
+                    }
+                }
+                .padding()
+                .background(theme.colors.cardBackground)
+                .cornerRadius(theme.radius.m)
+            }
+        }
+    }
+    
+    private func performanceMetric(icon: String, label: String, value: String) -> some View {
+        VStack(spacing: theme.spacing.xs) {
+            Image(systemName: icon)
+                .font(.caption)
+                .foregroundColor(theme.colors.accent)
+            
+            Text(value)
+                .font(theme.typography.caption)
+                .fontWeight(.semibold)
+                .foregroundColor(theme.colors.textPrimary)
+            
+            Text(label)
+                .font(.caption2)
+                .foregroundColor(theme.colors.textSecondary)
+        }
+        .frame(maxWidth: .infinity)
+    }
+    
+    private func formatDuration(_ duration: TimeInterval) -> String {
+        let minutes = Int(duration) / 60
+        let hours = minutes / 60
+        let remainingMinutes = minutes % 60
+        
+        if hours > 0 {
+            return "\(hours)h \(remainingMinutes)m"
+        } else {
+            return "\(minutes)m"
+        }
+    }
+    
+    private func formatRelativeDate(_ date: Date) -> String {
+        let formatter = RelativeDateTimeFormatter()
+        formatter.unitsStyle = .abbreviated
+        return formatter.localizedString(for: date, relativeTo: Date())
     }
 }
 

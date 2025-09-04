@@ -8,6 +8,7 @@ struct TrainingView: View {
     @State private var coordinator = TrainingCoordinator()
     @StateObject private var errorHandler = ErrorHandlingService.shared
     @Query private var programs: [LiftProgram]
+    @Query private var users: [User]
     
     var body: some View {
         NavigationStack(path: $coordinator.navigationPath) {
@@ -22,9 +23,7 @@ struct TrainingView: View {
                         TrainingTab(title: TrainingKeys.Dashboard.title.localized, icon: "house.fill"),
                         TrainingTab(title: TrainingKeys.Lift.title.localized, icon: "dumbbell.fill"),
                         TrainingTab(title: TrainingKeys.Cardio.title.localized, icon: "heart.fill"),
-                        TrainingTab(title: TrainingKeys.WOD.title.localized, icon: "flame.fill"),
-                        TrainingTab(title: TrainingKeys.Strength.title.localized, icon: "chart.bar.doc.horizontal.fill"),
-                        TrainingTab(title: TrainingKeys.Analytics.title.localized, icon: "chart.bar.fill")
+                        TrainingTab(title: TrainingKeys.WOD.title.localized, icon: "flame.fill")
                     ]
                 )
                 
@@ -42,12 +41,6 @@ struct TrainingView: View {
                             .environment(coordinator)
                     case .wod:
                         WODMainView()
-                            .environment(coordinator)
-                    case .tests:
-                        TestsMainView()
-                            .environment(coordinator)
-                    case .analytics:
-                        TrainingAnalyticsView(modelContext: modelContext)
                             .environment(coordinator)
                     }
                 }
@@ -78,6 +71,32 @@ struct TrainingView: View {
                         primaryTitle: "Back",
                         primaryAction: { coordinator.navigationPath.removeLast() }
                     )
+                case "analytics_detail":
+                    TrainingAnalyticsView(modelContext: modelContext)
+                        .environment(coordinator)
+                case "strength_test":
+                    TestsMainView()
+                        .environment(coordinator)
+                case "goal_settings":
+                    Group {
+                        if let currentUser = users.first {
+                            GoalSettingsView(user: currentUser)
+                                .onAppear {
+                                    print("📱 Goal settings opened with user: \(currentUser.name)")
+                                }
+                        } else {
+                            EmptyStateView(
+                                systemImage: "person.circle",
+                                title: "No User Profile",
+                                message: "Please complete your profile setup first.",
+                                primaryTitle: "Back",
+                                primaryAction: { coordinator.navigationPath.removeLast() }
+                            )
+                            .onAppear {
+                                print("❌ Goal settings: No user found")
+                            }
+                        }
+                    }
                 default:
                     EmptyView()
                 }

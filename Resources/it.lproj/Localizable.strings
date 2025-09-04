@@ -6,6 +6,7 @@
 // MARK: - Common Actions
 "common.ok" = "OK";
 "common.cancel" = "Annulla";
+"common.onboarding.common.cancel" = "Annulla";
 "common.save" = "Salva";
 "common.edit" = "Modifica";
 "common.done" = "Fatto";
@@ -2737,3 +2738,36 @@
 "training.cardio.clearSearch" = "Pulisci Ricerca";
 "training.cardio.neverAttempted" = "Mai Provato";
 
+
+// MARK: - Training Analytics (Additional)
+"training.analytics.startStrengthTest" = "Esegui Test di Forza";
+"training.analytics.startFirstCardio" = "Inizia Prima Sessione Cardio";
+"training.analytics.recordFirstPR" = "Registra il Tuo Primo RP";
+
+// MARK: - Consistency Analytics
+"consistency.analytics.title" = "Analisi Consistenza";
+"consistency.analytics.subtitle" = "Monitora la tua costanza negli allenamenti e le abitudini";
+"consistency.analytics.this_week_sessions" = "Sessioni di Questa Settimana";
+"consistency.analytics.last_12_weeks" = "Ultime 12 Settimane";
+"consistency.analytics.perfect_weeks" = "Settimane Perfette";
+"consistency.analytics.this_week" = "Questa Settimana";
+"consistency.analytics.average" = "Media";
+"consistency.analytics.best" = "Migliore";
+"consistency.analytics.frequency" = "Frequenza";
+"consistency.analytics.streak" = "Serie";
+"consistency.analytics.goals" = "Obiettivi";
+
+// MARK: - Strength Analytics
+"strength.analytics.subtitle" = "Monitora la tua progressione di forza e i tuoi RP";
+"strength.analytics.squat" = "Squat";
+"strength.analytics.bench" = "Panca Piana";
+"strength.analytics.deadlift" = "Stacco";
+"strength.analytics.ohp" = "Lento Avanti";
+"strength.analytics.pullup" = "Trazioni";
+
+// MARK: - Personal Records (Strength)
+"pr.strength.back_squat" = "RP Squat";
+"pr.strength.bench_press" = "RP Panca Piana";
+"pr.strength.deadlift" = "RP Stacco";
+"pr.strength.overhead_press" = "RP Lento Avanti";
+"pr.strength.pull_up" = "RP Trazioni";

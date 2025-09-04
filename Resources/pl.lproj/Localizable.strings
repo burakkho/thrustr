@@ -6,6 +6,7 @@
 // MARK: - Common Actions
 "common.ok" = "OK";
 "common.cancel" = "Anuluj";
+"common.onboarding.common.cancel" = "Anuluj";
 "common.save" = "Zapisz";
 "common.edit" = "Edytuj";
 "common.done" = "Gotowe";
@@ -2913,3 +2914,35 @@
 // Empty States
 "health.data_not_found.message" = "dane nie znaleziono";
 "health.loading_data.message" = "Ładowanie danych zdrowotnych...";
+// MARK: - Training Analytics (Additional)
+"training.analytics.startStrengthTest" = "Wykonaj Test Siły";
+"training.analytics.startFirstCardio" = "Rozpocznij Pierwszy Trening Cardio";
+"training.analytics.recordFirstPR" = "Zapisz Swój Pierwszy Rekord";
+
+// MARK: - Consistency Analytics
+"consistency.analytics.title" = "Analiza Regularności";
+"consistency.analytics.subtitle" = "Śledź swoją regularność treningową i wzorce";
+"consistency.analytics.this_week_sessions" = "Sesje w Tym Tygodniu";
+"consistency.analytics.last_12_weeks" = "Ostatnie 12 Tygodni";
+"consistency.analytics.perfect_weeks" = "Perfekcyjne Tygodnie";
+"consistency.analytics.this_week" = "Ten Tydzień";
+"consistency.analytics.average" = "Średnia";
+"consistency.analytics.best" = "Najlepszy";
+"consistency.analytics.frequency" = "Częstotliwość";
+"consistency.analytics.streak" = "Passa";
+"consistency.analytics.goals" = "Cele";
+
+// MARK: - Strength Analytics
+"strength.analytics.subtitle" = "Śledź swój postęp siłowy i rekordy";
+"strength.analytics.squat" = "Przysiad";
+"strength.analytics.bench" = "Wyciskanie";
+"strength.analytics.deadlift" = "Martwy Ciąg";
+"strength.analytics.ohp" = "Wyciskanie Nad Głowę";
+"strength.analytics.pullup" = "Podciągnięcia";
+
+// MARK: - Personal Records (Strength)
+"pr.strength.back_squat" = "Rekord Przysiad";
+"pr.strength.bench_press" = "Rekord Wyciskanie";
+"pr.strength.deadlift" = "Rekord Martwy Ciąg";
+"pr.strength.overhead_press" = "Rekord Wyciskanie Nad Głowę";
+"pr.strength.pull_up" = "Rekord Podciągnięcia";

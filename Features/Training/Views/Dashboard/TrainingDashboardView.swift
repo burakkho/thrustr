@@ -11,11 +11,23 @@ struct TrainingDashboardView: View {
     @Query private var wodResults: [WODResult]
     @Query private var user: [User]
     
+    @StateObject private var sessionsCache = RecentSessionsCache()
+    
     private var currentUser: User? {
         user.first
     }
     
     private var recentSessions: [any WorkoutSession] {
+        // Try to get cached sessions first
+        if let cached = sessionsCache.getCachedSessions() {
+            return cached
+        }
+        
+        // Compute fresh sessions
+        return computeFreshSessions()
+    }
+    
+    private func computeFreshSessions() -> [any WorkoutSession] {
         var allSessions: [any WorkoutSession] = []
         
         // Add lift sessions
@@ -82,6 +94,19 @@ struct TrainingDashboardView: View {
                 }
             }
             .padding(.vertical, theme.spacing.m)
+        }
+        .onAppear {
+            updateCacheIfNeeded()
+        }
+        .onChange(of: liftSessions.count) { _, _ in
+            Task { @MainActor in
+                invalidateCacheAndUpdate()
+            }
+        }
+        .onChange(of: cardioSessions.count) { _, _ in
+            Task { @MainActor in
+                invalidateCacheAndUpdate()
+            }
         }
     }
     
@@ -309,6 +334,22 @@ struct TrainingDashboardView: View {
         }
         .padding(.horizontal)
         .padding(.top, theme.spacing.xl)
+    }
+    
+    // MARK: - Cache Management
+    @MainActor
+    private func updateCacheIfNeeded() {
+        if !sessionsCache.isValid {
+            let freshSessions = computeFreshSessions()
+            sessionsCache.updateCache(freshSessions)
+        }
+    }
+    
+    @MainActor
+    private func invalidateCacheAndUpdate() {
+        sessionsCache.invalidateCache()
+        let freshSessions = computeFreshSessions()
+        sessionsCache.updateCache(freshSessions)
     }
     
     // MARK: - Helper Methods

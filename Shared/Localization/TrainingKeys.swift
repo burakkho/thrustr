@@ -173,6 +173,23 @@ enum TrainingKeys {
         }
     }
     
+    enum Celebration {
+        static let congratulations = "training.celebration.congratulations"
+        static let programCompleted = "training.celebration.programCompleted"
+        static let achievementMessage = "training.celebration.achievementMessage"
+        static let continueTraining = "training.celebration.continue"
+        static let share = "training.celebration.share"
+        static let shareText = "training.celebration.shareText"
+    }
+    
+    enum Preview {
+        static let previousPerformance = "training.preview.previousPerformance"
+        static let lastPerformed = "training.preview.lastPerformed"
+        static let duration = "training.preview.duration"
+        static let totalVolume = "training.preview.totalVolume"
+        static let sessions = "training.preview.sessions"
+    }
+    
     enum Part {
         // Revised part keys
         static let powerStrength = "training.part.powerStrength"
@@ -719,6 +736,17 @@ enum TrainingKeys {
         static let continueProgram = "training.dashboard.continueProgram"
         static let noRecentActivity = "training.dashboard.noRecentActivity"
         static let emptyStateDescription = "training.dashboard.emptyStateDescription"
+        
+        // Pills Navigation
+        static let overview = "training.dashboard.pills.overview"
+        static let analytics = "training.dashboard.pills.analytics"
+        static let tests = "training.dashboard.pills.tests"
+        static let goals = "training.dashboard.pills.goals"
+        
+        // Deep Navigation
+        static let viewDetailedAnalytics = "training.dashboard.viewDetailedAnalytics"
+        static let takeStrengthTest = "training.dashboard.takeStrengthTest"
+        static let manageGoals = "training.dashboard.manageGoals"
     }
     
     // MARK: - Analytics
@@ -787,6 +815,19 @@ enum TrainingKeys {
         static let startBreaking = "analytics.start_breaking"
         static let today = "analytics.date.today"
         static let yesterday = "analytics.date.yesterday"
+        
+        // Missing analytics strings from dashboard
+        static let performanceOverview = "training.analytics.performanceOverview"
+        static let monthlyTraining = "training.analytics.monthlyTraining"
+        static let totalDuration = "training.analytics.totalDuration"
+        static let thisMonthLower = "training.analytics.thisMonthLower"
+        static let weeklyTrend = "training.analytics.weeklyTrend"
+        static let consistency = "training.analytics.consistency"
+        static let increasing = "training.analytics.increasing"
+        static let stable = "training.analytics.stable"
+        static let strong = "training.analytics.strong"
+        static let improving = "training.analytics.improving"
+        static let viewDetailedAnalytics = "training.analytics.viewDetailedAnalytics"
     }
     
     // MARK: - Tests & Strength
@@ -949,6 +990,8 @@ enum TrainingKeys {
         static let previous = "training.oneRM.previous"
         static let next = "training.oneRM.next"
         static let calculateWeights = "training.oneRM.calculateWeights"
+        static let startingWeightsMessage = "training.oneRM.startingWeightsMessage"
+        static let fallbackProgram = "training.oneRM.fallbackProgram"
     }
     
     enum Programs {

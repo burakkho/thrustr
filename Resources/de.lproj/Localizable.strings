@@ -1355,6 +1355,7 @@
 // MARK: - Common (missing)
 "common.save" = "Speichern";
 "common.cancel" = "Abbrechen";
+"common.onboarding.common.cancel" = "Abbrechen";
 "common.delete" = "Löschen";
 "common.edit" = "Bearbeiten";
 "common.add" = "Hinzufügen";
@@ -2792,3 +2793,36 @@
 "training.workoutTypes.forTimeWithCap" = "Auf Zeit • %@ Min. Limit";
 "training.workoutTypes.amrapMinutes" = "AMRAP • %@ Minuten";
 "training.workoutTypes.emomMinutes" = "EMOM • %@ Minuten";
+
+// MARK: - Training Analytics
+"training.analytics.startStrengthTest" = "Krafttest machen";
+"training.analytics.startFirstCardio" = "Erste Cardio-Sitzung starten";
+"training.analytics.recordFirstPR" = "Ersten PR aufzeichnen";
+
+// MARK: - Consistency Analytics
+"consistency.analytics.title" = "Konsistenz-Analytik";
+"consistency.analytics.subtitle" = "Verfolgen Sie Ihre Trainings-Konsistenz und -Muster";
+"consistency.analytics.this_week_sessions" = "Sitzungen diese Woche";
+"consistency.analytics.last_12_weeks" = "Letzte 12 Wochen";
+"consistency.analytics.perfect_weeks" = "Perfekte Wochen";
+"consistency.analytics.this_week" = "Diese Woche";
+"consistency.analytics.average" = "Durchschnitt";
+"consistency.analytics.best" = "Bester";
+"consistency.analytics.frequency" = "Häufigkeit";
+"consistency.analytics.streak" = "Serie";
+"consistency.analytics.goals" = "Ziele";
+
+// MARK: - Strength Analytics
+"strength.analytics.subtitle" = "Verfolgen Sie Ihre Kraftentwicklung und PRs";
+"strength.analytics.squat" = "Kniebeugen";
+"strength.analytics.bench" = "Bankdrücken";
+"strength.analytics.deadlift" = "Kreuzheben";
+"strength.analytics.ohp" = "Überkopfdrücken";
+"strength.analytics.pullup" = "Klimmzüge";
+
+// MARK: - Personal Records (Strength)
+"pr.strength.back_squat" = "Back Squat PR";
+"pr.strength.bench_press" = "Bankdrücken PR";
+"pr.strength.deadlift" = "Kreuzheben PR";
+"pr.strength.overhead_press" = "Überkopfdrücken PR";
+"pr.strength.pull_up" = "Klimmzug PR";

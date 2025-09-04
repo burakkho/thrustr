@@ -539,6 +539,49 @@
 "settings.privacy_policy" = "Privacy Policy";
 "settings.terms_of_service" = "Terms of Service";
 
+// MARK: - Training Celebration
+"training.celebration.congratulations" = "Congratulations!";
+"training.celebration.programCompleted" = "completed!";
+"training.celebration.achievementMessage" = "You've successfully finished your training program. Your dedication and consistency paid off!";
+"training.celebration.continue" = "Continue Training";
+"training.celebration.share" = "Share Achievement";
+"training.celebration.shareText" = "Just completed my";
+
+// MARK: - Training Preview
+"training.preview.previousPerformance" = "Previous Performance";
+"training.preview.lastPerformed" = "Last performed";
+"training.preview.duration" = "Duration";
+"training.preview.totalVolume" = "Volume";
+"training.preview.sessions" = "Sessions";
+
+// MARK: - PR Categories  
+"pr.categories.subtitle" = "Track your personal records";
+"pr.categories.strength" = "Strength";
+"pr.categories.endurance" = "Endurance";
+
+// MARK: - Training Analytics Extended  
+"training.analytics.bodyMetrics" = "Body Metrics";
+"training.analytics.monthlyGoalsDesc" = "Set and track your monthly training targets";
+"training.analytics.weeklyGoals" = "Weekly Goals";
+"training.analytics.weeklyGoalsDesc" = "Your weekly training objectives";
+
+// MARK: - Training OneRM
+"training.oneRM.startingWeightsMessage" = "Based on your 1RMs, here are your starting weights for %@";
+"training.oneRM.fallbackProgram" = "your program";
+
+// MARK: - Training Goals
+"training.goals.setMonthlyGoals" = "Set Monthly Goals";
+"training.goals.trackProgress" = "Track your progress and achieve your targets";
+"training.goals.trainingSessions" = "Training Sessions";
+"training.goals.cardioDistance" = "Cardio Distance";
+"training.goals.liftSessions" = "Lift Sessions";
+"training.goals.cardioSessions" = "Cardio Sessions";
+"training.goals.weeklyDistance" = "Weekly Distance";
+"training.goals.saveGoals" = "Save Goals";
+"training.goals.sessions" = "sessions";
+"training.goals.weeklyTarget" = "Weekly target";
+"training.goals.cardioTarget" = "Cardio target";
+
 // MARK: - Common
 "action.save" = "Save";
 "action.cancel" = "Cancel";
@@ -1613,6 +1656,7 @@
 // MARK: - Common Actions
 "common.actions.save" = "Save";
 "common.actions.cancel" = "Cancel";
+"common.onboarding.common.cancel" = "Cancel";
 "common.actions.retry" = "Retry";
 "common.actions.continue" = "Continue";
 "common.actions.done" = "Done";
@@ -2949,6 +2993,17 @@
 "training.dashboard.totalTime" = "Total Time";
 "training.dashboard.emptyStateDescription" = "Start your first workout to see your progress here!";
 
+// Dashboard Pills
+"training.dashboard.pills.overview" = "Overview";
+"training.dashboard.pills.analytics" = "Analytics";
+"training.dashboard.pills.tests" = "Tests";
+"training.dashboard.pills.goals" = "Goals";
+
+// Dashboard Deep Navigation
+"training.dashboard.viewDetailedAnalytics" = "View Detailed Analytics";
+"training.dashboard.takeStrengthTest" = "Take Strength Test";
+"training.dashboard.manageGoals" = "Manage Goals";
+
 // MARK: - Training Goals
 "training.goals.setMonthlyGoals" = "Set Monthly Goals";
 "training.goals.trackProgress" = "Track Progress";
@@ -3409,6 +3464,50 @@
 "units.months" = "months";
 "units.meters_short" = "m";
 "units.kilometers_short" = "km";
+
+// MARK: - Missing Analytics Keys
+"training.analytics.performanceOverview" = "Performance Overview";
+"training.analytics.monthlyTraining" = "Monthly Training";
+"training.analytics.totalDuration" = "Total Duration";
+"training.analytics.thisMonthLower" = "this month";
+"training.analytics.weeklyTrend" = "Weekly Trend";
+"training.analytics.consistency" = "Consistency";
+"training.analytics.increasing" = "📈 Increasing";
+"training.analytics.stable" = "📊 Stable";
+"training.analytics.strong" = "🔥 Strong";
+"training.analytics.improving" = "💪 Improving";
+"training.analytics.viewDetailedAnalytics" = "View Detailed Analytics";
+"training.analytics.startStrengthTest" = "Take Strength Test";
+"training.analytics.startFirstCardio" = "Start First Cardio Session";
+"training.analytics.recordFirstPR" = "Record Your First PR";
+
+// MARK: - Consistency Analytics
+"consistency.analytics.title" = "Consistency Analytics";
+"consistency.analytics.subtitle" = "Track your workout consistency and patterns";
+"consistency.analytics.this_week_sessions" = "Sessions This Week";
+"consistency.analytics.last_12_weeks" = "Last 12 Weeks";
+"consistency.analytics.perfect_weeks" = "Perfect Weeks";
+"consistency.analytics.this_week" = "This Week";
+"consistency.analytics.average" = "Average";
+"consistency.analytics.best" = "Best";
+"consistency.analytics.frequency" = "Frequency";
+"consistency.analytics.streak" = "Streak";
+"consistency.analytics.goals" = "Goals";
+
+// MARK: - Strength Analytics
+"strength.analytics.subtitle" = "Track your strength progression and PRs";
+"strength.analytics.squat" = "Squat";
+"strength.analytics.bench" = "Bench Press";
+"strength.analytics.deadlift" = "Deadlift";
+"strength.analytics.ohp" = "Overhead Press";
+"strength.analytics.pullup" = "Pull-up";
+
+// MARK: - Personal Records (Strength)
+"pr.strength.back_squat" = "Back Squat PR";
+"pr.strength.bench_press" = "Bench Press PR";
+"pr.strength.deadlift" = "Deadlift PR";
+"pr.strength.overhead_press" = "Overhead Press PR";
+"pr.strength.pull_up" = "Pull-up PR";
 
 // MARK: - Bluetooth Signal Strength
 "bluetooth.signal.strong" = "Strong";

@@ -6,8 +6,6 @@ enum WorkoutType: Int, CaseIterable {
     case lift = 1
     case cardio = 2
     case wod = 3
-    case tests = 4
-    case analytics = 5
     
     var title: String {
         switch self {
@@ -15,8 +13,6 @@ enum WorkoutType: Int, CaseIterable {
         case .lift: return TrainingKeys.Lift.title.localized
         case .cardio: return TrainingKeys.Cardio.title.localized
         case .wod: return TrainingKeys.WOD.title.localized
-        case .tests: return TrainingKeys.Strength.title.localized
-        case .analytics: return TrainingKeys.Analytics.title.localized
         }
     }
     
@@ -26,8 +22,31 @@ enum WorkoutType: Int, CaseIterable {
         case .lift: return "dumbbell.fill"
         case .cardio: return "heart.fill"
         case .wod: return "flame.fill"
-        case .tests: return "chart.bar.doc.horizontal.fill"
+        }
+    }
+}
+
+enum DashboardSection: Int, CaseIterable {
+    case overview = 0
+    case analytics = 1
+    case tests = 2
+    case goals = 3
+    
+    var title: String {
+        switch self {
+        case .overview: return TrainingKeys.Dashboard.overview.localized
+        case .analytics: return TrainingKeys.Dashboard.analytics.localized
+        case .tests: return TrainingKeys.Dashboard.tests.localized
+        case .goals: return TrainingKeys.Dashboard.goals.localized
+        }
+    }
+    
+    var icon: String {
+        switch self {
+        case .overview: return "square.grid.2x2.fill"
         case .analytics: return "chart.bar.fill"
+        case .tests: return "chart.bar.doc.horizontal.fill"
+        case .goals: return "target"
         }
     }
 }
@@ -38,6 +57,8 @@ class TrainingCoordinator {
     var selectedWorkoutType: WorkoutType = .dashboard
     var navigationPath = NavigationPath()
     
+    // Dashboard State
+    var selectedDashboardSection: DashboardSection = .overview
     
     // Shared UI State
     var showingNewWorkout = false
@@ -92,6 +113,11 @@ class TrainingCoordinator {
     
     func navigateToPRDetail() {
         navigationPath.append("pr_detail")
+    }
+    
+    func navigateToGoalSettings() {
+        print("🚀 Navigating to goal_settings")
+        navigationPath.append("goal_settings")
     }
     
     // Listen for navigation notifications

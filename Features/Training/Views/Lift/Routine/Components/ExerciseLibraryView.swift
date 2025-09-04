@@ -15,16 +15,31 @@ struct ExerciseLibraryView: View {
     
     @State private var searchText = ""
     @State private var selectedForAddition: Set<UUID> = []
+    @State private var currentPage = 1
+    @State private var itemsPerPage = 20
     
     private var filteredExercises: [Exercise] {
+        let filtered: [Exercise]
+        
         if searchText.isEmpty {
-            return Array(allExercises.prefix(50)) // Limit for performance
+            filtered = allExercises
+        } else {
+            filtered = allExercises.filter { exercise in
+                exercise.nameEN.localizedCaseInsensitiveContains(searchText) ||
+                exercise.nameTR.localizedCaseInsensitiveContains(searchText)
+            }
         }
         
-        return allExercises.filter { exercise in
+        let totalItems = currentPage * itemsPerPage
+        return Array(filtered.prefix(totalItems))
+    }
+    
+    private var hasMoreItems: Bool {
+        let baseData = searchText.isEmpty ? allExercises : allExercises.filter { exercise in
             exercise.nameEN.localizedCaseInsensitiveContains(searchText) ||
             exercise.nameTR.localizedCaseInsensitiveContains(searchText)
         }
+        return baseData.count > filteredExercises.count
     }
     
     private var popularExercises: [Exercise] {
@@ -93,6 +108,9 @@ struct ExerciseLibraryView: View {
                 TextField("training.exercise.searchPlaceholder".localized, text: $searchText)
                     .textFieldStyle(PlainTextFieldStyle())
                     .font(theme.typography.body)
+                    .onChange(of: searchText) { _, _ in
+                        resetPagination()
+                    }
                 
                 if !searchText.isEmpty {
                     Button(action: {
@@ -172,6 +190,14 @@ struct ExerciseLibraryView: View {
                 )
             }
             
+            // Load More Button
+            if hasMoreItems {
+                LoadMoreButton {
+                    loadMoreExercises()
+                }
+                .padding(.horizontal)
+            }
+            
             // Show message if no results
             if exercisesToShow.isEmpty && !searchText.isEmpty {
                 VStack(spacing: theme.spacing.m) {
@@ -236,6 +262,14 @@ struct ExerciseLibraryView: View {
         } else {
             selectedForAddition.insert(exercise.id)
         }
+    }
+    
+    private func loadMoreExercises() {
+        currentPage += 1
+    }
+    
+    private func resetPagination() {
+        currentPage = 1
     }
     
     private func addSelectedExercises() {
@@ -366,6 +400,32 @@ struct ExerciseSelectionRow: View {
         case "isolation": return "Isolation • \(exercise.equipment.capitalized)"
         default: return exercise.equipment.capitalized
         }
+    }
+}
+
+// MARK: - Load More Button Component
+struct LoadMoreButton: View {
+    @Environment(\.theme) private var theme
+    let action: () -> Void
+    
+    var body: some View {
+        Button(action: action) {
+            HStack {
+                Image(systemName: "arrow.down.circle")
+                Text("Load More")
+                    .fontWeight(.medium)
+            }
+            .foregroundColor(theme.colors.accent)
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, theme.spacing.m)
+            .background(theme.colors.accent.opacity(0.1))
+            .cornerRadius(theme.radius.m)
+            .overlay(
+                RoundedRectangle(cornerRadius: theme.radius.m)
+                    .stroke(theme.colors.accent.opacity(0.3), lineWidth: 1)
+            )
+        }
+        .buttonStyle(PlainButtonStyle())
     }
 }
 

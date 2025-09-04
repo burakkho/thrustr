@@ -26,9 +26,6 @@ struct CardioMainView: View {
     
     var body: some View {
         VStack(spacing: 0) {
-            // Header
-            headerView
-            
             // Tab Selector
             TrainingTabSelector(
                 selection: $selectedTab,
@@ -61,42 +58,6 @@ struct CardioMainView: View {
         .sheet(isPresented: $showingQuickStart) {
             CardioQuickStartView()
         }
-    }
-    
-    private var headerView: some View {
-        HStack {
-            VStack(alignment: .leading, spacing: 4) {
-                Text(TrainingKeys.Cardio.title.localized)
-                    .font(theme.typography.title2)
-                    .fontWeight(.bold)
-                    .foregroundColor(theme.colors.textPrimary)
-                
-                if coordinator.hasActiveSession && coordinator.activeSessionType == .cardio {
-                    Label(TrainingKeys.Cardio.sessionInProgress.localized, systemImage: "circle.fill")
-                        .font(theme.typography.caption)
-                        .foregroundColor(theme.colors.success)
-                }
-            }
-            
-            Spacer()
-            
-            // Quick Actions Menu
-            Menu {
-                Button(action: { showingQuickStart = true }) {
-                    Label(TrainingKeys.Cardio.quickStart.localized, systemImage: "play.circle")
-                }
-                
-                Button(action: { selectedTab = 1 }) {
-                    Label(TrainingKeys.Cardio.viewHistory.localized, systemImage: "clock.arrow.circlepath")
-                }
-            } label: {
-                Image(systemName: "ellipsis.circle")
-                    .font(.title2)
-                    .foregroundColor(theme.colors.accent)
-            }
-        }
-        .padding(.horizontal)
-        .padding(.vertical, theme.spacing.m)
     }
 }
 
@@ -244,7 +205,7 @@ struct CardioTrainSection: View {
             primaryStats: buildSessionStats(for: session),
             secondaryInfo: [],
             cardStyle: .compact,
-            primaryAction: { /* View session detail */ }
+            primaryAction: { }
         )
     }
     
@@ -315,7 +276,7 @@ struct CardioHistorySection: View {
                     message: TrainingKeys.Cardio.noHistoryMessage.localized,
                     primaryAction: .init(
                         title: TrainingKeys.Cardio.browseTemplates.localized,
-                        action: { /* Navigate to templates */ }
+                        action: { }
                     )
                 )
                 .padding(.top, 100)

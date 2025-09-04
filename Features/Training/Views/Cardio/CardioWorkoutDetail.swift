@@ -377,24 +377,6 @@ struct StatisticsCard: View {
     }
 }
 
-struct StatItem: View {
-    @Environment(\.theme) private var theme
-    let title: String
-    let value: String
-    
-    var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text(title)
-                .font(.caption2)
-                .foregroundColor(theme.colors.textSecondary)
-            Text(value)
-                .font(theme.typography.body)
-                .fontWeight(.semibold)
-                .foregroundColor(theme.colors.textPrimary)
-        }
-    }
-}
-
 struct RecentSessionsSection: View {
     @Environment(\.theme) private var theme
     let sessions: [CardioSession]

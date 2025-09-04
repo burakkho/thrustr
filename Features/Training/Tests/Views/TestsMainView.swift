@@ -14,17 +14,15 @@ struct TestsMainView: View {
     @Environment(\.theme) private var theme
     
     var body: some View {
-        NavigationStack {
-            Group {
-                if strengthTests.isEmpty {
-                    emptyStateView
-                } else {
-                    contentView
-                }
+        Group {
+            if strengthTests.isEmpty {
+                emptyStateView
+            } else {
+                contentView
             }
-            .navigationTitle(TrainingKeys.Strength.title.localized)
-            .navigationBarTitleDisplayMode(.large)
         }
+        .navigationTitle(TrainingKeys.Strength.title.localized)
+        .navigationBarTitleDisplayMode(.large)
         .onAppear {
             if viewModel == nil {
                 viewModel = TestResultsViewModel(modelContext: modelContext)

@@ -237,12 +237,19 @@ When working with localization files (`*.lproj/Localizable.strings`), follow the
 - **GuideSection** for help text and user guidance
 
 ### Training System Architecture
-- **TrainingCoordinator**: Centralized workout state management
+- **TrainingCoordinator**: Centralized workout state management with dashboard section tracking
+- **DashboardSection**: Pills-based navigation within dashboard (Overview, Analytics, Tests, Goals)
 - **TimerViewModel**: Shared timer logic across all workout types
 - **CardioTimerViewModel** / **WODTimerViewModel**: Specialized timer implementations
 - Each training type (Cardio, Lift, WOD) has independent model hierarchies
 - Unified workout cards with **UnifiedWorkoutCard** component
 - Background timer support for long-running workout sessions
+
+#### Navigation Architecture
+- **Main Navigation**: 4 tabs (Dashboard, Lift, Cardio, WOD) - simplified from 6 tabs
+- **Dashboard Pills**: Overview, Analytics, Tests, Goals with deep navigation to detail screens
+- **Sub-navigation**: Each training module maintains its own tab system (Train, Programs, History, etc.)
+- **Deep Navigation**: Dashboard sections provide summary + navigation to full detail views
 
 ### Performance Guidelines
 - Use `@MainActor` for UI-related operations

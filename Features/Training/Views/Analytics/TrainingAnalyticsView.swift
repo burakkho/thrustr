@@ -24,9 +24,6 @@ struct TrainingAnalyticsView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: theme.spacing.xl) {
-                // Header Section
-                headerSection
-                
                 if let user = currentUser {
                     // Summary Cards Section
                     summaryCardsSection(for: user)
@@ -79,29 +76,6 @@ struct TrainingAnalyticsView: View {
                 analyticsService.updateUserAnalytics(for: user)
             }
         }
-    }
-    
-    // MARK: - Header Section
-    private var headerSection: some View {
-        HStack {
-            VStack(alignment: .leading, spacing: 4) {
-                Text(TrainingKeys.Analytics.title.localized)
-                    .font(theme.typography.title2)
-                    .fontWeight(.bold)
-                    .foregroundColor(theme.colors.textPrimary)
-                
-                Text(TrainingKeys.Analytics.subtitle.localized)
-                    .font(theme.typography.body)
-                    .foregroundColor(theme.colors.textSecondary)
-            }
-            
-            Spacer()
-            
-            Image(systemName: "chart.bar.fill")
-                .font(.largeTitle)
-                .foregroundColor(theme.colors.accent.opacity(0.3))
-        }
-        .padding(.horizontal)
     }
     
     // MARK: - Summary Cards Section

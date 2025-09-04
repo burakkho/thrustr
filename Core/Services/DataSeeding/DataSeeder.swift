@@ -505,7 +505,7 @@ class LiftProgramSeeder {
         Logger.info("Searching for LiftPrograms folder...")
         
         // First try: Look for specific JSON file to find the folder
-        if let jsonURL = Bundle.main.url(forResource: "stronglifts5x5", withExtension: "json") {
+        if let jsonURL = Bundle.main.url(forResource: "stronglifts5x5", withExtension: "json", subdirectory: "Training/Programs/LiftPrograms") {
             let parentURL = jsonURL.deletingLastPathComponent()
             Logger.info("Found stronglifts5x5.json at: \(jsonURL.path)")
             Logger.info("Parent directory: \(parentURL.path), name: \(parentURL.lastPathComponent)")

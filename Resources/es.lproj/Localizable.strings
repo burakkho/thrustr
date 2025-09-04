@@ -884,6 +884,7 @@
 "common.category" = "Categoría";
 "common.save" = "Guardar";
 "common.cancel" = "Cancelar";
+"common.onboarding.common.cancel" = "Cancelar";
 "common.delete" = "Eliminar";
 "common.edit" = "Editar";
 "common.add" = "Agregar";
@@ -2806,3 +2807,36 @@
 "training.workoutTypes.forTimeWithCap" = "Por tiempo • %@ min límite";
 "training.workoutTypes.amrapMinutes" = "AMRAP • %@ minutos";
 "training.workoutTypes.emomMinutes" = "EMOM • %@ minutos";
+
+// MARK: - Training Analytics
+"training.analytics.startStrengthTest" = "Hacer prueba de fuerza";
+"training.analytics.startFirstCardio" = "Comenzar primera sesión de cardio";
+"training.analytics.recordFirstPR" = "Registrar tu primer PR";
+
+// MARK: - Consistency Analytics
+"consistency.analytics.title" = "Análisis de Consistencia";
+"consistency.analytics.subtitle" = "Rastrea tu consistencia y patrones de entrenamiento";
+"consistency.analytics.this_week_sessions" = "Sesiones esta semana";
+"consistency.analytics.last_12_weeks" = "Últimas 12 semanas";
+"consistency.analytics.perfect_weeks" = "Semanas perfectas";
+"consistency.analytics.this_week" = "Esta semana";
+"consistency.analytics.average" = "Promedio";
+"consistency.analytics.best" = "Mejor";
+"consistency.analytics.frequency" = "Frecuencia";
+"consistency.analytics.streak" = "Racha";
+"consistency.analytics.goals" = "Objetivos";
+
+// MARK: - Strength Analytics
+"strength.analytics.subtitle" = "Rastrea tu progresión de fuerza y PRs";
+"strength.analytics.squat" = "Sentadilla";
+"strength.analytics.bench" = "Press de banca";
+"strength.analytics.deadlift" = "Peso muerto";
+"strength.analytics.ohp" = "Press militar";
+"strength.analytics.pullup" = "Dominadas";
+
+// MARK: - Personal Records (Strength)
+"pr.strength.back_squat" = "PR Sentadilla";
+"pr.strength.bench_press" = "PR Press de banca";
+"pr.strength.deadlift" = "PR Peso muerto";
+"pr.strength.overhead_press" = "PR Press militar";
+"pr.strength.pull_up" = "PR Dominadas";

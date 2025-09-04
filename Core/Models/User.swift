@@ -469,14 +469,20 @@ final class User {
         lastActiveDate = Date()
     }
     
-    func updateCardioSession(oldDuration: TimeInterval, oldDistance: Double, newDuration: TimeInterval, newDistance: Double) {
+    func updateCardioSession(oldDuration: TimeInterval, oldDistance: Double, newDuration: TimeInterval, newDistance: Double, oldCalories: Int? = nil, newCalories: Int? = nil) {
         // Remove old values
         totalCardioTime -= oldDuration
         totalCardioDistance -= oldDistance
+        if let oldCal = oldCalories {
+            totalCardioCalories -= oldCal
+        }
         
         // Add new values
         totalCardioTime += newDuration
         totalCardioDistance += newDistance
+        if let newCal = newCalories {
+            totalCardioCalories += newCal
+        }
         
         // Update last active date
         lastActiveDate = Date()

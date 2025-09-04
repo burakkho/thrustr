@@ -1,6 +1,7 @@
 // MARK: - Common Actions
 "common.ok" = "OK";
 "common.cancel" = "Batal";
+"common.onboarding.common.cancel" = "Batal";
 "common.save" = "Simpan";
 "common.edit" = "Edit";
 "common.done" = "Selesai";
@@ -2829,3 +2830,36 @@
 "training.workoutTypes.forTimeWithCap" = "For Time • %@ min cap";
 "training.workoutTypes.amrapMinutes" = "AMRAP • %@ menit";
 "training.workoutTypes.emomMinutes" = "EMOM • %@ menit";
+
+// MARK: - Training Analytics (Additional)
+"training.analytics.startStrengthTest" = "Mulai Tes Kekuatan";
+"training.analytics.startFirstCardio" = "Mulai Sesi Kardio Pertama";
+"training.analytics.recordFirstPR" = "Catat PR Pertama Anda";
+
+// MARK: - Consistency Analytics
+"consistency.analytics.title" = "Analisis Konsistensi";
+"consistency.analytics.subtitle" = "Lacak konsistensi latihan dan pola Anda";
+"consistency.analytics.this_week_sessions" = "Sesi Minggu Ini";
+"consistency.analytics.last_12_weeks" = "12 Minggu Terakhir";
+"consistency.analytics.perfect_weeks" = "Minggu Sempurna";
+"consistency.analytics.this_week" = "Minggu Ini";
+"consistency.analytics.average" = "Rata-rata";
+"consistency.analytics.best" = "Terbaik";
+"consistency.analytics.frequency" = "Frekuensi";
+"consistency.analytics.streak" = "Berturut-turut";
+"consistency.analytics.goals" = "Target";
+
+// MARK: - Strength Analytics
+"strength.analytics.subtitle" = "Lacak progres kekuatan dan PR Anda";
+"strength.analytics.squat" = "Squat";
+"strength.analytics.bench" = "Bench Press";
+"strength.analytics.deadlift" = "Deadlift";
+"strength.analytics.ohp" = "Overhead Press";
+"strength.analytics.pullup" = "Pull-up";
+
+// MARK: - Personal Records (Strength)
+"pr.strength.back_squat" = "PR Back Squat";
+"pr.strength.bench_press" = "PR Bench Press";
+"pr.strength.deadlift" = "PR Deadlift";
+"pr.strength.overhead_press" = "PR Overhead Press";
+"pr.strength.pull_up" = "PR Pull-up";

@@ -150,7 +150,7 @@ struct EnhancedWODTimerView: View {
                     // Movement Display
                     ScrollViewReader { proxy in
                         ScrollView {
-                            VStack(spacing: theme.spacing.m) {
+                            LazyVStack(spacing: theme.spacing.m) {
                                 ForEach(Array(movements.enumerated()), id: \.element.id) { index, movement in
                                     MovementTimerCard(
                                         movement: movement,

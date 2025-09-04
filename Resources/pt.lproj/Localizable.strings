@@ -6,6 +6,7 @@
 // MARK: - Common Actions
 "common.ok" = "OK";
 "common.cancel" = "Cancelar";
+"common.onboarding.common.cancel" = "Cancelar";
 "common.save" = "Salvar";
 "common.edit" = "Editar";
 "common.done" = "Concluído";
@@ -2828,3 +2829,36 @@
 "training.workoutTypes.forTimeWithCap" = "Por Tempo • %@ min limite";
 "training.workoutTypes.amrapMinutes" = "AMRAP • %@ minutos";
 
+
+// MARK: - Training Analytics (Additional)
+"training.analytics.startStrengthTest" = "Fazer Teste de Força";
+"training.analytics.startFirstCardio" = "Iniciar Primeira Sessão Cardio";
+"training.analytics.recordFirstPR" = "Registrar Seu Primeiro RP";
+
+// MARK: - Consistency Analytics
+"consistency.analytics.title" = "Análise de Consistência";
+"consistency.analytics.subtitle" = "Acompanhe sua consistência de treino e padrões";
+"consistency.analytics.this_week_sessions" = "Sessões Esta Semana";
+"consistency.analytics.last_12_weeks" = "Últimas 12 Semanas";
+"consistency.analytics.perfect_weeks" = "Semanas Perfeitas";
+"consistency.analytics.this_week" = "Esta Semana";
+"consistency.analytics.average" = "Média";
+"consistency.analytics.best" = "Melhor";
+"consistency.analytics.frequency" = "Frequência";
+"consistency.analytics.streak" = "Sequência";
+"consistency.analytics.goals" = "Objetivos";
+
+// MARK: - Strength Analytics
+"strength.analytics.subtitle" = "Acompanhe sua progressão de força e RPs";
+"strength.analytics.squat" = "Agachamento";
+"strength.analytics.bench" = "Supino";
+"strength.analytics.deadlift" = "Levantamento Terra";
+"strength.analytics.ohp" = "Desenvolvimento";
+"strength.analytics.pullup" = "Barra";
+
+// MARK: - Personal Records (Strength)
+"pr.strength.back_squat" = "RP Agachamento";
+"pr.strength.bench_press" = "RP Supino";
+"pr.strength.deadlift" = "RP Levantamento Terra";
+"pr.strength.overhead_press" = "RP Desenvolvimento";
+"pr.strength.pull_up" = "RP Barra";

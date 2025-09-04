@@ -61,40 +61,7 @@ struct WODMainView: View {
     
     // MARK: - UI Components
     
-    private var headerView: some View {
-        HStack {
-            VStack(alignment: .leading, spacing: 4) {
-                Text("METCON")
-                    .font(theme.typography.title2)
-                    .fontWeight(.bold)
-                    .foregroundColor(theme.colors.textPrimary)
-                
-                if let lastResult = wodResults.sorted(by: { $0.completedAt > $1.completedAt }).first {
-                    Text("Last METCON: \(lastResult.completedAt, formatter: RelativeDateTimeFormatter())")
-                        .font(theme.typography.caption)
-                        .foregroundColor(theme.colors.textSecondary)
-                }
-            }
-            
-            Spacer()
-            
-            HStack(spacing: theme.spacing.m) {
-                Button(action: { showingQRScanner = true }) {
-                    Image(systemName: "qrcode.viewfinder")
-                        .font(.title2)
-                        .foregroundColor(theme.colors.accent)
-                }
-                
-                Button(action: { showingNewWOD = true }) {
-                    Image(systemName: "plus.circle.fill")
-                        .font(.title2)
-                        .foregroundColor(theme.colors.accent)
-                }
-            }
-        }
-        .padding(.horizontal)
-        .padding(.vertical, theme.spacing.m)
-    }
+    // Header removed - no duplicate buttons needed
     
     
     private var categorySelector: some View {
@@ -215,9 +182,6 @@ struct WODMainView: View {
     
     var body: some View {
         VStack(spacing: 0) {
-            // Header
-            headerView
-            
             // Category Selector
             categorySelector
             
@@ -230,14 +194,12 @@ struct WODMainView: View {
             } else {
                 ScrollView {
                     LazyVStack(spacing: theme.spacing.m) {
-                        // Quick Actions for Custom WODs
-                        if selectedCategory == .custom {
-                            quickActionsSection
-                        }
-                        
                         // WOD Cards
                         if !filteredWODs.isEmpty {
                             wodsList
+                        } else if selectedCategory == .custom {
+                            // Show quick actions only in empty state for custom
+                            quickActionsSection
                         } else {
                             emptyState
                         }
@@ -291,7 +253,7 @@ struct WODMainView: View {
         
         // Movement count
         stats.append(WorkoutStat(
-            label: "Movements",
+            label: TrainingKeys.WOD.movements.localized,
             value: "\(wod.movements.count)",
             icon: "figure.strengthtraining.traditional"
         ))
@@ -299,13 +261,13 @@ struct WODMainView: View {
         // Time/Rounds
         if let timeCap = wod.timeCap {
             stats.append(WorkoutStat(
-                label: wod.wodType == .amrap ? "Duration" : "Time Cap",
-                value: "\(timeCap) min",
+                label: wod.wodType == .amrap ? TrainingKeys.Cardio.duration.localized : TrainingKeys.WOD.forTime.localized,
+                value: "\(timeCap) \(TrainingKeys.Units.minutes.localized)",
                 icon: "clock"
             ))
         } else if let rounds = wod.rounds {
             stats.append(WorkoutStat(
-                label: "Rounds",
+                label: TrainingKeys.WOD.rounds.localized,
                 value: "\(rounds)",
                 icon: "repeat"
             ))
@@ -314,7 +276,7 @@ struct WODMainView: View {
         // Personal Record
         if let bestResult = wodResults.filter({ $0.wodId == wod.id }).sorted(by: { $0.score > $1.score }).first {
             stats.append(WorkoutStat(
-                label: "Best",
+                label: TrainingKeys.TestResults.personalRecord.localized,
                 value: formatScore(bestResult.score, type: wod.wodType),
                 icon: "trophy.fill"
             ))
@@ -335,7 +297,7 @@ struct WODMainView: View {
         if let lastResult = wodResults.filter({ $0.wodId == wod.id }).sorted(by: { $0.completedAt > $1.completedAt }).first {
             let formatter = RelativeDateTimeFormatter()
             formatter.unitsStyle = .short
-            info.append("Last: \(formatter.localizedString(for: lastResult.completedAt, relativeTo: Date()))")
+            info.append("\(TrainingKeys.Cardio.lastSession.localized): \(formatter.localizedString(for: lastResult.completedAt, relativeTo: Date()))")
         }
         
         // Category
@@ -353,7 +315,7 @@ struct WODMainView: View {
             let seconds = Int(score) % 60
             return String(format: "%d:%02d", minutes, seconds)
         case .amrap:
-            return "\(Int(score)) rounds"
+            return "\(Int(score)) \(TrainingKeys.WOD.rounds.localized)"
         default:
             return "\(Int(score))"
         }

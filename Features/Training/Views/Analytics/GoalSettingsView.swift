@@ -295,6 +295,7 @@ struct GoalSettingsView: View {
     }
     
     private func saveGoals() {
+        print("💾 Save goals button tapped")
         // Update monthly goals
         user.monthlySessionGoal = monthlySessionGoal
         

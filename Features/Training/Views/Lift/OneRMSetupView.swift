@@ -373,7 +373,7 @@ struct StartingWeightsPreviewView: View {
                 .font(.title2)
                 .fontWeight(.bold)
             
-            Text("Based on your 1RMs, here are your starting weights for \(program.localizedName.isEmpty ? "your program" : program.localizedName)")
+            Text(String(format: TrainingKeys.OneRM.startingWeightsMessage.localized, program.localizedName.isEmpty ? TrainingKeys.OneRM.fallbackProgram.localized : program.localizedName))
                 .font(.body)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)

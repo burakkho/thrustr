@@ -372,7 +372,7 @@ struct ProgramDashboardView: View {
                     .multilineTextAlignment(.center)
             }
             
-            Button(action: { /* Navigate to programs */ }) {
+            Button(action: { coordinator.navigateToProgramSelection() }) {
                 HStack(spacing: theme.spacing.s) {
                     Image(systemName: "plus.circle.fill")
                         .font(.title3)

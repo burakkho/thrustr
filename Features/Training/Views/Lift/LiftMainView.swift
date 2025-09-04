@@ -7,17 +7,14 @@ struct LiftMainView: View {
     @State private var selectedTab = 0 // Start with Train tab
     
     private let tabs = [
-        TrainingTab(title: TrainingKeys.Lift.train.localized),
-        TrainingTab(title: TrainingKeys.Lift.programs.localized),
-        TrainingTab(title: TrainingKeys.Lift.routines.localized),
-        TrainingTab(title: TrainingKeys.Lift.history.localized)
+        TrainingTab(title: TrainingKeys.Lift.train.localized, icon: "dumbbell.fill"),
+        TrainingTab(title: TrainingKeys.Lift.programs.localized, icon: "rectangle.3.group"),
+        TrainingTab(title: TrainingKeys.Lift.routines.localized, icon: "list.bullet"),
+        TrainingTab(title: TrainingKeys.Lift.history.localized, icon: "clock.arrow.circlepath")
     ]
     
     var body: some View {
         VStack(spacing: 0) {
-            // Header
-            headerView
-            
             // Tab Selector
             TrainingTabSelector(
                 selection: $selectedTab,
@@ -29,58 +26,22 @@ struct LiftMainView: View {
                 switch selectedTab {
                 case 0:
                     LiftWorkoutsSection()
+                        .environment(coordinator)
                 case 1:
                     LiftProgramsSection()
+                        .environment(coordinator)
                 case 2:
                     LiftRoutinesSection()
+                        .environment(coordinator)
                 case 3:
                     LiftHistorySection()
+                        .environment(coordinator)
                 default:
                     EmptyView()
                 }
             }
         }
         .animation(.easeInOut(duration: 0.2), value: selectedTab)
-    }
-    
-    private var headerView: some View {
-        HStack {
-            VStack(alignment: .leading, spacing: 4) {
-                Text("training.lift.title".localized)
-                    .font(theme.typography.title2)
-                    .fontWeight(.bold)
-                    .foregroundColor(theme.colors.textPrimary)
-                
-                if coordinator.hasActiveSession && coordinator.activeSessionType == .lift {
-                    Label(TrainingKeys.Lift.sessionInProgress.localized, systemImage: "circle.fill")
-                        .font(theme.typography.caption)
-                        .foregroundColor(theme.colors.success)
-                }
-            }
-            
-            Spacer()
-            
-            // Quick Actions Menu
-            Menu {
-                Button(action: { coordinator.navigateToNewWorkout() }) {
-                    Label(TrainingKeys.Lift.newWorkout.localized, systemImage: "plus.circle")
-                }
-                
-                Button(action: { coordinator.navigateToProgramSelection() }) {
-                    Label(TrainingKeys.Lift.browsePrograms.localized, systemImage: "rectangle.3.group")
-                }
-                
-                Button(action: { coordinator.performQuickAction(.emptyWorkout) }) {
-                    Label(TrainingKeys.Lift.quickStart.localized, systemImage: "bolt.fill")
-                }
-            } label: {
-                Image(systemName: "ellipsis.circle")
-                    .font(.title2)
-                    .foregroundColor(theme.colors.accent)
-            }
-        }
-        .padding(.horizontal)
-        .padding(.vertical, theme.spacing.m)
     }
 }
 

@@ -580,8 +580,13 @@ struct CardioSessionSummaryView: View {
             
             session.totalDuration = newDuration
             
-            // No need to save manually - SwiftData auto-saves @Model changes
-            Logger.info("Cardio session duration updated successfully")
+            // Save changes to database
+            do {
+                try modelContext.save()
+                Logger.info("Cardio session duration updated successfully")
+            } catch {
+                Logger.error("Failed to save duration edit: \(error)")
+            }
         }
         
         showingDurationEdit = false
@@ -612,11 +617,11 @@ struct CardioSessionSummaryView: View {
         if abs(newDistanceMeters - originalDistance) > 0.1 { // Allow for minor floating point differences
             isDistanceEdited = true
             
-            // Update user stats with the change
+            // Update user stats with the change (fix: use proper duration value)
             user.updateCardioSession(
-                oldDuration: 0,
+                oldDuration: TimeInterval(session.totalDuration),
                 oldDistance: originalDistance,
-                newDuration: 0,
+                newDuration: TimeInterval(session.totalDuration),
                 newDistance: newDistanceMeters
             )
             
@@ -625,12 +630,12 @@ struct CardioSessionSummaryView: View {
             // Recalculate dependent metrics
             session.calculateTotals()
             
-            // No need to save manually - SwiftData auto-saves @Model changes
-            Logger.info("Cardio session distance updated successfully")
-            
-            // Force UI refresh by triggering objectWillChange
-            DispatchQueue.main.async {
-                self.unitSettings.objectWillChange.send()
+            // Save changes to database
+            do {
+                try modelContext.save()
+                Logger.info("Cardio session distance updated successfully")
+            } catch {
+                Logger.error("Failed to save distance edit: \(error)")
             }
         }
         
@@ -651,8 +656,13 @@ struct CardioSessionSummaryView: View {
             session.averageHeartRate = editAvgHeartRate > 0 ? editAvgHeartRate : nil
             session.maxHeartRate = editMaxHeartRate > 0 ? editMaxHeartRate : nil
             
-            // No need to save manually - SwiftData auto-saves @Model changes
-            Logger.info("Cardio session heart rate updated successfully")
+            // Save changes to database
+            do {
+                try modelContext.save()
+                Logger.info("Cardio session heart rate updated successfully")
+            } catch {
+                Logger.error("Failed to save heart rate edit: \(error)")
+            }
         }
         
         showingHeartRateEdit = false
@@ -667,10 +677,26 @@ struct CardioSessionSummaryView: View {
         
         if editCalories != originalCalories {
             isCaloriesEdited = true
+            
+            // Update user stats with the calorie change
+            user.updateCardioSession(
+                oldDuration: TimeInterval(session.totalDuration),
+                oldDistance: session.totalDistance,
+                newDuration: TimeInterval(session.totalDuration),
+                newDistance: session.totalDistance,
+                oldCalories: originalCalories,
+                newCalories: editCalories > 0 ? editCalories : nil
+            )
+            
             session.totalCaloriesBurned = editCalories > 0 ? editCalories : nil
             
-            // No need to save manually - SwiftData auto-saves @Model changes
-            Logger.info("Cardio session calories updated successfully")
+            // Save changes to database
+            do {
+                try modelContext.save()
+                Logger.info("Cardio session calories updated successfully")
+            } catch {
+                Logger.error("Failed to save calories edit: \(error)")
+            }
         }
         
         showingCaloriesEdit = false
