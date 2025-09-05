@@ -1848,6 +1848,26 @@
 "body_tracking.lbm" = "LBM";
 "body_tracking.ffmi" = "FFMI";
 
+// MARK: - Nutrition Alias Support
+"nutrition.alias.searchEnhanced" = "Enhanced Search";
+"nutrition.alias.multiLangSupport" = "Multi-Language Support";
+"nutrition.alias.foundViaAlias" = "Found via Alias";
+"nutrition.alias.aliasMatch" = "Similar Name";
+"nutrition.alias.enhancedResults" = "Enhanced Results";
+
+// MARK: - Nutrition Category Intelligence
+"nutrition.category.autoSuggested" = "Auto-Suggested Category";
+"nutrition.category.smartAssignment" = "Smart Category Assignment";
+"nutrition.category.categoryDetected" = "Category Detected";
+"nutrition.category.manualOverride" = "Manual Override";
+
+// MARK: - Nutrition Enhanced Search
+"nutrition.search.localResults" = "Local Results";
+"nutrition.search.enhancedSearch" = "Enhanced Search";
+"nutrition.search.aliasResults" = "Alias Results";
+"nutrition.search.searchOptimized" = "Search Optimized";
+"nutrition.search.multiLanguageSupport" = "Multi-Language Search Support";
+
 // MARK: - Help & Support
 "help.title" = "Help & Support";
 "help.subtitle" = "Get help and contact support";

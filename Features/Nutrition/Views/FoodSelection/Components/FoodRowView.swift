@@ -3,6 +3,7 @@ import SwiftUI
 struct FoodRowView: View {
     @EnvironmentObject private var unitSettings: UnitSettings
     let food: Food
+    var showAliasIndicator: Bool = false
     let action: () -> Void
     
     // OPTIMIZED: Add image caching state
@@ -67,14 +68,24 @@ struct FoodRowView: View {
                             .lineLimit(1)
                     }
                     
-                    if food.source == .openFoodFacts {
-                        HStack(spacing: 6) {
+                    HStack(spacing: 6) {
+                        if food.source == .openFoodFacts {
                             Text(NutritionKeys.Labels.off.localized)
                                 .font(.system(size: 9, weight: .bold))
                                 .padding(.horizontal, 6)
                                 .padding(.vertical, 2)
                                 .background(Color.blue.opacity(0.15))
                                 .foregroundColor(.blue)
+                                .clipShape(Capsule())
+                        }
+                        
+                        if showAliasIndicator {
+                            Text(NutritionKeys.Alias.aliasMatch.localized)
+                                .font(.system(size: 9, weight: .bold))
+                                .padding(.horizontal, 6)
+                                .padding(.vertical, 2)
+                                .background(Color.green.opacity(0.15))
+                                .foregroundColor(.green)
                                 .clipShape(Capsule())
                         }
                     }

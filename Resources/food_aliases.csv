@@ -1,0 +1,101 @@
+foodNameEN,aliasEN,aliasTR,aliasDE,aliasES,aliasFR,aliasIT,aliasID,aliasPL,aliasPT,language
+Chicken Breast,chicken breast,tavuk göğsü,hähnchenbrust,pechuga de pollo,blanc de poulet,petto di pollo,dada ayam,pierś kurczaka,peito de frango,all
+Chicken Breast,chicken,tavuk,hähnchen,pollo,poulet,pollo,ayam,kurczak,frango,all
+Chicken Breast,breast,göğüs,brust,pechuga,blanc,petto,dada,pierś,peito,all
+Ground Beef 85% Lean,ground beef,kıyma,hackfleisch,carne picada,bœuf haché,carne macinata,daging giling,mielona wołowina,carne moída,all
+Ground Beef 85% Lean,beef,dana,rindfleisch,ternera,bœuf,manzo,sapi,wołowina,carne,all
+Ground Beef 85% Lean,minced meat,kıyma et,hackfleisch,carne picada,viande hachée,carne tritata,daging cincang,mięso mielone,carne moída,all
+Lamb Chops,lamb,kuzu,lamm,cordero,agneau,agnello,domba,jagnięcina,cordeiro,all
+Lamb Chops,chops,pirzola,koteletts,chuletas,côtelettes,costolette,potongan,kotlety,costeletas,all
+Turkey Breast,turkey,hindi,truthahn,pavo,dinde,tacchino,kalkun,indyk,peru,all
+Beef Tenderloin,tenderloin,bonfile,filet,solomillo,filet,filetto,has dalam,polędwica,lombo,all
+Beef Tenderloin,filet,bonfile,filet,filete,filet,filetto,fillet,filet,filé,all
+Salmon,salmon,somon,lachs,salmón,saumon,salmone,salmon,łosoś,salmão,all
+Salmon,fish,balık,fisch,pescado,poisson,pesce,ikan,ryba,peixe,all
+Tuna in Water,tuna,ton,thunfisch,atún,thon,tonno,tuna,tuńczyk,atum,all
+Tuna in Water,canned tuna,konserve ton,thunfisch dose,atún en lata,thon en conserve,tonno in scatola,tuna kalengan,tuńczyk w puszce,atum enlatado,all
+Brown Rice,brown rice,esmer pirinç,brauner reis,arroz integral,riz complet,riso integrale,beras merah,ryż brązowy,arroz integral,all
+Brown Rice,rice,pirinç,reis,arroz,riz,riso,beras,ryż,arroz,all
+Brown Rice,wholegrain rice,tam tahıl pirinç,vollkornreis,arroz integral,riz complet,riso integrale,beras gandum,ryż pełnoziarnisty,arroz integral,all
+White Rice,white rice,beyaz pirinç,weißer reis,arroz blanco,riz blanc,riso bianco,beras putih,ryż biały,arroz branco,all
+Quinoa,quinoa,kinoa,quinoa,quinoa,quinoa,quinoa,quinoa,quinoa,quinoa,all
+Quinoa,superfood,süper gıda,superfood,superalimento,superaliment,superfood,superfood,superfood,superalimento,all
+Oats,oats,yulaf,hafer,avena,avoine,avena,gandum,owies,aveia,all
+Oats,oatmeal,yulaf ezmesi,haferflocken,harina de avena,flocons d'avoine,fiocchi d'avena,oatmeal,płatki owsiane,flocos de aveia,all
+Bulgur,bulgur,bulgur,bulgur,bulgur,boulgour,bulgur,bulgur,bulgur,bulgur,all
+Bulgur,cracked wheat,kırık buğday,geschroteter weizen,trigo partido,blé concassé,grano spezzato,gandum pecah,kasza bulgur,trigo partido,all
+Whole Wheat Bread,bread,ekmek,brot,pan,pain,pane,roti,chleb,pão,all
+Whole Wheat Bread,whole wheat,tam buğday,vollkorn,trigo integral,blé complet,grano intero,gandum utuh,pełnoziarnisty,trigo integral,all
+Pasta,pasta,makarna,pasta,pasta,pâtes,pasta,pasta,makaron,massa,all
+Pasta,noodles,şehriye,nudeln,fideos,nouilles,tagliatelle,mie,makaron,macarrão,all
+Sweet Potato,sweet potato,tatlı patates,süßkartoffel,batata,patate douce,patata dolce,ubi jalar,batat,batata doce,all
+Sweet Potato,yam,tatlı patates,süßkartoffel,ñame,igname,patata americana,ubi,batat,inhame,all
+Potato,potato,patates,kartoffel,patata,pomme de terre,patata,kentang,ziemniak,batata,all
+Greek Yogurt,yogurt,yoğurt,joghurt,yogur,yaourt,yogurt,yogurt,jogurt,iogurte,all
+Greek Yogurt,greek yogurt,süzme yoğurt,griechischer joghurt,yogur griego,yaourt grec,yogurt greco,yogurt yunani,jogurt grecki,iogurte grego,all
+Milk,milk,süt,milch,leche,lait,latte,susu,mleko,leite,all
+Milk,dairy,süt ürünü,milchprodukt,lácteo,produit laitier,latticino,produk susu,nabiał,laticínio,all
+Cheese,cheese,peynir,käse,queso,fromage,formaggio,keju,ser,queijo,all
+Almonds,almonds,badem,mandeln,almendras,amandes,mandorle,almond,migdały,amêndoas,all
+Almonds,nuts,fındık,nüsse,frutos secos,noix,noci,kacang,orzechy,nozes,all
+Walnuts,walnuts,ceviz,walnüsse,nueces,noix,noci,kenari,orzechy włoskie,nozes,all
+Hazelnuts,hazelnuts,fındık,haselnüsse,avellanas,noisettes,nocciole,hazelnut,orzechy laskowe,avelãs,all
+Banana,banana,muz,banane,plátano,banane,banana,pisang,banan,banana,all
+Banana,fruit,meyve,obst,fruta,fruit,frutta,buah,owoc,fruta,all
+Apple,apple,elma,apfel,manzana,pomme,mela,apel,jabłko,maçã,all
+Orange,orange,portakal,orange,naranja,orange,arancia,jeruk,pomarańcza,laranja,all
+Strawberry,strawberry,çilek,erdbeere,fresa,fraise,fragola,stroberi,truskawka,morango,all
+Strawberry,berries,böğürtlen,beeren,bayas,baies,frutti di bosco,berry,jagody,frutas vermelhas,all
+Tomato,tomato,domates,tomate,tomate,tomate,pomodoro,tomat,pomidor,tomate,all
+Tomato,vegetable,sebze,gemüse,verdura,légume,verdura,sayuran,warzywo,vegetal,all
+Broccoli,broccoli,brokoli,brokkoli,brócoli,brocoli,broccoli,brokoli,brokuły,brócolis,all
+Spinach,spinach,ıspanak,spinat,espinaca,épinard,spinaci,bayam,szpinak,espinafre,all
+Spinach,leafy greens,yeşil yapraklar,blattgemüse,verduras de hoja,légumes verts,verdure a foglia,sayuran hijau,warzywa liściaste,folhas verdes,all
+Cucumber,cucumber,salatalık,gurke,pepino,concombre,cetriolo,mentimun,ogórek,pepino,all
+Carrot,carrot,havuç,karotte,zanahoria,carotte,carota,wortel,marchewka,cenoura,all
+Bell Pepper,bell pepper,biber,paprika,pimiento,poivron,peperone,paprika,papryka,pimentão,all
+Onion,onion,soğan,zwiebel,cebolla,oignon,cipolla,bawang,cebula,cebola,all
+Garlic,garlic,sarımsak,knoblauch,ajo,ail,aglio,bawang putih,czosnek,alho,all
+Lemon,lemon,limon,zitrone,limón,citron,limone,lemon,cytryna,limão,all
+Avocado,avocado,avokado,avocado,aguacate,avocat,avocado,alpukat,awokado,abacate,all
+Avocado,healthy fat,sağlıklı yağ,gesunde fette,grasa saludable,graisse saine,grassi sani,lemak sehat,zdrowe tłuszcze,gordura saudável,all
+Olive Oil,olive oil,zeytinyağı,olivenöl,aceite de oliva,huile d'olive,olio d'oliva,minyak zaitun,oliwa z oliwek,azeite,all
+Olive Oil,oil,yağ,öl,aceite,huile,olio,minyak,olej,óleo,all
+Coconut Oil,coconut oil,hindistancevizi yağı,kokosöl,aceite de coco,huile de coco,olio di cocco,minyak kelapa,olej kokosowy,óleo de coco,all
+Butter,butter,tereyağı,butter,mantequilla,beurre,burro,mentega,masło,manteiga,all
+Whole Wheat Bread,bread,ekmek,brot,pan,pain,pane,roti,chleb,pão,all
+Whole Wheat Bread,toast,tost,toast,tostada,toast,toast,roti panggang,tost,torrada,all
+Eggs,eggs,yumurta,eier,huevos,œufs,uova,telur,jajka,ovos,all
+Eggs,protein,protein,protein,proteína,protéine,proteine,protein,białko,proteína,all
+Cottage Cheese,cottage cheese,lor peyniri,hüttenkäse,requesón,fromage blanc,ricotta,keju cottage,twaróg,queijo cottage,all
+Mozzarella,mozzarella,mozzarella,mozzarella,mozzarella,mozzarella,mozzarella,mozzarella,mozzarella,mozzarela,all
+Chicken Thigh,thigh,but,schenkel,muslo,cuisse,coscia,paha,udo,coxa,all
+Chicken Wings,wings,kanat,flügel,alas,ailes,ali,sayap,skrzydełka,asas,all
+Sea Bass,sea bass,levrek,seebarsch,lubina,bar,spigola,kakap,okoń morski,robalo,all
+Mackerel,mackerel,uskumru,makrele,caballa,maquereau,sgombro,kembung,makrela,cavala,all
+Shrimp,shrimp,karides,garnele,gamba,crevette,gambero,udang,krewetka,camarão,all
+Lentils,lentils,mercimek,linsen,lentejas,lentilles,lenticchie,lentil,soczewica,lentilhas,all
+Lentils,legumes,bakliyat,hülsenfrüchte,legumbres,légumineuses,legumi,kacang-kacangan,rośliny strączkowe,leguminosas,all
+Chickpeas,chickpeas,nohut,kichererbsen,garbanzos,pois chiches,ceci,buncis,ciecierzyca,grão de bico,all
+Black Beans,beans,fasulye,bohnen,frijoles,haricots,fagioli,kacang,fasola,feijão,all
+Protein Powder,protein powder,protein tozu,proteinpulver,proteína en polvo,poudre de protéine,proteine in polvere,bubuk protein,białko w proszku,proteína em pó,all
+Protein Powder,supplement,takviye,nahrungsergänzung,suplemento,supplément,integratore,suplemen,suplement,suplemento,all
+Whey Protein,whey,whey protein,molkenprotein,proteína de suero,protéine de lactosérum,proteine del siero,whey protein,białko serwatkowe,whey protein,all
+Creatine,creatine,kreatin,kreatin,creatina,créatine,creatina,kreatin,kreatyna,creatina,all
+Peanut Butter,peanut butter,fıstık ezmesi,erdnussbutter,mantequilla de maní,beurre de cacahuète,burro di arachidi,selai kacang,masło orzechowe,manteiga de amendoim,all
+Peanut Butter,nut butter,fındık ezmesi,nussbutter,mantequilla de frutos secos,beurre de noix,burro di noci,selai kacang,masło orzechowe,manteiga de noz,all
+Dark Chocolate,chocolate,çikolata,schokolade,chocolate,chocolat,cioccolato,cokelat,czekolada,chocolate,all
+Dark Chocolate,dark chocolate,bitter çikolata,dunkle schokolade,chocolate negro,chocolat noir,cioccolato fondente,cokelat hitam,gorzka czekolada,chocolate amargo,all
+Honey,honey,bal,honig,miel,miel,miele,madu,miód,mel,all
+Honey,natural sweetener,doğal tatlandırıcı,natürlicher süßstoff,endulzante natural,édulcorant naturel,dolcificante naturale,pemanis alami,naturalny słodzik,adoçante natural,all
+Olive,olives,zeytin,oliven,aceitunas,olives,olive,zaitun,oliwki,azeitonas,all
+Olive,mediterranean,akdeniz,mediterran,mediterráneo,méditerranéen,mediterraneo,mediterania,śródziemnomorski,mediterrâneo,all
+Feta Cheese,feta,beyaz peynir,feta,feta,feta,feta,keju feta,ser feta,queijo feta,all
+Feta Cheese,white cheese,beyaz peynir,weißkäse,queso blanco,fromage blanc,formaggio bianco,keju putih,biały ser,queijo branco,all
+Green Tea,green tea,yeşil çay,grüner tee,té verde,thé vert,tè verde,teh hijau,zielona herbata,chá verde,all
+Green Tea,tea,çay,tee,té,thé,tè,teh,herbata,chá,all
+Coffee,coffee,kahve,kaffee,café,café,caffè,kopi,kawa,café,all
+Coffee,espresso,espresso,espresso,espresso,expresso,espresso,espresso,espresso,expresso,all
+Water,water,su,wasser,agua,eau,acqua,air,woda,água,all
+Cucumber,cucumber,salatalık,gurke,pepino,concombre,cetriolo,mentimun,ogórek,pepino,all
+Cucumber,fresh vegetable,taze sebze,frisches gemüse,verdura fresca,légume frais,verdura fresca,sayuran segar,świeże warzywo,vegetal fresco,all

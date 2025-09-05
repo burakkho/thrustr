@@ -2771,3 +2771,23 @@
 "pr.strength.deadlift" = "RP Stacco";
 "pr.strength.overhead_press" = "RP Lento Avanti";
 "pr.strength.pull_up" = "RP Trazioni";
+
+// MARK: - Nutrition Alias Support
+"nutrition.alias.searchEnhanced" = "Ricerca Avanzata";
+"nutrition.alias.multiLangSupport" = "Supporto Multilingue";
+"nutrition.alias.foundViaAlias" = "Trovato tramite Alias";
+"nutrition.alias.aliasMatch" = "Nome Simile";
+"nutrition.alias.enhancedResults" = "Risultati Migliorati";
+
+// MARK: - Nutrition Category Intelligence
+"nutrition.category.autoSuggested" = "Categoria Auto-Suggerita";
+"nutrition.category.smartAssignment" = "Assegnazione Intelligente di Categoria";
+"nutrition.category.categoryDetected" = "Categoria Rilevata";
+"nutrition.category.manualOverride" = "Sovrascrittura Manuale";
+
+// MARK: - Nutrition Enhanced Search
+"nutrition.search.localResults" = "Risultati Locali";
+"nutrition.search.enhancedSearch" = "Ricerca Avanzata";
+"nutrition.search.aliasResults" = "Risultati Alias";
+"nutrition.search.searchOptimized" = "Ricerca Ottimizzata";
+"nutrition.search.multiLanguageSupport" = "Supporto Ricerca Multilingue";

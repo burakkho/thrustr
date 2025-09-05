@@ -370,9 +370,72 @@ class FoodSeeder {
     }
     
     @MainActor
-    static func seedFoodAliasesIfNeeded(modelContext: ModelContext) async {
-        // TODO: Implement - placeholder for now
-        Logger.info("FoodAliases: Not implemented yet")
+    static func seedFoodAliasesIfNeeded(modelContext: ModelContext) async throws {
+        Logger.info("Starting food aliases seeding...")
+        
+        // Check if aliases already exist
+        let descriptor = FetchDescriptor<FoodAlias>()
+        let existingCount = try modelContext.fetchCount(descriptor)
+        if existingCount > 0 {
+            Logger.info("Food aliases already seeded (\(existingCount) found), skipping")
+            return
+        }
+        
+        // Parse food_aliases.csv
+        let rows = try CSVParser.parseCSVFile("food_aliases")
+        guard rows.count > 1 else {
+            throw DataSeederError.emptyFile("food_aliases.csv")
+        }
+        
+        // Expected: foodNameEN,aliasEN,aliasTR,aliasDE,aliasES,aliasFR,aliasIT,aliasID,aliasPL,aliasPT,language
+        let dataRows = Array(rows.dropFirst())
+        var seededCount = 0
+        
+        // Pre-fetch all foods for efficient lookup
+        let foodDescriptor = FetchDescriptor<Food>(sortBy: [SortDescriptor(\Food.nameEN)])
+        let allFoods = try modelContext.fetch(foodDescriptor)
+        let foodLookup = Dictionary(uniqueKeysWithValues: allFoods.map { ($0.nameEN, $0) })
+        
+        for (index, row) in dataRows.enumerated() {
+            guard row.count >= 11 else {
+                Logger.warning("Skipping invalid alias row \(index): insufficient columns (\(row.count))")
+                continue
+            }
+            
+            let foodNameEN = row[0].trimmingCharacters(in: .whitespacesAndNewlines)
+            let _ = row[10].trimmingCharacters(in: .whitespacesAndNewlines)
+            
+            // Find corresponding food
+            guard let food = foodLookup[foodNameEN] else {
+                Logger.warning("Skipping alias row \(index): food '\(foodNameEN)' not found")
+                continue
+            }
+            
+            // Process each language alias (columns 1-9)
+            let aliases = [
+                (row[1], "en"), (row[2], "tr"), (row[3], "de"), 
+                (row[4], "es"), (row[5], "fr"), (row[6], "it"),
+                (row[7], "id"), (row[8], "pl"), (row[9], "pt")
+            ]
+            
+            for (aliasText, langCode) in aliases {
+                let trimmed = aliasText.trimmingCharacters(in: .whitespacesAndNewlines)
+                guard !trimmed.isEmpty else { continue }
+                
+                // Create FoodAlias
+                let alias = FoodAlias(term: trimmed, language: langCode, food: food)
+                modelContext.insert(alias)
+                seededCount += 1
+            }
+            
+            // Yield control periodically for performance
+            if seededCount % SeedingConfig.yieldInterval == 0 {
+                await Task.yield()
+            }
+        }
+        
+        try modelContext.save()
+        Logger.success("✅ Seeded \(seededCount) food aliases")
     }
 }
 
@@ -950,7 +1013,7 @@ class DataSeeder {
                 
                 // Food aliases - depends on foods being seeded
                 await progressCallback?(.foodAliases)
-                await FoodSeeder.seedFoodAliasesIfNeeded(modelContext: modelContext)
+                try await FoodSeeder.seedFoodAliasesIfNeeded(modelContext: modelContext)
                 
                 await progressCallback?(.completed)
                 Logger.success("Optimized database seeding completed!")

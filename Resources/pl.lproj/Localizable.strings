@@ -2946,3 +2946,23 @@
 "pr.strength.deadlift" = "Rekord Martwy Ciąg";
 "pr.strength.overhead_press" = "Rekord Wyciskanie Nad Głowę";
 "pr.strength.pull_up" = "Rekord Podciągnięcia";
+
+// MARK: - Nutrition Alias Support
+"nutrition.alias.searchEnhanced" = "Ulepszone Wyszukiwanie";
+"nutrition.alias.multiLangSupport" = "Wsparcie Wielojęzyczne";
+"nutrition.alias.foundViaAlias" = "Znaleziono przez Alias";
+"nutrition.alias.aliasMatch" = "Podobna Nazwa";
+"nutrition.alias.enhancedResults" = "Ulepszone Wyniki";
+
+// MARK: - Nutrition Category Intelligence
+"nutrition.category.autoSuggested" = "Auto-Sugerowana Kategoria";
+"nutrition.category.smartAssignment" = "Inteligentne Przypisanie Kategorii";
+"nutrition.category.categoryDetected" = "Kategoria Wykryta";
+"nutrition.category.manualOverride" = "Ręczne Nadpisanie";
+
+// MARK: - Nutrition Enhanced Search
+"nutrition.search.localResults" = "Wyniki Lokalne";
+"nutrition.search.enhancedSearch" = "Ulepszone Wyszukiwanie";
+"nutrition.search.aliasResults" = "Wyniki Aliasu";
+"nutrition.search.searchOptimized" = "Wyszukiwanie Zoptymalizowane";
+"nutrition.search.multiLanguageSupport" = "Wsparcie Wyszukiwania Wielojęzycznego";

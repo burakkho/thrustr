@@ -110,17 +110,17 @@ struct LiftAccordionCard: View {
                 VStack(spacing: 0) {
                     
                     // Set Header
-                    HStack(spacing: 4) {
+                    HStack(spacing: 6) {
                         Text("SET")
-                            .frame(width: 24, alignment: .leading)
-                        Text("PREVIOUS")
-                            .frame(width: 60, alignment: .center)
+                            .frame(width: 32, alignment: .leading)
+                        Text("PREV")
+                            .frame(width: 50, alignment: .center)
                         Text(unitSettings.unitSystem == .metric ? "KG" : "LB")
-                            .frame(width: 118, alignment: .center)
+                            .frame(width: 120, alignment: .center)
                         Text("REPS")
-                            .frame(width: 110, alignment: .center)
+                            .frame(width: 100, alignment: .center)
                         Image(systemName: "checkmark")
-                            .frame(width: 24)
+                            .frame(width: 32)
                     }
                     .font(theme.typography.caption)
                     .foregroundColor(theme.colors.textSecondary)

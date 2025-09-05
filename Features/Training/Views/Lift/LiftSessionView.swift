@@ -22,6 +22,8 @@ struct LiftSessionView: View {
     @State private var showingNotes = false
     @State private var sessionNotes = ""
     @State private var showingProgramCelebration = false
+    @State private var saveWorkItem: DispatchWorkItem?
+    @State private var expansionWorkItem: DispatchWorkItem?
     
     private var currentUser: User? {
         user.first
@@ -268,9 +270,12 @@ struct LiftSessionView: View {
         guard let user = currentUser else { return }
         session = workout.startSession(for: user, programExecution: programExecution)
         
-        // Auto-expand first exercise
-        if let firstExercise = session?.exerciseResults.first {
-            expandedExerciseId = firstExercise.id
+        // Smart auto-expand: first incomplete exercise
+        if let session = session {
+            let firstIncomplete = session.exerciseResults.first { result in
+                !result.sets.allSatisfy { $0.isCompleted }
+            }
+            expandedExerciseId = firstIncomplete?.id ?? session.exerciseResults.first?.id
         }
         
         // Load previous sessions for comparison
@@ -289,7 +294,17 @@ struct LiftSessionView: View {
     
     private func updateSessionTotals() {
         session?.calculateTotals()
-        try? modelContext.save()
+        scheduleDebouncedSave()
+    }
+    
+    private func scheduleDebouncedSave() {
+        saveWorkItem?.cancel()
+        
+        saveWorkItem = DispatchWorkItem {
+            try? modelContext.save()
+        }
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: saveWorkItem!)
     }
     
     private func handleSetCompletion(for exerciseResult: LiftExerciseResult) {
@@ -297,21 +312,26 @@ struct LiftSessionView: View {
         let isCompleted = exerciseResult.sets.allSatisfy { $0.isCompleted }
         
         if isCompleted && expandedExerciseId == exerciseResult.id {
-            // Auto-collapse completed exercise with animation
-            withAnimation(.easeInOut(duration: 0.3)) {
+            // Cancel any pending expansion animations
+            expansionWorkItem?.cancel()
+            
+            // Auto-collapse completed exercise with smooth animation
+            withAnimation(.easeInOut(duration: 0.25)) {
                 expandedExerciseId = nil
             }
             
-            // Auto-expand next incomplete exercise
+            // Schedule next expansion after collapse completes
             if let session = session,
                let nextIncomplete = session.exerciseResults.first(where: { 
                    !$0.sets.allSatisfy { $0.isCompleted } 
                }) {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                expansionWorkItem = DispatchWorkItem {
                     withAnimation(.easeInOut(duration: 0.2)) {
                         expandedExerciseId = nextIncomplete.id
                     }
                 }
+                
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3, execute: expansionWorkItem!)
             }
         }
     }
@@ -396,19 +416,23 @@ struct LiftSessionView: View {
     }
     
     private func getPreviousBest(for exercise: LiftExercise, user: User) -> Double {
-        // Query previous sessions for this exercise
-        let descriptor = FetchDescriptor<LiftSession>(
+        // Optimized query: only fetch recent sessions with limit
+        var descriptor = FetchDescriptor<LiftSession>(
             predicate: #Predicate<LiftSession> { session in
                 session.isCompleted
             },
             sortBy: [SortDescriptor(\LiftSession.startDate, order: .reverse)]
         )
         
+        // Limit to last 20 sessions for performance
+        descriptor.fetchLimit = 20
+        
         do {
-            let previousSessions = try modelContext.fetch(descriptor)
+            let recentSessions = try modelContext.fetch(descriptor)
             var maxWeight: Double = 0
             
-            for session in previousSessions {
+            // Early exit optimization: stop when we find enough data
+            for session in recentSessions {
                 for result in session.exerciseResults {
                     if result.exercise.exerciseName == exercise.exerciseName {
                         let sessionMax = result.sets
@@ -416,6 +440,11 @@ struct LiftSessionView: View {
                             .compactMap { $0.weight }
                             .max() ?? 0
                         maxWeight = max(maxWeight, sessionMax)
+                        
+                        // Performance boost: if we found good data, no need to check all sessions
+                        if maxWeight > 0 && recentSessions.count > 5 {
+                            break
+                        }
                     }
                 }
             }

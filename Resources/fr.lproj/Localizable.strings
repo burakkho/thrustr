@@ -1648,6 +1648,26 @@
 "body_measurements.subtitle" = "Suivez vos mesures corporelles au fil du temps";
 "body_measurements.current_measurements" = "Mesures Actuelles";
 
+// MARK: - Nutrition Alias Support
+"nutrition.alias.searchEnhanced" = "Recherche Améliorée";
+"nutrition.alias.multiLangSupport" = "Support Multilingue";
+"nutrition.alias.foundViaAlias" = "Trouvé via Alias";
+"nutrition.alias.aliasMatch" = "Nom Similaire";
+"nutrition.alias.enhancedResults" = "Résultats Améliorés";
+
+// MARK: - Nutrition Category Intelligence
+"nutrition.category.autoSuggested" = "Catégorie Auto-Suggérée";
+"nutrition.category.smartAssignment" = "Attribution Intelligente de Catégorie";
+"nutrition.category.categoryDetected" = "Catégorie Détectée";
+"nutrition.category.manualOverride" = "Remplacement Manuel";
+
+// MARK: - Nutrition Enhanced Search
+"nutrition.search.localResults" = "Résultats Locaux";
+"nutrition.search.enhancedSearch" = "Recherche Améliorée";
+"nutrition.search.aliasResults" = "Résultats d'Alias";
+"nutrition.search.searchOptimized" = "Recherche Optimisée";
+"nutrition.search.multiLanguageSupport" = "Support de Recherche Multilingue";
+
 // MARK: - Personal Info Extended
 "personal_info.update_title" = "Mettre à Jour Informations Personnelles";
 "personal_info.update_subtitle" = "Gardez vos informations à jour pour des calculs précis";

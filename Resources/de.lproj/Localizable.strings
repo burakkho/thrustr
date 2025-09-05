@@ -1847,6 +1847,26 @@
 "training.progress.totalVolume" = "Gesamtvolumen";
 "training.progress.totalWeight" = "Gesamtgewicht";
 
+// MARK: - Nutrition Alias Support
+"nutrition.alias.searchEnhanced" = "Erweiterte Suche";
+"nutrition.alias.multiLangSupport" = "Mehrsprachige Unterstützung";
+"nutrition.alias.foundViaAlias" = "Über Alias gefunden";
+"nutrition.alias.aliasMatch" = "Ähnlicher Name";
+"nutrition.alias.enhancedResults" = "Erweiterte Ergebnisse";
+
+// MARK: - Nutrition Category Intelligence
+"nutrition.category.autoSuggested" = "Automatisch vorgeschlagene Kategorie";
+"nutrition.category.smartAssignment" = "Intelligente Kategoriezuordnung";
+"nutrition.category.categoryDetected" = "Kategorie erkannt";
+"nutrition.category.manualOverride" = "Manuelle Überschreibung";
+
+// MARK: - Nutrition Enhanced Search
+"nutrition.search.localResults" = "Lokale Ergebnisse";
+"nutrition.search.enhancedSearch" = "Erweiterte Suche";
+"nutrition.search.aliasResults" = "Alias-Ergebnisse";
+"nutrition.search.searchOptimized" = "Suche optimiert";
+"nutrition.search.multiLanguageSupport" = "Mehrsprachige Suchunterstützung";
+
 // MARK: - User Profile Extended
 "user.profile.activityLevel" = "Aktivitätslevel";
 "user.profile.bodyFat" = "Körperfett";

@@ -207,4 +207,27 @@ enum NutritionKeys {
         static let permissionRequired = "nutrition.camera.permissionRequired"
         static let openSettings = "nutrition.camera.openSettings"
     }
+    
+    enum Alias {
+        static let searchEnhanced = "nutrition.alias.searchEnhanced"
+        static let multiLangSupport = "nutrition.alias.multiLangSupport"
+        static let foundViaAlias = "nutrition.alias.foundViaAlias"
+        static let aliasMatch = "nutrition.alias.aliasMatch"
+        static let enhancedResults = "nutrition.alias.enhancedResults"
+    }
+    
+    enum CategoryIntelligence {
+        static let autoSuggested = "nutrition.category.autoSuggested"
+        static let smartAssignment = "nutrition.category.smartAssignment"
+        static let categoryDetected = "nutrition.category.categoryDetected"
+        static let manualOverride = "nutrition.category.manualOverride"
+    }
+    
+    enum Search {
+        static let localResults = "nutrition.search.localResults"
+        static let enhancedSearch = "nutrition.search.enhancedSearch"
+        static let aliasResults = "nutrition.search.aliasResults"
+        static let searchOptimized = "nutrition.search.searchOptimized"
+        static let multiLanguageSupport = "nutrition.search.multiLanguageSupport"
+    }
 }

@@ -42,6 +42,8 @@
 		411001B62E6A140C00F30AE2 /* RecentSessionsCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 411001B42E6A140C00F30AE2 /* RecentSessionsCache.swift */; };
 		411001B92E6A141800F30AE2 /* TrainingDashboardDescriptors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 411001B72E6A141800F30AE2 /* TrainingDashboardDescriptors.swift */; };
 		411001BB2E6A14AD00F30AE2 /* StatItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 411001BA2E6A14AD00F30AE2 /* StatItem.swift */; };
+		411001BD2E6A1D0F00F30AE2 /* FoodSearchService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 411001BC2E6A1D0F00F30AE2 /* FoodSearchService.swift */; };
+		411001BF2E6A1D2000F30AE2 /* food_aliases.csv in Resources */ = {isa = PBXBuildFile; fileRef = 411001BE2E6A1D2000F30AE2 /* food_aliases.csv */; };
 		412659D12E5FA5C000FAB9E8 /* UnitsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 412659C92E5FA5C000FAB9E8 /* UnitsTests.swift */; };
 		412659D22E5FA5C000FAB9E8 /* DashboardViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 412659CB2E5FA5C000FAB9E8 /* DashboardViewModelTests.swift */; };
 		412659D32E5FA5C000FAB9E8 /* UserModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 412659C42E5FA5C000FAB9E8 /* UserModelTests.swift */; };
@@ -343,6 +345,8 @@
 		411001B42E6A140C00F30AE2 /* RecentSessionsCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecentSessionsCache.swift; sourceTree = "<group>"; };
 		411001B72E6A141800F30AE2 /* TrainingDashboardDescriptors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainingDashboardDescriptors.swift; sourceTree = "<group>"; };
 		411001BA2E6A14AD00F30AE2 /* StatItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatItem.swift; sourceTree = "<group>"; };
+		411001BC2E6A1D0F00F30AE2 /* FoodSearchService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoodSearchService.swift; sourceTree = "<group>"; };
+		411001BE2E6A1D2000F30AE2 /* food_aliases.csv */ = {isa = PBXFileReference; lastKnownFileType = text; path = food_aliases.csv; sourceTree = "<group>"; };
 		412659BE2E5FA5C000FAB9E8 /* HealthCalculatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthCalculatorTests.swift; sourceTree = "<group>"; };
 		412659C02E5FA5C000FAB9E8 /* MockHealthKitService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockHealthKitService.swift; sourceTree = "<group>"; };
 		412659C12E5FA5C000FAB9E8 /* MockUserService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockUserService.swift; sourceTree = "<group>"; };
@@ -953,6 +957,7 @@
 			children = (
 				41265A202E61E20700FAB9E8 /* DataSeeding */,
 				412659E32E605AEB00FAB9E8 /* NotificationManager.swift */,
+				411001BC2E6A1D0F00F30AE2 /* FoodSearchService.swift */,
 				4151B90E2E5CF58700A4E11E /* ActivityLoggerService.swift */,
 				4151B8DE2E5B865100A4E11E /* StrengthStandardsConfig.swift */,
 				4151B8DF2E5B865100A4E11E /* TestScoringService.swift */,
@@ -1043,6 +1048,7 @@
 		4151B7072E5A59C100A4E11E /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				411001BE2E6A1D2000F30AE2 /* food_aliases.csv */,
 				411001B02E6797A600F30AE2 /* pl.lproj */,
 				411001AC2E677F3400F30AE2 /* id.lproj */,
 				4110019B2E6771A300F30AE2 /* pt.lproj */,
@@ -1764,6 +1770,7 @@
 				411001752E671FD600F30AE2 /* Localizable.strings in Resources */,
 				411001762E671FD600F30AE2 /* Localizable.strings in Resources */,
 				41265A282E63818D00FAB9E8 /* Assets.xcassets in Resources */,
+				411001BF2E6A1D2000F30AE2 /* food_aliases.csv in Resources */,
 				4151B7742E5A59C100A4E11E /* metcon_exercises.csv in Resources */,
 				4151B8B82E5AFC2000A4E11E /* outdoor_cardio.csv in Resources */,
 				4151B77A2E5A59C100A4E11E /* lift_exercises.csv in Resources */,
@@ -1929,6 +1936,7 @@
 				411001952E676DF600F30AE2 /* HealthIntelligenceView.swift in Sources */,
 				411001962E676DF600F30AE2 /* HealthTrendsView.swift in Sources */,
 				412659FC2E605B5D00FAB9E8 /* WelcomeStepView.swift in Sources */,
+				411001BD2E6A1D0F00F30AE2 /* FoodSearchService.swift in Sources */,
 				412659FD2E605B5D00FAB9E8 /* GoalsStepView.swift in Sources */,
 				412659FE2E605B5D00FAB9E8 /* ConsentStepView.swift in Sources */,
 				411001B92E6A141800F30AE2 /* TrainingDashboardDescriptors.swift in Sources */,

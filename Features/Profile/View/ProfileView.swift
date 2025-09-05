@@ -31,30 +31,26 @@ struct ProfileView: View {
                         AthleteProfileCard(user: user)
                     }
                     
-                    // Settings Sections
+                    // Main Sections
                     VStack(spacing: 16) {
-                        // Lifetime Achievements Section
-                        if let user = currentUser {
-                            LifetimeAchievementsSection(user: user)
-                        }
-                        
-                        ProgressAnalyticsSection()
-                        
-                        BodyTrackingSection(
+                        // Essential Features (Always Visible)
+                        EssentialFeaturesSection(
+                            showingPersonalInfo: $showingPersonalInfoSheet,
                             showingWeightEntry: $showingWeightEntry,
                             showingMeasurements: $showingMeasurementsEntry,
                             showingPhotos: $showingProgressPhotos
                         )
                         
-                        PersonalSettingsSection(
-                            showingPersonalInfo: $showingPersonalInfoSheet,
-                            showingAccount: $showingAccountSheet
-                        )
-                        
-                        FitnessCalculatorsSection()
+                        ProgressSection()
                         
                         AppPreferencesSection(
                             showingPreferences: $showingPreferencesSheet
+                        )
+                        
+                        // Advanced Features (Collapsible)
+                        AdvancedFeaturesSection(
+                            showingAccount: $showingAccountSheet,
+                            user: currentUser
                         )
                     }
                 }
@@ -157,107 +153,52 @@ struct UserHeaderCard: View {
 }
 
 
-// MARK: - Settings Sections
-struct PersonalSettingsSection: View {
+// MARK: - Essential Features Section
+struct EssentialFeaturesSection: View {
     @Binding var showingPersonalInfo: Bool
-    @Binding var showingAccount: Bool
-    
-    var body: some View {
-        SettingsSection(title: "profile.personal_info".localized) {
-            SettingsRow(
-                icon: "person.fill",
-                title: "profile.personal_info".localized,
-                subtitle: "profile.personal_info_subtitle".localized,
-                action: { showingPersonalInfo = true }
-            )
-            
-            NavigationLink(destination: HealthKitAuthorizationView()) {
-                SettingsRowContent(
-                    icon: "heart.fill",
-                    title: "HealthKit İzinleri",
-                    subtitle: "Sağlık verisi erişim durumu"
-                )
-            }
-            
-            NavigationLink(destination: HealthIntelligenceView()) {
-                SettingsRowContent(
-                    icon: "brain.head.profile",
-                    title: "Sağlık Zekası",
-                    subtitle: "AI destekli sağlık önerileri"
-                )
-            }
-            
-            SettingsRow(
-                icon: "person.badge.key.fill",
-                title: "profile.account_management".localized,
-                subtitle: "profile.account_subtitle".localized,
-                action: { showingAccount = true }
-            )
-        }
-    }
-}
-
-struct BodyTrackingSection: View {
     @Binding var showingWeightEntry: Bool
     @Binding var showingMeasurements: Bool
     @Binding var showingPhotos: Bool
     
     var body: some View {
-        SettingsSection(title: "profile.body_tracking".localized) {
-            SettingsRow(
-                icon: "scalemass.fill",
-                title: "profile.weight_tracking".localized,
-                subtitle: "profile.weight_subtitle".localized,
-                action: { showingWeightEntry = true }
-            )
+        VStack(spacing: 16) {
+            SettingsSection(title: "profile.personal_info".localized) {
+                SettingsRow(
+                    icon: "person.fill",
+                    title: "profile.personal_info".localized,
+                    subtitle: "profile.personal_info_subtitle".localized,
+                    action: { showingPersonalInfo = true }
+                )
+            }
             
-            SettingsRow(
-                icon: "ruler.fill",
-                title: "profile.measurements".localized,
-                subtitle: "profile.measurements_subtitle".localized,
-                action: { showingMeasurements = true }
-            )
-            
-            SettingsRow(
-                icon: "camera.fill",
-                title: "profile.progress_photos".localized,
-                subtitle: "profile.photos_subtitle".localized,
-                action: { showingPhotos = true }
-            )
-        }
-    }
-}
-
-struct FitnessCalculatorsSection: View {
-    var body: some View {
-        SettingsSection(title: "calculators.fitness_calculators".localized) {
-            NavigationLink(destination: FitnessCalculatorsView()) {
-                SettingsRowContent(
-                    icon: "function",
-                    title: "calculators.title".localized,
-                    subtitle: "1RM, FFMI, Navy Method"
+            SettingsSection(title: "profile.body_tracking".localized) {
+                SettingsRow(
+                    icon: "scalemass.fill",
+                    title: "profile.weight_tracking".localized,
+                    subtitle: "profile.weight_subtitle".localized,
+                    action: { showingWeightEntry = true }
+                )
+                
+                SettingsRow(
+                    icon: "ruler.fill",
+                    title: "profile.measurements".localized,
+                    subtitle: "profile.measurements_subtitle".localized,
+                    action: { showingMeasurements = true }
+                )
+                
+                SettingsRow(
+                    icon: "camera.fill",
+                    title: "profile.progress_photos".localized,
+                    subtitle: "profile.photos_subtitle".localized,
+                    action: { showingPhotos = true }
                 )
             }
         }
     }
 }
 
-struct AppPreferencesSection: View {
-    @Binding var showingPreferences: Bool
-    
-    var body: some View {
-        SettingsSection(title: "settings.app_preferences".localized) {
-            SettingsRow(
-                icon: "gear",
-                title: "profile.settings".localized,
-                subtitle: "profile.settings_subtitle".localized,
-                action: { showingPreferences = true }
-            )
-        }
-    }
-}
-
-struct ProgressAnalyticsSection: View {
+// MARK: - Progress Section
+struct ProgressSection: View {
     var body: some View {
         SettingsSection(title: "analytics.progress_analytics".localized) {
             NavigationLink(destination: ProgressChartsView()) {
@@ -283,6 +224,83 @@ struct ProgressAnalyticsSection: View {
                     subtitle: "profile.goals_subtitle".localized
                 )
             }
+        }
+    }
+}
+
+// MARK: - Advanced Features Section
+struct AdvancedFeaturesSection: View {
+    @Binding var showingAccount: Bool
+    let user: User?
+    @State private var isExpanded = false
+    
+    var body: some View {
+        VStack(spacing: 0) {
+            Button(action: {
+                withAnimation(.easeInOut(duration: 0.3)) {
+                    isExpanded.toggle()
+                }
+            }) {
+                HStack {
+                    Image(systemName: "gearshape.2.fill")
+                        .foregroundColor(.blue)
+                    Text("profile.advanced_features".localized)
+                        .font(.headline)
+                        .fontWeight(.semibold)
+                    Spacer()
+                    Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
+                        .foregroundColor(.secondary)
+                }
+                .padding()
+                .background(Color(.systemBackground))
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+            }
+            .buttonStyle(PlainButtonStyle())
+            
+            if isExpanded {
+                VStack(spacing: 1) {
+                    NavigationLink(destination: FitnessCalculatorsView()) {
+                        SettingsRowContent(
+                            icon: "function",
+                            title: "calculators.title".localized,
+                            subtitle: "1RM, FFMI, Navy Method"
+                        )
+                    }
+                    
+                    NavigationLink(destination: HealthKitAuthorizationView()) {
+                        SettingsRowContent(
+                            icon: "heart.fill",
+                            title: "profile.health_integration".localized,
+                            subtitle: "HealthKit ve AI önerileri"
+                        )
+                    }
+                    
+                    SettingsRow(
+                        icon: "person.badge.key.fill",
+                        title: "profile.account_management".localized,
+                        subtitle: "profile.account_subtitle".localized,
+                        action: { showingAccount = true }
+                    )
+                }
+                .background(Color(.systemBackground))
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .padding(.top, 8)
+            }
+        }
+    }
+}
+
+struct AppPreferencesSection: View {
+    @Binding var showingPreferences: Bool
+    
+    var body: some View {
+        SettingsSection(title: "settings.app_preferences".localized) {
+            SettingsRow(
+                icon: "gear",
+                title: "profile.settings".localized,
+                subtitle: "profile.settings_subtitle".localized,
+                action: { showingPreferences = true }
+            )
         }
     }
 }

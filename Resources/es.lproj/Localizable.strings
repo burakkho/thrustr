@@ -1647,6 +1647,26 @@
 "strength.main.empty.title" = "No se han realizado pruebas";
 "strength.main.history" = "Historial";
 "strength.main.lastTest" = "Última Prueba";
+
+// MARK: - Nutrition Alias Support
+"nutrition.alias.searchEnhanced" = "Búsqueda Mejorada";
+"nutrition.alias.multiLangSupport" = "Soporte Multidioma";
+"nutrition.alias.foundViaAlias" = "Encontrado via Alias";
+"nutrition.alias.aliasMatch" = "Nombre Similar";
+"nutrition.alias.enhancedResults" = "Resultados Mejorados";
+
+// MARK: - Nutrition Category Intelligence
+"nutrition.category.autoSuggested" = "Categoría Auto-Sugerida";
+"nutrition.category.smartAssignment" = "Asignación Inteligente de Categoría";
+"nutrition.category.categoryDetected" = "Categoría Detectada";
+"nutrition.category.manualOverride" = "Anulación Manual";
+
+// MARK: - Nutrition Enhanced Search
+"nutrition.search.localResults" = "Resultados Locales";
+"nutrition.search.enhancedSearch" = "Búsqueda Mejorada";
+"nutrition.search.aliasResults" = "Resultados de Alias";
+"nutrition.search.searchOptimized" = "Búsqueda Optimizada";
+"nutrition.search.multiLanguageSupport" = "Soporte de Búsqueda Multidioma";
 "strength.main.quickActions" = "Acciones Rápidas";
 "strength.main.retestRecommended" = "Se recomienda repetir";
 "strength.main.score" = "Puntuación";

@@ -69,6 +69,66 @@ struct TrainingDashboardView: View {
     }
     
     var body: some View {
+        VStack(spacing: 0) {
+            // Dashboard Pills Selector
+            dashboardPillsSelector
+            
+            // Content based on selected section
+            switch coordinator.selectedDashboardSection {
+            case .overview:
+                overviewContent
+                    .animation(.easeInOut(duration: 0.2), value: coordinator.selectedDashboardSection)
+            case .analytics:
+                TrainingAnalyticsView(modelContext: modelContext)
+                    .environment(coordinator)
+                    .animation(.easeInOut(duration: 0.2), value: coordinator.selectedDashboardSection)
+            case .tests:
+                TestsMainView()
+                    .environment(coordinator)
+                    .animation(.easeInOut(duration: 0.2), value: coordinator.selectedDashboardSection)
+            case .goals:
+                if let user = currentUser {
+                    GoalSettingsView(user: user)
+                        .environment(coordinator)
+                        .animation(.easeInOut(duration: 0.2), value: coordinator.selectedDashboardSection)
+                } else {
+                    EmptyView()
+                }
+            }
+        }
+        .onAppear {
+            updateCacheIfNeeded()
+        }
+        .onChange(of: liftSessions.count) { _, _ in
+            Task { @MainActor in
+                invalidateCacheAndUpdate()
+            }
+        }
+        .onChange(of: cardioSessions.count) { _, _ in
+            Task { @MainActor in
+                invalidateCacheAndUpdate()
+            }
+        }
+    }
+    
+    // MARK: - Dashboard Pills Selector
+    private var dashboardPillsSelector: some View {
+        TrainingTabSelector(
+            selection: Binding(
+                get: { coordinator.selectedDashboardSection.rawValue },
+                set: { coordinator.selectedDashboardSection = DashboardSection(rawValue: $0) ?? .overview }
+            ),
+            tabs: [
+                TrainingTab(title: TrainingKeys.Dashboard.overview.localized, icon: "square.grid.2x2.fill"),
+                TrainingTab(title: TrainingKeys.Dashboard.analytics.localized, icon: "chart.bar.fill"),
+                TrainingTab(title: TrainingKeys.Dashboard.tests.localized, icon: "chart.bar.doc.horizontal.fill"),
+                TrainingTab(title: TrainingKeys.Dashboard.goals.localized, icon: "target")
+            ]
+        )
+    }
+    
+    // MARK: - Overview Content
+    private var overviewContent: some View {
         ScrollView {
             VStack(spacing: theme.spacing.xl) {
                 // Header Section
@@ -94,19 +154,6 @@ struct TrainingDashboardView: View {
                 }
             }
             .padding(.vertical, theme.spacing.m)
-        }
-        .onAppear {
-            updateCacheIfNeeded()
-        }
-        .onChange(of: liftSessions.count) { _, _ in
-            Task { @MainActor in
-                invalidateCacheAndUpdate()
-            }
-        }
-        .onChange(of: cardioSessions.count) { _, _ in
-            Task { @MainActor in
-                invalidateCacheAndUpdate()
-            }
         }
     }
     

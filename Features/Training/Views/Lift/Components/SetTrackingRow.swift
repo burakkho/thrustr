@@ -14,6 +14,7 @@ struct SetTrackingRow: View {
     @FocusState private var isRepsFocused: Bool
     @State private var weightText: String = ""
     @State private var repsText: String = ""
+    @State private var debounceWorkItem: DispatchWorkItem?
     
     // Optimized formatters
     private static let weightFormatter: NumberFormatter = {
@@ -37,9 +38,11 @@ struct SetTrackingRow: View {
     
     private var backgroundColor: Color {
         if set.isCompleted {
-            return theme.colors.success.opacity(0.05)
+            return theme.colors.success.opacity(0.08)
         } else if set.isWarmup {
-            return theme.colors.warning.opacity(0.05)
+            return theme.colors.warning.opacity(0.08)
+        } else if isWeightFocused || isRepsFocused {
+            return theme.colors.accent.opacity(0.05)
         } else {
             return .clear
         }
@@ -69,18 +72,18 @@ struct SetTrackingRow: View {
             if let prev = previousSet {
                 Text(prev.displayText)
                     .font(theme.typography.caption2)
-                    .foregroundColor(theme.colors.textSecondary.opacity(0.6))
-                    .frame(width: 60)
+                    .foregroundColor(theme.colors.textSecondary.opacity(0.4))
+                    .frame(width: 50)
                     .lineLimit(1)
             } else {
                 Spacer()
-                    .frame(width: 60)
+                    .frame(width: 50)
             }
         }
     }
     
     private var weightInputSection: some View {
-        HStack(spacing: 4) {
+        HStack(spacing: 6) {
             decreaseWeightButton
             weightTextField
             increaseWeightButton
@@ -101,6 +104,8 @@ struct SetTrackingRow: View {
                 .frame(width: 32, height: 32)
                 .background(theme.colors.backgroundSecondary, in: RoundedRectangle(cornerRadius: theme.radius.s))
         }
+        .frame(width: 44, height: 44)
+        .contentShape(Rectangle())
     }
     
     private var weightTextField: some View {
@@ -109,7 +114,7 @@ struct SetTrackingRow: View {
             .multilineTextAlignment(.center)
             .keyboardType(.decimalPad)
             .font(theme.typography.body)
-            .frame(width: 50)
+            .frame(width: 80)
             .padding(.vertical, 4)
             .background(theme.colors.backgroundSecondary, in: RoundedRectangle(cornerRadius: theme.radius.s))
             .overlay(
@@ -117,14 +122,24 @@ struct SetTrackingRow: View {
                     .stroke(isWeightFocused ? theme.colors.accent : Color.clear, lineWidth: 2)
             )
             .onChange(of: weightText) { _, newValue in
-                if let weight = parseWeightFromInput(newValue) {
-                    set.weight = weight
+                debounceWorkItem?.cancel()
+                
+                debounceWorkItem = DispatchWorkItem {
+                    if let weight = parseWeightFromInput(newValue) {
+                        set.weight = weight
+                    }
                 }
+                
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3, execute: debounceWorkItem!)
             }
             .onSubmit {
-                withAnimation(.easeInOut(duration: 0.2)) {
+                debounceWorkItem?.cancel()
+                if let weight = parseWeightFromInput(weightText) {
+                    set.weight = weight
+                }
+                
+                withAnimation(.easeInOut(duration: 0.1)) {
                     isWeightFocused = false
-                    isRepsFocused = true
                 }
             }
     }
@@ -143,6 +158,8 @@ struct SetTrackingRow: View {
                 .frame(width: 32, height: 32)
                 .background(theme.colors.backgroundSecondary, in: RoundedRectangle(cornerRadius: theme.radius.s))
         }
+        .frame(width: 44, height: 44)
+        .contentShape(Rectangle())
     }
     
     private var multiplySymbol: some View {
@@ -152,7 +169,7 @@ struct SetTrackingRow: View {
     }
     
     private var repsInputSection: some View {
-        HStack(spacing: 4) {
+        HStack(spacing: 6) {
             decreaseRepsButton
             repsTextField
             increaseRepsButton
@@ -173,6 +190,8 @@ struct SetTrackingRow: View {
                 .frame(width: 32, height: 32)
                 .background(theme.colors.backgroundSecondary, in: RoundedRectangle(cornerRadius: theme.radius.s))
         }
+        .frame(width: 44, height: 44)
+        .contentShape(Rectangle())
     }
     
     private var repsTextField: some View {
@@ -181,7 +200,7 @@ struct SetTrackingRow: View {
             .multilineTextAlignment(.center)
             .keyboardType(.numberPad)
             .font(theme.typography.body)
-            .frame(width: 38)
+            .frame(width: 60)
             .padding(.vertical, 4)
             .background(theme.colors.backgroundSecondary, in: RoundedRectangle(cornerRadius: theme.radius.s))
             .overlay(
@@ -189,18 +208,29 @@ struct SetTrackingRow: View {
                     .stroke(isRepsFocused ? theme.colors.accent : Color.clear, lineWidth: 2)
             )
             .onChange(of: repsText) { _, newValue in
-                if let reps = Int(newValue) {
-                    set.reps = reps
+                debounceWorkItem?.cancel()
+                
+                debounceWorkItem = DispatchWorkItem {
+                    if let reps = Int(newValue) {
+                        set.reps = reps
+                    }
                 }
+                
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3, execute: debounceWorkItem!)
             }
             .onSubmit {
-                withAnimation(.easeInOut(duration: 0.2)) {
+                debounceWorkItem?.cancel()
+                if let reps = Int(repsText) {
+                    set.reps = reps
+                }
+                
+                withAnimation(.easeInOut(duration: 0.15)) {
                     isRepsFocused = false
                 }
                 
                 if set.weight != nil && set.reps > 0 {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                        withAnimation(.spring(response: 0.3)) {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                        withAnimation(.spring(response: 0.25)) {
                             set.isCompleted = true
                             set.timestamp = Date()
                             onComplete()
@@ -222,6 +252,8 @@ struct SetTrackingRow: View {
                 .frame(width: 32, height: 32)
                 .background(theme.colors.backgroundSecondary, in: RoundedRectangle(cornerRadius: theme.radius.s))
         }
+        .frame(width: 44, height: 44)
+        .contentShape(Rectangle())
     }
     
     private var completeButton: some View {
@@ -243,7 +275,7 @@ struct SetTrackingRow: View {
     }
     
     var body: some View {
-        HStack(spacing: 4) {
+        HStack(spacing: 6) {
             setNumberSection
             previousSetInfo
             weightInputSection
@@ -252,27 +284,17 @@ struct SetTrackingRow: View {
             Spacer(minLength: 4)
             completeButton
         }
-        .padding(.horizontal, theme.spacing.xs)
-        .padding(.vertical, 8)
+        .padding(.horizontal, theme.spacing.s)
+        .padding(.vertical, 10)
         .background(backgroundColor, in: RoundedRectangle(cornerRadius: theme.radius.s))
         .onAppear {
             setupInitialValues()
         }
         .onTapGesture {
-            // Smart focus management with animation
-            withAnimation(.easeInOut(duration: 0.2)) {
-                // Auto-focus weight if no field is focused and set is incomplete
-                if !isWeightFocused && !isRepsFocused && !set.isCompleted {
-                    if set.weight == nil {
-                        isWeightFocused = true
-                    } else if set.reps == 0 {
-                        isRepsFocused = true
-                    }
-                } else {
-                    // Dismiss keyboard if already focused
-                    isWeightFocused = false
-                    isRepsFocused = false
-                }
+            // Manual focus control - dismiss any active keyboard
+            withAnimation(.easeInOut(duration: 0.1)) {
+                isWeightFocused = false
+                isRepsFocused = false
             }
         }
         .swipeActions(edge: .trailing, allowsFullSwipe: true) {

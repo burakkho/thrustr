@@ -1648,6 +1648,26 @@
 "body_measurements.subtitle" = "Lacak pengukuran tubuh Anda dari waktu ke waktu";
 "body_measurements.current_measurements" = "Pengukuran Saat Ini";
 
+// MARK: - Nutrition Alias Support
+"nutrition.alias.searchEnhanced" = "Pencarian Ditingkatkan";
+"nutrition.alias.multiLangSupport" = "Dukungan Multi-Bahasa";
+"nutrition.alias.foundViaAlias" = "Ditemukan via Alias";
+"nutrition.alias.aliasMatch" = "Nama Serupa";
+"nutrition.alias.enhancedResults" = "Hasil Ditingkatkan";
+
+// MARK: - Nutrition Category Intelligence
+"nutrition.category.autoSuggested" = "Kategori Auto-Saran";
+"nutrition.category.smartAssignment" = "Penugasan Kategori Cerdas";
+"nutrition.category.categoryDetected" = "Kategori Terdeteksi";
+"nutrition.category.manualOverride" = "Penggantian Manual";
+
+// MARK: - Nutrition Enhanced Search
+"nutrition.search.localResults" = "Hasil Lokal";
+"nutrition.search.enhancedSearch" = "Pencarian Ditingkatkan";
+"nutrition.search.aliasResults" = "Hasil Alias";
+"nutrition.search.searchOptimized" = "Pencarian Dioptimalkan";
+"nutrition.search.multiLanguageSupport" = "Dukungan Pencarian Multi-Bahasa";
+
 // MARK: - Personal Info Extended
 "personal_info.update_title" = "Update Informasi Personal";
 "personal_info.update_subtitle" = "Perbarui informasi Anda untuk kalkulasi yang akurat";

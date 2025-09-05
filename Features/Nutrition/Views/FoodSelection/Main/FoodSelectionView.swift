@@ -20,54 +20,18 @@ struct FoodSelectionView: View {
     @State private var offResults: [Food] = []
     @State private var recentSearches: [String] = []
     @State private var toastMessage: String? = nil
-    @State private var aliasMatches: [Food] = []
+    
+    // Enhanced search with service integration
+    @StateObject private var searchService = FoodSearchService()
     @State private var aliasSearchTask: Task<Void, Never>? = nil
     
-    // OPTIMIZED: Improved filtering with better performance
+    // Enhanced search results via FoodSearchService
     private var filteredFoods: [Food] {
-        var filtered = foods
-        
-        // Kategori filtresi - OPTIMIZED: Early return if no category filter
-        if let category = selectedCategory {
-            filtered = filtered.filter { $0.categoryEnum == category }
-        }
-        
-        // Arama filtresi - OPTIMIZED: Only filter if search text exists
-        if !debouncedSearchText.isEmpty {
-            let q = SearchUtilities.normalizeForSearch(debouncedSearchText)
-            let enFallbackTerms = LanguageSearchMap.translateTurkishToEnglishKeywords(query: debouncedSearchText)
-            
-            // OPTIMIZED: Use more efficient filtering
-            filtered = filtered.filter { food in
-                // OPTIMIZED: Pre-compute normalized strings
-                let nameTR = SearchUtilities.normalizeForSearch(food.nameTR)
-                let nameEN = SearchUtilities.normalizeForSearch(food.nameEN)
-                let brand = SearchUtilities.normalizeForSearch(food.brand ?? "")
-                let display = SearchUtilities.normalizeForSearch(food.displayName)
-                
-                // Primary match: TR/EN/display/brand
-                if display.contains(q) || nameTR.contains(q) || nameEN.contains(q) || (!brand.isEmpty && brand.contains(q)) {
-                    return true
-                }
-                
-                // Fallback: TR→EN keyword mapping - OPTIMIZED: Only if terms exist
-                if !enFallbackTerms.isEmpty {
-                    for term in enFallbackTerms {
-                        let tq = SearchUtilities.normalizeForSearch(term)
-                        if !tq.isEmpty && (nameEN.contains(tq) || display.contains(tq)) { 
-                            return true 
-                        }
-                    }
-                }
-                return false
-            }
-        }
-        
-        // OPTIMIZED: Sort only if needed and limit results for better performance
-        let sorted = filtered.sorted { $0.displayName < $1.displayName }
-        
-        // OPTIMIZED: Limit results to prevent UI lag with large datasets
-        return Array(sorted.prefix(100))
+        return searchService.searchResults
+    }
+    
+    private var aliasMatches: [Food] {
+        return searchService.aliasResults
     }
     
     var body: some View {
@@ -127,24 +91,46 @@ struct FoodSelectionView: View {
                         try? await Task.sleep(nanoseconds: 250_000_000)
                         if Task.isCancelled { return }
                         debouncedSearchText = newValue
+                        
+                        // Trigger enhanced search via service
+                        searchService.search(
+                            query: newValue,
+                            foods: foods,
+                            selectedCategory: selectedCategory,
+                            modelContext: modelContext
+                        )
+                    }
+                }
+                .onChange(of: selectedCategory) { _, _ in
+                    // Re-trigger search when category changes
+                    if !searchText.isEmpty {
+                        searchService.search(
+                            query: searchText,
+                            foods: foods,
+                            selectedCategory: selectedCategory,
+                            modelContext: modelContext
+                        )
                     }
                 }
                 
                 // Kategori filtreleri
                 FoodCategoryFilter(selectedCategory: $selectedCategory)
                 
-                // Progressive food list - show local results immediately, OFF results as they load
+                // Progressive food list - enhanced with alias support
                 let hasLocalResults = !filteredFoods.isEmpty
+                let hasAliasResults = !aliasMatches.isEmpty
                 let hasOffResults = !offResults.isEmpty
                 let isSearching = !debouncedSearchText.isEmpty
+                let hasAnyResults = hasLocalResults || hasAliasResults || hasOffResults
+                let shouldShowLoading = (isLoadingOFF || searchService.isSearching) && !hasAnyResults
                 
-                if !hasLocalResults && !hasOffResults && !isSearching {
+                if !hasAnyResults && !isSearching {
                     // Empty state when not searching
                     FoodSelectionEmptyStateView(
                         searchText: searchText,
                         onAddNew: { showingCustomFoodEntry = true }
                     )
-                } else if !hasLocalResults && !hasOffResults && isSearching && !isLoadingOFF {
+                } else if !hasAnyResults && isSearching && !shouldShowLoading {
                     // No results for search
                     FoodSelectionEmptyStateView(
                         searchText: searchText,
@@ -153,11 +139,23 @@ struct FoodSelectionView: View {
                 } else {
                     // Progressive results - show what we have
                     List {
-                        // Always show local results first (immediate)
+                        // Enhanced local results (immediate)
                         if hasLocalResults {
-                            Section(header: Text(NutritionKeys.FoodSelection.localResults.localized)) {
-                                ForEach(mergedLocalFoods(), id: \.id) { food in
+                            Section(header: Text(NutritionKeys.Search.localResults.localized)) {
+                                ForEach(filteredFoods, id: \.id) { food in
                                     FoodRowView(food: food) {
+                                        onFoodSelected(food)
+                                        HapticManager.shared.impact(.light)
+                                    }
+                                }
+                            }
+                        }
+                        
+                        // Alias-enhanced results (via FoodSearchService)
+                        if !aliasMatches.isEmpty {
+                            Section(header: Text(NutritionKeys.Search.aliasResults.localized)) {
+                                ForEach(aliasMatches, id: \.id) { food in
+                                    FoodRowView(food: food, showAliasIndicator: true) {
                                         onFoodSelected(food)
                                         HapticManager.shared.impact(.light)
                                     }
@@ -202,16 +200,15 @@ struct FoodSelectionView: View {
         }
         .onChange(of: debouncedSearchText) { _, newValue in
             offSearchTask?.cancel()
-            aliasSearchTask?.cancel()
             let query = newValue.trimmingCharacters(in: .whitespacesAndNewlines)
-            guard !query.isEmpty else { offResults = []; aliasMatches = []; return }
+            guard !query.isEmpty else { 
+                offResults = []
+                searchService.clearSearch()
+                return 
+            }
             
             offSearchTask = Task { @MainActor in
                 await performOFFSearch(query: query)
-            }
-            
-            aliasSearchTask = Task { @MainActor in
-                await updateAliasMatches(query: query)
             }
         }
         .sheet(isPresented: $showingCustomFoodEntry) {
@@ -236,7 +233,7 @@ struct FoodSelectionView: View {
             // Performance optimization - cancel ongoing tasks to prevent memory leaks
             searchTask?.cancel()
             offSearchTask?.cancel()
-            aliasSearchTask?.cancel()
+            searchService.clearSearch()
         }
         .animation(.easeInOut(duration: 0.3), value: isLoadingOFF)
         .animation(.easeInOut(duration: 0.3), value: offResults.count)
@@ -452,29 +449,16 @@ extension FoodSelectionView {
         return try modelContext.fetch(descriptor).first
     }
     
-    private func mergedLocalFoods() -> [Food] {
-        // Merge aliasMatches into filteredFoods (unique by id)
-        var map: [UUID: Food] = [:]
-        for f in filteredFoods { map[f.id] = f }
-        for f in aliasMatches { map[f.id] = f }
-        return map.values.sorted { $0.displayName < $1.displayName }
-    }
-
-    @MainActor
-    private func updateAliasMatches(query: String) async {
-        let q = SearchUtilities.normalizeForSearch(query)
-        guard !q.isEmpty else { aliasMatches = []; return }
-        var descriptor = FetchDescriptor<FoodAlias>()
-        descriptor.fetchLimit = 500 // Performance optimization - limit alias search
-        let aliases = (try? modelContext.fetch(descriptor)) ?? []
-        let matchedFoods: [Food] = aliases.compactMap { alias in
-            let term = SearchUtilities.normalizeForSearch(alias.term)
-            guard !term.isEmpty, term.contains(q) else { return nil }
-            return alias.food
-        }
-        // Remove foods already present in filteredFoods to reduce duplicates visually
-        let existingIds = Set(filteredFoods.map { $0.id })
-        aliasMatches = matchedFoods.filter { !existingIds.contains($0.id) }
+    // MARK: - Service Integration Helpers
+    
+    private func triggerInitialSearch() {
+        guard !searchText.isEmpty else { return }
+        searchService.search(
+            query: searchText,
+            foods: foods,
+            selectedCategory: selectedCategory,
+            modelContext: modelContext
+        )
     }
 }
 

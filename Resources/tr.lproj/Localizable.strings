@@ -2048,6 +2048,26 @@
 "account.delete_desc" = "Hesabı ve tüm verileri kalıcı olarak sil";
 "account.cannot_undo" = "Bu işlem geri alınamaz.";
 
+// MARK: - Nutrition Alias Support
+"nutrition.alias.searchEnhanced" = "Gelişmiş Arama";
+"nutrition.alias.multiLangSupport" = "Çok Dilli Destek";
+"nutrition.alias.foundViaAlias" = "Alternatif Adla Bulundu";
+"nutrition.alias.aliasMatch" = "Benzer İsim";
+"nutrition.alias.enhancedResults" = "Genişletilmiş Sonuçlar";
+
+// MARK: - Nutrition Category Intelligence
+"nutrition.category.autoSuggested" = "Otomatik Önerilen Kategori";
+"nutrition.category.smartAssignment" = "Akıllı Kategori Ataması";
+"nutrition.category.categoryDetected" = "Kategori Algılandı";
+"nutrition.category.manualOverride" = "Manuel Geçersiz Kılma";
+
+// MARK: - Nutrition Enhanced Search
+"nutrition.search.localResults" = "Yerel Sonuçlar";
+"nutrition.search.enhancedSearch" = "Gelişmiş Arama";
+"nutrition.search.aliasResults" = "Alternatif Sonuçlar";
+"nutrition.search.searchOptimized" = "Arama Optimize Edildi";
+"nutrition.search.multiLanguageSupport" = "Çok Dilli Arama Desteği";
+
 // MARK: - Goal Types Extended
 "goal_type_strength" = "Güç Hedefi";
 "goal_type_endurance" = "Dayanıklılık Hedefi";
@@ -3612,3 +3632,12 @@
 "activity.type.cycling" = "bisiklet";
 "activity.type.walking" = "yürüyüş";
 "activity.type.rowing" = "kürek";
+
+// MARK: - Profile Simplification
+"profile.essential_features" = "Temel Özellikler";
+"profile.advanced_features" = "Gelişmiş Özellikler";
+"profile.progress_analytics" = "İlerleme Analitiği";
+"profile.achievements_goals" = "Başarılar & Hedefler";
+"profile.achievements_goals_subtitle" = "Başarılarınızı ve hedefleri takip edin";
+"profile.health_integration" = "Sağlık Entegrasyonu";
+"profile.weight_measurements_photos" = "Kilo, ölçümler ve fotoğraflar";
