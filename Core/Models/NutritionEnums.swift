@@ -31,13 +31,13 @@ enum FoodCategory: String, CaseIterable {
         case .nuts: return NutritionKeys.Categories.nuts.localized
         case .beverages: return NutritionKeys.Categories.beverages.localized
         case .snacks: return NutritionKeys.Categories.snacks.localized
-        case .turkish: return "Türk Yemekleri" // Keep Turkish-specific
-        case .fastfood: return "Fast Food" // Keep universal
-        case .supplements: return "Takviyeler" // Keep Turkish-specific
-        case .condiments: return "Soslar & Baharatlar" // Keep Turkish-specific
-        case .bakery: return "Fırın Ürünleri" // Keep Turkish-specific
-        case .seafood: return "Deniz Ürünleri" // Keep Turkish-specific
-        case .desserts: return "Tatlılar" // Keep Turkish-specific
+        case .turkish: return NutritionKeys.Categories.turkish.localized
+        case .fastfood: return NutritionKeys.Categories.fastfood.localized
+        case .supplements: return NutritionKeys.Categories.supplements.localized
+        case .condiments: return NutritionKeys.Categories.condiments.localized
+        case .bakery: return NutritionKeys.Categories.bakery.localized
+        case .seafood: return NutritionKeys.Categories.seafood.localized
+        case .desserts: return NutritionKeys.Categories.desserts.localized
         case .other: return NutritionKeys.Categories.other.localized
         }
     }

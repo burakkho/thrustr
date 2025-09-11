@@ -1,10 +1,11 @@
 import SwiftUI
 
 @MainActor
-class SeedingState: ObservableObject {
-    @Published var isFoodsReady: Bool = false
-    @Published var isExercisesReady: Bool = false
-    @Published var currentProgress: SeedingProgress? = nil
+@Observable
+class SeedingState {
+    var isFoodsReady: Bool = false
+    var isExercisesReady: Bool = false
+    var currentProgress: SeedingProgress? = nil
     
     func updateProgress(_ progress: SeedingProgress) {
         currentProgress = progress

@@ -17,67 +17,95 @@ import Foundation
  */
 @Model
 final class User {
-    // MARK: - Personal Information
-    var name: String
-    var age: Int
-    var gender: String // Uses Gender enum rawValue
-    var height: Double // cm
-    var currentWeight: Double // kg
+    // MARK: - Personal Information  
+    var id: UUID = UUID()
+    var name: String = ""
+    var age: Int = 25
+    var gender: String = "male" // Uses Gender enum rawValue
+    var height: Double = 170.0 // cm
+    var currentWeight: Double = 70.0 // kg
     
     // MARK: - Goals & Activity
-    var fitnessGoal: String // Uses FitnessGoal enum rawValue
-    var activityLevel: String // Uses ActivityLevel enum rawValue
+    var fitnessGoal: String = "maintain" // Uses FitnessGoal enum rawValue
+    var activityLevel: String = "moderate" // Uses ActivityLevel enum rawValue
     
     // MARK: - App Settings
-    var selectedLanguage: String
-    var onboardingCompleted: Bool
-    var profilePictureData: Data?
+    var selectedLanguage: String = "tr"
+    var onboardingCompleted: Bool = false
+    @Transient var profilePictureURL: String? // File system path for profile picture - LOCAL ONLY
     
-    // MARK: - Legal / Consent
-    var consentAccepted: Bool
-    var consentTimestamp: Date?
-    var marketingOptIn: Bool
+    // MARK: - Legal / Consent (LOCAL ONLY for privacy)
+    var consentAccepted: Bool = false
+    var consentTimestamp: Date? = nil
+    var marketingOptIn: Bool = false
     
     // MARK: - Account Information
-    var createdAt: Date // MISSING PROPERTY ADDED
-    var lastActiveDate: Date
+    var createdAt: Date = Date()
+    var lastActiveDate: Date = Date()
     
-    // MARK: - Notification Settings
-    @Relationship(deleteRule: .cascade) var notificationSettings: UserNotificationSettings?
+    // MARK: - Notification Settings  
+    @Relationship(deleteRule: .cascade, inverse: \UserNotificationSettings.user) var notificationSettings: UserNotificationSettings?
     
-    // MARK: - Health Data Integration
-    var lastHealthKitSync: Date?
-    var healthKitSteps: Double?
-    var healthKitCalories: Double?
-    var healthKitWeight: Double?
+    // MARK: - CloudKit Relationships (Single Direction Only)
+    var activityEntries: [ActivityEntry]?
+    var bodyMeasurements: [BodyMeasurement]?
+    var cardioResults: [CardioResult]?
+    @Relationship(inverse: \CardioSession.user) var cardioSessions: [CardioSession]?
+    var goals: [Goal]?
+    @Relationship(inverse: \LiftProgram.creator) var createdPrograms: [LiftProgram]?
+    @Relationship(inverse: \LiftResult.user) var liftResults: [LiftResult]?
+    @Relationship(inverse: \LiftSession.user) var liftSessions: [LiftSession]?
+    @Relationship(inverse: \ProgramExecution.user) var programExecutions: [ProgramExecution]?
+    var progressPhotos: [ProgressPhoto]?
+    var weightEntries: [WeightEntry]?
+    var wodResults: [WODResult]?
     
-    // MARK: - Calculated Metrics (Auto-updated)
-    var bmr: Double // Basal Metabolic Rate
-    var tdee: Double // Total Daily Energy Expenditure
-    var dailyCalorieGoal: Double
-    var dailyProteinGoal: Double // grams
-    var dailyCarbGoal: Double // grams
-    var dailyFatGoal: Double // grams
+    // MARK: - Health Data Integration (LOCAL ONLY for privacy)
+    @Transient var lastHealthKitSync: Date?
     
-    // MARK: - Workout Stats
-    var totalWorkouts: Int
-    var totalWorkoutTime: TimeInterval // seconds
-    var totalVolume: Double // kg
-    var totalVolumeLifted: Double // kg - alias for totalVolume for analytics
-    var lastWorkoutDate: Date?
-    var maxSetsInSingleWorkout: Int // maximum sets completed in one session
-    var maxRepsInSingleSet: Int // maximum reps in a single set
-    var longestWorkoutDuration: TimeInterval // longest single workout duration
+    // MARK: - Data Source Tracking (LOCAL ONLY for privacy)
+    @Transient var weightSource: String = "manual"
+    @Transient var weightLastUpdated: Date?
     
-    // MARK: - Cardio Stats
-    var totalCardioSessions: Int
-    var totalCardioTime: TimeInterval // seconds
-    var totalCardioDistance: Double // meters
-    var lastCardioDate: Date?
-    var totalCardioCalories: Int // estimated calories burned in cardio
-    var longestRun: Double // meters - longest single run distance
+    // TODO: Add source tracking for other metrics as needed
+    // var stepsSource: String = DataSource.healthKit.rawValue
+    // var stepsLastUpdated: Date?
     
-    // MARK: - Body Measurements (Optional)
+    // Note: healthKitSteps, healthKitCalories, healthKitWeight removed
+    // These are now accessed directly from HealthKitService for real-time data
+    
+    // MARK: - Calculated Metrics (CloudKit Syncable)
+    var bmr: Double = 0.0 // Basal Metabolic Rate
+    var tdee: Double = 0.0 // Total Daily Energy Expenditure
+    var dailyCalorieGoal: Double = 0.0
+    var dailyProteinGoal: Double = 0.0 // grams
+    var dailyCarbGoal: Double = 0.0 // grams
+    var dailyFatGoal: Double = 0.0 // grams
+    
+    // MARK: - Workout Stats (CloudKit Syncable)
+    var totalWorkouts: Int = 0
+    var totalWorkoutTime: TimeInterval = 0.0 // seconds
+    var totalVolume: Double = 0.0 // kg
+    var lastWorkoutDate: Date? = nil
+    var maxSetsInSingleWorkout: Int = 0 // maximum sets completed in one session
+    var maxRepsInSingleSet: Int = 0 // maximum reps in a single set
+    var longestWorkoutDuration: TimeInterval = 0.0 // longest single workout duration
+    
+    // MARK: - Cardio Stats (CloudKit Syncable)
+    var totalCardioSessions: Int = 0
+    var totalCardioTime: TimeInterval = 0.0 // seconds
+    var totalCardioDistance: Double = 0.0 // meters - internal metric storage
+    var lastCardioDate: Date? = nil
+    var totalCardioCalories: Int = 0 // estimated calories burned in cardio
+    var longestRun: Double = 0.0 // meters - internal metric storage
+    
+    // MARK: - Lift Stats (CloudKit Syncable)
+    var totalLiftSessions: Int = 0
+    var totalLiftTime: TimeInterval = 0.0 // seconds
+    var totalLiftVolume: Double = 0.0 // kg - internal metric storage
+    var lastLiftDate: Date? = nil
+    
+    // MARK: - Body Measurements (CloudKit Syncable)
     var chest: Double?
     var waist: Double?
     var hips: Double?
@@ -85,7 +113,7 @@ final class User {
     var bicep: Double?
     var thigh: Double?
     
-    // MARK: - Lift Training Data
+    // MARK: - Lift Training Data (CloudKit Syncable)
     var squatOneRM: Double?
     var benchPressOneRM: Double?
     var deadliftOneRM: Double?
@@ -93,46 +121,46 @@ final class User {
     var pullUpOneRM: Double?
     var oneRMLastUpdated: Date?
     
-    // MARK: - Strength Test Data
-    var strengthTestLastCompleted: Date?
-    var strengthTestCompletionCount: Int
-    var strengthProfile: String? // "balanced", "upper_dominant", "lower_dominant"
-    var lastStrengthScore: Double // 0.0 - 1.0 overall test score
+    // MARK: - Strength Test Data (CloudKit Syncable)
+    var strengthTestLastCompleted: Date? = nil
+    var strengthTestCompletionCount: Int = 0
+    var strengthProfile: String? = nil // "balanced", "upper_dominant", "lower_dominant"
+    var lastStrengthScore: Double = 0.0 // 0.0 - 1.0 overall test score
     
-    // MARK: - Equipment Setup
-    var availablePlates: [Double] // Available weight plates in kg
-    var hasHomeGym: Bool
-    var equipmentNotes: String?
+    // MARK: - Equipment Setup (CloudKit Syncable)
+    var availablePlates: [Double] = [1.25, 2.5, 5, 10, 15, 20] // kg - metric plates
+    var hasHomeGym: Bool = false
+    var equipmentNotes: String? = nil
     
-    // MARK: - Analytics & Performance Tracking
-    var currentWorkoutStreak: Int
-    var longestWorkoutStreak: Int
-    var lastStreakUpdate: Date?
+    // MARK: - Analytics & Performance Tracking (CloudKit Syncable)
+    var currentWorkoutStreak: Int = 0
+    var longestWorkoutStreak: Int = 0
+    var lastStreakUpdate: Date? = nil
     
-    // MARK: - User Goals (Customizable)
-    var monthlySessionGoal: Int
-    var monthlyDistanceGoal: Double // meters
-    var goalCompletionRate: Double
+    // MARK: - User Goals (CloudKit Syncable)
+    var monthlySessionGoal: Int = 16 // 4 sessions per week default
+    var monthlyDistanceGoal: Double = 50000.0 // meters - 50km internal metric storage
+    var goalCompletionRate: Double = 0.0
     
-    // MARK: - Weekly Goals (Dashboard)
-    var weeklyLiftGoal: Int // weekly lift sessions target
-    var weeklyCardioGoal: Int // weekly cardio sessions target
-    var weeklyDistanceGoal: Double // meters per week
-    var weeklySessionGoal: Int // total weekly sessions target (lift + cardio)
+    // MARK: - Weekly Goals (CloudKit Syncable)
+    var weeklyLiftGoal: Int = 4 // weekly lift sessions target
+    var weeklyCardioGoal: Int = 3 // weekly cardio sessions target
+    var weeklyDistanceGoal: Double = 12500.0 // meters - 12.5km internal metric storage
+    var weeklySessionGoal: Int = 4 // total weekly sessions target (lift + cardio)
     
-    // MARK: - PR Tracking (8 Specific Exercises)
-    var totalPRsThisMonth: Int
-    var totalPRsAllTime: Int
-    var lastPRDate: Date?
+    // MARK: - PR Tracking (CloudKit Syncable)
+    var totalPRsThisMonth: Int = 0
+    var totalPRsAllTime: Int = 0
+    var lastPRDate: Date? = nil
     
-    // MARK: - Performance Analytics
-    var averageSessionDuration: TimeInterval
-    var lastAnalyticsUpdate: Date?
+    // MARK: - Performance Analytics (CloudKit Syncable)
+    var averageSessionDuration: TimeInterval = 0.0
+    var lastAnalyticsUpdate: Date? = nil
     
-    // MARK: - BMI Cache (Performance Optimization)
-    private var _cachedBMI: Double?
-    private var _bmiCacheTimestamp: Date?
-    private var bmiCacheTimeout: TimeInterval = 3600 // 1 hour cache - performance optimization
+    // MARK: - BMI Cache (LOCAL ONLY - Performance Optimization)
+    @Transient private var _cachedBMI: Double?
+    @Transient private var _bmiCacheTimestamp: Date?
+    @Transient private var bmiCacheTimeout: TimeInterval = 3600
     
     // MARK: - Computed Properties Using Enums
     var genderEnum: Gender {
@@ -150,6 +178,11 @@ final class User {
         set { activityLevel = newValue.rawValue }
     }
     
+    var weightSourceEnum: DataSource {
+        get { DataSource(rawValue: weightSource) ?? .manual }
+        set { weightSource = newValue.rawValue }
+    }
+    
     // MARK: - Convenience Properties
     var displayWeight: String {
         String(format: "%.1f kg", currentWeight)
@@ -161,7 +194,7 @@ final class User {
     }
     
     var displayAge: String {
-        "\(age) yaş"
+        String(format: CommonKeys.PersonalInfoExtended.ageFormat.localized, age)
     }
     
     var bmi: Double {
@@ -238,6 +271,13 @@ final class User {
         self.createdAt = Date()
         self.lastActiveDate = Date()
         
+        // Data source tracking initialization (for @Transient properties)
+        self.weightSource = DataSource.manual.rawValue
+        self.weightLastUpdated = Date()
+        
+        // BMI cache initialization
+        self.bmiCacheTimeout = 3600 // 1 hour cache
+        
         // Initialize calculated values
         self.bmr = 0
         self.tdee = 0
@@ -250,7 +290,6 @@ final class User {
         self.totalWorkouts = 0
         self.totalWorkoutTime = 0
         self.totalVolume = 0
-        self.totalVolumeLifted = 0
         self.maxSetsInSingleWorkout = 0
         self.maxRepsInSingleSet = 0
         self.longestWorkoutDuration = 0
@@ -262,6 +301,12 @@ final class User {
         self.lastCardioDate = nil
         self.totalCardioCalories = 0
         self.longestRun = 0
+        
+        // Initialize lift stats
+        self.totalLiftSessions = 0
+        self.totalLiftTime = 0
+        self.totalLiftVolume = 0.0
+        self.lastLiftDate = nil
         
         // Initialize lift training data
         self.squatOneRM = nil
@@ -309,6 +354,9 @@ final class User {
         
         // Calculate initial metrics
         calculateMetrics()
+        
+        // Run migration for existing data
+        migrateLegacyHealthKitData()
     }
     
     // MARK: - Methods
@@ -411,20 +459,37 @@ final class User {
     }
     
     // MARK: - HealthKit Integration
-    func updateHealthKitData(steps: Double?, calories: Double?, weight: Double?) {
-        if let steps = steps { healthKitSteps = steps }
-        if let calories = calories { healthKitCalories = calories }
-        if let weight = weight, weight > 10 && weight < 500 {  // FIXED: Validate weight range
-            healthKitWeight = weight
-            // Update current weight if HealthKit has newer data
-            currentWeight = weight
-            // Invalidate BMI cache when weight changes from HealthKit
-            _cachedBMI = nil
-            _bmiCacheTimestamp = nil
-            calculateMetrics()  // Recalculate with new weight
+    func updateHealthKitData(steps: Double?, calories: Double?, weight: Double?, timestamp: Date = Date()) {
+        // Weight update using intelligent conflict resolution
+        if let weight = weight {
+            updateWeightIntelligently(weight, source: .healthKit, timestamp: timestamp)
         }
-        lastHealthKitSync = Date()
+        
+        // TODO: Add smart update logic for steps and calories when needed
+        // For now, we don't store these as they're accessed directly from HealthKitService
+        
+        lastHealthKitSync = timestamp
         lastActiveDate = Date()
+        
+        print("✅ HealthKit data updated: weight=\(weight?.description ?? "nil"), timestamp=\(timestamp)")
+    }
+    
+    /**
+     * Updates weight from manual user entry with automatic bi-directional sync.
+     * This method should be called when user manually enters their weight.
+     */
+    func updateWeightManually(_ weight: Double) {
+        updateWeightIntelligently(weight, source: .manual, timestamp: Date())
+        
+        // Bi-directional sync to HealthKit
+        Task { @MainActor in
+            let success = await HealthKitService.shared.saveWeight(weight)
+            if success {
+                print("✅ Weight synced to HealthKit: \(weight)kg")
+            } else {
+                print("⚠️ Failed to sync weight to HealthKit")
+            }
+        }
     }
     
     // MARK: - Workout Stats Updates
@@ -432,7 +497,6 @@ final class User {
         totalWorkouts += 1
         totalWorkoutTime += duration
         totalVolume += volume
-        totalVolumeLifted += volume // Keep both in sync
         lastWorkoutDate = Date()
         lastActiveDate = Date()
         
@@ -467,6 +531,19 @@ final class User {
         }
         
         lastActiveDate = Date()
+    }
+    
+    func addLiftSession(duration: TimeInterval, volume: Double, sets: Int, reps: Int) {
+        totalLiftSessions += 1
+        totalLiftTime += duration
+        totalLiftVolume += volume
+        lastLiftDate = Date()
+        lastActiveDate = Date()
+        
+        // Update personal records if applicable
+        if duration > longestWorkoutDuration {
+            longestWorkoutDuration = duration
+        }
     }
     
     func updateCardioSession(oldDuration: TimeInterval, oldDistance: Double, newDuration: TimeInterval, newDistance: Double, oldCalories: Int? = nil, newCalories: Int? = nil) {
@@ -576,32 +653,32 @@ final class User {
     }
     
     // MARK: - Lift Training Methods
-    func calculateStartingWeights() -> [String: Double] {
+    func calculateStartingWeights(unitSystem: UnitSystem = .metric) -> [String: Double] {
         var startingWeights: [String: Double] = [:]
         
         // Calculate starting weights at 65% of 1RM for main lifts
         if let squatMax = squatOneRM {
             let calculatedWeight = squatMax * 0.65
-            startingWeights["squat"] = roundToPlateIncrement(calculatedWeight)
+            startingWeights["squat"] = roundToPlateIncrement(calculatedWeight, system: unitSystem)
         }
         
         if let benchMax = benchPressOneRM {
             let calculatedBench = benchMax * 0.65
-            startingWeights["bench"] = roundToPlateIncrement(calculatedBench)
+            startingWeights["bench"] = roundToPlateIncrement(calculatedBench, system: unitSystem)
             
             // Row starts at 65% of bench press 1RM (same as other lifts)
             let calculatedRow = benchMax * 0.65
-            startingWeights["row"] = roundToPlateIncrement(calculatedRow)
+            startingWeights["row"] = roundToPlateIncrement(calculatedRow, system: unitSystem)
         }
         
         if let deadliftMax = deadliftOneRM {
             let calculatedWeight = deadliftMax * 0.65
-            startingWeights["deadlift"] = roundToPlateIncrement(calculatedWeight)
+            startingWeights["deadlift"] = roundToPlateIncrement(calculatedWeight, system: unitSystem)
         }
         
         if let ohpMax = overheadPressOneRM {
             let calculatedWeight = ohpMax * 0.65
-            startingWeights["ohp"] = roundToPlateIncrement(calculatedWeight)
+            startingWeights["ohp"] = roundToPlateIncrement(calculatedWeight, system: unitSystem)
         }
         
         return startingWeights
@@ -641,6 +718,7 @@ final class User {
                pullUpOneRM != nil
     }
     
+    @MainActor
     func roundToPlateIncrement(_ weight: Double) -> Double {
         let unitSystem = UnitSettings.shared.unitSystem
         return roundToPlateIncrement(weight, system: unitSystem)
@@ -705,10 +783,10 @@ final class User {
             return 
         }
         
-        print("✅ User.updateWithStrengthTest: Processing test with \(strengthTest.results.count) results")
+        print("✅ User.updateWithStrengthTest: Processing test with \(strengthTest.results?.count ?? 0) results")
         
         // Update 1RM values from test results with safety checks
-        for result in strengthTest.results {
+        for result in strengthTest.results ?? [] {
             guard result.value > 0 && result.value.isFinite && !result.value.isNaN else {
                 print("❌ User.updateWithStrengthTest: Invalid result value for \(result.exerciseType)")
                 continue
@@ -854,5 +932,173 @@ final class User {
     
     func formattedHeight(system: UnitSystem) -> String {
         return UnitsFormatter.formatHeight(cm: height, system: system)
+    }
+    
+    // MARK: - Migration & Data Source Management
+    
+    /**
+     * Migrates legacy HealthKit data fields to the new data source tracking system.
+     * This method runs once during User initialization to handle existing users.
+     * 
+     * Migration Strategy:
+     * 1. Check if migration already completed (weightLastUpdated exists)
+     * 2. Detect data source based on available timestamps and data patterns
+     * 3. Set appropriate source and timestamp
+     * 4. Clean up any inconsistencies
+     */
+    private func migrateLegacyHealthKitData() {
+        // Skip migration if already done (weightLastUpdated exists)
+        if weightLastUpdated != nil {
+            print("✅ Migration skipped - Already completed")
+            return
+        }
+        
+        var detectedSource: DataSource = .manual
+        var detectedTimestamp: Date = Date()
+        
+        // Strategy 1: Check HealthKit sync patterns
+        if let hkSyncDate = lastHealthKitSync {
+            // User has HealthKit sync history
+            let daysSinceSync = Calendar.current.dateComponents([.day], from: hkSyncDate, to: Date()).day ?? 0
+            
+            if daysSinceSync <= 7 {
+                // Recent HealthKit activity suggests HealthKit source
+                detectedSource = .healthKit
+                detectedTimestamp = hkSyncDate
+                print("📱 Migration: Detected active HealthKit usage (last sync: \(daysSinceSync) days ago)")
+            } else {
+                // Old HealthKit sync, likely manual now
+                detectedSource = .manual
+                detectedTimestamp = Date()
+                print("📝 Migration: HealthKit inactive, defaulting to manual")
+            }
+        } else {
+            // No HealthKit sync history - definitely manual
+            detectedSource = .manual
+            detectedTimestamp = createdAt
+            print("📝 Migration: No HealthKit history, setting manual source")
+        }
+        
+        // Strategy 2: Data consistency validation
+        // Note: In future versions, this would check actual legacy fields
+        // if let legacyHKWeight = healthKitWeight {
+        //     if abs(legacyHKWeight - currentWeight) < 0.5 {
+        //         detectedSource = .healthKit
+        //     }
+        // }
+        
+        // Apply migration results
+        weightSource = detectedSource.rawValue
+        weightLastUpdated = detectedTimestamp
+        
+        // Log migration completion
+        let sourceIcon = detectedSource == .healthKit ? "⌚" : "📝"
+        print("✅ User migration completed: \(sourceIcon) \(detectedSource.displayName) source detected")
+        
+        // Migration quality check
+        validateMigrationIntegrity()
+    }
+    
+    /**
+     * Validates that migration completed successfully and data is consistent.
+     */
+    private func validateMigrationIntegrity() {
+        guard let weightTimestamp = weightLastUpdated else {
+            print("❌ Migration validation failed: weightLastUpdated is nil")
+            return
+        }
+        
+        let source = weightSourceEnum
+        let now = Date()
+        
+        // Validate timestamp is reasonable
+        if weightTimestamp > now {
+            print("⚠️ Migration warning: Weight timestamp is in the future")
+            weightLastUpdated = now
+        }
+        
+        // Validate weight is reasonable
+        if currentWeight < 10 || currentWeight > 500 {
+            print("⚠️ Migration warning: Weight value seems unreasonable: \(currentWeight)kg")
+        }
+        
+        // Validate source enum
+        if DataSource(rawValue: weightSource) == nil {
+            print("⚠️ Migration warning: Invalid weight source, resetting to manual")
+            weightSource = DataSource.manual.rawValue
+        }
+        
+        print("✅ Migration validation passed: \(source.displayName), \(String(format: "%.1f", currentWeight))kg")
+    }
+    
+    /**
+     * Updates weight with intelligent conflict resolution based on timestamp and source priority.
+     * 
+     * - Parameters:
+     *   - newWeight: The new weight value in kilograms
+     *   - source: The data source providing this weight
+     *   - timestamp: When this weight was measured (defaults to current time)
+     */
+    func updateWeightIntelligently(_ newWeight: Double, source: DataSource, timestamp: Date = Date()) {
+        // Validate weight range
+        guard newWeight > 10 && newWeight < 500 else {
+            print("❌ Invalid weight range: \(newWeight)kg")
+            return
+        }
+        
+        let currentTimestamp = weightLastUpdated ?? .distantPast
+        let oldWeight = currentWeight
+        let oldSource = weightSourceEnum
+        
+        // Determine if this update should win
+        let shouldUpdate = source.shouldOverride(
+            oldSource,
+            thisTimestamp: timestamp,
+            otherTimestamp: currentTimestamp
+        )
+        
+        if shouldUpdate {
+            // Update weight data
+            currentWeight = newWeight
+            weightSourceEnum = source
+            weightLastUpdated = timestamp
+            lastActiveDate = Date()
+            
+            // Invalidate BMI cache when weight changes
+            _cachedBMI = nil
+            _bmiCacheTimestamp = nil
+            
+            // Check for significant change (>1kg)
+            let weightDifference = abs(newWeight - oldWeight)
+            if weightDifference > 1.0 {
+                print("⚖️ Weight updated: \(oldWeight)kg → \(newWeight)kg (\(source.displayName))")
+                
+                // Recalculate metrics for significant changes
+                calculateMetrics()
+                
+                // Log the change for potential user notification
+                notifyWeightChange(from: oldWeight, to: newWeight, source: source)
+            } else {
+                print("⚖️ Weight updated silently: \(oldWeight)kg → \(newWeight)kg (\(source.displayName))")
+            }
+        } else {
+            print("⚖️ Weight update ignored: \(newWeight)kg from \(source.displayName) (older than current)")
+        }
+    }
+    
+    /**
+     * Logs weight changes for potential user notification.
+     * This method can be extended to trigger actual UI notifications.
+     */
+    private func notifyWeightChange(from oldWeight: Double, to newWeight: Double, source: DataSource) {
+        let change = newWeight - oldWeight
+        let direction = change > 0 ? "gained" : "lost"
+        let amount = abs(change)
+        
+        // TODO: Implement actual notification system
+        print("📊 Weight change notification: \(direction) \(String(format: "%.1f", amount))kg via \(source.displayName)")
+        
+        // This is where you would trigger toast notifications or other UI feedback
+        // NotificationCenter.default.post(name: .weightUpdated, object: WeightChangeInfo(...))
     }
 }

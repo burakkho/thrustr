@@ -10,7 +10,7 @@ import SwiftData
  */
 struct LifetimeAchievementsSection: View {
     @Environment(\.theme) private var theme
-    @EnvironmentObject private var unitSettings: UnitSettings
+    @Environment(UnitSettings.self) var unitSettings
     
     // MARK: - Properties
     let user: User?
@@ -216,5 +216,5 @@ private struct LifetimeStatCard: View {
     LifetimeAchievementsSection(user: sampleUser)
         .padding()
         .modelContainer(for: [User.self, LiftSession.self, CardioSession.self], inMemory: true)
-        .environmentObject(UnitSettings.shared)
+        .environment(UnitSettings.shared)
 }

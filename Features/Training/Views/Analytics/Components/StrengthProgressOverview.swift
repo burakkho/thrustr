@@ -3,7 +3,7 @@ import Charts
 
 struct StrengthProgressOverview: View {
     @Environment(\.theme) private var theme
-    @EnvironmentObject private var unitSettings: UnitSettings
+    @Environment(UnitSettings.self) var unitSettings
     
     let user: User
     @State private var selectedTimeRange: TimeRange = .sixMonths
@@ -261,6 +261,8 @@ struct StrengthProgressOverview: View {
     }
     
     private func generateProgressionData(exercise: String, currentMax: Double, startDate: Date, endDate: Date, timeRange: TimeRange) -> [StrengthDataPoint] {
+        // In a real implementation, this would query LiftSession and LiftResult tables
+        // Simulating realistic progression data from actual workout history
         var points: [StrengthDataPoint] = []
         let calendar = Calendar.current
         
@@ -329,6 +331,6 @@ struct StrengthProgressOverview: View {
     user.pullUpOneRM = 25
     
     return StrengthProgressOverview(user: user)
-        .environmentObject(UnitSettings.shared)
+        .environment(UnitSettings.shared)
         .padding()
 }

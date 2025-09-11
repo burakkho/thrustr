@@ -4,7 +4,7 @@ import UserNotifications
 
 struct NotificationSettingsSection: View {
     @Environment(\.modelContext) private var modelContext
-    @EnvironmentObject private var notificationManager: NotificationManager
+    @Environment(NotificationManager.self) var notificationManager
     
     @Query private var notificationSettings: [UserNotificationSettings]
     

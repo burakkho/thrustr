@@ -1,6 +1,6 @@
 import Foundation
 
-enum CardioCategory: String, CaseIterable {
+enum CardioCategory: String, CaseIterable, Sendable {
     case exercise = "exercise"
     case custom = "custom"
     

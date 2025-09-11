@@ -4,7 +4,7 @@ import SwiftData
 struct NavyMethodCalculatorView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
-    @EnvironmentObject private var unitSettings: UnitSettings
+    @Environment(UnitSettings.self) var unitSettings
     
     let user: User?
     
@@ -268,7 +268,7 @@ struct NavyMethodCalculatorView: View {
             }
         } catch {
             print("Error saving Navy Method measurements: \(error)")
-            // TODO: Show error toast with ProfileKeys.Messages.saveError
+            // Error handling - could show toast notification to user
         }
     }
     
@@ -758,5 +758,5 @@ enum BodyFatCategory: CaseIterable {
         NavyMethodCalculatorView(user: nil)
     }
     .modelContainer(for: [User.self], inMemory: true)
-    .environmentObject(UnitSettings.shared)
+    .environment(UnitSettings.shared)
 }

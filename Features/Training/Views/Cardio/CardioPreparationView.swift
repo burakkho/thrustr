@@ -369,7 +369,9 @@ struct CardioPreparationView: View {
             
             // Start monitoring GPS
             Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
-                checkGPSStatus()
+                Task { @MainActor in
+                    checkGPSStatus()
+                }
             }
         } else {
             gpsStatus = .notNeeded

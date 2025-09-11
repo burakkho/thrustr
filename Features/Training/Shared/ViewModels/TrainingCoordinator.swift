@@ -1,7 +1,7 @@
 import SwiftUI
 import SwiftData
 
-enum WorkoutType: Int, CaseIterable {
+enum WorkoutType: Int, CaseIterable, Sendable {
     case dashboard = 0
     case lift = 1
     case cardio = 2
@@ -26,39 +26,14 @@ enum WorkoutType: Int, CaseIterable {
     }
 }
 
-enum DashboardSection: Int, CaseIterable {
-    case overview = 0
-    case analytics = 1
-    case tests = 2
-    case goals = 3
-    
-    var title: String {
-        switch self {
-        case .overview: return TrainingKeys.Dashboard.overview.localized
-        case .analytics: return TrainingKeys.Dashboard.analytics.localized
-        case .tests: return TrainingKeys.Dashboard.tests.localized
-        case .goals: return TrainingKeys.Dashboard.goals.localized
-        }
-    }
-    
-    var icon: String {
-        switch self {
-        case .overview: return "square.grid.2x2.fill"
-        case .analytics: return "chart.bar.fill"
-        case .tests: return "chart.bar.doc.horizontal.fill"
-        case .goals: return "target"
-        }
-    }
-}
 
+@MainActor
 @Observable
 class TrainingCoordinator {
     // Navigation State
     var selectedWorkoutType: WorkoutType = .dashboard
     var navigationPath = NavigationPath()
     
-    // Dashboard State
-    var selectedDashboardSection: DashboardSection = .overview
     
     // Shared UI State
     var showingNewWorkout = false
@@ -127,7 +102,9 @@ class TrainingCoordinator {
             object: nil,
             queue: .main
         ) { [weak self] _ in
-            self?.handleWODHistoryNavigation()
+            Task { @MainActor in
+                self?.handleWODHistoryNavigation()
+            }
         }
     }
     

@@ -47,7 +47,7 @@ struct NutritionView: View {
     @State private var forceStartWithScanner = false
     @State private var saveErrorMessage: String? = nil
     @State private var showRealEmptyState = false
-    @StateObject private var errorHandler = ErrorHandlingService.shared
+    @State private var errorHandler = ErrorHandlingService.shared
 
     init() {}
     
@@ -56,8 +56,8 @@ struct NutritionView: View {
             ZStack {
                 ScrollView {
                     VStack(spacing: 20) {
-                        // Loading state during initial app launch
-                        if foods.isEmpty && todayEntries.isEmpty && weekEntries.isEmpty {
+                        // Loading state during initial app launch - only check foods array
+                        if foods.isEmpty {
                             // Show loading state for first few seconds, then show empty state
                             VStack(spacing: 16) {
                                 ProgressView()
@@ -71,28 +71,18 @@ struct NutritionView: View {
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 60)
                             .onAppear {
-                                // After 3 seconds, if still empty, show the real empty state
+                                // After 3 seconds, if foods still empty, show the real empty state
                                 DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
-                                    if foods.isEmpty && todayEntries.isEmpty && weekEntries.isEmpty {
+                                    if foods.isEmpty {
                                         showRealEmptyState = true
                                     }
                                 }
                             }
                         }
                         
-                        // Test butonları (geçici)
-                        if foods.isEmpty && showRealEmptyState {
-                            VStack(spacing: 12) {
-                                Button(NutritionKeys.Test.addTestFood.localized) {
-                                    addTestFoods()
-                                }
-                                .buttonStyle(.borderedProminent)
-                            }
-                            .padding()
-                        }
                         
-                        // Boş durumlar - gerçek empty state
-                        if foods.isEmpty && todayEntries.isEmpty && weekEntries.isEmpty && showRealEmptyState {
+                        // Boş durumlar - gerçek empty state (only check foods, not entries)
+                        if foods.isEmpty && showRealEmptyState {
                             EmptyStateView(
                                 systemImage: "fork.knife.circle.fill",
                                 title: NutritionKeys.Empty.firstTitle.localized,
@@ -237,38 +227,7 @@ struct NutritionView: View {
         }
     }
     
-    private func addTestFoods() {
-        let testFoods = [
-            Food(nameEN: "Chicken Breast", nameTR: "Tavuk GÃ¶ÄŸsÃ¼", calories: 165, protein: 31, carbs: 0, fat: 3.6, category: .meat),
-            Food(nameEN: "Brown Rice", nameTR: "Esmer PirinÃ§", calories: 111, protein: 2.6, carbs: 23, fat: 0.9, category: .grains),
-            Food(nameEN: "Banana", nameTR: "Muz", calories: 89, protein: 1.1, carbs: 23, fat: 0.3, category: .fruits)
-        ]
-        
-        for food in testFoods {
-            modelContext.insert(food)
-        }
-        do { 
-            try modelContext.save() 
-            errorHandler.showSuccessToast(NutritionKeys.Test.addedSuccessfully.localized)
-        } catch { 
-            errorHandler.handle(error, severity: .medium, source: "NutritionView.addTestFoods")
-        }
-    }
     
-    private func clearAllFoods() {
-        for food in foods {
-            modelContext.delete(food)
-        }
-        for entry in todayEntries {
-            modelContext.delete(entry)
-        }
-        do { 
-            try modelContext.save() 
-            errorHandler.showSuccessToast(NutritionKeys.Test.clearedSuccessfully.localized)
-        } catch { 
-            errorHandler.handle(error, severity: .medium, source: "NutritionView.clearAllFoods")
-        }
-    }
 }
 
 #Preview {

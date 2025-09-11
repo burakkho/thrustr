@@ -33,6 +33,9 @@ final class UserNotificationSettings {
     var streakAlertsEnabled: Bool = true
     var streakReminderHours: Int = 2 // Hours before streak might break
     
+    // MARK: - Relationships
+    var user: User?
+    
     init() {}
     
     // MARK: - Convenience Methods

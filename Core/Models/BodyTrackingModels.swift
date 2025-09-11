@@ -5,11 +5,11 @@ import SwiftData
 // MARK: - WeightEntry Model (Enhanced)
 @Model
 final class WeightEntry {
-    var id: UUID
-    var weight: Double // kg
-    var date: Date
+    var id: UUID = UUID()
+    var weight: Double = 0.0 // kg
+    var date: Date = Date()
     var notes: String?
-    var createdAt: Date
+    var createdAt: Date = Date()
     
     // Enhanced Properties
     var bodyFat: Double? // Body fat percentage
@@ -80,17 +80,17 @@ final class WeightEntry {
 // MARK: - BodyMeasurement Model (Enhanced)
 @Model
 final class BodyMeasurement {
-    var id: UUID
-    var type: String
-    var value: Double // cm
-    var date: Date
+    var id: UUID = UUID()
+    var type: String = "chest"
+    var value: Double = 0.0 // cm
+    var date: Date = Date()
     var notes: String?
-    var createdAt: Date
+    var createdAt: Date = Date()
     
     // Enhanced Properties
     var leftValue: Double? // For paired measurements (left arm, left leg)
     var rightValue: Double? // For paired measurements
-    var isSymmetrical: Bool // Whether left/right should be same
+    var isSymmetrical: Bool = false // Whether left/right should be same
     
     // Relationships
     var user: User?
@@ -146,27 +146,27 @@ final class BodyMeasurement {
 // MARK: - ProgressPhoto Model (Enhanced)
 @Model
 final class ProgressPhoto {
-    var id: UUID
-    var type: String
-    var imageData: Data?
-    var date: Date
+    var id: UUID = UUID()
+    var type: String = "front"
+    var imageURL: String? // File system path for progress photo
+    var date: Date = Date()
     var notes: String?
-    var createdAt: Date
+    var createdAt: Date = Date()
     
     // Enhanced Properties
     var weight: Double? // Weight at time of photo
     var bodyFat: Double? // Body fat at time of photo
-    var isVisible: Bool // User can hide photos
-    var isFavorite: Bool
+    var isVisible: Bool = true // User can hide photos
+    var isFavorite: Bool = false
     var tags: [String]? // Custom tags
     
     // Relationships
     var user: User?
     
-    init(type: String, imageData: Data?, date: Date, notes: String? = nil, weight: Double? = nil, bodyFat: Double? = nil, isVisible: Bool = true, isFavorite: Bool = false) {
+    init(type: String, imageURL: String?, date: Date, notes: String? = nil, weight: Double? = nil, bodyFat: Double? = nil, isVisible: Bool = true, isFavorite: Bool = false) {
         self.id = UUID()
         self.type = type
-        self.imageData = imageData
+        self.imageURL = imageURL
         self.date = date
         self.notes = notes
         self.weight = weight
@@ -184,8 +184,14 @@ final class ProgressPhoto {
     
     /// File size in MB
     var fileSizeMB: Double {
-        guard let data = imageData else { return 0 }
-        return Double(data.count) / (1024 * 1024)
+        guard let urlString = imageURL, let url = URL(string: urlString) else { return 0 }
+        do {
+            let attributes = try FileManager.default.attributesOfItem(atPath: url.path)
+            let fileSize = attributes[.size] as? Int ?? 0
+            return Double(fileSize) / (1024 * 1024)
+        } catch {
+            return 0
+        }
     }
     
     /// Display date string
@@ -206,23 +212,23 @@ final class ProgressPhoto {
 // MARK: - Goal Model (Enhanced)
 @Model
 final class Goal {
-    var id: UUID
-    var title: String
+    var id: UUID = UUID()
+    var title: String = ""
     var goalDescription: String?
-    var type: String
-    var targetValue: Double
-    var currentValue: Double
-    var unit: String
+    var type: String = "weight"
+    var targetValue: Double = 0.0
+    var currentValue: Double = 0.0
+    var unit: String = ""
     var deadline: Date?
-    var createdDate: Date
+    var createdDate: Date = Date()
     var completedDate: Date?
-    var isCompleted: Bool
+    var isCompleted: Bool = false
     
     // Enhanced Properties
-    var priority: Int // 1-5 scale
-    var isActive: Bool
-    var category: String // GoalCategory for grouping
-    var reminderEnabled: Bool
+    var priority: Int = 3 // 1-5 scale
+    var isActive: Bool = true
+    var category: String = "general" // GoalCategory for grouping
+    var reminderEnabled: Bool = true
     var milestones: [Double]? // Intermediate targets
     
     // Relationships

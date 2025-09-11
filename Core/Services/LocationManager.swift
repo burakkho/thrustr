@@ -2,6 +2,101 @@ import Foundation
 import CoreLocation
 import SwiftUI
 
+// MARK: - Location Tracking Actor (Background Processing)
+actor LocationTracker {
+    private var totalDistance: Double = 0
+    private var averageSpeed: Double = 0
+    private var routeCoordinates: [CLLocationCoordinate2D] = []
+    private var lastLocation: CLLocation?
+    private var speedReadings: [Double] = []
+    private var lastRecordTime: Date?
+    private let minimumRecordInterval: TimeInterval = 5
+    
+    func updateLocation(_ location: CLLocation) async -> LocationUpdate {
+        let currentTime = Date()
+        
+        // Calculate distance if we have a previous location
+        var distanceIncrement: Double = 0
+        if let lastLoc = lastLocation {
+            distanceIncrement = location.distance(from: lastLoc)
+            totalDistance += distanceIncrement
+        }
+        
+        // Update speed readings
+        speedReadings.append(location.speed >= 0 ? location.speed : 0)
+        if speedReadings.count > 20 { // Keep last 20 readings
+            speedReadings.removeFirst()
+        }
+        
+        // Calculate average speed
+        let validSpeeds = speedReadings.filter { $0 > 0 }
+        averageSpeed = validSpeeds.isEmpty ? 0 : validSpeeds.reduce(0, +) / Double(validSpeeds.count)
+        
+        // Record coordinate if enough time has passed
+        var shouldRecordCoordinate = false
+        if let lastTime = lastRecordTime {
+            shouldRecordCoordinate = currentTime.timeIntervalSince(lastTime) >= minimumRecordInterval
+        } else {
+            shouldRecordCoordinate = true
+        }
+        
+        if shouldRecordCoordinate {
+            routeCoordinates.append(location.coordinate)
+            lastRecordTime = currentTime
+        }
+        
+        lastLocation = location
+        
+        return LocationUpdate(
+            totalDistance: totalDistance,
+            averageSpeed: averageSpeed,
+            currentSpeed: location.speed >= 0 ? location.speed : 0,
+            routeCoordinates: routeCoordinates
+        )
+    }
+    
+    func resetTracking() async {
+        totalDistance = 0
+        averageSpeed = 0
+        routeCoordinates = []
+        lastLocation = nil
+        speedReadings = []
+        lastRecordTime = nil
+    }
+    
+    func getCurrentStats() async -> LocationStats {
+        return LocationStats(
+            totalDistance: totalDistance,
+            averageSpeed: averageSpeed,
+            routeCoordinates: routeCoordinates
+        )
+    }
+    
+    func getLastRecordTime() async -> Date? {
+        return lastRecordTime
+    }
+    
+    func getMinimumRecordInterval() async -> TimeInterval {
+        return minimumRecordInterval
+    }
+}
+
+// MARK: - Location Data Types
+struct LocationUpdate: Sendable {
+    let totalDistance: Double
+    let averageSpeed: Double
+    let currentSpeed: Double
+    let routeCoordinates: [CLLocationCoordinate2D]
+}
+
+struct LocationStats: Sendable {
+    let totalDistance: Double
+    let averageSpeed: Double
+    let routeCoordinates: [CLLocationCoordinate2D]
+}
+
+// MARK: - Location Manager (UI Interface)
+@MainActor
 @Observable
 class LocationManager: NSObject {
     // MARK: - Singleton
@@ -9,9 +104,10 @@ class LocationManager: NSObject {
     
     // MARK: - Properties
     private let locationManager = CLLocationManager()
+    private let tracker = LocationTracker()
     private var locationUpdateTimer: Timer?
     
-    // Published properties
+    // UI-bound properties
     var isAuthorized = false
     var isTracking = false
     var currentLocation: CLLocation?
@@ -21,12 +117,6 @@ class LocationManager: NSObject {
     var averageSpeed: Double = 0 // m/s
     var routeCoordinates: [CLLocationCoordinate2D] = []
     var locationAccuracy: LocationAccuracy = .good
-    
-    // Private tracking properties
-    private var lastLocation: CLLocation?
-    private var speedReadings: [Double] = []
-    private var lastRecordTime: Date?
-    private var minimumRecordInterval: TimeInterval = 5 // seconds
     
     // MARK: - Enums
     enum LocationAccuracy {
@@ -102,18 +192,17 @@ class LocationManager: NSObject {
             return
         }
         
-        resetTracking()
+        Task {
+            await resetTracking()
+        }
         isTracking = true
         
-        // Start location updates on background thread to avoid UI blocking
-        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+        // Start location updates on main actor
+        Task { @MainActor [weak self] in
             self?.locationManager.startUpdatingLocation()
         }
         
-        // Start timer for dynamic recording
-        locationUpdateTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
-            self?.updateRecordingInterval()
-        }
+        // Dynamic recording is now handled by the actor
         
         Logger.info("Started GPS tracking")
     }
@@ -121,8 +210,8 @@ class LocationManager: NSObject {
     func stopTracking() {
         isTracking = false
         
-        // Stop location updates on background thread
-        DispatchQueue.global(qos: .utility).async { [weak self] in
+        // Stop location updates on main actor
+        Task { @MainActor [weak self] in
             self?.locationManager.stopUpdatingLocation()
         }
         
@@ -133,7 +222,7 @@ class LocationManager: NSObject {
     }
     
     func pauseTracking() {
-        DispatchQueue.global(qos: .utility).async { [weak self] in
+        Task { @MainActor [weak self] in
             self?.locationManager.stopUpdatingLocation()
         }
         locationUpdateTimer?.invalidate()
@@ -142,24 +231,27 @@ class LocationManager: NSObject {
     func resumeTracking() {
         guard isAuthorized else { return }
         
-        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+        Task { @MainActor [weak self] in
             self?.locationManager.startUpdatingLocation()
         }
         
-        locationUpdateTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
-            self?.updateRecordingInterval()
+        // Timer for recording interval tracking
+        locationUpdateTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
+            // Update recording interval handled by the tracker actor
+            // No need for manual interval tracking here
         }
     }
     
-    func resetTracking() {
+    func resetTracking() async {
+        // Reset UI properties
         totalDistance = 0
         averageSpeed = 0
         currentSpeed = 0
         currentAltitude = 0
         routeCoordinates.removeAll()
-        speedReadings.removeAll()
-        lastLocation = nil
-        lastRecordTime = nil
+        
+        // Reset actor state
+        await tracker.resetTracking()
     }
     
     // MARK: - Route Data
@@ -189,47 +281,7 @@ class LocationManager: NSObject {
     }
     
     // MARK: - Private Methods
-    private func updateRecordingInterval() {
-        // Dynamic recording based on speed
-        let speedKmh = currentSpeed * 3.6
-        
-        if speedKmh < 1 {
-            // Stationary - don't record
-            minimumRecordInterval = 30
-        } else if speedKmh < 7 {
-            // Walking speed - every 10 seconds
-            minimumRecordInterval = 10
-        } else if speedKmh < 20 {
-            // Running speed - every 5 seconds
-            minimumRecordInterval = 5
-        } else {
-            // Cycling speed - every 3 seconds
-            minimumRecordInterval = 3
-        }
-    }
-    
-    private func shouldRecordLocation() -> Bool {
-        guard let lastTime = lastRecordTime else {
-            return true
-        }
-        
-        let timeSinceLastRecord = Date().timeIntervalSince(lastTime)
-        
-        // Record if enough time has passed or direction changed significantly
-        if timeSinceLastRecord >= minimumRecordInterval {
-            return true
-        }
-        
-        // Check for significant direction change
-        if let last = lastLocation, let current = currentLocation {
-            let bearing = calculateBearing(from: last.coordinate, to: current.coordinate)
-            if abs(bearing) > 30 {
-                return true
-            }
-        }
-        
-        return false
-    }
+    // Recording interval and location recording logic is now handled by the LocationTracker actor
     
     private func calculateBearing(from: CLLocationCoordinate2D, to: CLLocationCoordinate2D) -> Double {
         let lat1 = from.latitude * .pi / 180
@@ -269,14 +321,14 @@ class LocationManager: NSObject {
 
 // MARK: - CLLocationManagerDelegate
 extension LocationManager: CLLocationManagerDelegate {
-    func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
-        DispatchQueue.main.async { [weak self] in
-            switch manager.authorizationStatus {
+    nonisolated func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
+        Task { @MainActor in
+            switch self.locationManager.authorizationStatus {
             case .authorizedWhenInUse, .authorizedAlways:
-                self?.isAuthorized = true
+                self.isAuthorized = true
                 Logger.info("Location authorization granted")
             case .denied, .restricted:
-                self?.isAuthorized = false
+                self.isAuthorized = false
                 Logger.warning("Location authorization denied")
             case .notDetermined:
                 // Don't recursively call requestAuthorization from delegate
@@ -288,44 +340,32 @@ extension LocationManager: CLLocationManagerDelegate {
         }
     }
     
-    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+    nonisolated func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         guard let location = locations.last else { return }
         
-        currentLocation = location
-        currentSpeed = max(0, location.speed)
-        currentAltitude = location.altitude
-        
-        // Update accuracy
-        updateLocationAccuracy(location)
-        
-        // Calculate distance
-        if let lastLocation = lastLocation {
-            let distance = location.distance(from: lastLocation)
+        Task { @MainActor in
+            // Update UI properties
+            self.currentLocation = location
+            self.currentSpeed = max(0, location.speed)
+            self.currentAltitude = location.altitude
             
-            // Filter out GPS jitter
-            if distance > 1 && distance < 100 && location.horizontalAccuracy <= 20 {
-                totalDistance += distance
-            }
+            // Update accuracy
+            self.updateLocationAccuracy(location)
+            
+            // Process location data in background actor
+            let locationUpdate = await self.tracker.updateLocation(location)
+            
+            // Update UI with processed data
+            self.totalDistance = locationUpdate.totalDistance
+            self.averageSpeed = locationUpdate.averageSpeed
+            self.routeCoordinates = locationUpdate.routeCoordinates
         }
-        
-        // Update average speed
-        speedReadings.append(currentSpeed)
-        if speedReadings.count > 10 {
-            speedReadings.removeFirst()
-        }
-        averageSpeed = speedReadings.reduce(0, +) / Double(speedReadings.count)
-        
-        // Record route point if needed
-        if shouldRecordLocation() {
-            routeCoordinates.append(location.coordinate)
-            lastRecordTime = Date()
-        }
-        
-        lastLocation = location
     }
     
-    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+    nonisolated func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
         Logger.error("Location manager failed: \(error.localizedDescription)")
-        locationAccuracy = .noSignal
+        Task { @MainActor in
+            self.locationAccuracy = .noSignal
+        }
     }
 }

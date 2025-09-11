@@ -26,8 +26,10 @@ thrustr/
 │   │   ├── Exercise.swift     # Exercise database model
 │   │   ├── Food.swift         # Nutrition database model
 │   │   ├── Cardio/           # Cardio workout models
+│   │   │   └── EquipmentItem.swift # Equipment tracking
 │   │   ├── Lift/             # Strength training models
-│   │   └── WOD/              # CrossFit workout models
+│   │   ├── WOD/              # CrossFit workout models
+│   │   └── WorkoutSession.swift  # Unified workout sessions
 │   ├── Services/             # Business logic services
 │   │   ├── HealthKitService.swift    # Apple HealthKit integration
 │   │   ├── DataSeeder.swift          # Database initialization
@@ -130,6 +132,8 @@ protocol Theme {
 - `LoadingView`: Consistent loading indicators
 - `QuickStatCard`: Metric display cards
 - `HealthStatStrip`: Dashboard health metrics
+- `EditableRow`: Editable form components
+- `GuideSection`: Help and guidance sections
 
 ## 📊 Domain Models & Relationships
 
@@ -200,7 +204,7 @@ Multi-language Support
 ├── LocalizationKeys Enum
 ├── .localized String Extension
 ├── Fallback to System Language
-└── 6 Supported Languages (TR/EN/DE/ES/IT/FR)
+└── 9 Supported Languages (TR/EN/DE/ES/IT/FR/PT/ID/PL)
 ```
 
 ## ⚡ Performance Optimizations
@@ -249,7 +253,9 @@ Multi-language Support
 - **Database Operations**: SwiftData integration tests
 - **HealthKit Integration**: Authorization and data sync
 - **UI Navigation**: Navigation flow validation
-- **Multi-language**: Localization completeness
+- **Multi-language**: Localization completeness (9 languages)
+- **Equipment Integration**: Bluetooth device compatibility
+- **Watch Connectivity**: iPhone ↔ Watch data sync
 
 ## 🚀 Scalability Considerations
 

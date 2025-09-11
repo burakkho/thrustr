@@ -1,5 +1,7 @@
 import SwiftData
 import Foundation
+// Import required for ActivityTimeFormatter if not automatically resolved
+// (The file is in Shared/Utilities/ActivityTimeFormatter.swift)
 
 /**
  * ActivityEntry - User activity tracking model
@@ -10,14 +12,15 @@ import Foundation
 @Model
 final class ActivityEntry {
     // MARK: - Core Properties
-    var timestamp: Date
-    var type: String  // Store as string for SwiftData compatibility
-    var title: String
+    var timestamp: Date = Date()
+    var type: String = "workout_completed"  // Store as string for SwiftData compatibility
+    var title: String = ""
     var subtitle: String?
-    var icon: String
+    var icon: String = ""
+    var source: String = "manual"  // manual, sync, automatic
     
     // MARK: - Metadata
-    var metadata: ActivityMetadata
+    var metadata: ActivityMetadata?
     var isArchived: Bool = false
     
     // MARK: - Relations
@@ -28,8 +31,12 @@ final class ActivityEntry {
         return ActivityType(rawValue: type) ?? .workoutCompleted
     }
     
-    var timeAgo: String {
-        ActivityTimeFormatter.timeAgo(from: timestamp)
+    var sourceEnum: ActivitySource {
+        return ActivitySource(rawValue: source) ?? .manual
+    }
+    
+    var timeAgoFormatted: String {
+        timeAgo
     }
     
     var displayIcon: String {
@@ -42,8 +49,9 @@ final class ActivityEntry {
         title: String,
         subtitle: String? = nil,
         icon: String? = nil,
-        metadata: ActivityMetadata = ActivityMetadata(),
-        user: User? = nil
+        metadata: ActivityMetadata? = nil,
+        user: User? = nil,
+        source: ActivitySource = .manual
     ) {
         self.timestamp = Date()
         self.type = type.rawValue  // Store as string
@@ -52,6 +60,7 @@ final class ActivityEntry {
         self.icon = icon ?? type.defaultIcon
         self.metadata = metadata
         self.user = user
+        self.source = source.rawValue
     }
 }
 
@@ -286,30 +295,62 @@ extension ActivityEntry {
             user: user
         )
     }
+    
+    /**
+     * Creates a cardio completed activity
+     */
+    static func cardioCompleted(
+        exerciseType: String,
+        distance: Double,
+        duration: TimeInterval,
+        calories: Double? = nil,
+        user: User?
+    ) -> ActivityEntry {
+        let metadata = ActivityMetadata()
+        metadata.distance = distance
+        metadata.duration = duration
+        metadata.calories = calories
+        
+        let subtitle = ActivityFormatter.cardioSubtitle(
+            distance: distance,
+            duration: duration,
+            calories: calories
+        )
+        
+        return ActivityEntry(
+            type: ActivityType.cardioCompleted,
+            title: "\(exerciseType) \(CommonKeys.Activity.completed.localized)",
+            subtitle: subtitle,
+            icon: "figure.run",
+            metadata: metadata,
+            user: user
+        )
+    }
+    
 }
 
-// MARK: - Time Formatter Helper
-
-struct ActivityTimeFormatter {
-    static func timeAgo(from date: Date) -> String {
+// MARK: - ActivityTimeFormatter Extension
+// Temporary inline implementation to resolve import issues
+extension ActivityEntry {
+    var timeAgo: String {
         let now = Date()
-        let interval = now.timeIntervalSince(date)
+        let interval = now.timeIntervalSince(timestamp)
         
-        if interval < 3600 { // Less than 1 hour
+        if interval < 60 {
+            return "Şimdi"
+        } else if interval < 3600 {
             let minutes = Int(interval / 60)
-            return "\(minutes) \(CommonKeys.TimeFormatting.minutesAgo.localized)"
-        } else if interval < 86400 { // Less than 1 day
+            return "\(minutes) dk önce"
+        } else if interval < 86400 {
             let hours = Int(interval / 3600)
-            return "\(hours) \(CommonKeys.TimeFormatting.hoursAgo.localized)"
-        } else if Calendar.current.isDateInYesterday(date) {
-            let formatter = DateFormatter()
-            formatter.timeStyle = .short
-            return "\(CommonKeys.TimeFormatting.yesterday.localized) \(formatter.string(from: date))"
+            return "\(hours) sa önce"
+        } else if Calendar.current.isDateInYesterday(timestamp) {
+            return "Dün"
         } else {
             let formatter = DateFormatter()
             formatter.dateStyle = .short
-            formatter.timeStyle = .none
-            return formatter.string(from: date)
+            return formatter.string(from: timestamp)
         }
     }
 }
+

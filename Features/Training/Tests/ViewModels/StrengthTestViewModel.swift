@@ -9,24 +9,24 @@ import Combine
  * while providing reactive UI state management.
  */
 @MainActor
-final class StrengthTestViewModel: ObservableObject {
+@Observable
+final class StrengthTestViewModel {
     
-    // MARK: - Published Properties
+    // MARK: - Observable Properties
     
-    @Published var currentTest: StrengthTest?
-    @Published var testInputs: [StrengthExerciseType: TestInput] = [:]
-    @Published var isTestInProgress: Bool = false
-    @Published var isTestCompleted: Bool = false
-    @Published var showingInstructions: StrengthExerciseType?
-    @Published var showingResults: Bool = false
-    @Published var errorMessage: String?
-    @Published var isLoading: Bool = false
+    var currentTest: StrengthTest?
+    var testInputs: [StrengthExerciseType: TestInput] = [:]
+    var isTestInProgress: Bool = false
+    var isTestCompleted: Bool = false
+    var showingInstructions: StrengthExerciseType?
+    var showingResults: Bool = false
+    var errorMessage: String?
+    var isLoading: Bool = false
     
     // MARK: - Dependencies
     
     private let modelContext: ModelContext
     private let scoringService = TestScoringService.shared
-    private var cancellables = Set<AnyCancellable>()
     
     // MARK: - Initialization
     
@@ -140,7 +140,7 @@ final class StrengthTestViewModel: ObservableObject {
         showingResults = true
         
         // Calculate final metrics
-        let (overallScore, strengthProfile) = scoringService.calculateOverallScore(from: currentTest.results)
+        let (overallScore, strengthProfile) = scoringService.calculateOverallScore(from: currentTest.results ?? [])
         currentTest.overallScore = overallScore
         currentTest.strengthProfile = strengthProfile
         currentTest.testDuration = Date().timeIntervalSince(currentTest.testDate)
@@ -274,12 +274,9 @@ final class StrengthTestViewModel: ObservableObject {
     }
     
     private func setupInputValidation() {
-        // Observe input changes for real-time validation
-        $testInputs
-            .sink { [weak self] inputs in
-                self?.validateAllInputs()
-            }
-            .store(in: &cancellables)
+        // Real-time validation will be handled through @Observable property observation
+        // No need for Combine publishers with @Observable pattern
+        validateAllInputs()
     }
     
     private func validateAllInputs() {
@@ -335,13 +332,14 @@ final class StrengthTestViewModel: ObservableObject {
 /**
  * Input state for individual exercises within the test.
  */
-class TestInput: ObservableObject {
-    @Published var value: Double = 0.0
-    @Published var isWeighted: Bool = false
-    @Published var additionalWeight: Double = 0.0
-    @Published var isCompleted: Bool = false
-    @Published var isValid: Bool = true
-    @Published var errorMessage: String?
+@Observable
+class TestInput {
+    var value: Double = 0.0
+    var isWeighted: Bool = false
+    var additionalWeight: Double = 0.0
+    var isCompleted: Bool = false
+    var isValid: Bool = true
+    var errorMessage: String?
     
     var previousBest: Double?
     

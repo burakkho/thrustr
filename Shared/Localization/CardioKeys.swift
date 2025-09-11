@@ -2,6 +2,11 @@ import Foundation
 
 /// Cardio-specific localization keys
 enum CardioKeys {
+    // MARK: - Common
+    enum Common {
+        static let cardioWorkout = "training.cardio.title"
+        static let cardio = "training.cardio.name"
+    }
     // MARK: - Time Periods
     enum TimePeriods {
         static let thisWeek = "cardio.time_periods.this_week"
@@ -130,5 +135,10 @@ enum CardioKeys {
         // Share text components
         static let shareWorkoutCompleted = "cardio.session.share_workout_completed"
         static let shareDurationPrefix = "cardio.session.share_duration_prefix"
+        
+        // Achievement notifications
+        static let achievementTitle = "cardio.session.achievement_title"
+        static let achievementBody = "cardio.session.achievement_body"
+        static let achievementInApp = "cardio.session.achievement_in_app"
     }
 }

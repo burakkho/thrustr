@@ -65,7 +65,7 @@ struct ExerciseSelectionView: View {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: theme.spacing.s) {
                         FilterChip(
-                            title: "All",
+                            title: TrainingKeys.Exercise.all.localized,
                             isSelected: selectedCategory == nil,
                             action: { selectedCategory = nil }
                         )
@@ -91,11 +91,11 @@ struct ExerciseSelectionView: View {
                             .font(.system(size: 50))
                             .foregroundColor(theme.colors.textSecondary)
                         
-                        Text("No exercises found")
+                        Text(TrainingKeys.EmptyStatesNew.noExercisesFound.localized)
                             .font(theme.typography.headline)
                             .foregroundColor(theme.colors.textSecondary)
                         
-                        Text("Try adjusting your filters")
+                        Text(TrainingKeys.EmptyStatesNew.tryAdjustingFilters.localized)
                             .font(theme.typography.caption)
                             .foregroundColor(theme.colors.textSecondary)
                     }

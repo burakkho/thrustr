@@ -22,7 +22,7 @@ struct WODQRData: Codable {
         self.t = wod.type
         self.r = wod.repScheme.isEmpty ? nil : wod.repScheme
         self.tc = wod.timeCap
-        self.m = wod.movements.map { movement in
+        self.m = (wod.movements ?? []).map { movement in
             var rxWeight: String? = nil
             if let male = movement.rxWeightMale, let female = movement.rxWeightFemale {
                 rxWeight = "\(male)/\(female)"
@@ -57,7 +57,8 @@ struct WODQRData: Codable {
                 reps: movement.rp,
                 orderIndex: index
             )
-            wod.movements.append(wodMovement)
+            if wod.movements == nil { wod.movements = [] }
+            wod.movements!.append(wodMovement)
         }
         
         return wod

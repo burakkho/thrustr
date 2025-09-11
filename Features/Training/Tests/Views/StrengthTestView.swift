@@ -11,7 +11,7 @@ struct StrengthTestView: View {
     // MARK: - Properties
     let user: User
     
-    @StateObject private var viewModel: StrengthTestViewModel
+    @State private var viewModel: StrengthTestViewModel
     @Environment(\.dismiss) private var dismiss
     @Environment(\.theme) private var theme
     
@@ -35,7 +35,7 @@ struct StrengthTestView: View {
     
     init(user: User, modelContext: ModelContext) {
         self.user = user
-        self._viewModel = StateObject(wrappedValue: StrengthTestViewModel(modelContext: modelContext))
+        self._viewModel = State(wrappedValue: StrengthTestViewModel(modelContext: modelContext))
     }
     
     
@@ -411,7 +411,7 @@ struct StrengthTestView: View {
             let levelName = averageStrengthLevel.name
             
             ActivityLoggerService.shared.logStrengthTestCompleted(
-                exerciseCount: currentTest.results.count,
+                exerciseCount: currentTest.results?.count ?? 0,
                 averageStrengthLevel: levelName,
                 totalScore: currentTest.overallScore,
                 user: user

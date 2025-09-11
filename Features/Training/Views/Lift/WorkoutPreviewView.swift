@@ -8,7 +8,7 @@ struct WorkoutPreviewView: View {
     @Environment(\.theme) private var theme
     @Environment(\.modelContext) private var modelContext
     @Environment(TrainingCoordinator.self) private var coordinator
-    @EnvironmentObject private var unitSettings: UnitSettings
+    @Environment(UnitSettings.self) var unitSettings
     
     let workout: LiftWorkout
     let programExecution: ProgramExecution?
@@ -82,7 +82,7 @@ struct WorkoutPreviewView: View {
                 statItem(
                     icon: "list.bullet",
                     title: "Exercises",
-                    value: "\(workout.exercises.count)"
+                    value: "\((workout.exercises ?? []).count)"
                 )
                 
                 Divider()
@@ -147,12 +147,12 @@ struct WorkoutPreviewView: View {
             
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
-                    Text(execution.program.localizedName)
+                    Text(execution.program?.localizedName ?? "Unknown Program")
                         .font(theme.typography.body)
                         .fontWeight(.medium)
                         .foregroundColor(theme.colors.textPrimary)
                     
-                    Text("Week \(execution.currentWeek) of \(execution.program.weeks) • Workout \(execution.completedWorkouts.count + 1)")
+                    Text("Week \(execution.currentWeek) of \(execution.program?.weeks ?? 0) • Workout \((execution.completedWorkouts ?? []).count + 1)")
                         .font(theme.typography.caption)
                         .foregroundColor(theme.colors.textSecondary)
                 }
@@ -191,13 +191,13 @@ struct WorkoutPreviewView: View {
                 
                 Spacer()
                 
-                Text("\(workout.exercises.count) exercises")
+                Text("\((workout.exercises ?? []).count) exercises")
                     .font(theme.typography.caption)
                     .foregroundColor(theme.colors.textSecondary)
             }
             
             VStack(spacing: theme.spacing.s) {
-                ForEach(Array(workout.exercises.enumerated()), id: \.element.id) { index, exercise in
+                ForEach(Array((workout.exercises ?? []).enumerated()), id: \.element.id) { index, exercise in
                     ExercisePreviewCard(
                         exercise: exercise,
                         index: index + 1
@@ -276,7 +276,7 @@ struct WorkoutPreviewView: View {
                     Image(systemName: "play.circle.fill")
                         .font(.title2)
                     
-                    Text("BEGIN WORKOUT")
+                    Text(TrainingKeys.WorkoutPreview.beginWorkout.localized)
                         .font(theme.typography.headline)
                         .fontWeight(.bold)
                 }
@@ -294,7 +294,7 @@ struct WorkoutPreviewView: View {
                     HStack(spacing: theme.spacing.s) {
                         Image(systemName: "clock.arrow.circlepath")
                             .font(.body)
-                        Text("View Previous Sessions")
+                        Text(TrainingKeys.WorkoutPreview.viewPreviousSessions.localized)
                             .font(theme.typography.body)
                     }
                     .foregroundColor(theme.colors.accent)
@@ -307,7 +307,7 @@ struct WorkoutPreviewView: View {
     
     // MARK: - Computed Properties
     private var totalSets: Int {
-        workout.exercises.reduce(0) { $0 + $1.targetSets }
+        (workout.exercises ?? []).reduce(0) { $0 + $1.targetSets }
     }
     
     private var hasPreviousSessions: Bool {
@@ -430,7 +430,7 @@ struct WorkoutPreviewView: View {
 // MARK: - Exercise Preview Card
 struct ExercisePreviewCard: View {
     @Environment(\.theme) private var theme
-    @EnvironmentObject private var unitSettings: UnitSettings
+    @Environment(UnitSettings.self) var unitSettings
     
     let exercise: LiftExercise
     let index: Int

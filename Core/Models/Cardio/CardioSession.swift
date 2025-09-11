@@ -4,10 +4,10 @@ import SwiftData
 // MARK: - Cardio Session Model (Actual Performed Workouts)
 @Model
 final class CardioSession {
-    var id: UUID
-    var startDate: Date
-    var completedAt: Date?
-    var isCompleted: Bool
+    var id: UUID = UUID()
+    var startDate: Date = Date()
+    var completedAt: Date? = nil
+    var isCompleted: Bool = false
     
     // Session Overview
     var sessionNotes: String?
@@ -16,11 +16,11 @@ final class CardioSession {
     var perceivedEffort: Int? // 1-10 RPE scale
     
     // Session Totals (calculated)
-    var totalDuration: Int // seconds
-    var totalDistance: Double // meters
-    var totalCaloriesBurned: Int?
-    var averageHeartRate: Int?
-    var maxHeartRate: Int?
+    var totalDuration: Int = 0 // seconds
+    var totalDistance: Double = 0.0 // meters - internal metric storage
+    var totalCaloriesBurned: Int? = nil
+    var averageHeartRate: Int? = nil
+    var maxHeartRate: Int? = nil
     
     // GPS and Route Data (optional)
     var routeData: Data? // serialized GPS coordinates
@@ -28,18 +28,23 @@ final class CardioSession {
     var averageSpeed: Double? // km/h
     
     // Personal Records
-    var personalRecordsHit: [String] // Types of PRs achieved in this session
+    var personalRecordsHit: [String] = [] // Types of PRs achieved in this session
+    
+    // Edit Tracking Flags
+    var isDurationManuallyEdited: Bool = false
+    var isDistanceManuallyEdited: Bool = false
+    var isCaloriesManuallyEdited: Bool = false
     
     // Template Reference
-    var originalWorkout: CardioWorkout?
-    var wasFromTemplate: Bool
+    var originalWorkout: CardioWorkout? = nil
+    var wasFromTemplate: Bool = false
     
     // Timestamps
-    var createdAt: Date
+    var createdAt: Date = Date()
     
     // Relationships
     var user: User?
-    var results: [CardioResult]
+    @Relationship(deleteRule: .cascade, inverse: \CardioResult.session) var results: [CardioResult]?
     
     init(
         workout: CardioWorkout? = nil,
@@ -67,6 +72,10 @@ final class CardioSession {
         self.averageSpeed = nil
         
         self.personalRecordsHit = []
+        
+        self.isDurationManuallyEdited = false
+        self.isDistanceManuallyEdited = false
+        self.isCaloriesManuallyEdited = false
         
         self.originalWorkout = workout
         self.wasFromTemplate = wasFromTemplate
@@ -96,6 +105,7 @@ extension CardioSession {
         return UnitsFormatter.formatDistance(meters: totalDistance, system: unitSystem)
     }
     
+    @MainActor
     var formattedDistance: String {
         return UnitsFormatter.formatDistance(meters: totalDistance, system: UnitSettings.shared.unitSystem)
     }
@@ -106,6 +116,7 @@ extension CardioSession {
         return UnitsFormatter.formatPace(minPerKm: paceMinPerKm, system: unitSystem)
     }
     
+    @MainActor
     var formattedAveragePace: String? {
         guard totalDistance > 0 && totalDuration > 0 else { return nil }
         let paceMinPerKm = Double(totalDuration) / 60.0 / (totalDistance / 1000.0)
@@ -145,6 +156,7 @@ extension CardioSession {
         return UnitsFormatter.formatSpeed(kmh: speed, system: unitSystem)
     }
     
+    @MainActor
     var formattedSpeed: String? {
         guard let speed = averageSpeed else { return nil }
         return UnitsFormatter.formatSpeed(kmh: speed, system: UnitSettings.shared.unitSystem)
@@ -153,10 +165,10 @@ extension CardioSession {
     var completionPercentage: Double {
         guard let workout = originalWorkout else { return 0.0 }
         
-        let totalExpectedExercises = workout.exercises.count
+        let totalExpectedExercises = workout.exercises?.count ?? 0
         guard totalExpectedExercises > 0 else { return 0.0 }
         
-        let completedExercises = results.filter { $0.isCompleted }.count
+        let completedExercises = results?.filter { $0.isCompleted }.count ?? 0
         return Double(completedExercises) / Double(totalExpectedExercises)
     }
 }
@@ -165,18 +177,24 @@ extension CardioSession {
 extension CardioSession {
     private func initializeResultsFromTemplate(_ workout: CardioWorkout) {
         // Create a result for each exercise in the template
-        for exercise in workout.exercises {
+        if results == nil {
+            results = []
+        }
+        for exercise in workout.exercises ?? [] {
             let result = CardioResult(
                 exercise: exercise,
                 session: self
             )
-            results.append(result)
+            results?.append(result)
         }
     }
     
     func addResult(_ result: CardioResult) {
         result.session = self
-        results.append(result)
+        if results == nil {
+            results = []
+        }
+        results?.append(result)
     }
     
     func startSession() {
@@ -213,20 +231,28 @@ extension CardioSession {
     
     func calculateTotals() {
         // Calculate from completed results
-        let completedResults = results.filter { $0.isCompleted }
+        let completedResults = results?.filter { $0.isCompleted } ?? []
         
-        totalDuration = completedResults.reduce(0) { total, result in
-            total + (result.completionTime ?? 0)
+        // Only update duration if not manually edited
+        if !isDurationManuallyEdited {
+            totalDuration = completedResults.reduce(0) { total, result in
+                total + (result.completionTime ?? 0)
+            }
         }
         
-        totalDistance = completedResults.reduce(0.0) { total, result in
-            total + (result.distanceCovered ?? 0.0)
+        // Only update distance if not manually edited
+        if !isDistanceManuallyEdited {
+            totalDistance = completedResults.reduce(0.0) { total, result in
+                total + (result.distanceCovered ?? 0.0)
+            }
         }
         
-        // Calculate estimated calories
-        totalCaloriesBurned = estimateCalories()
+        // Only update calories if not manually edited
+        if !isCaloriesManuallyEdited {
+            totalCaloriesBurned = estimateCalories()
+        }
         
-        // Calculate average speed
+        // Calculate average speed (always recalculate based on current duration/distance)
         if totalDistance > 0 && totalDuration > 0 {
             averageSpeed = (totalDistance / 1000.0) / (Double(totalDuration) / 3600.0) // km/h
         }
@@ -275,11 +301,37 @@ extension CardioSession {
         perceivedEffort = max(1, min(10, effort)) // Clamp between 1-10
     }
     
+    // Manual edit methods
+    func updateDurationManually(_ newDuration: Int) {
+        totalDuration = newDuration
+        isDurationManuallyEdited = true
+        
+        // Recalculate dependent metrics
+        if totalDistance > 0 && totalDuration > 0 {
+            averageSpeed = (totalDistance / 1000.0) / (Double(totalDuration) / 3600.0)
+        }
+    }
+    
+    func updateDistanceManually(_ newDistance: Double) {
+        totalDistance = newDistance
+        isDistanceManuallyEdited = true
+        
+        // Recalculate dependent metrics
+        if totalDistance > 0 && totalDuration > 0 {
+            averageSpeed = (totalDistance / 1000.0) / (Double(totalDuration) / 3600.0)
+        }
+    }
+    
+    func updateCaloriesManually(_ newCalories: Int?) {
+        totalCaloriesBurned = newCalories
+        isCaloriesManuallyEdited = true
+    }
+    
     // Check if this session beat any personal records
     func checkForPersonalRecords() {
         personalRecordsHit.removeAll()
         
-        for result in results.filter({ $0.isCompleted }) {
+        for result in results?.filter({ $0.isCompleted }) ?? [] {
             result.checkForPersonalRecord()
             
             // Collect PR types achieved

@@ -3,7 +3,7 @@ import SwiftData
 
 struct CardioAnalyticsCard: View {
     @Environment(\.theme) private var theme
-    @EnvironmentObject private var unitSettings: UnitSettings
+    @Environment(UnitSettings.self) var unitSettings
     
     let sessions: [CardioSession]
     let currentUser: User?
@@ -106,5 +106,5 @@ struct CardioAnalyticsCard: View {
     let session1 = CardioSession()
     
     CardioAnalyticsCard(sessions: [session1], currentUser: User(name: "Test"))
-        .environmentObject(UnitSettings.shared)
+        .environment(UnitSettings.shared)
 }

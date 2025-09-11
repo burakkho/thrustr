@@ -9,7 +9,7 @@ struct CustomFoodEntryView: View {
     
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
-    @EnvironmentObject private var unitSettings: UnitSettings
+    @Environment(UnitSettings.self) var unitSettings
     
     @State private var foodName = ""
     @State private var brand = ""

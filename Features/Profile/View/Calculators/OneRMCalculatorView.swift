@@ -2,7 +2,7 @@ import SwiftUI
 import Foundation
 
 struct OneRMCalculatorView: View {
-    @EnvironmentObject private var unitSettings: UnitSettings
+    @Environment(UnitSettings.self) var unitSettings
     @State private var weight = ""
     @State private var reps = ""
     @State private var selectedFormula: RMFormula = .brzycki

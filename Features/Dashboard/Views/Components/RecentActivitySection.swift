@@ -10,10 +10,10 @@ import SwiftData
 struct RecentActivitySection: View {
     @Environment(\.theme) private var theme
     @Environment(\.modelContext) private var modelContext
-    @EnvironmentObject private var tabRouter: TabRouter
+    @Environment(TabRouter.self) var tabRouter
     
-    @ObservedObject var viewModel: DashboardViewModel
-    @StateObject private var activityLogger = ActivityLoggerService.shared
+    var viewModel: DashboardViewModel
+    @State private var activityLogger = ActivityLoggerService.shared
     
     @State private var groupedActivities: [(String, [ActivityEntry])] = []
     @State private var isLoading = false
@@ -38,9 +38,9 @@ struct RecentActivitySection: View {
             loadActivities()
         }
         .onReceive(NotificationCenter.default.publisher(for: .activityLogged)) { _ in
-            // Throttle refresh to prevent spam
+            // Enhanced throttle refresh to prevent spam (increased from 1s to 3s)
             let now = Date()
-            if now.timeIntervalSince(lastRefreshTime) > 1.0 {
+            if now.timeIntervalSince(lastRefreshTime) > 3.0 {
                 lastRefreshTime = now
                 loadActivities()
             }
@@ -244,7 +244,7 @@ private struct AllActivitiesView: View {
     @Environment(\.theme) private var theme
     @Environment(\.modelContext) private var modelContext
     
-    @StateObject private var activityLogger = ActivityLoggerService.shared
+    @State private var activityLogger = ActivityLoggerService.shared
     @State private var activities: [ActivityEntry] = []
     @State private var filteredActivities: [ActivityEntry] = []
     @State private var selectedFilter: ActivityFilter = .all
@@ -574,7 +574,7 @@ extension Notification.Name {
     
     return RecentActivitySection(viewModel: viewModel)
         .modelContainer(container)
-        .environmentObject(TabRouter())
+        .environment(TabRouter())
         .padding()
 }
 

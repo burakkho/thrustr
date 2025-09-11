@@ -1,34 +1,6 @@
 import SwiftUI
 import SwiftData
 
-// MARK: - WorkoutSession Protocol (shared from TrainingDashboardView)
-protocol WorkoutSession {
-    var workoutName: String { get }
-    var startDate: Date { get }
-    var completedAt: Date? { get }
-    var sessionDuration: TimeInterval { get }
-    var isCompleted: Bool { get }
-}
-
-extension LiftSession: WorkoutSession {
-    var workoutName: String {
-        workout.name
-    }
-    
-    var completedAt: Date? {
-        endDate
-    }
-    
-    var sessionDuration: TimeInterval {
-        self.duration
-    }
-}
-
-extension CardioSession: WorkoutSession {
-    var sessionDuration: TimeInterval {
-        TimeInterval(self.duration)
-    }
-}
 
 struct WorkoutHistoryView: View {
     @Environment(\.theme) private var theme
@@ -37,7 +9,7 @@ struct WorkoutHistoryView: View {
     
     @Query(sort: \LiftSession.startDate, order: .reverse) private var liftSessions: [LiftSession]
     @Query(sort: \CardioSession.startDate, order: .reverse) private var cardioSessions: [CardioSession]
-    @Query(sort: \WODResult.date, order: .reverse) private var wodResults: [WODResult]
+    @Query(sort: \WODResult.completedAt, order: .reverse) private var wodResults: [WODResult]
     
     @State private var selectedFilter: WorkoutFilter = .all
     @State private var searchText = ""
@@ -122,7 +94,7 @@ struct WorkoutHistoryView: View {
                 .textFieldStyle(PlainTextFieldStyle())
         }
         .padding(theme.spacing.s)
-        .background(theme.colors.surfaceSecondary)
+        .background(theme.colors.surfaceElevated)
         .cornerRadius(theme.radius.s)
         .padding(.horizontal)
         .padding(.bottom, theme.spacing.s)
@@ -131,9 +103,18 @@ struct WorkoutHistoryView: View {
     private var sessionsList: some View {
         ScrollView {
             LazyVStack(spacing: theme.spacing.s) {
-                ForEach(Array(filteredSessions.enumerated()), id: \.offset) { index, session in
-                    WorkoutHistoryRow(session: session)
-                        .padding(.horizontal)
+                ForEach(filteredSessions, id: \.id) { session in
+                    WorkoutHistoryRow(
+                        session: session,
+                        onEdit: {
+                            // Session editing functionality placeholder
+                            print("Edit session: \(session.workoutName)")
+                        },
+                        onDelete: {
+                            deleteSession(session)
+                        }
+                    )
+                    .padding(.horizontal)
                 }
             }
             .padding(.vertical, theme.spacing.s)
@@ -143,12 +124,33 @@ struct WorkoutHistoryView: View {
     private var emptyStateView: some View {
         EmptyStateView(
             systemImage: "clock.arrow.circlepath",
-            title: "No Workout History",
-            message: "Complete your first workout to see your training history here.",
+            title: TrainingKeys.EmptyStatesNew.noWorkoutHistory.localized,
+            message: TrainingKeys.EmptyStatesNew.noWorkoutHistoryMessage.localized,
             primaryTitle: "Start Training",
             primaryAction: { dismiss() }
         )
         .padding(.top, theme.spacing.xxl)
+    }
+    
+    // MARK: - Actions
+    private func deleteSession(_ session: any WorkoutSession) {
+        do {
+            // Delete based on session type
+            if let liftSession = session as? LiftSession {
+                modelContext.delete(liftSession)
+            } else if let cardioSession = session as? CardioSession {
+                modelContext.delete(cardioSession)
+            } else {
+                // Handle other session types if needed
+                Logger.warning("Unknown session type for deletion")
+            }
+            
+            try modelContext.save()
+            Logger.success("Workout session deleted successfully")
+            
+        } catch {
+            Logger.error("Failed to delete workout session: \(error)")
+        }
     }
 }
 
@@ -167,70 +169,61 @@ enum WorkoutFilter: CaseIterable {
     }
 }
 
-struct FilterChip: View {
-    @Environment(\.theme) private var theme
-    let title: String
-    let isSelected: Bool
-    let action: () -> Void
-    
-    var body: some View {
-        Button(action: action) {
-            Text(title)
-                .font(theme.typography.caption)
-                .fontWeight(.medium)
-                .foregroundColor(isSelected ? .white : theme.colors.textSecondary)
-                .padding(.horizontal, theme.spacing.m)
-                .padding(.vertical, theme.spacing.s)
-                .background(
-                    isSelected ? theme.colors.accent : theme.colors.surfaceSecondary
-                )
-                .cornerRadius(theme.radius.s)
-        }
-        .buttonStyle(PlainButtonStyle())
-    }
-}
 
 struct WorkoutHistoryRow: View {
     @Environment(\.theme) private var theme
     let session: any WorkoutSession
+    let onEdit: (() -> Void)?
+    let onDelete: () -> Void
+    
+    init(session: any WorkoutSession, onEdit: (() -> Void)? = nil, onDelete: @escaping () -> Void) {
+        self.session = session
+        self.onEdit = onEdit
+        self.onDelete = onDelete
+    }
     
     var body: some View {
-        HStack(spacing: theme.spacing.m) {
-            // Workout type icon
-            Image(systemName: workoutTypeIcon)
-                .font(.title3)
-                .foregroundColor(workoutTypeColor)
-                .frame(width: 32, height: 32)
-                .background(workoutTypeColor.opacity(0.1))
-                .cornerRadius(theme.radius.s)
-            
-            VStack(alignment: .leading, spacing: 4) {
-                Text(session.workoutName)
-                    .font(theme.typography.body)
-                    .fontWeight(.semibold)
-                    .foregroundColor(theme.colors.textPrimary)
-                
-                Text(formatDate(session.completedAt ?? session.startDate))
-                    .font(theme.typography.caption)
-                    .foregroundColor(theme.colors.textSecondary)
-            }
-            
-            Spacer()
-            
-            VStack(alignment: .trailing, spacing: 4) {
-                Text(formatDuration(session.sessionDuration))
-                    .font(theme.typography.caption)
-                    .fontWeight(.medium)
-                    .foregroundColor(theme.colors.textPrimary)
-                
-                Text(workoutTypeLabel)
-                    .font(theme.typography.caption2)
-                    .foregroundColor(theme.colors.textSecondary)
-            }
-        }
-        .padding(theme.spacing.m)
-        .background(theme.colors.cardBackground)
-        .cornerRadius(theme.radius.m)
+        EditableRow(
+            content: {
+                HStack(spacing: theme.spacing.m) {
+                    // Workout type icon
+                    Image(systemName: workoutTypeIcon)
+                        .font(.title3)
+                        .foregroundColor(workoutTypeColor)
+                        .frame(width: 32, height: 32)
+                        .background(workoutTypeColor.opacity(0.1))
+                        .cornerRadius(theme.radius.s)
+                    
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(session.workoutName)
+                            .font(theme.typography.body)
+                            .fontWeight(.semibold)
+                            .foregroundColor(theme.colors.textPrimary)
+                        
+                        Text(formatDate(session.completedAt ?? session.startDate))
+                            .font(theme.typography.caption)
+                            .foregroundColor(theme.colors.textSecondary)
+                    }
+                    
+                    Spacer()
+                    
+                    VStack(alignment: .trailing, spacing: 4) {
+                        Text(formatDuration(session.sessionDuration))
+                            .font(theme.typography.caption)
+                            .fontWeight(.medium)
+                            .foregroundColor(theme.colors.textPrimary)
+                        
+                        Text(workoutTypeLabel)
+                            .font(theme.typography.caption2)
+                            .foregroundColor(theme.colors.textSecondary)
+                    }
+                }
+            },
+            onRemove: onDelete,
+            onEdit: onEdit,
+            deleteTitle: "Delete Workout",
+            deleteMessage: "Are you sure you want to delete this workout session? This action cannot be undone."
+        )
         .shadow(color: theme.shadows.card.opacity(0.05), radius: 2)
     }
     

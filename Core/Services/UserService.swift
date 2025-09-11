@@ -3,11 +3,12 @@ import SwiftData
 import HealthKit
 
 @MainActor
-class UserService: ObservableObject {
-    // MARK: - Published Properties
-    @Published var isLoading = false
-    @Published var error: Error?
-    @Published var validationErrors: [ValidationError] = []
+@Observable
+class UserService {
+    // MARK: - Properties
+    var isLoading = false
+    var error: Error?
+    var validationErrors: [ValidationError] = []
     
     // MARK: - Dependencies
     private var modelContext: ModelContext?
@@ -78,8 +79,14 @@ class UserService: ObservableObject {
         self.modelContext = context
     }
 
-    // HealthKitService'i lazy property yapalım
-    private lazy var healthKitService = HealthKitService()
+    // HealthKitService - On-demand initialization for Swift 6 @Observable compatibility
+    private var _healthKitService: HealthKitService?
+    private var healthKitService: HealthKitService {
+        if _healthKitService == nil {
+            _healthKitService = HealthKitService()
+        }
+        return _healthKitService!
+    }
     
     // MARK: - User Profile Management
     func updateUserProfile(

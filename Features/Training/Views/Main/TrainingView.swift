@@ -4,9 +4,9 @@ import SwiftData
 // MARK: - Main Training View
 struct TrainingView: View {
     @Environment(\.modelContext) private var modelContext
-    @EnvironmentObject private var tabRouter: TabRouter
+    @Environment(TabRouter.self) private var tabRouter
     @State private var coordinator = TrainingCoordinator()
-    @StateObject private var errorHandler = ErrorHandlingService.shared
+    @State private var errorHandler = ErrorHandlingService.shared
     @Query private var programs: [LiftProgram]
     @Query private var users: [User]
     
@@ -72,7 +72,7 @@ struct TrainingView: View {
                         primaryAction: { coordinator.navigationPath.removeLast() }
                     )
                 case "analytics_detail":
-                    TrainingAnalyticsView(modelContext: modelContext)
+                    TrainingAnalyticsView()
                         .environment(coordinator)
                 case "strength_test":
                     TestsMainView()
@@ -80,10 +80,10 @@ struct TrainingView: View {
                 case "goal_settings":
                     Group {
                         if let currentUser = users.first {
-                            GoalSettingsView(user: currentUser)
-                                .onAppear {
-                                    print("📱 Goal settings opened with user: \(currentUser.name)")
-                                }
+                            TrainingGoalsView(user: currentUser)
+                            .onAppear {
+                                print("📱 Goal settings opened with user: \(currentUser.name)")
+                            }
                         } else {
                             EmptyStateView(
                                 systemImage: "person.circle",
@@ -113,7 +113,7 @@ struct TrainingView: View {
 // MARK: - Preview
 #Preview {
     TrainingView()
-        .environmentObject(TabRouter())
+        .environment(TabRouter())
         .modelContainer(for: [
             LiftProgram.self,
             LiftWorkout.self,

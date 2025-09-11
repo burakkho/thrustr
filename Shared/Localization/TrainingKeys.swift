@@ -556,6 +556,8 @@ enum TrainingKeys {
         static let customSessions = "training.cardio.customSessions"
         
         // Empty states
+        static let noSessions = "training.cardio.noSessions"
+        static let noSessionsDesc = "training.cardio.noSessionsDesc"
         static let noExerciseTypes = "training.cardio.noExerciseTypes"
         static let adjustSearch = "training.cardio.adjustSearch"
         static let clearSearch = "training.cardio.clearSearch"
@@ -767,6 +769,14 @@ enum TrainingKeys {
         static let streak = "training.analytics.streak"
         static let prs = "training.analytics.prs"
         static let days = "training.analytics.days"
+        
+        // Empty states
+        static let noStrengthDataTitle = "training.analytics.noStrengthDataTitle"
+        static let noStrengthDataDesc = "training.analytics.noStrengthDataDesc"
+        static let noWorkoutsTitle = "training.analytics.noWorkoutsTitle"
+        static let noWorkoutsDesc = "training.analytics.noWorkoutsDesc"
+        static let noPRsTitle = "training.analytics.noPRsTitle"
+        static let noPRsDesc = "training.analytics.noPRsDesc"
         static let monthlyGoals = "training.analytics.monthlyGoals"
         static let monthlyGoalsDesc = "training.analytics.monthlyGoalsDesc"
         static let weeklyGoals = "training.analytics.weeklyGoals"
@@ -992,6 +1002,10 @@ enum TrainingKeys {
         static let calculateWeights = "training.oneRM.calculateWeights"
         static let startingWeightsMessage = "training.oneRM.startingWeightsMessage"
         static let fallbackProgram = "training.oneRM.fallbackProgram"
+        static let setupComplete = "training.oneRM.setupComplete"
+        static let startingWeightsCalculated = "training.oneRM.startingWeightsCalculated"
+        static let oneRMTitle = "training.oneRM.title"
+        static let estimateExample = "training.oneRM.estimateExample"
     }
     
     enum Programs {
@@ -1067,10 +1081,10 @@ enum TrainingKeys {
         static let welcomeBack = "training.welcome.welcomeBack"
         static let quickLift = "training.welcome.quickLift"
         static let quickCardio = "training.welcome.quickCardio"
-        static let dailyWOD = "training.welcome.dailyWOD"
+        static let createWOD = "training.welcome.createWOD"
         static let startStrengthTraining = "training.welcome.startStrengthTraining"
         static let startCardioSession = "training.welcome.startCardioSession"
-        static let todaysWorkout = "training.welcome.todaysWorkout"
+        static let createWODSubtitle = "training.welcome.createWODSubtitle"
         static let findProgram = "training.welcome.findProgram"
     }
     
@@ -1273,5 +1287,67 @@ enum TrainingKeys {
         
         // Common
         static let subtitle = "pr.categories.subtitle"
+    }
+    
+    // MARK: - Screen Lock
+    enum ScreenLock {
+        static let screenLocked = "training.screen_lock.screen_locked"
+        static let accidentalPressProtection = "training.screen_lock.accidental_press_protection"
+        static let or = "training.screen_lock.or"
+        static let volumeButtonsHint = "training.screen_lock.volume_buttons_hint"
+        static let slideToUnlock = "training.screen_lock.slide_to_unlock"
+    }
+    
+    // MARK: - Program Dashboard
+    enum ProgramDashboard {
+        static let activeProgram = "training.program_dashboard.active_program"
+        static let nextWorkout = "training.program_dashboard.next_workout"
+        static let startWorkout = "training.program_dashboard.start_workout"
+        static let resumeProgram = "training.program_dashboard.resume_program"
+        static let startNewProgram = "training.program_dashboard.start_new_program"
+        static let details = "training.program_dashboard.details"
+    }
+    
+    // MARK: - Workout Preview
+    enum WorkoutPreview {
+        static let beginWorkout = "training.workout_preview.begin_workout"
+        static let viewPreviousSessions = "training.workout_preview.view_previous_sessions"
+    }
+    
+    // MARK: - Forms Extended
+    enum FormsExtended {
+        static let cancel = "training.forms.cancel"
+        static let back = "training.forms.back"
+        static let routineName = "training.forms.routine_name"
+        static let quickSuggestions = "training.forms.quick_suggestions"
+        static let weightPlaceholder = "training.forms.weight_placeholder"
+        static let repsPlaceholder = "training.forms.reps_placeholder"
+        static let setsPlaceholder = "training.forms.sets_placeholder"
+    }
+    
+    // MARK: - Alerts Extended
+    enum AlertsExtended {
+        static let error = "training.alerts.error"
+        static let deleteWorkout = "training.alerts.delete_workout"
+        static let deleteSetConfirmation = "training.alerts.delete_set_confirmation"
+    }
+    
+    // MARK: - Empty States Extended  
+    enum EmptyStatesNew {
+        static let noWorkoutHistory = "training.empty_states.no_workout_history"
+        static let noWorkoutHistoryMessage = "training.empty_states.no_workout_history_message"
+        static let startWorkout = "training.empty_states.start_workout"
+        static let noExercisesFound = "training.empty_states.no_exercises_found"
+        static let tryAdjustingFilters = "training.empty_states.try_adjusting_filters"
+        static let startFirstWorkout = "training.empty_states.start_first_workout"
+        static let firstWorkoutMessage = "training.empty_states.first_workout_message"
+    }
+    
+    // MARK: - One RM Setup
+    enum OneRMSetup {
+        static let proTips = "training.one_rm_setup.pro_tips"
+        static let startingConservativeTip = "training.one_rm_setup.starting_conservative_tip"
+        static let progressionTip = "training.one_rm_setup.progression_tip"
+        static let adjustWeightsTip = "training.one_rm_setup.adjust_weights_tip"
     }
 }

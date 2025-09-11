@@ -14,6 +14,8 @@ struct LiftWorkoutsSection: View {
     @Query(filter: #Predicate<ProgramExecution> { $0.isCompleted == false })
     private var activeProgramExecutions: [ProgramExecution]
     
+    @Query private var users: [User]
+    
     @State private var selectedWorkout: LiftWorkout?
     @State private var showingScratchBuilder = false
     
@@ -24,6 +26,9 @@ struct LiftWorkoutsSection: View {
     var body: some View {
         ScrollView {
             VStack(spacing: theme.spacing.xl) {
+                // Weekly Analytics
+                LiftAnalyticsCard(sessions: completedSessions, currentUser: users.first)
+                
                 // Active Program Card (if exists)
                 if let activeExecution = activeProgramExecutions.first {
                     compactProgramCard(execution: activeExecution)
@@ -72,12 +77,12 @@ struct LiftWorkoutsSection: View {
     private func compactProgramCard(execution: ProgramExecution) -> some View {
         VStack(spacing: theme.spacing.m) {
             UnifiedWorkoutCard(
-                title: execution.program.localizedName,
+                title: execution.program?.localizedName ?? "Unknown Program",
                 subtitle: "Week \(execution.currentWeek) • \(execution.currentWorkout?.localizedName ?? "")",
                 primaryStats: [
                     WorkoutStat(
                         label: "This Week",
-                        value: "\(execution.completedWorkoutsThisWeek)/\(execution.program.daysPerWeek)",
+                        value: "\(execution.completedWorkoutsThisWeek)/\(execution.program?.daysPerWeek ?? 3)",
                         icon: "checkmark.circle"
                     ),
                     WorkoutStat(
@@ -199,7 +204,7 @@ struct LiftWorkoutsSection: View {
     
     private func recentSessionCard(session: LiftSession) -> some View {
         VStack(alignment: .leading, spacing: theme.spacing.s) {
-            Text(session.workout.localizedName)
+            Text(session.workout?.localizedName ?? "Unknown Workout")
                 .font(theme.typography.body)
                 .fontWeight(.medium)
                 .foregroundColor(theme.colors.textPrimary)
@@ -242,7 +247,7 @@ struct LiftWorkoutsSection: View {
             subtitle: "training.lift.browsePrograms.subtitle".localized,
             style: .outlined,
             size: .fullWidth,
-            action: { /* Navigate to programs */ }
+            action: { coordinator.navigateToProgramSelection() }
         )
         .padding(.horizontal)
     }
@@ -270,7 +275,7 @@ struct LiftWorkoutsSection: View {
     
     private func findProgramExecutionForWorkout(_ workout: LiftWorkout) -> ProgramExecution? {
         activeProgramExecutions.first { execution in
-            execution.program.workouts.contains { $0.id == workout.id }
+            (execution.program?.workouts ?? []).contains { $0.id == workout.id }
         }
     }
 }

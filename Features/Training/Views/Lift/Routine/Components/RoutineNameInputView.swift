@@ -49,7 +49,7 @@ struct RoutineNameInputView: View {
                 routineName = generateDefaultName()
             }
         }
-        .alert("Error", isPresented: $showingError) {
+        .alert(TrainingKeys.AlertsExtended.error.localized, isPresented: $showingError) {
             Button("common.ok".localized, role: .cancel) { }
         } message: {
             Text(errorMessage)
@@ -80,7 +80,7 @@ struct RoutineNameInputView: View {
     // MARK: - Name Input Section
     private var nameInputSection: some View {
         VStack(alignment: .leading, spacing: theme.spacing.s) {
-            Text("Routine Name")
+            Text(TrainingKeys.FormsExtended.routineName.localized)
                 .font(theme.typography.headline)
                 .fontWeight(.medium)
                 .foregroundColor(theme.colors.textPrimary)
@@ -107,7 +107,7 @@ struct RoutineNameInputView: View {
     // MARK: - Quick Suggestions Section
     private var quickSuggestionsSection: some View {
         VStack(alignment: .leading, spacing: theme.spacing.s) {
-            Text("Quick suggestions:")
+            Text(TrainingKeys.FormsExtended.quickSuggestions.localized)
                 .font(theme.typography.caption)
                 .foregroundColor(theme.colors.textSecondary)
             

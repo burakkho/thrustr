@@ -163,7 +163,7 @@ struct TestsMainView: View {
                 HStack(spacing: theme.spacing.l) {
                     // Body visualization
                     CompactBodyVisualization(
-                        results: latestTest.results,
+                        results: latestTest.results ?? [],
                         size: 80
                     )
                     

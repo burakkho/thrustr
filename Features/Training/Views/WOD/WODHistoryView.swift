@@ -190,7 +190,7 @@ struct WODHistoryView: View {
         return grouped.map { date, results in
             let title: String
             if Calendar.current.isDateInToday(date) {
-                title = "Bugün"
+                title = "training.common.today".localized
             } else if Calendar.current.isDate(date, equalTo: Date(), toGranularity: .weekOfYear) {
                 title = formatter.string(from: date)
             } else {

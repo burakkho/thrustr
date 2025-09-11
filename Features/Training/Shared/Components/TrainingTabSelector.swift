@@ -38,6 +38,12 @@ struct TrainingTab {
     }
 }
 
+// MARK: - TabSelectorItem Conformance
+extension TrainingTab: TabSelectorItem {
+    var id: String { title }
+    var displayName: String { title }
+}
+
 private struct TrainingTabButton: View {
     @Environment(\.theme) private var theme
     let tab: TrainingTab

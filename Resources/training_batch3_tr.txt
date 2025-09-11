@@ -1,0 +1,13 @@
+"training.test_results.percentile_explanation" = "Percentile: Seviye içindeki pozisyonunuz";
+"training.test_results.personal_record" = "Kişisel Rekor";
+"training.test_results.personal_record" = "Kişisel Rekor";
+"training.test_results.personal_record" = "Kişisel Rekor";
+"training.test_results.personal_record" = "Kişisel Rekor";
+"training.test_results.recommendation_title" = "Öneri";
+"training.test_results.reps_goal_format" = "tekrar";
+"training.test_results.unknown" = "Bilinmiyor";
+"training.test_results.unknown_dominance" = "Bilinmiyor";
+"training.test_results.upper_body_dominant" = "Üst Vücut";
+"training.test_results.weight_goal_format" = "kg";
+"training.workout_preview.begin_workout" = "ANTRENMANI BAŞLAT";
+"training.workout_preview.view_previous_sessions" = "Önceki Seansları Gör";

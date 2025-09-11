@@ -5,7 +5,7 @@ import SwiftUI
 
 // MARK: - Theme Protocol
 
-protocol Theme {
+protocol Theme: Sendable {
     var colors: Colors { get }
     var spacing: Spacing { get }
     var radius: Radius { get }
@@ -31,7 +31,7 @@ extension EnvironmentValues {
 
 // MARK: - Theme Implementations
 
-struct DefaultLightTheme: Theme {
+struct DefaultLightTheme: Theme, Sendable {
     let colors = Colors(
         accent: .appPrimary,
         accentSecondary: .appPrimary.opacity(0.8),
@@ -77,7 +77,7 @@ struct DefaultLightTheme: Theme {
     let typography = Typography()
 }
 
-struct DefaultDarkTheme: Theme {
+struct DefaultDarkTheme: Theme, Sendable {
     let colors = Colors(
         accent: .appPrimary,
         accentSecondary: .appPrimary.opacity(0.8),

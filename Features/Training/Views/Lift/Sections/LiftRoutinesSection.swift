@@ -193,7 +193,7 @@ struct LiftRoutinesSection: View {
     private func routineCompactCard(_ routine: LiftWorkout) -> some View {
         UnifiedWorkoutCard(
             title: routine.localizedName,
-            subtitle: "\(routine.exercises.count) exercises",
+            subtitle: "\(routine.exercises?.count ?? 0) exercises",
             primaryStats: [
                 WorkoutStat(
                     label: "Duration",
@@ -244,7 +244,7 @@ struct LiftRoutinesSection: View {
                     }
                 }
                 
-                Text("\(routine.exercises.count) exercises")
+                Text("\(routine.exercises?.count ?? 0) exercises")
                     .font(theme.typography.caption)
                     .foregroundColor(theme.colors.textSecondary)
                 
@@ -360,8 +360,11 @@ struct LiftRoutinesSection: View {
             isCustom: true
         )
         // Copy exercises
-        for exercise in routine.exercises {
-            copy.exercises.append(exercise)
+        if copy.exercises == nil {
+            copy.exercises = []
+        }
+        for exercise in routine.exercises ?? [] {
+            copy.exercises?.append(exercise)
         }
         modelContext.insert(copy)
         try? modelContext.save()

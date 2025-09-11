@@ -190,8 +190,8 @@ struct PhotoTypeCard: View {
         VStack(spacing: 8) {
             // Photo Preview or Placeholder
             Group {
-                if let latestPhoto = latestPhoto, let imageData = latestPhoto.imageData,
-                   let uiImage = UIImage(data: imageData) {
+                if let latestPhoto = latestPhoto, let imagePath = latestPhoto.imageURL,
+                   let uiImage = ImageManager.shared.loadImage(from: imagePath) {
                     Image(uiImage: uiImage)
                         .resizable()
                         .aspectRatio(contentMode: .fill)
@@ -306,8 +306,8 @@ struct PhotoGridItem: View {
         VStack(spacing: 6) {
             // Photo
             Group {
-                if let imageData = photo.imageData,
-                   let uiImage = UIImage(data: imageData) {
+                if let imagePath = photo.imageURL,
+                   let uiImage = ImageManager.shared.loadImage(from: imagePath) {
                     Image(uiImage: uiImage)
                         .resizable()
                         .aspectRatio(contentMode: .fill)
@@ -352,8 +352,8 @@ struct PhotoGridItem: View {
             }
         }
         .fullScreenCover(isPresented: $showingFullScreen) {
-            if let imageData = photo.imageData,
-               let uiImage = UIImage(data: imageData) {
+            if let imagePath = photo.imageURL,
+               let uiImage = ImageManager.shared.loadImage(from: imagePath) {
                 FullScreenPhotoView(image: uiImage, photo: photo)
             }
         }
@@ -574,12 +574,14 @@ struct AddProgressPhotoView: View {
     }
     
     private func savePhoto() {
-        guard let image = selectedImage,
-              let imageData = image.jpegData(compressionQuality: 0.8) else { return }
+        guard let image = selectedImage else { return }
+        
+        // Save image to file system using ImageManager
+        guard let imagePath = ImageManager.shared.saveProgressPhoto(image, type: selectedPhotoType) else { return }
         
         let progressPhoto = ProgressPhoto(
             type: selectedPhotoType.rawValue,
-            imageData: imageData,
+            imageURL: imagePath,
             date: Date(),
             notes: notes.isEmpty ? nil : notes
         )

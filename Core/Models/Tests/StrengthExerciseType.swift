@@ -6,7 +6,7 @@ import Foundation
  * This enum defines the 5 core strength test exercises with their muscle groups,
  * baseline standards, and display properties for consistent UI rendering.
  */
-enum StrengthExerciseType: String, CaseIterable, Identifiable {
+enum StrengthExerciseType: String, CaseIterable, Identifiable, Sendable {
     case benchPress = "bench_press"
     case overheadPress = "overhead_press"
     case pullUp = "pull_up"
@@ -147,7 +147,7 @@ enum StrengthExerciseType: String, CaseIterable, Identifiable {
 /**
  * Different 1RM calculation formulas with their implementations.
  */
-enum RMFormula: String, CaseIterable {
+enum RMFormula: String, CaseIterable, Sendable {
     case brzycki = "brzycki"
     case epley = "epley"
     case lander = "lander"
@@ -187,7 +187,7 @@ enum RMFormula: String, CaseIterable {
 
 // MARK: - Supporting Enums
 
-enum MuscleGroup: String, CaseIterable {
+enum MuscleGroup: String, CaseIterable, Sendable {
     case chest = "chest"
     case shoulders = "shoulders"
     case back = "back"
@@ -220,7 +220,7 @@ enum MuscleGroup: String, CaseIterable {
     }
 }
 
-enum StrengthLevel: Int, CaseIterable {
+enum StrengthLevel: Int, CaseIterable, Sendable {
     case beginner = 0
     case novice = 1
     case intermediate = 2

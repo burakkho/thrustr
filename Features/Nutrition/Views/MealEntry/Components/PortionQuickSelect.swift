@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct PortionQuickSelect: View {
-    @EnvironmentObject private var unitSettings: UnitSettings
+    @Environment(UnitSettings.self) var unitSettings
     @Binding var quantity: Double
     var suggested: [Int] = []
     @State private var showingCustomInput = false

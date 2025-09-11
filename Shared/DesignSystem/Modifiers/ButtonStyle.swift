@@ -8,7 +8,7 @@ struct PrimaryButtonStyle: ButtonStyle {
     
     let tokens: ButtonTokens
     
-    init(_ tokens: ButtonTokens = .primary) {
+    nonisolated init(_ tokens: ButtonTokens = .primary) {
         self.tokens = tokens
     }
     
@@ -36,7 +36,7 @@ struct SecondaryButtonStyle: ButtonStyle {
     
     let tokens: ButtonTokens
     
-    init(_ tokens: ButtonTokens = .secondary) {
+    nonisolated init(_ tokens: ButtonTokens = .secondary) {
         self.tokens = tokens
     }
     

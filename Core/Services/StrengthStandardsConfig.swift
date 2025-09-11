@@ -6,11 +6,11 @@ import Foundation
  * Provides scaled strength standards based on user characteristics
  * including gender, age, and body weight adjustments.
  */
-struct StrengthStandardsConfig {
+struct StrengthStandardsConfig: Sendable {
     
     // MARK: - Scaling Factors
     
-    struct ScalingFactors {
+    struct ScalingFactors: Sendable {
         static let femaleMultiplier: Double = 0.7
         static let ageGroup36_45Multiplier: Double = 0.95
         static let ageGroup45PlusMultiplier: Double = 0.9
@@ -18,7 +18,7 @@ struct StrengthStandardsConfig {
     
     // MARK: - Age Groups
     
-    enum AgeGroup {
+    enum AgeGroup: Sendable {
         case young      // 18-35
         case middle     // 36-45
         case mature     // 45+
@@ -48,7 +48,7 @@ struct StrengthStandardsConfig {
     
     // MARK: - Weight Classes (for future body weight adjustments)
     
-    struct WeightClass {
+    struct WeightClass: Sendable {
         let minWeight: Double
         let maxWeight: Double
         let multiplier: Double

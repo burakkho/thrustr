@@ -4,43 +4,43 @@ import SwiftData
 // MARK: - Cardio Workout Model (Templates)
 @Model
 final class CardioWorkout {
-    var id: UUID
-    var name: String
-    var nameEN: String
-    var nameTR: String
-    var nameES: String
-    var nameDE: String
+    var id: UUID = UUID()
+    var name: String = ""
+    var nameEN: String = ""
+    var nameTR: String = ""
+    var nameES: String = ""
+    var nameDE: String = ""
     
     // Workout Configuration
-    var type: String // "distance", "time", "circuit"
-    var category: String // "benchmark", "custom"
-    var workoutDescription: String
-    var descriptionTR: String
-    var descriptionES: String
-    var descriptionDE: String
+    var type: String = "distance" // "distance", "time", "circuit"
+    var category: String = "custom" // "benchmark", "custom"
+    var workoutDescription: String = ""
+    var descriptionTR: String = ""
+    var descriptionES: String = ""
+    var descriptionDE: String = ""
     
     // Target Parameters (optional suggestions)
     var targetDistance: Int? // in meters
     var targetTime: Int? // in seconds
-    var estimatedCalories: Int?
-    var difficulty: String // "beginner", "intermediate", "advanced"
+    var estimatedCalories: Int? = nil
+    var difficulty: String = "intermediate" // "beginner", "intermediate", "advanced"
     
     // Template Properties
-    var isTemplate: Bool
-    var isCustom: Bool
-    var isFavorite: Bool
-    var shareCode: String?
+    var isTemplate: Bool = true
+    var isCustom: Bool = false
+    var isFavorite: Bool = false
+    var shareCode: String? = nil
     
     // Equipment Requirements
-    var equipment: [String] // ["outdoor", "treadmill", "row_erg", "bike_erg", "ski_erg"]
+    var equipmentItems: [EquipmentItem]?
     
     // Timestamps
-    var createdAt: Date
-    var updatedAt: Date
+    var createdAt: Date = Date()
+    var updatedAt: Date = Date()
     
     // Relationships
-    var exercises: [CardioExercise]
-    var sessions: [CardioSession]
+    @Relationship(deleteRule: .cascade, inverse: \CardioExercise.workout) var exercises: [CardioExercise]?
+    @Relationship(deleteRule: .cascade, inverse: \CardioSession.originalWorkout) var sessions: [CardioSession]?
     
     init(
         name: String,
@@ -86,7 +86,10 @@ final class CardioWorkout {
         self.isFavorite = false
         self.shareCode = nil
         
-        self.equipment = equipment
+        // Initialize equipment items from string array
+        self.equipmentItems = equipment.enumerated().map { index, equipmentName in
+            EquipmentItem(name: equipmentName, orderIndex: index)
+        }
         
         self.createdAt = Date()
         self.updatedAt = Date()
@@ -118,6 +121,7 @@ extension CardioWorkout {
         }
     }
     
+    @MainActor
     var formattedDistance: String? {
         guard let distance = targetDistance else { return nil }
         return UnitsFormatter.formatDistance(meters: Double(distance), system: UnitSettings.shared.unitSystem)
@@ -138,6 +142,21 @@ extension CardioWorkout {
         }
     }
     
+    // Backward compatibility - converts equipmentItems to [String]
+    var equipment: [String] {
+        get {
+            return equipmentItems?.sorted(by: { $0.orderIndex < $1.orderIndex }).map { $0.name } ?? []
+        }
+        set {
+            // Remove existing equipment items
+            equipmentItems?.removeAll()
+            // Create new equipment items from string array
+            self.equipmentItems = newValue.enumerated().map { index, equipmentName in
+                EquipmentItem(name: equipmentName, orderIndex: index)
+            }
+        }
+    }
+    
     var displayEquipment: String {
         let equipmentNames = equipment.map { equipmentKey in
             switch equipmentKey {
@@ -154,35 +173,39 @@ extension CardioWorkout {
     
     // Get personal record for this workout
     var personalRecord: CardioResult? {
+        guard let sessions = sessions else { return nil }
         let completedSessions = sessions.filter { $0.isCompleted }
-        let allResults = completedSessions.flatMap { $0.results }
+        let allResults = completedSessions.flatMap { $0.results ?? [] }
         
         switch type {
         case "distance":
             // For distance workouts, fastest time is best
-            return allResults
-                .filter { $0.completionTime != nil && $0.completionTime! > 0 }
-                .min { ($0.completionTime ?? Int.max) < ($1.completionTime ?? Int.max) }
+            let validResults = allResults.filter { $0.completionTime != nil && $0.completionTime! > 0 }
+            return validResults.min { result1, result2 in
+                (result1.completionTime ?? Int.max) < (result2.completionTime ?? Int.max)
+            }
         case "time":
             // For time-based workouts, longest distance is best
-            return allResults
-                .filter { $0.distanceCovered != nil && $0.distanceCovered! > 0 }
-                .max { ($0.distanceCovered ?? 0) < ($1.distanceCovered ?? 0) }
+            let validResults = allResults.filter { $0.distanceCovered != nil && $0.distanceCovered! > 0 }
+            return validResults.max { result1, result2 in
+                (result1.distanceCovered ?? 0) < (result2.distanceCovered ?? 0)
+            }
         default:
             return allResults.first
         }
     }
     
     var lastPerformed: Date? {
-        sessions.filter { $0.isCompleted }.map { $0.completedAt ?? $0.startDate }.max()
+        sessions?.filter { $0.isCompleted }.map { $0.completedAt ?? $0.startDate }.max()
     }
     
     var totalSessions: Int {
-        sessions.filter { $0.isCompleted }.count
+        sessions?.filter { $0.isCompleted }.count ?? 0
     }
     
     var averagePerformance: Double? {
-        let completedResults = sessions.filter { $0.isCompleted }.flatMap { $0.results }
+        guard let sessions = sessions else { return nil }
+        let completedResults = sessions.filter { $0.isCompleted }.flatMap { $0.results ?? [] }
         guard !completedResults.isEmpty else { return nil }
         
         switch type {
@@ -203,29 +226,57 @@ extension CardioWorkout {
 // MARK: - Methods
 extension CardioWorkout {
     func addExercise(_ exercise: CardioExercise) {
-        exercise.orderIndex = exercises.count
-        exercises.append(exercise)
+        if exercises == nil {
+            exercises = []
+        }
+        exercise.orderIndex = exercises?.count ?? 0
+        exercises?.append(exercise)
         exercise.workout = self
         updatedAt = Date()
     }
     
     func removeExercise(_ exercise: CardioExercise) {
-        exercises.removeAll { $0.id == exercise.id }
+        exercises?.removeAll { $0.id == exercise.id }
         // Reorder remaining exercises
-        for (index, ex) in exercises.enumerated() {
-            ex.orderIndex = index
+        if let exercises = exercises {
+            for (index, ex) in exercises.enumerated() {
+                ex.orderIndex = index
+            }
         }
         updatedAt = Date()
     }
     
     func startSession(for user: User) -> CardioSession {
         let session = CardioSession(workout: self, user: user)
-        sessions.append(session)
+        if sessions == nil {
+            sessions = []
+        }
+        sessions?.append(session)
         return session
     }
     
     func toggleFavorite() {
         isFavorite.toggle()
+        updatedAt = Date()
+    }
+    
+    func addEquipment(_ equipmentName: String) {
+        if equipmentItems == nil {
+            equipmentItems = []
+        }
+        let newItem = EquipmentItem(name: equipmentName, orderIndex: equipmentItems?.count ?? 0)
+        equipmentItems?.append(newItem)
+        updatedAt = Date()
+    }
+    
+    func removeEquipment(_ equipmentName: String) {
+        equipmentItems?.removeAll { $0.name == equipmentName }
+        // Reorder remaining equipment items
+        if let equipmentItems = equipmentItems {
+            for (index, item) in equipmentItems.enumerated() {
+                item.orderIndex = index
+            }
+        }
         updatedAt = Date()
     }
     
@@ -252,9 +303,11 @@ extension CardioWorkout {
         )
         
         // Duplicate exercises
-        for exercise in exercises {
-            let newExercise = exercise.duplicate()
-            newWorkout.addExercise(newExercise)
+        if let exercises = exercises {
+            for exercise in exercises {
+                let newExercise = exercise.duplicate()
+                newWorkout.addExercise(newExercise)
+            }
         }
         
         return newWorkout

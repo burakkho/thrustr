@@ -2,10 +2,11 @@ import SwiftUI
 import Foundation
 
 @MainActor
-class LanguageManager: ObservableObject {
+@Observable
+class LanguageManager {
     static let shared = LanguageManager()
     
-    @Published var currentLanguage: Language = .system {
+    var currentLanguage: Language = .system {
         didSet {
             saveLanguagePreference()
             updateAppLanguage()

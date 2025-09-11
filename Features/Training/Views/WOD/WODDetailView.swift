@@ -5,7 +5,7 @@ struct WODDetailView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.theme) private var theme
     @Environment(\.modelContext) private var modelContext
-    @EnvironmentObject private var unitSettings: UnitSettings
+    @Environment(UnitSettings.self) var unitSettings
     @Query private var user: [User]
     
     let wod: WOD
@@ -21,202 +21,29 @@ struct WODDetailView: View {
     }
     
     private var wodResults: [WODResult] {
-        wod.results.sorted { $0.completedAt > $1.completedAt }
+        (wod.results ?? []).sorted { $0.completedAt > $1.completedAt }
     }
     
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: theme.spacing.l) {
-                    // Header Card
-                    VStack(alignment: .leading, spacing: theme.spacing.m) {
-                        HStack {
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text(wod.wodType.displayName)
-                                    .font(theme.typography.caption)
-                                    .foregroundColor(theme.colors.textSecondary)
-                                
-                                Text(wod.name)
-                                    .font(theme.typography.title2)
-                                    .fontWeight(.bold)
-                                    .foregroundColor(theme.colors.textPrimary)
-                            }
-                            
-                            Spacer()
-                            
-                            Button(action: toggleFavorite) {
-                                Image(systemName: wod.isFavorite ? "star.fill" : "star")
-                                    .font(.title2)
-                                    .foregroundColor(wod.isFavorite ? theme.colors.warning : theme.colors.textSecondary)
-                            }
-                        }
-                        
-                        // Rep Scheme or Time Cap
-                        if !wod.repScheme.isEmpty {
-                            HStack {
-                                Image(systemName: "repeat")
-                                    .foregroundColor(theme.colors.accent)
-                                Text(wod.formattedRepScheme)
-                                    .font(theme.typography.headline)
-                                    .foregroundColor(theme.colors.accent)
-                            }
-                        }
-                        
-                        if let timeCap = wod.formattedTimeCap {
-                            HStack {
-                                Image(systemName: "clock")
-                                    .foregroundColor(theme.colors.warning)
-                                Text(timeCap)
-                                    .font(theme.typography.headline)
-                                    .foregroundColor(theme.colors.warning)
-                            }
-                        }
-                        
-                        // Personal Record
-                        if let pr = wod.personalRecord {
-                            HStack {
-                                Image(systemName: "trophy.fill")
-                                    .foregroundColor(theme.colors.success)
-                                Text("PR: \(pr.displayScore)")
-                                    .font(theme.typography.body)
-                                    .fontWeight(.semibold)
-                                    .foregroundColor(theme.colors.success)
-                                
-                                if pr.isRX {
-                                    Text("(RX)")
-                                        .font(theme.typography.caption)
-                                        .foregroundColor(theme.colors.success)
-                                }
-                            }
-                            .padding(theme.spacing.m)
-                            .frame(maxWidth: .infinity)
-                            .background(theme.colors.success.opacity(0.1))
-                            .cornerRadius(theme.radius.m)
-                        }
-                    }
-                    .padding()
-                    .background(theme.colors.cardBackground)
-                    .cornerRadius(theme.radius.m)
-                    
-                    // Movements Section
-                    VStack(alignment: .leading, spacing: theme.spacing.m) {
-                        Text("Movements")
-                            .font(theme.typography.headline)
-                            .foregroundColor(theme.colors.textPrimary)
-                        
-                        ForEach(Array(wod.movements.enumerated()), id: \.element.id) { index, movement in
-                            MovementCard(
-                                movement: movement,
-                                index: index + 1,
-                                userGender: currentUser?.gender,
-                                isRX: $isRX,
-                                selectedWeight: Binding(
-                                    get: { selectedWeights[movement.id] },
-                                    set: { selectedWeights[movement.id] = $0 }
-                                )
-                            )
-                        }
-                    }
-                    
-                    // RX/Scaled Toggle
-                    HStack {
-                        Text("Mode:")
-                            .font(theme.typography.body)
-                            .foregroundColor(theme.colors.textSecondary)
-                        
-                        Picker("Mode", selection: $isRX) {
-                            Text("RX").tag(true)
-                            Text("Scaled").tag(false)
-                        }
-                        .pickerStyle(SegmentedPickerStyle())
-                        .frame(width: 150)
-                    }
-                    .padding()
-                    .background(theme.colors.backgroundSecondary)
-                    .cornerRadius(theme.radius.m)
-                    
-                    // Action Buttons
-                    VStack(spacing: theme.spacing.m) {
-                        Button(action: { showingTimer = true }) {
-                            HStack {
-                                Image(systemName: "play.fill")
-                                Text("Start WOD")
-                                    .fontWeight(.semibold)
-                            }
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                            .background(theme.colors.accent)
-                            .foregroundColor(.white)
-                            .cornerRadius(theme.radius.m)
-                        }
-                        
-                        HStack(spacing: theme.spacing.m) {
-                            Button(action: { showingShare = true }) {
-                                HStack {
-                                    Image(systemName: "qrcode")
-                                    Text("Share")
-                                }
-                                .frame(maxWidth: .infinity)
-                                .padding()
-                                .background(theme.colors.backgroundSecondary)
-                                .foregroundColor(theme.colors.textPrimary)
-                                .cornerRadius(theme.radius.m)
-                            }
-                            
-                            Button(action: { showingHistory = true }) {
-                                HStack {
-                                    Image(systemName: "clock.arrow.circlepath")
-                                    Text("History")
-                                }
-                                .frame(maxWidth: .infinity)
-                                .padding()
-                                .background(theme.colors.backgroundSecondary)
-                                .foregroundColor(theme.colors.textPrimary)
-                                .cornerRadius(theme.radius.m)
-                            }
-                        }
-                        
-                        if wod.isCustom {
-                            Button(action: { showingEdit = true }) {
-                                HStack {
-                                    Image(systemName: "pencil")
-                                    Text("Edit WOD")
-                                }
-                                .frame(maxWidth: .infinity)
-                                .padding()
-                                .background(theme.colors.backgroundSecondary)
-                                .foregroundColor(theme.colors.textPrimary)
-                                .cornerRadius(theme.radius.m)
-                            }
-                        }
-                    }
-                    
-                    // Recent Results
-                    if !wodResults.isEmpty {
-                        VStack(alignment: .leading, spacing: theme.spacing.m) {
-                            Text("Recent Results")
-                                .font(theme.typography.headline)
-                                .foregroundColor(theme.colors.textPrimary)
-                            
-                            ForEach(wodResults.prefix(3)) { result in
-                                ResultRow(result: result, wod: wod)
-                            }
-                        }
-                    }
+                    headerCard
+                    movementsSection
+                    rxScaledToggle
+                    resultsSection
+                    startButton
                 }
                 .padding()
             }
-            .navigationTitle(TrainingKeys.Navigation.wodDetails.localized)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button(CommonKeys.Onboarding.Common.close.localized) { dismiss() }
-                }
+                toolbarContent
             }
             .fullScreenCover(isPresented: $showingTimer) {
                 EnhancedWODTimerView(
                     wod: wod,
-                    movements: wod.movements.map { movement in
+                    movements: (wod.movements ?? []).map { movement in
                         let updatedMovement = movement
                         updatedMovement.userWeight = selectedWeights[movement.id]
                         updatedMovement.isRX = isRX
@@ -228,17 +55,232 @@ struct WODDetailView: View {
             .sheet(isPresented: $showingHistory) {
                 NavigationStack {
                     WODHistoryView()
-                        .navigationTitle(String(format: CommonKeys.Navigation.wodHistoryFormat.localized, wod.name))
+                        .navigationTitle("WOD History")
                         .navigationBarTitleDisplayMode(.inline)
                         .toolbar {
                             ToolbarItem(placement: .navigationBarTrailing) {
-                                Button(CommonKeys.Onboarding.Common.done.localized) { showingHistory = false }
+                                Button(CommonKeys.Onboarding.Common.done.localized) { 
+                                    showingHistory = false 
+                                }
                             }
                         }
                 }
             }
             .sheet(isPresented: $showingShare) {
                 WODShareView(wod: wod, result: nil)
+            }
+            .sheet(isPresented: $showingEdit) {
+                // WOD edit view would go here
+                Text("Edit WOD - Coming Soon")
+            }
+        }
+    }
+    
+    private var headerCard: some View {
+        VStack(alignment: .leading, spacing: theme.spacing.m) {
+            headerTitleRow
+            repSchemeView
+            timeCapView
+            personalRecordView
+        }
+        .padding()
+        .background(theme.colors.cardBackground)
+        .cornerRadius(theme.radius.m)
+    }
+    
+    private var headerTitleRow: some View {
+        HStack {
+            VStack(alignment: .leading, spacing: 4) {
+                Text(wod.wodType.displayName)
+                    .font(theme.typography.caption)
+                    .foregroundColor(theme.colors.textSecondary)
+                
+                Text(wod.name)
+                    .font(theme.typography.title2)
+                    .fontWeight(.bold)
+                    .foregroundColor(theme.colors.textPrimary)
+            }
+            
+            Spacer()
+            
+            Button(action: toggleFavorite) {
+                Image(systemName: wod.isFavorite ? "star.fill" : "star")
+                    .font(.title2)
+                    .foregroundColor(wod.isFavorite ? theme.colors.warning : theme.colors.textSecondary)
+            }
+        }
+    }
+    
+    private var repSchemeView: some View {
+        Group {
+            if !wod.repScheme.isEmpty {
+                HStack {
+                    Image(systemName: "repeat")
+                        .foregroundColor(theme.colors.accent)
+                    Text(wod.formattedRepScheme)
+                        .font(theme.typography.headline)
+                        .foregroundColor(theme.colors.accent)
+                }
+            }
+        }
+    }
+    
+    private var timeCapView: some View {
+        Group {
+            if let timeCap = wod.formattedTimeCap {
+                HStack {
+                    Image(systemName: "clock")
+                        .foregroundColor(theme.colors.warning)
+                    Text(timeCap)
+                        .font(theme.typography.headline)
+                        .foregroundColor(theme.colors.warning)
+                }
+            }
+        }
+    }
+    
+    private var personalRecordView: some View {
+        Group {
+            if let pr = wod.personalRecord {
+                HStack {
+                    Image(systemName: "trophy.fill")
+                        .foregroundColor(theme.colors.success)
+                    Text("PR: \(pr.displayScore)")
+                        .font(theme.typography.body)
+                        .fontWeight(.semibold)
+                        .foregroundColor(theme.colors.success)
+                    
+                    if pr.isRX {
+                        Text("(RX)")
+                            .font(theme.typography.caption)
+                            .foregroundColor(theme.colors.success)
+                    }
+                }
+                .padding(theme.spacing.m)
+                .frame(maxWidth: .infinity)
+                .background(theme.colors.success.opacity(0.1))
+                .cornerRadius(theme.radius.m)
+            }
+        }
+    }
+    
+    private var movementsSection: some View {
+        VStack(alignment: .leading, spacing: theme.spacing.m) {
+            Text("Movements")
+                .font(theme.typography.headline)
+                .foregroundColor(theme.colors.textPrimary)
+            
+            ForEach(Array((wod.movements ?? []).enumerated()), id: \.element.id) { index, movement in
+                MovementCard(
+                    movement: movement,
+                    index: index + 1,
+                    userGender: currentUser?.gender,
+                    isRX: $isRX,
+                    selectedWeight: Binding(
+                        get: { selectedWeights[movement.id] },
+                        set: { selectedWeights[movement.id] = $0 }
+                    )
+                )
+            }
+        }
+    }
+    
+    private var rxScaledToggle: some View {
+        HStack {
+            Text("Mode:")
+                .font(theme.typography.body)
+                .foregroundColor(theme.colors.textSecondary)
+            
+            Picker("Mode", selection: $isRX) {
+                Text("RX").tag(true)
+                Text("Scaled").tag(false)
+            }
+            .pickerStyle(SegmentedPickerStyle())
+            .frame(width: 150)
+        }
+        .padding()
+        .background(theme.colors.backgroundSecondary)
+        .cornerRadius(theme.radius.m)
+    }
+    
+    private var resultsSection: some View {
+        Group {
+            if !wodResults.isEmpty {
+                VStack(alignment: .leading, spacing: theme.spacing.m) {
+                    Text("Recent Results")
+                        .font(theme.typography.headline)
+                        .foregroundColor(theme.colors.textPrimary)
+                    
+                    ForEach(wodResults.prefix(3)) { result in
+                        ResultRow(result: result, wod: wod)
+                    }
+                }
+            }
+        }
+    }
+    
+    private var startButton: some View {
+        VStack(spacing: theme.spacing.m) {
+            Button(action: { showingTimer = true }) {
+                HStack {
+                    Image(systemName: "play.fill")
+                    Text("Start WOD")
+                        .fontWeight(.semibold)
+                }
+                .frame(maxWidth: .infinity)
+                .padding()
+                .background(theme.colors.accent)
+                .foregroundColor(.white)
+                .cornerRadius(theme.radius.m)
+            }
+            
+            HStack(spacing: theme.spacing.m) {
+                Button(action: { showingShare = true }) {
+                    HStack {
+                        Image(systemName: "qrcode")
+                        Text("Share")
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(theme.colors.backgroundSecondary)
+                    .foregroundColor(theme.colors.textPrimary)
+                    .cornerRadius(theme.radius.m)
+                }
+                
+                Button(action: { showingHistory = true }) {
+                    HStack {
+                        Image(systemName: "clock.arrow.circlepath")
+                        Text("History")
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(theme.colors.backgroundSecondary)
+                    .foregroundColor(theme.colors.textPrimary)
+                    .cornerRadius(theme.radius.m)
+                }
+            }
+            
+            if wod.isCustom {
+                Button(action: { showingEdit = true }) {
+                    HStack {
+                        Image(systemName: "pencil")
+                        Text("Edit WOD")
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(theme.colors.backgroundSecondary)
+                    .foregroundColor(theme.colors.textPrimary)
+                    .cornerRadius(theme.radius.m)
+                }
+            }
+        }
+    }
+    
+    @ToolbarContentBuilder
+    private var toolbarContent: some ToolbarContent {
+        ToolbarItem(placement: .navigationBarLeading) {
+            Button(CommonKeys.Onboarding.Common.close.localized) { 
+                dismiss() 
             }
         }
     }
@@ -258,7 +300,7 @@ private struct MovementCard: View {
     @Binding var isRX: Bool
     @Binding var selectedWeight: Double?
     @Environment(\.theme) private var theme
-    @EnvironmentObject private var unitSettings: UnitSettings
+    @Environment(UnitSettings.self) var unitSettings
     @State private var weightText = ""
     
     private var rxWeight: String? {
@@ -405,7 +447,7 @@ private struct ResultRow: View {
                     .cornerRadius(theme.radius.s)
             }
             
-            if result.isPR(among: wod.results) {
+            if result.isPR(among: wod.results ?? []) {
                 Image(systemName: "trophy.fill")
                     .foregroundColor(theme.colors.warning)
             }

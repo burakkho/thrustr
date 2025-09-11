@@ -3,8 +3,8 @@ import SwiftData
 
 struct MainTabView: View {
     @Environment(\.modelContext) private var modelContext
-    @EnvironmentObject private var languageManager: LanguageManager
-    @EnvironmentObject private var tabRouter: TabRouter
+    @Environment(LanguageManager.self) private var languageManager
+    @Environment(TabRouter.self) private var tabRouter
     @Query private var users: [User]
     @State private var selectedTab = 0
     
@@ -13,7 +13,8 @@ struct MainTabView: View {
     }
     
     var body: some View {
-        TabView(selection: $tabRouter.selected) {
+        @Bindable var bindableRouter = tabRouter
+        TabView(selection: $bindableRouter.selected) {
             DashboardView()
                 .tabItem {
                     Image(systemName: "house.fill")
@@ -35,12 +36,19 @@ struct MainTabView: View {
                 }
                 .tag(2)
             
+            AnalyticsTabView()
+                .tabItem {
+                    Image(systemName: "chart.bar.fill")
+                    Text("tab.analytics".localized)
+                }
+                .tag(3)
+            
             ProfileView()
                 .tabItem {
                     Image(systemName: "person.fill")
                     Text("tab.profile".localized)
                 }
-                .tag(3)
+                .tag(4)
         }
         .tint(Color.appPrimary)
         .onAppear(perform: setupTabBarAppearance)
@@ -77,5 +85,5 @@ struct MainTabView: View {
 #Preview {
     MainTabView()
         .modelContainer(for: [User.self, LiftSession.self, Exercise.self, Food.self, NutritionEntry.self])
-        .environmentObject(LanguageManager.shared)
+        .environment(LanguageManager.shared)
 }

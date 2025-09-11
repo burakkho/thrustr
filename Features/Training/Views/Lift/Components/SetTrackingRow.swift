@@ -3,7 +3,7 @@ import SwiftUI
 // MARK: - Set Tracking Row (Hevy Style)
 struct SetTrackingRow: View {
     @Environment(\.theme) private var theme
-    @EnvironmentObject private var unitSettings: UnitSettings
+    @Environment(UnitSettings.self) var unitSettings
     @Binding var set: SetData
     let setNumber: Int
     let previousSet: SetData?
@@ -83,7 +83,7 @@ struct SetTrackingRow: View {
     }
     
     private var weightInputSection: some View {
-        HStack(spacing: 6) {
+        HStack(spacing: 4) {
             decreaseWeightButton
             weightTextField
             increaseWeightButton
@@ -169,7 +169,7 @@ struct SetTrackingRow: View {
     }
     
     private var repsInputSection: some View {
-        HStack(spacing: 6) {
+        HStack(spacing: 4) {
             decreaseRepsButton
             repsTextField
             increaseRepsButton
@@ -275,13 +275,13 @@ struct SetTrackingRow: View {
     }
     
     var body: some View {
-        HStack(spacing: 6) {
+        HStack(spacing: 4) {
             setNumberSection
             previousSetInfo
             weightInputSection
             multiplySymbol
             repsInputSection
-            Spacer(minLength: 4)
+            Spacer(minLength: 2)
             completeButton
         }
         .padding(.horizontal, theme.spacing.s)

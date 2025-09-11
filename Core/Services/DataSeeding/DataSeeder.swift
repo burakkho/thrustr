@@ -1,6 +1,7 @@
 import SwiftData
 import Foundation
 
+
 // MARK: - Temporary placeholders (to be moved to separate files)
 class ExerciseSeeder {
     @MainActor
@@ -64,6 +65,12 @@ class ExerciseSeeder {
             
             modelContext.insert(exercise)
             seededCount += 1
+            
+            // Fast initial seeding with larger batches  
+            if seededCount % SeedingConfig.batchSize == 0 {
+                try modelContext.save()
+                try await Task.sleep(nanoseconds: SeedingConfig.cloudKitDelay)
+            }
             
             // Yield control periodically
             if seededCount % SeedingConfig.yieldInterval == 0 {
@@ -235,7 +242,10 @@ class BenchmarkWODSeeder {
                 )
                 
                 movement.wod = wod
-                wod.movements.append(movement)
+                if wod.movements == nil {
+                    wod.movements = []
+                }
+                wod.movements?.append(movement)
                 modelContext.insert(movement)
             }
             
@@ -254,7 +264,7 @@ class BenchmarkWODSeeder {
 
 class FoodSeeder {
     @MainActor
-    static func seedFoods(modelContext: ModelContext) async throws {
+    static func seedFoods(modelContext: ModelContext, progressCallback: ProgressCallback? = nil) async throws {
         Logger.info("Starting foods seeding...")
         
         // Check if foods already exist
@@ -275,9 +285,8 @@ class FoodSeeder {
         let dataRows = Array(rows.dropFirst())
         var seededCount = 0
         
-        // OPTIMIZED: Process foods in smaller batches for faster UI feedback
+        // CloudKit-friendly batch processing
         var batchCount = 0
-        let batchSize = 25 // Smaller batches for faster initial response
         
         for (index, row) in dataRows.enumerated() {
             guard row.count >= 10 else {
@@ -347,11 +356,12 @@ class FoodSeeder {
             seededCount += 1
             batchCount += 1
             
-            // PERFORMANCE: Save in smaller batches for faster UI updates
-            if batchCount >= batchSize {
+            // Fast initial seeding with larger batches
+            if batchCount >= SeedingConfig.batchSize {
                 try modelContext.save()
                 batchCount = 0
-                await Task.yield() // Allow UI to update
+                try await Task.sleep(nanoseconds: SeedingConfig.cloudKitDelay)
+                await progressCallback?(.foods)
                 Logger.info("Seeded \(seededCount) foods so far...")
             }
             
@@ -405,9 +415,9 @@ class FoodSeeder {
             let foodNameEN = row[0].trimmingCharacters(in: .whitespacesAndNewlines)
             let _ = row[10].trimmingCharacters(in: .whitespacesAndNewlines)
             
-            // Find corresponding food
-            guard let food = foodLookup[foodNameEN] else {
-                Logger.warning("Skipping alias row \(index): food '\(foodNameEN)' not found")
+            // Find corresponding food with fuzzy matching
+            guard let food = DataSeeder.findFoodWithFuzzyMatching(foodName: foodNameEN, foodLookup: foodLookup) else {
+                Logger.warning("Skipping alias row \(index): food '\(foodNameEN)' not found even with fuzzy matching")
                 continue
             }
             
@@ -562,51 +572,40 @@ class LiftProgramSeeder {
     
     @MainActor
     private static func loadLiftProgramsFromJSON(modelContext: ModelContext) async throws {
-        // Try different ways to find the LiftPrograms folder
-        var programsURL: URL?
+        Logger.info("Loading lift programs from individual JSON files...")
         
-        Logger.info("Searching for LiftPrograms folder...")
+        // List of program JSON files to load
+        let programFiles = [
+            "stronglifts5x5",
+            "531-beginner", 
+            "icf5x5",
+            "starting-strength"
+        ]
         
-        // First try: Look for specific JSON file to find the folder
-        if let jsonURL = Bundle.main.url(forResource: "stronglifts5x5", withExtension: "json", subdirectory: "Training/Programs/LiftPrograms") {
-            let parentURL = jsonURL.deletingLastPathComponent()
-            Logger.info("Found stronglifts5x5.json at: \(jsonURL.path)")
-            Logger.info("Parent directory: \(parentURL.path), name: \(parentURL.lastPathComponent)")
-            programsURL = parentURL
-        }
+        var loadedCount = 0
+        var exerciseResolver = ExerciseResolver()
         
-        // Second try: Use subdirectory parameter for new structure
-        if programsURL == nil {
-            if let url = Bundle.main.url(forResource: "", withExtension: nil, subdirectory: "Training/Programs/LiftPrograms") {
-                Logger.info("Found LiftPrograms via subdirectory: \(url.path)")
-                programsURL = url
-            }
-        }
-        
-        // Third try: Legacy subdirectory
-        if programsURL == nil {
-            if let url = Bundle.main.url(forResource: "", withExtension: nil, subdirectory: "LiftPrograms") {
-                Logger.info("Found LiftPrograms via legacy path: \(url.path)")
-                programsURL = url
-            }
-        }
-        
-        guard let finalURL = programsURL, 
-              FileManager.default.fileExists(atPath: finalURL.path) else {
-            throw DataSeederError.fileNotFound("LiftPrograms folder (checked Training/Programs/LiftPrograms and legacy locations)")
-        }
-        
-        do {
-            let fileURLs = try FileManager.default.contentsOfDirectory(
-                at: finalURL,
-                includingPropertiesForKeys: nil,
-                options: .skipsHiddenFiles
-            ).filter { $0.pathExtension == "json" }
+        for programName in programFiles {
+            // Try different bundle paths for each JSON file
+            var jsonURL: URL?
             
-            var loadedCount = 0
-            var exerciseResolver = ExerciseResolver()
+            // First try: Subdirectory path
+            if let url = Bundle.main.url(forResource: programName, withExtension: "json", subdirectory: "Training/Programs/LiftPrograms") {
+                Logger.info("Found \(programName).json via subdirectory path")
+                jsonURL = url
+            }
+            // Second try: Direct bundle path (flat structure)
+            else if let url = Bundle.main.url(forResource: programName, withExtension: "json") {
+                Logger.info("Found \(programName).json via direct bundle path")
+                jsonURL = url
+            }
             
-            for fileURL in fileURLs {
+            guard let fileURL = jsonURL else {
+                Logger.warning("Could not find \(programName).json in bundle")
+                continue
+            }
+            
+            do {
                 if let program = try await loadSingleProgramFromJSON(
                     fileURL: fileURL, 
                     modelContext: modelContext,
@@ -616,14 +615,17 @@ class LiftProgramSeeder {
                     loadedCount += 1
                     Logger.info("Loaded program: \(program.localizedName)")
                 }
+            } catch {
+                Logger.error("Failed to load program \(programName): \(error)")
+                continue // Continue with other programs
             }
-            
+        }
+        
+        if loadedCount > 0 {
             try modelContext.save()
             Logger.success("Successfully loaded \(loadedCount) lift programs from JSON")
-            
-        } catch {
-            Logger.error("Failed to load lift programs from JSON: \(error)")
-            throw error
+        } else {
+            throw DataSeederError.fileNotFound("No lift program JSON files found in bundle")
         }
     }
     
@@ -877,7 +879,7 @@ class LiftRoutineSeeder {
             }
         }
         
-        return workout.exercises.isEmpty ? nil : workout
+        return (workout.exercises ?? []).isEmpty ? nil : workout
     }
     
     // MARK: - JSON Parsing Models for Routines
@@ -903,8 +905,240 @@ class LiftRoutineSeeder {
 class DataNormalizer {
     @MainActor
     static func normalizeDataAfterSeeding(modelContext: ModelContext) async {
-        // TODO: Implement - placeholder for now
-        Logger.info("DataNormalizer: Not implemented yet")
+        Logger.info("DataNormalizer: Starting data normalization")
+        
+        do {
+            // 1. Remove duplicate exercises
+            await removeDuplicateExercises(modelContext: modelContext)
+            
+            // 2. Normalize exercise names and categories
+            await normalizeExerciseData(modelContext: modelContext)
+            
+            // 3. Remove duplicate foods
+            await removeDuplicateFoods(modelContext: modelContext)
+            
+            // 4. Optimize food categories
+            await optimizeFoodCategories(modelContext: modelContext)
+            
+            // 5. Clean up orphaned records
+            await cleanupOrphanedRecords(modelContext: modelContext)
+            
+            // Final save
+            try modelContext.save()
+            Logger.info("DataNormalizer: Normalization completed successfully")
+            
+        } catch {
+            Logger.error("DataNormalizer: Failed to normalize data: \(error)")
+        }
+    }
+    
+    @MainActor
+    private static func removeDuplicateExercises(modelContext: ModelContext) async {
+        let descriptor = FetchDescriptor<Exercise>()
+        
+        do {
+            let allExercises = try modelContext.fetch(descriptor)
+            Logger.info("DataNormalizer: Processing \(allExercises.count) exercises for duplicates")
+            
+            var seenExercises: [String: Exercise] = [:]
+            var duplicatesToRemove: [Exercise] = []
+            
+            for exercise in allExercises {
+                let key = exercise.displayName.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
+                
+                if let existingExercise = seenExercises[key] {
+                    // Keep the one with more complete data
+                    if (exercise.instructions?.count ?? 0) > (existingExercise.instructions?.count ?? 0) {
+                        duplicatesToRemove.append(existingExercise)
+                        seenExercises[key] = exercise
+                    } else {
+                        duplicatesToRemove.append(exercise)
+                    }
+                } else {
+                    seenExercises[key] = exercise
+                }
+            }
+            
+            for duplicate in duplicatesToRemove {
+                modelContext.delete(duplicate)
+            }
+            
+            if !duplicatesToRemove.isEmpty {
+                Logger.info("DataNormalizer: Removed \(duplicatesToRemove.count) duplicate exercises")
+            }
+            
+        } catch {
+            Logger.error("DataNormalizer: Failed to process exercise duplicates: \(error)")
+        }
+    }
+    
+    @MainActor
+    private static func normalizeExerciseData(modelContext: ModelContext) async {
+        let descriptor = FetchDescriptor<Exercise>()
+        
+        do {
+            let exercises = try modelContext.fetch(descriptor)
+            var normalizedCount = 0
+            
+            for exercise in exercises {
+                var wasModified = false
+                
+                // Normalize exercise names (title case)
+                let normalizedNameEN = exercise.nameEN.capitalized
+                let normalizedNameTR = exercise.nameTR.capitalized
+                if exercise.nameEN != normalizedNameEN {
+                    exercise.nameEN = normalizedNameEN
+                    wasModified = true
+                }
+                if exercise.nameTR != normalizedNameTR {
+                    exercise.nameTR = normalizedNameTR
+                    wasModified = true
+                }
+                
+                // Ensure category consistency
+                if exercise.category.isEmpty {
+                    exercise.category = "general" // Default category
+                    wasModified = true
+                }
+                
+                // Clean up instructions
+                if let instructions = exercise.instructions, !instructions.isEmpty {
+                    let cleanedInstructions = instructions
+                        .trimmingCharacters(in: .whitespacesAndNewlines)
+                        .replacingOccurrences(of: "  ", with: " ")
+                    
+                    if instructions != cleanedInstructions {
+                        exercise.instructions = cleanedInstructions
+                        wasModified = true
+                    }
+                }
+                
+                if wasModified {
+                    normalizedCount += 1
+                }
+            }
+            
+            if normalizedCount > 0 {
+                Logger.info("DataNormalizer: Normalized \(normalizedCount) exercises")
+            }
+            
+        } catch {
+            Logger.error("DataNormalizer: Failed to normalize exercise data: \(error)")
+        }
+    }
+    
+    @MainActor
+    private static func removeDuplicateFoods(modelContext: ModelContext) async {
+        let descriptor = FetchDescriptor<Food>()
+        
+        do {
+            let allFoods = try modelContext.fetch(descriptor)
+            Logger.info("DataNormalizer: Processing \(allFoods.count) foods for duplicates")
+            
+            var seenFoods: [String: Food] = [:]
+            var duplicatesToRemove: [Food] = []
+            
+            for food in allFoods {
+                let key = food.displayName.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
+                
+                if let existingFood = seenFoods[key] {
+                    // Keep the one with more complete nutritional data
+                    let existingNutrients = existingFood.protein + existingFood.carbs + existingFood.fat
+                    let currentNutrients = food.protein + food.carbs + food.fat
+                    
+                    if currentNutrients > existingNutrients {
+                        duplicatesToRemove.append(existingFood)
+                        seenFoods[key] = food
+                    } else {
+                        duplicatesToRemove.append(food)
+                    }
+                } else {
+                    seenFoods[key] = food
+                }
+            }
+            
+            for duplicate in duplicatesToRemove {
+                modelContext.delete(duplicate)
+            }
+            
+            if !duplicatesToRemove.isEmpty {
+                Logger.info("DataNormalizer: Removed \(duplicatesToRemove.count) duplicate foods")
+            }
+            
+        } catch {
+            Logger.error("DataNormalizer: Failed to process food duplicates: \(error)")
+        }
+    }
+    
+    @MainActor
+    private static func optimizeFoodCategories(modelContext: ModelContext) async {
+        let descriptor = FetchDescriptor<Food>()
+        
+        do {
+            let foods = try modelContext.fetch(descriptor)
+            var categorizedCount = 0
+            
+            for food in foods {
+                // Auto-categorize foods without categories based on name patterns
+                if food.category.isEmpty {
+                    let lowercaseName = food.displayName.lowercased()
+                    
+                    let newCategory = if lowercaseName.contains("chicken") || lowercaseName.contains("beef") || lowercaseName.contains("fish") {
+                        "protein"
+                    } else if lowercaseName.contains("apple") || lowercaseName.contains("banana") || lowercaseName.contains("orange") {
+                        "fruits"
+                    } else if lowercaseName.contains("broccoli") || lowercaseName.contains("spinach") || lowercaseName.contains("carrot") {
+                        "vegetables"
+                    } else if lowercaseName.contains("bread") || lowercaseName.contains("rice") || lowercaseName.contains("pasta") {
+                        "grains"
+                    } else {
+                        "general"
+                    }
+                    
+                    food.category = newCategory
+                    categorizedCount += 1
+                }
+            }
+            
+            if categorizedCount > 0 {
+                Logger.info("DataNormalizer: Auto-categorized \(categorizedCount) foods")
+            }
+            
+        } catch {
+            Logger.error("DataNormalizer: Failed to optimize food categories: \(error)")
+        }
+    }
+    
+    @MainActor
+    private static func cleanupOrphanedRecords(modelContext: ModelContext) async {
+        // Clean up any orphaned food aliases without corresponding foods
+        do {
+            let aliasDescriptor = FetchDescriptor<FoodAlias>()
+            let aliases = try modelContext.fetch(aliasDescriptor)
+            
+            let foodDescriptor = FetchDescriptor<Food>()
+            let foods = try modelContext.fetch(foodDescriptor)
+            let foodNames = Set(foods.map { $0.displayName.lowercased() })
+            
+            var orphanedAliases: [FoodAlias] = []
+            
+            for alias in aliases {
+                if let foodName = alias.food?.displayName, !foodNames.contains(foodName.lowercased()) {
+                    orphanedAliases.append(alias)
+                }
+            }
+            
+            for orphan in orphanedAliases {
+                modelContext.delete(orphan)
+            }
+            
+            if !orphanedAliases.isEmpty {
+                Logger.info("DataNormalizer: Cleaned up \(orphanedAliases.count) orphaned food aliases")
+            }
+            
+        } catch {
+            Logger.error("DataNormalizer: Failed to cleanup orphaned records: \(error)")
+        }
     }
 }
 
@@ -941,7 +1175,7 @@ class DataSeeder {
                 // PRIORITY: Seed foods first for immediate nutrition functionality
                 do {
                     await progressCallback?(.foods)
-                    try await FoodSeeder.seedFoods(modelContext: modelContext)
+                    try await FoodSeeder.seedFoods(modelContext: modelContext, progressCallback: progressCallback)
                     await Task.yield() // Keep UI responsive
                 } catch {
                     Logger.error("Failed to seed foods: \(error)")
@@ -1140,5 +1374,69 @@ class DataSeeder {
         }
         try? modelContext.save()
         Logger.info("Exercises cleared (foods preserved)")
+    }
+    
+    // MARK: - Food Fuzzy Matching Helper
+    static func findFoodWithFuzzyMatching(foodName: String, foodLookup: [String: Food]) -> Food? {
+        let cleanFoodName = foodName.trimmingCharacters(in: .whitespacesAndNewlines)
+        
+        // 1. Exact match (case-sensitive)
+        if let exactMatch = foodLookup[cleanFoodName] {
+            return exactMatch
+        }
+        
+        // 2. Case-insensitive exact match
+        let lowercaseName = cleanFoodName.lowercased()
+        for (key, food) in foodLookup {
+            if key.lowercased() == lowercaseName {
+                return food
+            }
+        }
+        
+        // 3. Partial match (contains)
+        for (key, food) in foodLookup {
+            if key.lowercased().contains(lowercaseName) || lowercaseName.contains(key.lowercased()) {
+                return food
+            }
+        }
+        
+        // 4. Common food name mappings
+        let foodMappings = getFoodNameMappings()
+        if let mappedName = foodMappings[lowercaseName] {
+            return foodLookup[mappedName] ?? findByPartialMatch(mappedName: mappedName, foodLookup: foodLookup)
+        }
+        
+        return nil
+    }
+    
+    // Common food name mappings for aliases
+    private static func getFoodNameMappings() -> [String: String] {
+        return [
+            "chicken breast": "Tavuk Göğsü",
+            "sweet potato": "Tatlı Patates", 
+            "potato": "Patates",
+            "milk": "Süt",
+            "cheese": "Peynir",
+            "garlic": "Sarımsak",
+            "lemon": "Limon",
+            "coconut oil": "Hindistancevizi Yağı",
+            "lentils": "Mercimek",
+            "whey protein": "Whey Protein",
+            "dark chocolate": "Bitter Çikolata",
+            "olive": "Zeytin",
+            "coffee": "Kahve",
+            "water": "Su"
+        ]
+    }
+    
+    // Helper for partial matching with mapped names
+    private static func findByPartialMatch(mappedName: String, foodLookup: [String: Food]) -> Food? {
+        let lowercaseMapped = mappedName.lowercased()
+        for (key, food) in foodLookup {
+            if key.lowercased().contains(lowercaseMapped) || lowercaseMapped.contains(key.lowercased()) {
+                return food
+            }
+        }
+        return nil
     }
 }

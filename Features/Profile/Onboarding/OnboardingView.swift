@@ -123,7 +123,7 @@ struct OnboardingView: View {
             try modelContext.save()
             print("✅ User kaydedildi")
             
-            Task {
+            Task { @MainActor in
                 let healthKit = HealthKitService()
                 let authorized = await healthKit.requestPermissions()
                 if authorized {
@@ -145,7 +145,7 @@ struct OnboardingView: View {
             print("✅ Onboarding tamamlandı")
         } catch {
             print("❌ Save error: \(error)")
-            toastMessage = "Kayıt başarısız: \(error.localizedDescription)"
+            toastMessage = "error.save_failed".localized + ": \(error.localizedDescription)"
         }
     }
     

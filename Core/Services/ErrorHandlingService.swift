@@ -56,20 +56,20 @@ enum ErrorSeverity {
 }
 
 // MARK: - Error Context
-struct ErrorContext {
+struct ErrorContext: Sendable {
     let error: AppError
     let severity: ErrorSeverity
     let source: String
     let timestamp: Date
     let userAction: String?
-    let additionalInfo: [String: Any]?
+    let additionalInfo: [String: String]?
     
     init(
         error: AppError,
         severity: ErrorSeverity,
         source: String,
         userAction: String? = nil,
-        additionalInfo: [String: Any]? = nil
+        additionalInfo: [String: String]? = nil
     ) {
         self.error = error
         self.severity = severity
@@ -82,14 +82,15 @@ struct ErrorContext {
 
 // MARK: - Error Handling Service
 @MainActor
-class ErrorHandlingService: ObservableObject {
+@Observable
+class ErrorHandlingService {
     static let shared = ErrorHandlingService()
     
-    @Published var currentError: ErrorContext?
-    @Published var showErrorAlert = false
-    @Published var errorHistory: [ErrorContext] = []
-    @Published var toastMessage: String?
-    @Published var toastType: ToastType = .info
+    var currentError: ErrorContext?
+    var showErrorAlert = false
+    var errorHistory: [ErrorContext] = []
+    var toastMessage: String?
+    var toastType: ToastType = .info
     
     private let maxHistorySize = 50
     
@@ -100,7 +101,7 @@ class ErrorHandlingService: ObservableObject {
                severity: ErrorSeverity = .medium,
                source: String,
                userAction: String? = nil,
-               additionalInfo: [String: Any]? = nil) {
+               additionalInfo: [String: String]? = nil) {
         
         let appError = categorizeError(error)
         let context = ErrorContext(
@@ -244,7 +245,7 @@ class ErrorHandlingService: ObservableObject {
 
 // MARK: - Error Display View
 struct ErrorAlertView: View {
-    @ObservedObject var errorService = ErrorHandlingService.shared
+    @State var errorService = ErrorHandlingService.shared
     
     var body: some View {
         EmptyView()

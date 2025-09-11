@@ -22,11 +22,12 @@ import UserNotifications
  * - Body Weight (HKQuantityTypeIdentifier.bodyMass) - read/write
  */
 @MainActor
-class HealthKitService: ObservableObject {
+@Observable
+class HealthKitService {
     static let shared = HealthKitService()
     
     private let healthStore = HKHealthStore()
-    private var observerQueries: [HKObserverQuery] = []
+    private let queryManager = HealthQueryManager()
     
     // OPTIMIZED: Add comprehensive caching for better performance
     private var cachedHealthData: [String: Any] = [:]
@@ -39,57 +40,57 @@ class HealthKitService: ObservableObject {
     private var cachedWeight: Double? = nil
     
     // MARK: - Published Properties
-    @Published var isAuthorized = false
-    @Published var isLoading = false
-    @Published var error: Error?
+    var isAuthorized = false
+    var isLoading = false
+    var error: Error?
     
     // MARK: Activity & Fitness Data
-    @Published var todaySteps: Double = 0
-    @Published var todayActiveCalories: Double = 0
-    @Published var todayBasalCalories: Double = 0
-    @Published var todayDistance: Double = 0
+    var todaySteps: Double = 0
+    var todayActiveCalories: Double = 0
+    var todayBasalCalories: Double = 0
+    var todayDistance: Double = 0
     
     var todayCalories: Double {
         return todayActiveCalories + todayBasalCalories
     }
-    @Published var todayFlightsClimbed: Double = 0
-    @Published var todayExerciseMinutes: Double = 0
-    @Published var todayStandHours: Double = 0
+    var todayFlightsClimbed: Double = 0
+    var todayExerciseMinutes: Double = 0
+    var todayStandHours: Double = 0
     
     // MARK: Heart & Cardiovascular Data
-    @Published var currentHeartRate: Double? = nil
-    @Published var restingHeartRate: Double? = nil
-    @Published var heartRateVariability: Double? = nil
-    @Published var vo2Max: Double? = nil
+    var currentHeartRate: Double? = nil
+    var restingHeartRate: Double? = nil
+    var heartRateVariability: Double? = nil
+    var vo2Max: Double? = nil
     
     // MARK: Body Measurements Data
-    @Published var currentWeight: Double? = nil
-    @Published var bodyMassIndex: Double? = nil
-    @Published var bodyFatPercentage: Double? = nil
-    @Published var leanBodyMass: Double? = nil
-    @Published var currentHeight: Double? = nil
+    var currentWeight: Double? = nil
+    var bodyMassIndex: Double? = nil
+    var bodyFatPercentage: Double? = nil
+    var leanBodyMass: Double? = nil
+    var currentHeight: Double? = nil
     
     // MARK: Sleep & Recovery Data
-    @Published var lastNightSleep: Double = 0 // hours
-    @Published var sleepEfficiency: Double = 0 // percentage
+    var lastNightSleep: Double = 0 // hours
+    var sleepEfficiency: Double = 0 // percentage
     
     // MARK: Workout Data
-    @Published var recentWorkouts: [HKWorkout] = []
-    @Published var workoutHistory: [WorkoutHistoryItem] = []
+    var recentWorkouts: [HKWorkout] = []
+    var workoutHistory: [WorkoutHistoryItem] = []
     
     // MARK: Historical Trends Data
-    @Published var stepsHistory: [HealthDataPoint] = []
-    @Published var weightHistory: [HealthDataPoint] = []
-    @Published var heartRateHistory: [HealthDataPoint] = []
-    @Published var workoutTrends: WorkoutTrends = WorkoutTrends.empty
+    var stepsHistory: [HealthDataPoint] = []
+    var weightHistory: [HealthDataPoint] = []
+    var heartRateHistory: [HealthDataPoint] = []
+    var workoutTrends: WorkoutTrends = WorkoutTrends.empty
     
     // MARK: Health Intelligence Data
-    @Published var currentRecoveryScore: RecoveryScore?
-    @Published var healthInsights: [HealthInsight] = []
-    @Published var fitnessAssessment: FitnessLevelAssessment?
+    var currentRecoveryScore: RecoveryScore?
+    var healthInsights: [HealthInsight] = []
+    var fitnessAssessment: FitnessLevelAssessment?
     
     // MARK: Authorization Status Tracking
-    @Published var authorizationStatuses: [String: HKAuthorizationStatus] = [:]
+    var authorizationStatuses: [String: HKAuthorizationStatus] = [:]
     
     // MARK: - Health Data Types
     
@@ -1722,60 +1723,40 @@ class HealthKitService: ObservableObject {
         let types: [HKQuantityType] = [stepCountType, activeEnergyType, bodyMassType]
         
         // Cancel previously running queries to avoid duplicates
-        for query in observerQueries {
-            healthStore.stop(query)
+        Task {
+            await queryManager.stopAllQueries(healthStore)
         }
-        observerQueries.removeAll()
         
         for type in types {
             let observerQuery = HKObserverQuery(sampleType: type, predicate: nil) { [weak self] _, completionHandler, error in
+                // Create a nonisolated wrapper for the completion handler
+                nonisolated(unsafe) let completion = completionHandler
                 if let error = error {
                     print("❌ HealthKit observer error for \(type.identifier): \(error)")
-                    completionHandler()
+                    completion()
                     return
                 }
                 
-                Task { [weak self] in
-                    guard let self else { completionHandler(); return }
+                Task { @MainActor [weak self] in
+                    guard let self else { completion(); return }
                     await self.readTodaysData()
-                    await MainActor.run {
-                        let steps = Int(self.todaySteps)
-                        let calories = Int(self.todayActiveCalories)
-                        let weightString = self.currentWeight.map { String(format: "%.1f", $0) } ?? "-"
-                        print("✅ HealthKit update received for \(type.identifier) at \(Date()) | steps=\(steps) kcal=\(calories) weight=\(weightString)")
-                    }
-                    completionHandler()
+                    let steps = Int(self.todaySteps)
+                    let calories = Int(self.todayActiveCalories)
+                    let weightString = self.currentWeight.map { String(format: "%.1f", $0) } ?? "-"
+                    print("✅ HealthKit update received for \(type.identifier) at \(Date()) | steps=\(steps) kcal=\(calories) weight=\(weightString)")
+                    completion()
                 }
             }
             healthStore.execute(observerQuery)
-            observerQueries.append(observerQuery)
+            Task {
+                await queryManager.addQuery(observerQuery)
+            }
             print("Observer query started for: \(type.identifier)")
         }
     }
     
-    // MARK: - Cleanup
-    deinit {
-        // Stop observer queries synchronously
-        for query in observerQueries {
-            healthStore.stop(query)
-        }
-        observerQueries.removeAll()
-        print("🧹 HealthKitService deinitialized")
-    }
-    
-    @MainActor
-    func stopObserverQueries() {
-        guard !observerQueries.isEmpty else { 
-            print("🔍 No HealthKit observer queries to stop")
-            return 
-        }
-        
-        let queryCount = observerQueries.count
-        for query in observerQueries {
-            healthStore.stop(query)
-        }
-        observerQueries.removeAll()
-        print("🛑 Stopped \(queryCount) HealthKit observer queries (\(Date()))")
+    func stopObserverQueries() async {
+        await queryManager.stopAllQueries(healthStore)
     }
     
     func disableBackgroundDelivery() {
@@ -1790,7 +1771,7 @@ class HealthKitService: ObservableObject {
             }
         }
     }
-    
+
     // MARK: - Helper Methods
     func getAuthorizationStatus() -> (steps: HKAuthorizationStatus, calories: HKAuthorizationStatus, weight: HKAuthorizationStatus) {
         return (
@@ -1798,5 +1779,56 @@ class HealthKitService: ObservableObject {
             calories: healthStore.authorizationStatus(for: activeEnergyType),
             weight: healthStore.authorizationStatus(for: bodyMassType)
         )
+    }
+    
+    // MARK: - Cleanup
+    deinit {
+        // Actor-safe cleanup of observer queries
+        let queryManager = self.queryManager
+        let healthStore = self.healthStore
+        Task {
+            await queryManager.stopAllQueries(healthStore)
+        }
+        print("🧹 HealthKitService deinitialized")
+    }
+}
+
+// MARK: - Thread-Safe Query Management Actor
+/**
+ * Actor responsible for managing HKObserverQuery lifecycle in a thread-safe manner.
+ * 
+ * This actor ensures that HealthKit observer queries are properly managed without
+ * concurrency issues, especially during cleanup operations in deinit.
+ */
+actor HealthQueryManager {
+    private var queries: [HKObserverQuery] = []
+    
+    /// Add an observer query to be managed
+    func addQuery(_ query: HKObserverQuery) {
+        queries.append(query)
+        print("🔍 Added HealthKit observer query. Total: \(queries.count)")
+    }
+    
+    /// Stop all managed queries and clear the collection
+    func stopAllQueries(_ healthStore: HKHealthStore) {
+        guard !queries.isEmpty else {
+            print("🔍 No HealthKit observer queries to stop")
+            return
+        }
+        
+        let queryCount = queries.count
+        print("🛑 Stopping \(queryCount) HealthKit observer queries...")
+        
+        for query in queries {
+            healthStore.stop(query)
+        }
+        
+        queries.removeAll()
+        print("✅ All HealthKit observer queries stopped and cleared")
+    }
+    
+    /// Get current number of managed queries
+    func getQueryCount() -> Int {
+        return queries.count
     }
 }

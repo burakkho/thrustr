@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct EntryRowView: View {
-    @EnvironmentObject private var unitSettings: UnitSettings
+    @Environment(UnitSettings.self) var unitSettings
     let entry: NutritionEntry
     let onEdit: () -> Void
     let onError: (String) -> Void

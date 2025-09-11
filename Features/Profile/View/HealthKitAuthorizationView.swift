@@ -2,9 +2,9 @@ import SwiftUI
 import HealthKit
 
 struct HealthKitAuthorizationView: View {
-    @StateObject private var healthKitService = HealthKitService.shared
+    @State private var healthKitService = HealthKitService.shared
     @Environment(\.theme) private var theme
-    @StateObject private var unitSettings = UnitSettings.shared
+    @State private var unitSettings = UnitSettings.shared
     
     var body: some View {
         ScrollView {
@@ -98,7 +98,7 @@ struct HealthKitAuthorizationView: View {
 
 // MARK: - Authorization Summary Card
 struct AuthorizationSummaryCard: View {
-    @StateObject private var healthKitService = HealthKitService.shared
+    @State private var healthKitService = HealthKitService.shared
     @Environment(\.theme) private var theme
     
     var body: some View {
@@ -154,7 +154,7 @@ struct AuthorizationSummaryCard: View {
 // MARK: - Health Data Category Card
 struct HealthDataCategoryCard: View {
     let category: HealthDataCategory
-    @StateObject private var healthKitService = HealthKitService.shared
+    @State private var healthKitService = HealthKitService.shared
     @Environment(\.theme) private var theme
     
     var body: some View {

@@ -4,11 +4,18 @@ import SwiftData
 struct AccountManagementView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
+    @Environment(CloudSyncManager.self) private var cloudSyncManager
+    @Environment(CloudKitAvailabilityService.self) private var cloudAvailability
     
     let user: User?
     
     @State private var showingDeleteAlert = false
     @State private var showingResetAlert = false
+    @State private var showingResetConfirmation = false
+    @State private var isResetting = false
+    @State private var showingResetSuccess = false
+    @State private var showingResetError = false
+    @State private var resetErrorMessage = ""
     
     var body: some View {
         NavigationStack {
@@ -31,7 +38,10 @@ struct AccountManagementView: View {
                 Section {
                     DangerousActionsSection(
                         showingReset: $showingResetAlert,
-                        showingDelete: $showingDeleteAlert
+                        showingResetConfirmation: $showingResetConfirmation,
+                        showingDelete: $showingDeleteAlert,
+                        isResetting: isResetting,
+                        cloudAvailable: cloudAvailability.isAvailable
                     )
                 } header: {
                     Text("account.dangerous_actions".localized)
@@ -52,13 +62,39 @@ struct AccountManagementView: View {
                 }
             }
         }
-        .alert("account.reset_data".localized, isPresented: $showingResetAlert) {
-            Button("account.reset_data".localized, role: .destructive) {
-                resetData()
+        .alert("⚠️ iCloud Data Warning", isPresented: $showingResetAlert) {
+            Button("I Understand", role: .destructive) {
+                showingResetConfirmation = true
             }
             Button("common.cancel".localized, role: .cancel) { }
         } message: {
-            Text("account.reset_desc".localized)
+            Text("This will delete data from iCloud and all your other devices. This action cannot be undone and will affect all devices signed in to your iCloud account.")
+        }
+        .alert("account.reset_data".localized, isPresented: $showingResetConfirmation) {
+            Button("account.reset_data".localized, role: .destructive) {
+                Task {
+                    await resetData()
+                }
+            }
+            Button("common.cancel".localized, role: .cancel) { }
+        } message: {
+            Text(cloudAvailability.isAvailable 
+                ? "Final confirmation: All workout and nutrition data will be permanently deleted from this device and iCloud."
+                : "account.reset_desc".localized)
+        }
+        .alert("Success", isPresented: $showingResetSuccess) {
+            Button("common.ok".localized) { }
+        } message: {
+            Text(cloudAvailability.isAvailable 
+                ? "All workout and nutrition data has been reset successfully on this device and iCloud. Changes will sync to your other devices."
+                : "All workout and nutrition data has been reset successfully.")
+        }
+        .alert("Reset Status", isPresented: $showingResetError) {
+            Button("common.ok".localized) { }
+        } message: {
+            Text(resetErrorMessage.isEmpty 
+                ? "An error occurred while resetting data. Please try again."
+                : resetErrorMessage)
         }
         .alert("account.delete_account".localized, isPresented: $showingDeleteAlert) {
             Button("common.delete".localized, role: .destructive) {
@@ -70,8 +106,84 @@ struct AccountManagementView: View {
         }
     }
     
-    private func resetData() {
-        print("Data reset requested")
+    @MainActor
+    private func resetData() async {
+        isResetting = true
+        
+        do {
+            // Delete all workout and nutrition data while preserving user profile
+            // Since ModelContext is MainActor-isolated, we need to perform deletions sequentially
+            
+            // Delete Lift Results
+            let liftResults = try modelContext.fetch(FetchDescriptor<LiftExerciseResult>())
+            for result in liftResults {
+                modelContext.delete(result)
+            }
+            
+            // Delete Cardio Results
+            let cardioResults = try modelContext.fetch(FetchDescriptor<CardioResult>())
+            for result in cardioResults {
+                modelContext.delete(result)
+            }
+            
+            // Delete Nutrition Entries
+            let nutritionEntries = try modelContext.fetch(FetchDescriptor<NutritionEntry>())
+            for entry in nutritionEntries {
+                modelContext.delete(entry)
+            }
+            
+            // Delete Lift Sessions
+            let liftSessions = try modelContext.fetch(FetchDescriptor<LiftSession>())
+            for session in liftSessions {
+                modelContext.delete(session)
+            }
+            
+            // Delete Cardio Sessions
+            let cardioSessions = try modelContext.fetch(FetchDescriptor<CardioSession>())
+            for session in cardioSessions {
+                modelContext.delete(session)
+            }
+            
+            // Delete WOD Results
+            let wodResults = try modelContext.fetch(FetchDescriptor<WODResult>())
+            for result in wodResults {
+                modelContext.delete(result)
+            }
+            
+            // Delete Strength Test Results
+            let testResults = try modelContext.fetch(FetchDescriptor<StrengthTestResult>())
+            for result in testResults {
+                modelContext.delete(result)
+            }
+            
+            // Save changes
+            try modelContext.save()
+            
+            // Trigger CloudKit sync if available
+            if cloudAvailability.isAvailable {
+                print("🔄 Triggering CloudKit sync after data reset")
+                await cloudSyncManager.sync()
+                
+                // Check for sync errors
+                if cloudSyncManager.syncStatus == .failed,
+                   let syncError = cloudSyncManager.error {
+                    isResetting = false
+                    resetErrorMessage = "Data reset completed locally, but iCloud sync failed: \(syncError.localizedDescription). Data will sync when connection improves."
+                    showingResetError = true
+                    return
+                }
+            }
+            
+            // Show success
+            isResetting = false
+            showingResetSuccess = true
+            
+        } catch {
+            // Handle error
+            isResetting = false
+            resetErrorMessage = "Failed to reset data: \(error.localizedDescription)"
+            showingResetError = true
+        }
     }
     
     private func deleteAccount() {
@@ -222,20 +334,33 @@ struct DataManagementSection: View {
 // MARK: - Dangerous Actions Section
 struct DangerousActionsSection: View {
     @Binding var showingReset: Bool
+    @Binding var showingResetConfirmation: Bool
     @Binding var showingDelete: Bool
+    let isResetting: Bool
+    let cloudAvailable: Bool
     
     var body: some View {
         VStack(spacing: 0) {
             Button {
-                showingReset = true
+                if cloudAvailable {
+                    showingReset = true  // İlk uyarı (iCloud ile ilgili)
+                } else {
+                    showingResetConfirmation = true  // Direkt onay (sadece local)
+                }
             } label: {
                 HStack {
-                    Image(systemName: "trash.fill")
-                        .foregroundColor(.orange)
-                        .frame(width: 24)
+                    if isResetting {
+                        ProgressView()
+                            .scaleEffect(0.8)
+                            .frame(width: 24)
+                    } else {
+                        Image(systemName: "trash.fill")
+                            .foregroundColor(.orange)
+                            .frame(width: 24)
+                    }
                     
                     VStack(alignment: .leading, spacing: 2) {
-                        Text("account.reset_data".localized)
+                        Text(isResetting ? "Processing..." : "account.reset_data".localized)
                             .foregroundColor(.orange)
                             .fontWeight(.medium)
                         
@@ -247,6 +372,7 @@ struct DangerousActionsSection: View {
                     Spacer()
                 }
             }
+            .disabled(isResetting)
             
             Divider()
                 .padding(.vertical, 8)

@@ -9,17 +9,18 @@ import Combine
  * and provides insights for user progress tracking.
  */
 @MainActor
-final class TestResultsViewModel: ObservableObject {
+@Observable
+final class TestResultsViewModel {
     
-    // MARK: - Published Properties
+    // MARK: - Observable Properties
     
-    @Published var currentResults: StrengthTest?
-    @Published var historicalTests: [StrengthTest] = []
-    @Published var showingComparison: Bool = false
-    @Published var selectedHistoricalTest: StrengthTest?
-    @Published var isLoadingHistory: Bool = false
-    @Published var shareText: String?
-    @Published var showingShareSheet: Bool = false
+    var currentResults: StrengthTest?
+    var historicalTests: [StrengthTest] = []
+    var showingComparison: Bool = false
+    var selectedHistoricalTest: StrengthTest?
+    var isLoadingHistory: Bool = false
+    var shareText: String?
+    var showingShareSheet: Bool = false
     
     // MARK: - Dependencies
     
@@ -178,7 +179,7 @@ final class TestResultsViewModel: ObservableObject {
     }
     
     var personalRecordsCount: Int {
-        currentResults?.results.filter { $0.isPersonalRecord }.count ?? 0
+        currentResults?.results?.filter { $0.isPersonalRecord }.count ?? 0
     }
     
     var recommendationsCount: Int {
@@ -316,13 +317,13 @@ struct TestComparison {
     /**
      * Gets exercise-specific comparisons.
      */
-    func exerciseComparison(for exerciseType: StrengthExerciseType) -> ExerciseComparison? {
+    func exerciseComparison(for exerciseType: StrengthExerciseType) -> TestExerciseComparison? {
         guard let currentResult = current.result(for: exerciseType),
               let previousResult = previous.result(for: exerciseType) else {
             return nil
         }
         
-        return ExerciseComparison(
+        return TestExerciseComparison(
             current: currentResult,
             previous: previousResult,
             exerciseType: exerciseType
@@ -372,7 +373,7 @@ struct ExerciseProgress {
 /**
  * Comparison between two exercise results.
  */
-struct ExerciseComparison {
+struct TestExerciseComparison {
     let current: StrengthTestResult
     let previous: StrengthTestResult
     let exerciseType: StrengthExerciseType

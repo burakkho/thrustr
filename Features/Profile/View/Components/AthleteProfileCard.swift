@@ -15,22 +15,37 @@ struct AthleteProfileCard: View {
     
     @Environment(\.theme) private var theme
     @Environment(\.modelContext) private var modelContext
-    @EnvironmentObject private var unitSettings: UnitSettings
-    @EnvironmentObject private var tabRouter: TabRouter
+    @Environment(UnitSettings.self) private var unitSettings
+    @Environment(TabRouter.self) private var tabRouter
+    @State private var healthKitService = HealthKitService.shared
     
     @State private var showingStrengthTest = false
     @State private var showingNavyCalculator = false
     
     var body: some View {
-        HStack(spacing: theme.spacing.s) {
-            heightCard
-            weightCard  
-            bodyFatCard
-            strengthLevelCard
+        VStack(spacing: 16) {
+            // Section Header
+            HStack {
+                Text("profile.quick_actions".localized)
+                    .font(.headline)
+                    .fontWeight(.semibold)
+                    .foregroundColor(theme.colors.textPrimary)
+                
+                Spacer()
+            }
+            .padding(.horizontal, 4)
+            
+            // Quick Action Buttons Grid
+            LazyVGrid(columns: [
+                GridItem(.flexible(), spacing: 12),
+                GridItem(.flexible(), spacing: 12)
+            ], spacing: 16) {
+                quickWeightAction
+                quickMeasureAction
+                quickGoalsAction  
+                quickAnalyticsAction
+            }
         }
-        .accessibilityElement(children: .contain)
-        .accessibilityLabel(DashboardKeys.Profile.profileMetrics.localized)
-        .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
         .fullScreenCover(isPresented: $showingStrengthTest) {
             StrengthTestView(user: user, modelContext: modelContext)
         }
@@ -41,95 +56,78 @@ struct AthleteProfileCard: View {
         }
     }
     
-    // MARK: - Card Components
-    private var heightCard: some View {
-        UserStatCard(
-            icon: "ruler",
-            value: formatHeight(user.height),
-            title: DashboardKeys.Profile.height.localized,
-            color: .blue,
-            action: nil  // No action for now
-        )
-    }
+    // MARK: - Quick Action Components
     
-    private var weightCard: some View {
-        UserStatCard(
-            icon: "scalemass",
-            value: formatWeight(user.currentWeight),
-            title: DashboardKeys.Profile.weight.localized,
+    @State private var showingWeightEntry = false
+    @State private var showingMeasurements = false
+    
+    private var quickWeightAction: some View {
+        QuickActionCard(
+            title: "profile.log_weight".localized,
+            subtitle: formatCurrentWeight(),
+            icon: "scalemass.fill",
             color: .green,
-            action: nil  // No action for now
+            action: { showingWeightEntry = true }
+        )
+        .sheet(isPresented: $showingWeightEntry) {
+            WeightEntrySheet(user: user)
+        }
+    }
+    
+    private var quickMeasureAction: some View {
+        QuickActionCard(
+            title: "profile.measurements".localized,
+            subtitle: "profile.track_progress".localized,
+            icon: "ruler.fill",
+            color: .blue,
+            action: { showingMeasurements = true }
+        )
+        .sheet(isPresented: $showingMeasurements) {
+            BodyMeasurementsView(user: user)
+        }
+    }
+    
+    private var quickGoalsAction: some View {
+        QuickActionCard(
+            title: "profile.goals".localized,
+            subtitle: "profile.set_targets".localized,
+            icon: "target",
+            color: .purple,
+            action: {
+                tabRouter.selected = 1  // Training tab for goals
+            }
         )
     }
     
-    private var bodyFatCard: some View {
-        UserStatCard(
-            icon: "percent",
-            value: bodyFatDisplay,
-            title: DashboardKeys.Profile.bodyFat.localized,
+    private var quickAnalyticsAction: some View {
+        QuickActionCard(
+            title: "analytics.title".localized,
+            subtitle: "profile.view_progress".localized,
+            icon: "chart.line.uptrend.xyaxis",
             color: .orange,
-            action: navigateToBodyFatCalculator
-        )
-    }
-    
-    private var strengthLevelCard: some View {
-        UserStatCard(
-            icon: isStrengthLevelEmpty ? "plus.circle" : "chart.line.uptrend.xyaxis",
-            value: isStrengthLevelEmpty ? DashboardKeys.Profile.takeTest.localized : strengthLevelDisplay,
-            title: DashboardKeys.Profile.strengthLevel.localized,
-            color: isStrengthLevelEmpty ? .blue : strengthLevelColor,
-            action: strengthLevelAction
+            action: {
+                tabRouter.selected = 1  // Training tab analytics
+            }
         )
     }
     
     // MARK: - Computed Properties
     
-    private var bodyFatDisplay: String {
-        if let bodyFat = user.calculateBodyFatPercentage() {
-            return String(format: "%.1f%%", bodyFat)
-        }
-        return "--"
-    }
-    
-    private var strengthLevelDisplay: String {
-        let (levelString, _) = getOverallStrengthLevel()
-        return levelString
-    }
-    
-    private var strengthLevelColor: Color {
-        let (_, strengthLevel) = getOverallStrengthLevel()
+    private func formatCurrentWeight() -> String {
+        // Use HealthKit weight if available, otherwise user's manual weight
+        let weight = healthKitService.isAuthorized && healthKitService.currentWeight != nil 
+                   ? healthKitService.currentWeight! 
+                   : user.currentWeight
         
-        guard let level = strengthLevel else { return .gray }
-        
-        switch level {
-        case .beginner: return .red
-        case .novice: return .orange
-        case .intermediate: return .yellow
-        case .advanced: return .green
-        case .expert: return .blue
-        case .elite: return .purple
-        }
-    }
-    
-    private func formatHeight(_ height: Double) -> String {
         if unitSettings.unitSystem == .metric {
-            return "\(Int(height))cm"
-        } else {
-            let totalInches = height * 0.393701
-            let feet = Int(totalInches / 12)
-            let inches = Int(totalInches.truncatingRemainder(dividingBy: 12))
-            return "\(feet)'\(inches)\""
-        }
-    }
-    
-    private func formatWeight(_ weight: Double) -> String {
-        if unitSettings.unitSystem == .metric {
-            return String(format: "%.1fkg", weight)
+            return String(format: "%.1f kg", weight)
         } else {
             let pounds = weight * 2.20462
-            return String(format: "%.1flb", pounds)
+            return String(format: "%.1f lb", pounds)
         }
     }
+    
+    
     
     private func getOverallStrengthLevel() -> (level: String, strengthLevel: StrengthLevel?) {
         guard user.hasCompleteOneRMData else { return ("--", nil) }
@@ -176,13 +174,11 @@ struct AthleteProfileCard: View {
         return (abbreviation, overallLevel)
     }
     
-    private var isStrengthLevelEmpty: Bool {
-        return strengthLevelDisplay == "--"
-    }
     
     // MARK: - Actions
     private func strengthLevelAction() {
-        if isStrengthLevelEmpty {
+        let (levelString, _) = getOverallStrengthLevel()
+        if levelString == "--" {
             // Navigate to strength test
             navigateToStrengthTest()
         } else {
@@ -211,6 +207,7 @@ struct AthleteProfileCard: View {
 
 // MARK: - Supporting Views
 
+
 /**
  * Enhanced stat card for displaying user profile metrics with icons and animations.
  * Includes hover effects and consistent sizing for better visual hierarchy.
@@ -222,8 +219,18 @@ struct UserStatCard: View {
     let icon: String
     let value: String
     let title: String
+    let subtitle: String?
     let color: Color
     let action: (() -> Void)?
+    
+    init(icon: String, value: String, title: String, subtitle: String? = nil, color: Color, action: (() -> Void)? = nil) {
+        self.icon = icon
+        self.value = value
+        self.title = title
+        self.subtitle = subtitle
+        self.color = color
+        self.action = action
+    }
     
     // Computed property to detect call-to-action state
     private var isCallToAction: Bool {
@@ -232,21 +239,29 @@ struct UserStatCard: View {
     
     var body: some View {
         VStack(spacing: theme.spacing.xs) {
-            // Value with larger, bolder text
+            // Value with larger, bolder text - Enhanced sizing
             Text(value)
-                .font(isCallToAction ? .callout.bold() : .title3.bold())
+                .font(isCallToAction ? .headline.bold() : .title2.bold())  // Increased font sizes
                 .foregroundColor(isCallToAction ? color : theme.colors.textPrimary)
                 .lineLimit(1)
                 .minimumScaleFactor(0.7)
             
-            // Title with better spacing
+            // Title with better spacing - Enhanced readability
             Text(title)
-                .font(.caption.weight(.medium))
+                .font(.subheadline.weight(.medium))  // Increased from .caption
                 .foregroundColor(theme.colors.textSecondary)
                 .lineLimit(1)
+            
+            // Source indicator subtitle
+            if let subtitle = subtitle {
+                Text(subtitle)
+                    .font(.caption2)
+                    .foregroundColor(theme.colors.textTertiary)
+                    .lineLimit(1)
+            }
         }
-        .frame(maxWidth: .infinity, idealHeight: 60)
-        .padding(theme.spacing.m)
+        .frame(maxWidth: .infinity, idealHeight: 80)  // Increased from 60 to 80
+        .padding(theme.spacing.l)  // Increased padding from .m to .l
         .background(
             RoundedRectangle(cornerRadius: theme.radius.m)
                 .fill(theme.colors.cardBackground)
@@ -285,8 +300,12 @@ struct UserStatCard: View {
     
     // MARK: - Actions
     private func performAction(_ action: @escaping () -> Void) {
-        // Haptic feedback
-        HapticManager.shared.impact(.light)
+        // Enhanced haptic feedback based on action type
+        if isCallToAction {
+            HapticManager.shared.impact(.medium)  // Stronger feedback for CTA
+        } else {
+            HapticManager.shared.impact(.light)   // Light feedback for info cards
+        }
         
         action()
     }
@@ -320,5 +339,5 @@ struct UserStatCard: View {
     AthleteProfileCard(user: sampleUser)
         .padding()
         .modelContainer(for: [User.self, StrengthTest.self], inMemory: true)
-        .environmentObject(UnitSettings.shared)
+        .environment(UnitSettings.shared)
 }

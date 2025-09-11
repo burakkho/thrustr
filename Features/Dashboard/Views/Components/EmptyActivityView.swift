@@ -8,7 +8,7 @@ import SwiftUI
  */
 struct EmptyActivityView: View {
     @Environment(\.theme) private var theme
-    @EnvironmentObject private var tabRouter: TabRouter
+    @Environment(TabRouter.self) var tabRouter
     
     var user: User? = nil
     
@@ -179,7 +179,7 @@ struct EmptyActivityView: View {
 
 #Preview {
     EmptyActivityView(user: nil)
-        .environmentObject(TabRouter())
+        .environment(TabRouter())
         .environment(\.theme, DefaultLightTheme())
         .padding()
 }

@@ -4,9 +4,9 @@ import SwiftData
 // MARK: - Cardio Result Model (Per-Exercise Results)
 @Model
 final class CardioResult {
-    var id: UUID
-    var completedAt: Date
-    var isCompleted: Bool
+    var id: UUID = UUID()
+    var completedAt: Date = Date()
+    var isCompleted: Bool = false
     
     // Performance Data
     var completionTime: Int? // in seconds (for distance workouts)
@@ -37,7 +37,7 @@ final class CardioResult {
     
     // Notes and Feedback
     var exerciseNotes: String?
-    var isPersonalRecord: Bool
+    var isPersonalRecord: Bool = false
     var prType: String? // "fastest_time", "longest_distance", "best_pace"
     
     // GPS and Route Data (for outdoor exercises)
@@ -47,7 +47,7 @@ final class CardioResult {
     
     // Timestamps
     var startedAt: Date?
-    var createdAt: Date
+    var createdAt: Date = Date()
     
     // Relationships
     var exercise: CardioExercise?
@@ -120,11 +120,13 @@ extension CardioResult {
         }
     }
     
+    @MainActor
     var formattedDistance: String? {
         guard let distance = distanceCovered else { return nil }
         return UnitsFormatter.formatDistance(meters: distance, system: UnitSettings.shared.unitSystem)
     }
     
+    @MainActor
     var formattedPace: String? {
         let paceSeconds = calculatePace()
         guard let paceSeconds = paceSeconds else { return nil }
@@ -132,6 +134,7 @@ extension CardioResult {
         return UnitsFormatter.formatPace(minPerKm: paceMinPerKm, system: UnitSettings.shared.unitSystem)
     }
     
+    @MainActor
     var formattedSpeed: String? {
         guard let speed = calculateSpeed() else { return nil }
         return UnitsFormatter.formatSpeed(kmh: speed, system: UnitSettings.shared.unitSystem)
@@ -274,7 +277,7 @@ extension CardioResult {
         guard let exercise = exercise, isCompleted else { return }
         
         // Get all previous completed results for this exercise
-        let previousResults = exercise.results.filter { result in
+        let previousResults = (exercise.results ?? []).filter { result in
             result.id != self.id && result.isCompleted
         }
         
@@ -346,7 +349,7 @@ extension CardioResult {
     func getComparisonWithPrevious() -> ResultComparison? {
         guard let exercise = exercise else { return nil }
         
-        let previousResults = exercise.results
+        let previousResults = (exercise.results ?? [])
             .filter { $0.id != self.id && $0.isCompleted }
             .sorted { $0.completedAt > $1.completedAt }
         
@@ -379,6 +382,7 @@ struct ResultComparison {
         return previousPace - currentPace // Positive means improvement (faster pace)
     }
     
+    @MainActor
     var improvementSummary: String {
         var improvements: [String] = []
         

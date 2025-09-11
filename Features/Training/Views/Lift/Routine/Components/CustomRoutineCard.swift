@@ -9,7 +9,7 @@ struct CustomRoutineCard: View {
     let onFavoriteToggle: (() -> Void)?
     
     private var totalSets: Int {
-        workout.exercises.reduce(0) { $0 + $1.targetSets }
+        workout.exercises?.reduce(0) { $0 + $1.targetSets } ?? 0
     }
     
     private var estimatedDuration: String {
@@ -23,7 +23,7 @@ struct CustomRoutineCard: View {
     }
     
     private var exercisePreview: [String] {
-        workout.exercises.prefix(3).map { $0.exerciseName }
+        workout.exercises?.prefix(3).map { $0.exerciseName } ?? []
     }
     
     var body: some View {
@@ -70,7 +70,7 @@ struct CustomRoutineCard: View {
                 HStack(spacing: theme.spacing.l) {
                     statItem(
                         icon: "list.bullet",
-                        value: "\(workout.exercises.count)",
+                        value: "\(workout.exercises?.count ?? 0)",
                         label: "routine.exercises".localized
                     )
                     
@@ -102,8 +102,8 @@ struct CustomRoutineCard: View {
                             }
                         }
                         
-                        if workout.exercises.count > 3 {
-                            Text("+ \(workout.exercises.count - 3) more")
+                        if (workout.exercises?.count ?? 0) > 3 {
+                            Text("+ \((workout.exercises?.count ?? 0) - 3) more")
                                 .font(.caption)
                                 .foregroundColor(theme.colors.textSecondary)
                         }

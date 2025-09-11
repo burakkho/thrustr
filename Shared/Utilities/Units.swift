@@ -3,16 +3,22 @@ import SwiftUI
 import Combine
 
 // MARK: - Unit System
-enum UnitSystem: String, Codable, CaseIterable, Equatable {
+enum UnitSystem: String, Codable, CaseIterable, Equatable, Sendable {
     case metric
     case imperial
 }
 
 // MARK: - Global Unit Settings
-final class UnitSettings: ObservableObject {
+@MainActor
+@Observable
+final class UnitSettings {
     static let shared = UnitSettings()
     
-    @Published var unitSystem: UnitSystem
+    var unitSystem: UnitSystem {
+        didSet {
+            Self.persist(unitSystem)
+        }
+    }
     
     static let userDefaultsKey = "preferredUnitSystem"
     
@@ -30,13 +36,8 @@ final class UnitSettings: ObservableObject {
     }
     
     private func setupPersistence() {
-        // Listen to unitSystem changes and persist them
-        $unitSystem
-            .dropFirst() // Skip initial value
-            .sink { newValue in
-                Self.persist(newValue)
-            }
-            .store(in: &cancellables)
+        // For @Observable pattern, persistence is handled in didSet
+        // No need for Combine publishers
     }
     
     private var cancellables = Set<AnyCancellable>()

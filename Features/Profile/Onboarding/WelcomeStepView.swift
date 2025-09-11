@@ -97,7 +97,7 @@ struct WelcomeStepView: View {
                 onNext()
             }
             .accessibilityLabel(Text(CommonKeys.Onboarding.welcomeStart.localized))
-            .accessibilityHint(Text("Onboarding'a başla"))
+            .accessibilityHint(Text("onboarding.welcome.start_hint".localized))
             .padding(.horizontal, 24)
             .padding(.bottom, 50)
         }

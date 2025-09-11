@@ -367,6 +367,7 @@
 "onboarding.summary.label.protein" = "Protein";
 "onboarding.summary.label.carbs" = "Kohlenhydrate";
 "onboarding.summary.label.fat" = "Fett";
+"onboarding.summary.age_format" = "%d Jahre";
 
 // MARK: - Dashboard
 // duplicate removed
@@ -527,8 +528,11 @@
 "training.cardio.quickStart" = "Schnellstart";
 "training.cardio.activityType" = "Aktivitätstyp";
 "training.cardio.selectActivityToStart" = "Aktivitätstyp auswählen und starten";
+"training.cardio.modalLocation" = "Standort";
 "training.cardio.location" = "Standort";
+"training.cardio.modalFeatures" = "Funktionen";
 "training.cardio.features" = "Funktionen";
+"training.cardio.modalStart" = "Starten";
 "training.cardio.start" = "Starten";
 "training.cardio.cancel" = "Abbrechen";
 "training.cardio.gpsRealTimeTracking" = "GPS-Echtzeit-Distanzverfolgung";
@@ -617,6 +621,7 @@
 "training.category.functional" = "Funktionell";
 "training.category.isolation" = "Isolation";
 "training.category.other" = "Andere";
+"training.category.strength" = "Kraft";
 
 // MARK: - Set Tracking
 "training.set.back" = "Zurück";
@@ -867,6 +872,15 @@
 "analytics.this_month" = "Dieser Monat";
 "analytics.last_30_days" = "Letzte 30 Tage";
 "analytics.all_time" = "Alle Zeiten";
+"analytics.nutrition_dashboard" = "Ernährungs-Dashboard";
+"analytics.monthly_trends" = "Monatliche Trends";
+"analytics.total_entries" = "Gesamte Einträge";
+"analytics.avg_daily_calories" = "Durchschn. tägliche Kalorien";
+"analytics.most_active_day" = "Aktivster Tag";
+"analytics.highest_calorie_day" = "Höchster Kalorien-Tag";
+"analytics.logging_consistency" = "Protokollierungs-Konsistenz";
+"analytics.primary_macro" = "Primärer Makro";
+"analytics.calorie_consistency" = "Kalorien-Konsistenz";
 
 // MARK: - Calculators
 "calculators.title" = "Rechner";
@@ -874,6 +888,9 @@
 "calculators.navy_method" = "Navy-Methode";
 "calculators.ffmi_calculator" = "FFMI-Rechner";
 "calculators.one_rm_calculator" = "1RM-Rechner";
+"calculators.bmr" = "BMR";
+"calculators.bmr_calculator" = "BMR-Rechner";
+"calculators.tdee" = "TDEE";
 "calculators.bmr_calculator" = "BMR-Rechner";
 "calculators.tdee_calculator" = "TDEE-Rechner";
 
@@ -1293,10 +1310,12 @@
 "body_measurements.current_measurements" = "Aktuelle Messungen";
 
 // MARK: - Personal Info Extended
+"personal_info.title" = "Persönliche Informationen";
 "personal_info.update_title" = "Persönliche Informationen aktualisieren";
 "personal_info.update_subtitle" = "Halte deine Informationen aktuell für genaue Berechnungen";
 "personal_info.basic_info" = "Grundinformationen";
 "personal_info.name" = "Name";
+"personal_info.name_placeholder" = "Namen eingeben";
 "personal_info.age" = "Alter";
 "personal_info.gender" = "Geschlecht";
 "personal_info.physical_measurements" = "Körperliche Messungen";
@@ -1939,6 +1958,8 @@
 "training.cardio.adjustSearch" = "Versuche deine Suche anzupassen";
 "training.cardio.clearSearch" = "Suche Löschen";
 "training.cardio.noHistory" = "Noch Keine Einheiten";
+"training.cardio.noSessions" = "Noch keine Sitzungen";
+"training.cardio.noSessionsDesc" = "Starten Sie Ihr erstes Cardio-Training";
 "training.cardio.browseTemplates" = "Vorlagen Durchsuchen";
 "training.cardio.neverAttempted" = "Nie versucht";
 
@@ -2704,6 +2725,13 @@
 "nutrition.categories.nuts" = "Nüsse";
 "nutrition.categories.beverages" = "Getränke";
 "nutrition.categories.snacks" = "Snacks";
+"nutrition.categories.turkish" = "Türkische Gerichte";
+"nutrition.categories.fastfood" = "Fast Food";
+"nutrition.categories.supplements" = "Nahrungsergänzungsmittel";
+"nutrition.categories.condiments" = "Soßen & Gewürze";
+"nutrition.categories.bakery" = "Backwaren";
+"nutrition.categories.seafood" = "Meeresfrüchte";
+"nutrition.categories.desserts" = "Desserts";
 "nutrition.categories.other" = "Andere";
 
 // MARK: - Nutrition Labels
@@ -2725,6 +2753,10 @@
 "nutrition.portionInput.custom" = "Benutzerdefiniert";
 "nutrition.portionInput.customAmount" = "Benutzerdefinierte Menge";
 "nutrition.portionInput.set" = "Setzen";
+
+// MARK: - Nutrition OpenFoodFacts
+"nutrition.openfoodfacts.section" = "OpenFoodFacts";
+"nutrition.openfoodfacts.loadingProduct" = "Produkt wird geladen...";
 "training.cardio.elevation" = "Höhe";
 
 // MARK: - Status Messages
@@ -2790,10 +2822,10 @@
 "training.welcome.welcomeBack" = "Willkommen zurück, %@!";
 "training.welcome.quickLift" = "Schnelles Krafttraining";
 "training.welcome.quickCardio" = "Schnelles Cardio";
-"training.welcome.dailyWOD" = "Tägliches WOD";
+"training.welcome.createWOD" = "WOD Erstellen";
 "training.welcome.startStrengthTraining" = "Krafttraining starten";
 "training.welcome.startCardioSession" = "Cardio-Sitzung starten";
-"training.welcome.todaysWorkout" = "Heutiges Training";
+"training.welcome.createWODSubtitle" = "WOD erstellen und starten";
 "training.welcome.findProgram" = "Programm finden";
 
 // MARK: - Warmup
@@ -2818,6 +2850,11 @@
 "training.analytics.startStrengthTest" = "Krafttest machen";
 "training.analytics.startFirstCardio" = "Erste Cardio-Sitzung starten";
 "training.analytics.recordFirstPR" = "Ersten PR aufzeichnen";
+"training.analytics.generalScore" = "Allgemeine Bewertung";
+"training.analytics.strengthProfile" = "Kraftprofil";
+"training.analytics.levelGuide" = "Levelführer";
+"training.test_results.details" = "Details";
+"training.test_results.percentage_symbol" = "%";
 
 // MARK: - Consistency Analytics
 "consistency.analytics.title" = "Konsistenz-Analytik";
@@ -2846,3 +2883,31 @@
 "pr.strength.deadlift" = "Kreuzheben PR";
 "pr.strength.overhead_press" = "Überkopfdrücken PR";
 "pr.strength.pull_up" = "Klimmzug PR";
+
+// MARK: - Dashboard Ergänzungen
+"dashboard.activities.allActivitiesTitle" = "Alle Aktivitäten";
+"dashboard.activities.clearFilters" = "Filter zurücksetzen";
+"dashboard.activities.filterAll" = "Alle";
+"dashboard.activities.filterMeasurements" = "Messungen";
+"dashboard.activities.filterNutrition" = "Ernährung";
+"dashboard.activities.filterWorkouts" = "Training";
+"dashboard.activities.noResultsDesc" = "Versuchen Sie, die Filter zurückzusetzen";
+"dashboard.activities.noResultsTitle" = "Keine Ergebnisse gefunden";
+"dashboard.activities.searchPlaceholder" = "Aktivität suchen...";
+"dashboard.activities.thisWeekStats" = "%d Aktivitäten diese Woche";
+"dashboard.activities.totalActivities" = "Insgesamt %d Aktivitäten";
+
+// Dashboard Strength Profile
+"dashboard.strengthProfile.empty.startTest" = "Test starten";
+"dashboard.strengthProfile.empty.subtitle" = "Entdecke dein aktuelles Kraftniveau";
+"dashboard.strengthProfile.empty.title" = "Krafttest";
+"dashboard.strengthProfile.history" = "Test-Historie";
+"dashboard.strengthProfile.lastTest" = "Letzter Test";
+"dashboard.strengthProfile.newTest" = "Neuer Test";
+"dashboard.strengthProfile.noData" = "Keine Daten";
+"dashboard.strengthProfile.notTested" = "Nicht getestet";
+"dashboard.strengthProfile.retestButton" = "Test wiederholen";
+"dashboard.strengthProfile.retestRecommended" = "Neuer Test empfohlen";
+"dashboard.strengthProfile.tapToStart" = "Antippen zum Starten";
+"dashboard.strengthProfile.title" = "Kraftprofil";
+"dashboard.strengthProfile.viewDetails" = "Details anzeigen";

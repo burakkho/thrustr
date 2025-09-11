@@ -8,18 +8,18 @@ import SwiftUI
  */
 struct ActivityRow: View {
     @Environment(\.theme) private var theme
-    @EnvironmentObject private var tabRouter: TabRouter
+    @Environment(TabRouter.self) var tabRouter
     @State private var isPressed = false
     @State private var isExpanded = false
     
     let activity: ActivityEntry
     
     private var isGroupedNutrition: Bool {
-        activity.metadata.customData?["is_grouped"] == "true"
+        activity.metadata?.customData?["is_grouped"] == "true"
     }
     
     private var groupedCount: Int {
-        Int(activity.metadata.customData?["grouped_count"] ?? "1") ?? 1
+        Int(activity.metadata?.customData?["grouped_count"] ?? "1") ?? 1
     }
     
     var body: some View {
@@ -120,19 +120,19 @@ struct ActivityRow: View {
                 ], spacing: theme.spacing.s) {
                     NutritionDetailItem(
                         label: "Protein",
-                        value: "\(Int(activity.metadata.protein ?? 0))g",
+                        value: "\(Int(activity.metadata?.protein ?? 0))g",
                         color: .red
                     )
                     
                     NutritionDetailItem(
                         label: "Karb",
-                        value: "\(Int(activity.metadata.carbs ?? 0))g",
+                        value: "\(Int(activity.metadata?.carbs ?? 0))g",
                         color: .blue
                     )
                     
                     NutritionDetailItem(
                         label: "Yağ",
-                        value: "\(Int(activity.metadata.fat ?? 0))g",
+                        value: "\(Int(activity.metadata?.fat ?? 0))g",
                         color: .yellow
                     )
                 }
@@ -321,7 +321,7 @@ struct NutritionDetailItem: View {
         ActivityRow(activity: sampleGoalActivity())
     }
     .padding()
-    .environmentObject(TabRouter())
+    .environment(TabRouter())
 }
 
 // MARK: - Preview Helpers

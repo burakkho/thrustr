@@ -4,7 +4,7 @@ import SwiftData
 // MARK: - Lift Accordion Card
 struct LiftAccordionCard: View {
     @Environment(\.theme) private var theme
-    @EnvironmentObject private var unitSettings: UnitSettings
+    @Environment(UnitSettings.self) var unitSettings
     @Binding var exerciseResult: LiftExerciseResult
     let isExpanded: Bool
     let previousSets: [SetData]?
@@ -53,7 +53,7 @@ struct LiftAccordionCard: View {
                         }
                         
                         VStack(alignment: .leading, spacing: 4) {
-                            Text(exerciseResult.exercise.exerciseName)
+                            Text(exerciseResult.exercise?.exerciseName ?? "Unknown Exercise")
                                 .font(theme.typography.headline)
                                 .foregroundColor(
                                     isExerciseCompleted ?
@@ -110,7 +110,7 @@ struct LiftAccordionCard: View {
                 VStack(spacing: 0) {
                     
                     // Set Header
-                    HStack(spacing: 6) {
+                    HStack(spacing: 4) {
                         Text("SET")
                             .frame(width: 32, alignment: .leading)
                         Text("PREV")
@@ -127,45 +127,53 @@ struct LiftAccordionCard: View {
                     .padding(.horizontal, theme.spacing.xs)
                     .padding(.vertical, 6)
                     
-                    // Sets
-                    ForEach(exerciseResult.sets.indices, id: \.self) { index in
-                        if index < exerciseResult.sets.count {
-                            SetTrackingRow(
-                                set: Binding(
-                                    get: { 
-                                        guard index < exerciseResult.sets.count else {
-                                            return SetData(setNumber: index + 1, weight: nil, reps: 10, isWarmup: false, isCompleted: false)
-                                        }
-                                        return exerciseResult.sets[index] 
-                                    },
-                                    set: { newValue in
-                                        guard index < exerciseResult.sets.count else { return }
-                                        exerciseResult.sets[index] = newValue
+                    // Sets - Safe ForEach with stable IDs
+                    ForEach(Array(exerciseResult.sets.enumerated()), id: \.element.id) { index, setData in
+                        SetTrackingRow(
+                            set: Binding(
+                                get: { 
+                                    // Safe get: Find by ID to ensure consistency
+                                    if let currentIndex = exerciseResult.sets.firstIndex(where: { $0.id == setData.id }) {
+                                        return exerciseResult.sets[currentIndex]
+                                    }
+                                    // Fallback: return original if not found (shouldn't happen)
+                                    return setData
+                                },
+                                set: { newValue in
+                                    // Safe set: Find current index by ID and update
+                                    if let currentIndex = exerciseResult.sets.firstIndex(where: { $0.id == setData.id }) {
+                                        exerciseResult.sets[currentIndex] = newValue
                                         onSetUpdate()
                                     }
-                                ),
+                                }
+                            ),
                             setNumber: index + 1,
                             previousSet: previousSets?.indices.contains(index) == true ? previousSets?[index] : nil,
                             onComplete: {
-                                exerciseResult.completeSet(at: index)
-                                onSetUpdate()
-                                
-                                // Check if exercise is now completed
-                                let isCompleted = exerciseResult.sets.allSatisfy { $0.isCompleted }
-                                if isCompleted {
-                                    onExerciseCompleted?(exerciseResult)
+                                // Find current index by ID for safe completion
+                                if let currentIndex = exerciseResult.sets.firstIndex(where: { $0.id == setData.id }) {
+                                    exerciseResult.completeSet(at: currentIndex)
+                                    onSetUpdate()
+                                    
+                                    // Check if exercise is now completed
+                                    let isCompleted = exerciseResult.sets.allSatisfy { $0.isCompleted }
+                                    if isCompleted {
+                                        onExerciseCompleted?(exerciseResult)
+                                    }
                                 }
                             },
                             onDelete: {
-                                setToDelete = index
-                                showingDeleteAlert = true
+                                // Find current index by ID for safe deletion
+                                if let currentIndex = exerciseResult.sets.firstIndex(where: { $0.id == setData.id }) {
+                                    setToDelete = currentIndex
+                                    showingDeleteAlert = true
+                                }
                             }
-                            )
-                            
-                            if index < exerciseResult.sets.count - 1 {
-                                Divider()
-                                    .padding(.horizontal, theme.spacing.m)
-                            }
+                        )
+                        
+                        if index < exerciseResult.sets.count - 1 {
+                            Divider()
+                                .padding(.horizontal, theme.spacing.m)
                         }
                     }
                     
@@ -225,7 +233,7 @@ struct LiftAccordionCard: View {
                 }
             }
         } message: {
-            Text("Are you sure you want to delete this set?")
+            Text(TrainingKeys.AlertsExtended.deleteSetConfirmation.localized)
         }
     }
 }

@@ -6,15 +6,18 @@ struct TrainingAnalyticsView: View {
     @Environment(\.theme) private var theme
     @Environment(\.modelContext) private var modelContext
     @Environment(TrainingCoordinator.self) private var coordinator
-    @EnvironmentObject private var unitSettings: UnitSettings
+    @Environment(UnitSettings.self) private var unitSettings
     @Query private var users: [User]
     
-    @StateObject private var analyticsService: AnalyticsService
+    @State private var analyticsService: AnalyticsService
     @State private var showingGoalSettings = false
     
-    // Initialize AnalyticsService with modelContext
-    init(modelContext: ModelContext) {
-        self._analyticsService = StateObject(wrappedValue: AnalyticsService(modelContext: modelContext))
+    // Initialize AnalyticsService with default empty service, will be updated in onAppear
+    init() {
+        // Temporary initialization - will be updated when view appears
+        let config = ModelConfiguration(isStoredInMemoryOnly: true)
+        let tempContainer = try! ModelContainer(for: User.self, configurations: config)
+        self._analyticsService = StateObject(wrappedValue: AnalyticsService(modelContext: tempContainer.mainContext))
     }
     
     private var currentUser: User? {
@@ -22,50 +25,51 @@ struct TrainingAnalyticsView: View {
     }
     
     var body: some View {
-        ScrollView {
-            VStack(spacing: theme.spacing.xl) {
-                if let user = currentUser {
-                    // Summary Cards Section
-                    summaryCardsSection(for: user)
-                    
-                    // Training Consistency Ring
+        VStack(spacing: theme.spacing.l) {
+            if let user = currentUser {
+                // Summary Cards Section (Most Important)
+                summaryCardsSection(for: user)
+                
+                // Compact Progress Section
+                VStack(spacing: theme.spacing.m) {
+                    // Training Consistency Ring - Compact
                     TrainingConsistencyRing(user: user)
                         .padding(.horizontal)
+                        .frame(maxHeight: 200) // Limit height
                     
-                    // Strength Progress Overview
-                    StrengthProgressOverview(user: user)
-                        .padding(.horizontal)
-                    
-                    // Cardio Progress Chart
-                    CardioProgressChart(user: user)
-                        .padding(.horizontal)
-                    
-                    // PR Timeline Card
+                    // Weekly Activity Chart Section - Compact
+                    weeklyChartSection
+                        .frame(maxHeight: 150) // Limit chart height
+                }
+                
+                // Additional Analytics - Collapsed by default
+                VStack(spacing: theme.spacing.m) {
+                    // PR Timeline Card - Compact
                     PRTimelineCard(user: user)
                         .padding(.horizontal)
-                    
-                    // Weekly Activity Chart Section
-                    weeklyChartSection
+                        .frame(maxHeight: 120) // Compact PR display
                     
                     // Monthly Goals Section
                     monthlyGoalsSection(for: user)
-                    
-                } else {
-                    // No user state
-                    EmptyStateCard(
-                        icon: "person.circle",
-                        title: TrainingKeys.Analytics.noUserProfile.localized,
-                        message: TrainingKeys.Analytics.setupProfileMessage.localized,
-                        primaryAction: .init(
-                            title: TrainingKeys.Analytics.setupProfile.localized,
-                            action: { coordinator.navigateToOneRMSetup() }
-                        )
-                    )
-                    .padding(.top, 50)
                 }
+                
+            } else {
+                // No user state
+                EmptyStateCard(
+                    icon: "person.circle",
+                    title: TrainingKeys.Analytics.noUserProfile.localized,
+                    message: TrainingKeys.Analytics.setupProfileMessage.localized,
+                    primaryAction: .init(
+                        title: TrainingKeys.Analytics.setupProfile.localized,
+                        action: { coordinator.navigateToOneRMSetup() }
+                    )
+                )
+                .padding(.top, 50)
             }
-            .padding(.vertical, theme.spacing.m)
+            
+            Spacer(minLength: 0) // Allow flexible spacing
         }
+        .padding(.vertical, theme.spacing.m)
         .sheet(isPresented: $showingGoalSettings) {
             if let user = currentUser {
                 GoalSettingsView(user: user)
@@ -211,7 +215,7 @@ struct TrainingAnalyticsView: View {
     user.benchPressOneRM = 80
     container.mainContext.insert(user)
     
-    return TrainingAnalyticsView(modelContext: container.mainContext)
+    return TrainingAnalyticsView()
         .environment(TrainingCoordinator())
         .modelContainer(container)
 }

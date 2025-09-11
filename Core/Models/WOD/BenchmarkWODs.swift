@@ -197,7 +197,8 @@ struct BenchmarkWODDatabase {
                 orderIndex: index
             )
             wodMovement.wod = wod
-            wod.movements.append(wodMovement)
+            if wod.movements == nil { wod.movements = [] }
+            wod.movements!.append(wodMovement)
         }
         
         return wod

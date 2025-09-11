@@ -18,9 +18,9 @@ struct ActivityFormatter {
         
         // Add food count
         if foodCount == 1 {
-            components.append(DashboardKeys.Activities.oneFood.localized)
+            components.append("1 food item")
         } else {
-            components.append(String(format: DashboardKeys.Activities.multipleFood.localized, foodCount))
+            components.append("\(foodCount) food items")
         }
         
         // Add calories
@@ -393,10 +393,10 @@ struct ActivityFormatter {
     
     private static func createGroupedNutritionActivity(from activities: [ActivityEntry]) -> ActivityEntry {
         let latestActivity = activities.max(by: { $0.timestamp < $1.timestamp })!
-        let totalCalories = activities.compactMap { $0.metadata.calories }.reduce(0, +)
-        let totalProtein = activities.compactMap { $0.metadata.protein }.reduce(0, +)
-        let totalCarbs = activities.compactMap { $0.metadata.carbs }.reduce(0, +)
-        let totalFat = activities.compactMap { $0.metadata.fat }.reduce(0, +)
+        let totalCalories = activities.compactMap { $0.metadata?.calories }.reduce(0, +)
+        let totalProtein = activities.compactMap { $0.metadata?.protein }.reduce(0, +)
+        let totalCarbs = activities.compactMap { $0.metadata?.carbs }.reduce(0, +)
+        let totalFat = activities.compactMap { $0.metadata?.fat }.reduce(0, +)
         let foodCount = activities.count
         
         let groupedMetadata = ActivityMetadata()

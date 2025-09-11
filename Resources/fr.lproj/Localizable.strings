@@ -679,6 +679,7 @@
 "onboarding.summary.label.protein" = "Protéines";
 "onboarding.summary.label.carbs" = "Glucides";
 "onboarding.summary.label.fat" = "Lipides";
+"onboarding.summary.age_format" = "%d ans";
 
 // MARK: - Dashboard
 // duplicate removed
@@ -862,8 +863,11 @@
 "training.cardio.quickStart" = "Démarrage Rapide";
 "training.cardio.activityType" = "Type d'Activité";
 "training.cardio.selectActivityToStart" = "Sélectionnez le type d'activité et commencez";
+"training.cardio.modalLocation" = "Lieu";
 "training.cardio.location" = "Lieu";
+"training.cardio.modalFeatures" = "Fonctionnalités";
 "training.cardio.features" = "Fonctionnalités";
+"training.cardio.modalStart" = "Démarrer";
 "training.cardio.start" = "Démarrer";
 "training.cardio.cancel" = "Annuler";
 "training.cardio.gpsRealTimeTracking" = "Suivi GPS distance en temps réel";
@@ -952,6 +956,7 @@
 "training.category.functional" = "Fonctionnel";
 "training.category.isolation" = "Isolation";
 "training.category.other" = "Autre";
+"training.category.strength" = "Force";
 
 // MARK: - Set Tracking
 "training.set.back" = "Retour";
@@ -1235,6 +1240,15 @@
 "analytics.this_month" = "Ce Mois";
 "analytics.last_30_days" = "30 Derniers Jours";
 "analytics.all_time" = "Depuis le Début";
+"analytics.nutrition_dashboard" = "Tableau de Bord Nutrition";
+"analytics.monthly_trends" = "Tendances Mensuelles";
+"analytics.total_entries" = "Entrées Totales";
+"analytics.avg_daily_calories" = "Calories Quotidiennes Moyennes";
+"analytics.most_active_day" = "Jour le Plus Actif";
+"analytics.highest_calorie_day" = "Jour de Plus Hautes Calories";
+"analytics.logging_consistency" = "Consistance des Enregistrements";
+"analytics.primary_macro" = "Macro Primaire";
+"analytics.calorie_consistency" = "Consistance Calorique";
 
 // MARK: - Calculators
 "calculators.title" = "Calculatrices";
@@ -1242,6 +1256,9 @@
 "calculators.navy_method" = "Navy Method";
 "calculators.ffmi_calculator" = "Calculateur FFMI";
 "calculators.one_rm_calculator" = "Calculateur 1RM";
+"calculators.bmr" = "BMR";
+"calculators.bmr_calculator" = "Calculateur BMR";
+"calculators.tdee" = "TDEE";
 "calculators.bmr_calculator" = "Calculateur BMR";
 "calculators.tdee_calculator" = "Calculateur TDEE";
 "calculators.body_fat_calculator" = "Calculateur Graisse Corporelle";
@@ -1669,10 +1686,12 @@
 "nutrition.search.multiLanguageSupport" = "Support de Recherche Multilingue";
 
 // MARK: - Personal Info Extended
+"personal_info.title" = "Informations Personnelles";
 "personal_info.update_title" = "Mettre à Jour Informations Personnelles";
 "personal_info.update_subtitle" = "Gardez vos informations à jour pour des calculs précis";
 "personal_info.basic_info" = "Informations de Base";
 "personal_info.name" = "Nom";
+"personal_info.name_placeholder" = "Entrez votre nom";
 "personal_info.age" = "Age";
 "personal_info.gender" = "Genre";
 "personal_info.physical_measurements" = "Mesures Physiques";
@@ -2826,10 +2845,10 @@
 "training.welcome.welcomeBack" = "Bon retour, %@!";
 "training.welcome.quickLift" = "Musculation Rapide";
 "training.welcome.quickCardio" = "Cardio Rapide";
-"training.welcome.dailyWOD" = "WOD Quotidien";
+"training.welcome.createWOD" = "Créer WOD";
 "training.welcome.startStrengthTraining" = "Commencer entraînement de force";
 "training.welcome.startCardioSession" = "Commencer séance cardio";
-"training.welcome.todaysWorkout" = "Entraînement d'aujourd'hui";
+"training.welcome.createWODSubtitle" = "Créer et commencer WOD";
 "training.welcome.findProgram" = "Trouver un programme";
 
 // MARK: - Warmup
@@ -2854,6 +2873,11 @@
 "training.analytics.startStrengthTest" = "Effectuer un Test de Force";
 "training.analytics.startFirstCardio" = "Commencer la Première Séance Cardio";
 "training.analytics.recordFirstPR" = "Enregistrer votre Premier RP";
+"training.analytics.generalScore" = "Score Général";
+"training.analytics.strengthProfile" = "Profil de Force";
+"training.analytics.levelGuide" = "Guide de Niveau";
+"training.test_results.details" = "Détails";
+"training.test_results.percentage_symbol" = "%";
 
 // MARK: - Consistency Analytics
 "consistency.analytics.title" = "Analyse de Régularité";
@@ -2882,3 +2906,29 @@
 "pr.strength.deadlift" = "RP Soulevé de Terre";
 "pr.strength.overhead_press" = "RP Développé Militaire";
 "pr.strength.pull_up" = "RP Traction";
+
+// MARK: - Dashboard Compléments
+"dashboard.activities.allActivitiesTitle" = "Toutes les Activités";
+"dashboard.activities.clearFilters" = "Effacer les filtres";
+"dashboard.activities.filterAll" = "Tout";
+"dashboard.activities.filterMeasurements" = "Mesures";
+"dashboard.activities.filterNutrition" = "Nutrition";
+"dashboard.activities.filterWorkouts" = "Entraînements";
+"dashboard.activities.noResultsDesc" = "Essayez d'effacer les filtres";
+"dashboard.activities.noResultsTitle" = "Aucun résultat trouvé";
+"dashboard.activities.searchPlaceholder" = "Rechercher une activité...";
+"dashboard.activities.thisWeekStats" = "%d activités cette semaine";
+"dashboard.activities.totalActivities" = "Total %d activités";
+"dashboard.strengthProfile.empty.startTest" = "Démarrer le Test";
+"dashboard.strengthProfile.empty.subtitle" = "Découvrez votre niveau de force actuel";
+"dashboard.strengthProfile.empty.title" = "Test de Force";
+"dashboard.strengthProfile.history" = "Historique des Tests";
+"dashboard.strengthProfile.lastTest" = "Dernier Test";
+"dashboard.strengthProfile.newTest" = "Nouveau Test";
+"dashboard.strengthProfile.noData" = "Aucune donnée";
+"dashboard.strengthProfile.notTested" = "Non testé";
+"dashboard.strengthProfile.retestButton" = "Refaire le Test";
+"dashboard.strengthProfile.retestRecommended" = "Nouveau test recommandé";
+"dashboard.strengthProfile.tapToStart" = "Appuyez pour commencer";
+"dashboard.strengthProfile.title" = "Profil de Force";
+"dashboard.strengthProfile.viewDetails" = "Voir les Détails";

@@ -756,8 +756,11 @@
 "training.cardio.quickStart" = "Avvio Rapido";
 "training.cardio.activityType" = "Tipo Attività";
 "training.cardio.selectActivityToStart" = "Seleziona tipo attività e inizia";
+"training.cardio.modalLocation" = "Posizione";
 "training.cardio.location" = "Posizione";
+"training.cardio.modalFeatures" = "Caratteristiche";
 "training.cardio.features" = "Caratteristiche";
+"training.cardio.modalStart" = "Inizia";
 "training.cardio.start" = "Inizia";
 "training.cardio.cancel" = "Annulla";
 "training.cardio.gpsRealTimeTracking" = "Monitoraggio GPS distanza in tempo reale";
@@ -851,6 +854,15 @@
 "analytics.this_month" = "Questo Mese";
 "analytics.last_30_days" = "Ultimi 30 Giorni";
 "analytics.all_time" = "Tutti i Tempi";
+"analytics.nutrition_dashboard" = "Dashboard Nutrizione";
+"analytics.monthly_trends" = "Tendenze Mensili";
+"analytics.total_entries" = "Inserimenti Totali";
+"analytics.avg_daily_calories" = "Calorie Giornaliere Medie";
+"analytics.most_active_day" = "Giorno Più Attivo";
+"analytics.highest_calorie_day" = "Giorno con Più Calorie";
+"analytics.logging_consistency" = "Consistenza del Registro";
+"analytics.primary_macro" = "Macro Primario";
+"analytics.calorie_consistency" = "Consistenza Calorica";
 
 // MARK: - Calculators
 "calculators.title" = "Calcolatori";
@@ -858,6 +870,9 @@
 "calculators.navy_method" = "Metodo Navy";
 "calculators.ffmi_calculator" = "Calcolatore FFMI";
 "calculators.one_rm_calculator" = "Calcolatore 1RM";
+"calculators.bmr" = "BMR";
+"calculators.bmr_calculator" = "Calcolatore BMR";
+"calculators.tdee" = "TDEE";
 "calculators.bmr_calculator" = "Calcolatore BMR";
 "calculators.tdee_calculator" = "Calcolatore TDEE";
 "calculators.body_fat_calculator" = "Calcolatore Grasso Corporeo";
@@ -943,6 +958,18 @@
 "achievements.item.sharer.desc" = "Prima foto progressi";
 "achievements.item.motivator_5.title" = "Motivatore";
 "achievements.item.motivator_5.desc" = "Condividi 5 foto progressi";
+
+// MARK: - Exercise Categories
+"training.category.push" = "Spinta";
+"training.category.pull" = "Trazione";
+"training.category.legs" = "Gambe";
+"training.category.core" = "Core";
+"training.category.cardio" = "Cardio";
+"training.category.olympic" = "Olimpico";
+"training.category.functional" = "Funzionale";
+"training.category.isolation" = "Isolamento";
+"training.category.other" = "Altro";
+"training.category.strength" = "Forza";
 
 // MARK: - Common Extended
 "common.completed" = "Completato";
@@ -1091,10 +1118,12 @@
 "body_measurements.add_new" = "Aggiungi Nuovo";
 
 // MARK: - Personal Info Extended
+"personal_info.title" = "Informazioni Personali";
 "personal_info.update_title" = "Aggiorna Informazioni Personali";
 "personal_info.update_subtitle" = "Mantieni aggiornate le tue informazioni per calcoli accurati";
 "personal_info.basic_info" = "Informazioni Base";
 "personal_info.name" = "Nome";
+"personal_info.name_placeholder" = "Inserisci il tuo nome";
 "personal_info.age" = "Età";
 "personal_info.gender" = "Genere";
 "personal_info.physical_measurements" = "Misurazioni Fisiche";
@@ -2335,10 +2364,10 @@
 "training.welcome.welcomeBack" = "Bentornato, %@!";
 "training.welcome.quickLift" = "Sollevamento Rapido";
 "training.welcome.quickCardio" = "Cardio Rapido";
-"training.welcome.dailyWOD" = "WOD Giornaliero";
+"training.welcome.createWOD" = "Crea WOD";
 "training.welcome.startStrengthTraining" = "Inizia allenamento forza";
 "training.welcome.startCardioSession" = "Inizia sessione cardio";
-"training.welcome.todaysWorkout" = "Allenamento di oggi";
+"training.welcome.createWODSubtitle" = "Crea e inizia WOD";
 "training.welcome.findProgram" = "Trova un programma";
 
 // MARK: - Warmup Complete
@@ -2743,6 +2772,11 @@
 "training.analytics.startStrengthTest" = "Esegui Test di Forza";
 "training.analytics.startFirstCardio" = "Inizia Prima Sessione Cardio";
 "training.analytics.recordFirstPR" = "Registra il Tuo Primo RP";
+"training.analytics.generalScore" = "Punteggio Generale";
+"training.analytics.strengthProfile" = "Profilo di Forza";
+"training.analytics.levelGuide" = "Guida al Livello";
+"training.test_results.details" = "Dettagli";
+"training.test_results.percentage_symbol" = "%";
 
 // MARK: - Consistency Analytics
 "consistency.analytics.title" = "Analisi Consistenza";
@@ -2791,3 +2825,119 @@
 "nutrition.search.aliasResults" = "Risultati Alias";
 "nutrition.search.searchOptimized" = "Ricerca Ottimizzata";
 "nutrition.search.multiLanguageSupport" = "Supporto Ricerca Multilingue";
+
+// MARK: - Onboarding Completamento
+"onboarding.back" = "Indietro";
+"onboarding.next" = "Avanti";
+"onboarding.skip" = "Salta";
+"onboarding.continue" = "Continua";
+
+// Welcome Step
+"onboarding.welcome.title" = "Benvenuto in\nThrustr! 💪";
+"onboarding.welcome.subtitle" = "Siamo con te nel tuo percorso fitness.\nIniziamo!";
+"onboarding.welcome.start" = "Iniziamo!";
+"onboarding.feature.workout" = "Tracciamento allenamenti intelligente";
+"onboarding.feature.progress" = "Analisi dei progressi";
+"onboarding.feature.nutrition" = "Controllo nutrizionale";
+"onboarding.feature.goals" = "Obiettivi personali";
+
+// Progress
+"onboarding.progress.step" = "Passo %d/%d";
+
+// Personal Info Step
+"onboarding.personalInfo.title" = "Informazioni Personali";
+"onboarding.personalInfo.subtitle" = "Conosciamoci meglio";
+"onboarding.personalInfo.name" = "Nome";
+"onboarding.personalInfo.name.placeholder" = "es. Marco";
+"onboarding.personalInfo.age" = "Età";
+"onboarding.personalInfo.age.years" = "%d anni";
+"onboarding.personalInfo.gender" = "Sesso";
+"onboarding.personalInfo.gender.male" = "Maschio";
+"onboarding.personalInfo.gender.female" = "Femmina";
+"onboarding.personalInfo.height" = "Altezza";
+"onboarding.personalInfo.weight" = "Peso";
+
+// Consent Step
+"onboarding.consent.title" = "Consenso";
+"onboarding.consent.subtitle" = "Rivedi e accetta i documenti per continuare.";
+"onboarding.consent.terms.title" = "Accetta Termini di Servizio";
+"onboarding.consent.terms.desc" = "Devi accettare i Termini di Servizio per utilizzare l'app.";
+"onboarding.consent.viewTerms" = "Visualizza Termini di Servizio";
+"onboarding.consent.privacy.title" = "Accetta Privacy Policy";
+"onboarding.consent.privacy.desc" = "Rivedi e accetta la nostra Privacy Policy.";
+"onboarding.consent.viewPrivacy" = "Visualizza Privacy Policy";
+"onboarding.consent.marketing" = "Voglio ricevere aggiornamenti prodotto e consigli";
+
+// Goals Step
+"onboarding.goals.title" = "I Tuoi Obiettivi";
+"onboarding.goals.subtitle" = "In quale direzione stai pianificando di progredire?";
+"onboarding.goals.mainGoal" = "Obiettivo Principale";
+"onboarding.goals.activityLevel" = "Livello di Attività";
+"onboarding.goals.targetWeight" = "Peso Obiettivo (Opzionale)";
+"onboarding.goals.targetWeight.toggle" = "Imposta peso obiettivo";
+"onboarding.goals.cut.title" = "Perdita Grasso";
+"onboarding.goals.cut.subtitle" = "Perdere peso e ridurre grasso corporeo";
+"onboarding.goals.bulk.title" = "Aumento Massa";
+"onboarding.goals.bulk.subtitle" = "Aumentare massa muscolare e forza";
+
+// Measurements Step
+"onboarding.measurements.navyMethod.title" = "Metodo Navy";
+"onboarding.measurements.navyMethod.desc" = "Calcolo accurato grasso corporeo";
+"onboarding.measurements.neck.label" = "Collo";
+"onboarding.measurements.waist.male.label" = "Vita (all'ombelico)";
+"onboarding.measurements.waist.female.label" = "Vita (punto più stretto)";
+"onboarding.measurements.hip.label" = "Fianchi";
+"onboarding.measurements.bodyFat.title" = "Grasso Corporeo";
+"onboarding.measurements.bodyFat.navy" = "Navy Method";
+"onboarding.measurements.optional.info" = "Informazioni Opzionali";
+"onboarding.measurements.optional.desc" = "Queste misure sono opzionali ma migliorano i calcoli";
+"onboarding.measurements.skipStep" = "Salta Questo Passo";
+
+// Age format
+"onboarding.summary.age_format" = "%d anni";
+
+// MARK: - Dashboard Completamento
+"dashboard.activities.cardioCompleted" = "Cardio completato";
+"dashboard.activities.empty" = "Nessuna attività ancora";
+"dashboard.activities.empty.desc" = "Inizia il tuo primo allenamento o registra un pasto";
+"dashboard.activities.goalCompleted" = "completato";
+"dashboard.activities.measurementUpdated" = "aggiornata";
+"dashboard.activities.nutritionLogged" = "registrata";
+"dashboard.activities.personalRecord" = "Record personale!";
+"dashboard.activities.programStarted" = "Nuovo programma avviato";
+"dashboard.activities.seeAll" = "Visualizza Tutto";
+"dashboard.activities.settingsUpdated" = "aggiornate";
+"dashboard.activities.thisWeek" = "Questa Settimana";
+"dashboard.activities.title" = "Attività Recenti";
+"dashboard.activities.today" = "Oggi";
+"dashboard.activities.wodCompleted" = "WOD completato";
+"dashboard.activities.workoutCompleted" = "Allenamento completato";
+"dashboard.activities.yesterday" = "Ieri";
+
+// Dashboard General
+"dashboard.general.streakLabel" = "Serie";
+
+// Dashboard Quick Status
+"dashboard.quickStatus.dailyCalories" = "Calorie Giornaliere";
+"dashboard.quickStatus.monthlyAverage" = "Media Mensile";
+"dashboard.quickStatus.todayCalories" = "Calorie di Oggi";
+"dashboard.quickStatus.todayDistance" = "Distanza di Oggi";
+"dashboard.quickStatus.todayVolume" = "Volume di Oggi";
+"dashboard.quickStatus.weeklyAverage" = "Media Settimanale";
+"dashboard.quickStatus.weeklyDistance" = "Distanza Settimanale";
+"dashboard.quickStatus.weeklyVolume" = "Volume Settimanale";
+
+// Dashboard Strength Profile
+"dashboard.strengthProfile.empty.startTest" = "Inizia Test";
+"dashboard.strengthProfile.empty.subtitle" = "Scopri il tuo livello di forza attuale";
+"dashboard.strengthProfile.empty.title" = "Test di Forza";
+"dashboard.strengthProfile.history" = "Cronologia Test";
+"dashboard.strengthProfile.lastTest" = "Ultimo Test";
+"dashboard.strengthProfile.newTest" = "Nuovo Test";
+"dashboard.strengthProfile.noData" = "Nessun dato";
+"dashboard.strengthProfile.notTested" = "Non testato";
+"dashboard.strengthProfile.retestButton" = "Ripeti Test";
+"dashboard.strengthProfile.retestRecommended" = "Si consiglia un nuovo test";
+"dashboard.strengthProfile.tapToStart" = "Tocca per iniziare";
+"dashboard.strengthProfile.title" = "Profilo di Forza";
+"dashboard.strengthProfile.viewDetails" = "Visualizza Dettagli";

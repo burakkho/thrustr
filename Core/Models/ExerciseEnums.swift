@@ -1,7 +1,7 @@
 import SwiftUI
 
 // MARK: - Exercise Category Enum
-enum ExerciseCategory: String, CaseIterable, Codable {
+enum ExerciseCategory: String, CaseIterable, Codable, Sendable {
     case push = "push"
     case pull = "pull"
     case legs = "legs"
@@ -103,7 +103,7 @@ enum ExerciseCategory: String, CaseIterable, Codable {
 }
 
 // MARK: - Exercise Equipment Types
-enum ExerciseEquipment: String, CaseIterable {
+enum ExerciseEquipment: String, CaseIterable, Sendable {
     case barbell = "barbell"
     case dumbbell = "dumbbell"
     case kettlebell = "kettlebell"
@@ -168,7 +168,7 @@ enum ExerciseEquipment: String, CaseIterable {
 }
 
 // MARK: - WOD Format Types
-enum WODFormat: String, CaseIterable {
+enum WODFormat: String, CaseIterable, Sendable {
     case forTime = "for_time"
     case amrap = "amrap"
     case emom = "emom"
@@ -246,7 +246,7 @@ enum WODFormat: String, CaseIterable {
 }
 
 // MARK: - Fitness Level
-enum FitnessLevel: String, CaseIterable {
+enum FitnessLevel: String, CaseIterable, Sendable {
     case beginner = "beginner"
     case intermediate = "intermediate"
     case advanced = "advanced"
@@ -281,7 +281,7 @@ enum FitnessLevel: String, CaseIterable {
 }
 
 // MARK: - Activity Level - UPDATED FOR LOCALIZATION
-enum ActivityLevel: String, CaseIterable {
+enum ActivityLevel: String, CaseIterable, Sendable {
     case sedentary = "sedentary"
     case light = "light"
     case moderate = "moderate"
@@ -320,7 +320,7 @@ enum ActivityLevel: String, CaseIterable {
 }
 
 // MARK: - Fitness Goal - UPDATED FOR LOCALIZATION
-enum FitnessGoal: String, CaseIterable {
+enum FitnessGoal: String, CaseIterable, Sendable {
     case cut = "cut"
     case bulk = "bulk"
     case maintain = "maintain"
@@ -394,7 +394,7 @@ enum FitnessGoal: String, CaseIterable {
 }
 
 // MARK: - Meal Types
-enum MealType: String, CaseIterable {
+enum MealType: String, CaseIterable, Sendable {
     case breakfast = "breakfast"
     case lunch = "lunch"
     case dinner = "dinner"

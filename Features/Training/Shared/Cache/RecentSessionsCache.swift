@@ -1,8 +1,9 @@
 import Foundation
 import SwiftUI
 
-// MARK: - Simple Session Cache (No @Published to avoid SwiftUI conflicts)
-class RecentSessionsCache: ObservableObject {
+// MARK: - Simple Session Cache (No published properties - pure cache)
+@Observable
+class RecentSessionsCache {
     private var cachedSessions: [any WorkoutSession]?
     private var lastUpdateTime: Date?
     private let cacheValidityDuration: TimeInterval = 300 // 5 minutes

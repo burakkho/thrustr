@@ -55,7 +55,7 @@ struct LiftHistorySection: View {
     
     private func sessionCard(for session: LiftSession) -> some View {
         SessionHistoryCard(
-            workoutName: session.workout.localizedName,
+            workoutName: session.workout?.localizedName ?? "Unknown Workout",
             date: session.startDate,
             duration: session.duration,
             primaryMetric: SessionMetric(

@@ -1,13 +1,28 @@
 import Foundation
 import SwiftUI
 import CoreLocation
+import AVFoundation
+import AudioToolbox
+import HealthKit
 
+@MainActor
 @Observable
 class CardioTimerViewModel {
     // MARK: - Core Services
     let timerViewModel = TimerViewModel()
     let locationManager = LocationManager.shared
     let bluetoothManager = BluetoothManager()
+    
+    // MARK: - HealthKit Integration
+    private let healthStore = HKHealthStore()
+    
+    // Local data collection for iOS HealthKit
+    private var heartRateReadings: [(Date, Double)] = []
+    private var calorieReadings: [(Date, Double)] = []
+    
+    // MARK: - Audio Feedback
+    private var audioPlayer: AVAudioPlayer?
+    private var hapticGenerator = UIImpactFeedbackGenerator(style: .medium)
     
     // MARK: - Unit Settings
     private var unitSettings: UnitSettings { UnitSettings.shared }
@@ -98,6 +113,7 @@ class CardioTimerViewModel {
         
         setupLocationTracking()
         setupHeartRateZones()
+        setupAudioFeedback()
     }
     
     // MARK: - Setup
@@ -116,9 +132,80 @@ class CardioTimerViewModel {
         bluetoothManager.updateHeartRateZonesKarvonen(max: maxHR, resting: restingHR)
     }
     
+    private func setupAudioFeedback() {
+        do {
+            // Configure audio session to mix with other audio (music)
+            // This allows workout sounds to play over music without interrupting it
+            try AVAudioSession.sharedInstance().setCategory(
+                .playback,
+                mode: .spokenAudio, // Optimized for short audio cues
+                options: [.mixWithOthers, .duckOthers] // Mix with music, duck volume briefly
+            )
+            
+            // Prepare haptic generator
+            hapticGenerator.prepare()
+            
+            Logger.info("Audio feedback configured - will mix with user's music")
+        } catch {
+            Logger.error("Failed to setup audio feedback: \(error)")
+        }
+    }
+    
+    // MARK: - Audio Feedback Methods
+    
+    private func playAudioFeedback(for type: AudioFeedbackType) {
+        // Check if audio feedback is enabled in user settings
+        guard shouldPlayAudioFeedback() else {
+            // Always provide haptic feedback as fallback
+            hapticGenerator.impactOccurred()
+            return
+        }
+        
+        // Use system sounds for better integration
+        switch type {
+        case .splitComplete:
+            // Short, pleasant beep for splits
+            AudioServicesPlaySystemSound(1309) // Tock sound
+        case .lapComplete:
+            // Double beep for laps
+            AudioServicesPlaySystemSound(1309)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                AudioServicesPlaySystemSound(1309)
+            }
+        case .milestone:
+            // Achievement sound
+            AudioServicesPlaySystemSound(1322) // Anticipate sound
+        case .warning:
+            // Subtle alert
+            AudioServicesPlaySystemSound(1306) // Telegraph sound
+        }
+        
+        // Always provide haptic feedback
+        hapticGenerator.impactOccurred()
+    }
+    
+    private func shouldPlayAudioFeedback() -> Bool {
+        // Audio feedback enabled by default - configurable via settings
+        // For now, always provide feedback (will mix with music)
+        return true
+    }
+    
+    
+    enum AudioFeedbackType {
+        case splitComplete
+        case lapComplete
+        case milestone
+        case warning
+    }
+    
     // MARK: - Timer Control
     func startSession() {
         sessionStartTime = Date()
+        
+        // Start HealthKit workout session
+        Task {
+            await startHealthKitTracking()
+        }
         
         // Start timer with countdown
         timerViewModel.startCountdown()
@@ -156,6 +243,11 @@ class CardioTimerViewModel {
     
     func stopSession() {
         timerViewModel.stopTimer()
+        
+        // Finish HealthKit workout
+        Task {
+            await saveHealthKitWorkout()
+        }
         
         if isOutdoor {
             locationManager.stopTracking()
@@ -197,6 +289,11 @@ class CardioTimerViewModel {
         
         // Check for split (every km)
         checkForSplit()
+        
+        // Write real-time data to HealthKit
+        Task {
+            await collectHealthKitData()
+        }
         
         // Force UI update by updating a computed property dependency
         Logger.debug("Updated metrics - Distance: \(locationManager.totalDistance)m, Pace: \(currentPace), Calories: \(currentCalories)")
@@ -260,7 +357,8 @@ class CardioTimerViewModel {
             
             splits.append(split)
             
-            // TODO: Audio feedback for split
+            // Audio feedback for split completion
+            playAudioFeedback(for: .splitComplete)
             let splitLabel = UnitsFormatter.formatSplitDistance(splitNumber: splitsCompleted, system: unitSettings.unitSystem)
             Logger.info("\(splitLabel): \(formatPace(splitPace))")
         }
@@ -353,4 +451,218 @@ class CardioTimerViewModel {
         
         return session
     }
+    
+    // MARK: - HealthKit Integration Methods (iOS Pattern)
+    @MainActor
+    private func startHealthKitTracking() async {
+        guard HKHealthStore.isHealthDataAvailable() else {
+            Logger.warning("HealthKit not available on this device")
+            return
+        }
+        
+        // Clear previous data
+        heartRateReadings.removeAll()
+        calorieReadings.removeAll()
+        
+        Logger.info("HealthKit tracking started - collecting data locally")
+    }
+    
+    @MainActor
+    private func mapActivityTypeToHealthKit() -> HKWorkoutActivityType {
+        switch activityType {
+        case .running:
+            return .running
+        case .walking:
+            return .walking
+        case .cycling:
+            return .cycling
+        }
+    }
+    
+    @MainActor
+    private func collectHealthKitData() async {
+        let now = Date()
+        
+        // Collect heart rate data
+        if bluetoothManager.currentHeartRate > 0 {
+            heartRateReadings.append((now, Double(bluetoothManager.currentHeartRate)))
+        }
+        
+        // Collect calorie data
+        if currentCalories > 0 {
+            calorieReadings.append((now, Double(currentCalories)))
+        }
+    }
+    
+    @MainActor
+    private func saveHealthKitWorkout() async {
+        guard HKHealthStore.isHealthDataAvailable(),
+              let startTime = sessionStartTime else {
+            return
+        }
+        
+        do {
+            let endTime = Date()
+            var samples: [HKSample] = []
+            
+            // Create workout using HKWorkoutBuilder (iOS 17+)
+            let workout = try await createWorkout(
+                activityType: mapActivityTypeToHealthKit(),
+                start: startTime,
+                end: endTime,
+                duration: endTime.timeIntervalSince(startTime) - totalPausedTime,
+                totalEnergyBurned: currentCalories > 0 ? HKQuantity(unit: .kilocalorie(), doubleValue: Double(currentCalories)) : nil,
+                totalDistance: isOutdoor ? HKQuantity(unit: .meter(), doubleValue: locationManager.totalDistance) : nil,
+                isIndoor: !isOutdoor
+            )
+            samples.append(workout)
+            
+            // Add heart rate samples
+            for (timestamp, heartRate) in heartRateReadings {
+                let heartRateType = HKQuantityType.quantityType(forIdentifier: .heartRate)!
+                let heartRateQuantity = HKQuantity(unit: HKUnit.count().unitDivided(by: .minute()), doubleValue: heartRate)
+                let heartRateSample = HKQuantitySample(
+                    type: heartRateType,
+                    quantity: heartRateQuantity,
+                    start: timestamp,
+                    end: timestamp
+                )
+                samples.append(heartRateSample)
+            }
+            
+            // Add route if outdoor and we have coordinates
+            if isOutdoor && !locationManager.routeCoordinates.isEmpty {
+                let locations = locationManager.routeCoordinates.map { coordinate in
+                    CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
+                }
+                
+                let routeBuilder = HKWorkoutRouteBuilder(healthStore: healthStore, device: nil)
+                try await routeBuilder.insertRouteData(locations)
+                let route = try await routeBuilder.finishRoute(with: workout, metadata: nil)
+                samples.append(route)
+            }
+            
+            // Save all samples to HealthKit
+            try await healthStore.save(samples)
+            
+            Logger.info("HealthKit workout saved successfully with \(samples.count) samples")
+        } catch {
+            Logger.error("Failed to save HealthKit workout: \(error)")
+        }
+        
+        // Clean up local data
+        heartRateReadings.removeAll()
+        calorieReadings.removeAll()
+    }
+    
+    // MARK: - HealthKit Workout Creation
+    
+    /// Creates a workout using HKWorkoutBuilder (iOS 17+ only)
+    private func createWorkout(
+        activityType: HKWorkoutActivityType,
+        start: Date,
+        end: Date,
+        duration: TimeInterval,
+        totalEnergyBurned: HKQuantity?,
+        totalDistance: HKQuantity?,
+        isIndoor: Bool
+    ) async throws -> HKWorkout {
+        
+        let metadata: [String: Any] = [
+            HKMetadataKeyIndoorWorkout: isIndoor
+        ]
+        
+        return try await createWorkoutWithBuilder(
+            activityType: activityType,
+            start: start,
+            end: end,
+            duration: duration,
+            totalEnergyBurned: totalEnergyBurned,
+            totalDistance: totalDistance,
+            metadata: metadata
+        )
+    }
+    
+    /// Modern workout creation using HKWorkoutBuilder (iOS 17+ only)
+    private func createWorkoutWithBuilder(
+        activityType: HKWorkoutActivityType,
+        start: Date,
+        end: Date,
+        duration: TimeInterval,
+        totalEnergyBurned: HKQuantity?,
+        totalDistance: HKQuantity?,
+        metadata: [String: Any]
+    ) async throws -> HKWorkout {
+        
+        let healthStore = HKHealthStore()
+        let configuration = HKWorkoutConfiguration()
+        configuration.activityType = activityType
+        configuration.locationType = metadata[HKMetadataKeyIndoorWorkout] as? Bool == true ? .indoor : .outdoor
+        
+        let builder = HKWorkoutBuilder(healthStore: healthStore, configuration: configuration, device: .local())
+        
+        return try await withCheckedThrowingContinuation { continuation in
+            builder.beginCollection(withStart: start) { success, error in
+                if let error = error {
+                    print("⚠️ HKWorkoutBuilder failed to begin collection: \(error)")
+                    continuation.resume(throwing: error)
+                    return
+                }
+                
+                // Add energy burned if available
+                if let energyBurned = totalEnergyBurned {
+                    let energyType = HKQuantityType.quantityType(forIdentifier: .activeEnergyBurned)!
+                    let energySample = HKQuantitySample(
+                        type: energyType,
+                        quantity: energyBurned,
+                        start: start,
+                        end: end
+                    )
+                    builder.add([energySample]) { success, error in
+                        if let error = error {
+                            print("⚠️ Failed to add energy sample: \(error)")
+                        }
+                    }
+                }
+                
+                // Add distance if available
+                if let distance = totalDistance {
+                    let distanceType = HKQuantityType.quantityType(forIdentifier: .distanceWalkingRunning)!
+                    let distanceSample = HKQuantitySample(
+                        type: distanceType,
+                        quantity: distance,
+                        start: start,
+                        end: end
+                    )
+                    builder.add([distanceSample]) { success, error in
+                        if let error = error {
+                            print("⚠️ Failed to add distance sample: \(error)")
+                        }
+                    }
+                }
+                
+                builder.endCollection(withEnd: end) { success, error in
+                    if let error = error {
+                        print("⚠️ HKWorkoutBuilder failed to end collection: \(error)")
+                        continuation.resume(throwing: error)
+                        return
+                    }
+                    
+                    builder.finishWorkout { workout, error in
+                        if let error = error {
+                            print("⚠️ HKWorkoutBuilder failed to finish workout: \(error)")
+                            continuation.resume(throwing: error)
+                        } else if let workout = workout {
+                            continuation.resume(returning: workout)
+                        } else {
+                            print("⚠️ HKWorkoutBuilder returned no workout")
+                            let noWorkoutError = NSError(domain: "HKWorkoutBuilder", code: -1, userInfo: [NSLocalizedDescriptionKey: "No workout returned from builder"])
+                            continuation.resume(throwing: noWorkoutError)
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
 }

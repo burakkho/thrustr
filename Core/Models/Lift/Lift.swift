@@ -3,29 +3,29 @@ import SwiftData
 
 @Model
 final class Lift {
-    var id: UUID
-    var name: String
-    var nameEN: String
-    var nameTR: String
-    var nameES: String
-    var nameDE: String
-    var type: String // strength, powerlifting, olympic
-    var category: String // benchmark, custom
-    var liftDescription: String
-    var descriptionTR: String
-    var descriptionES: String
-    var descriptionDE: String
-    var sets: Int
-    var reps: Int
-    var isCustom: Bool
-    var isFavorite: Bool
+    var id: UUID = UUID()
+    var name: String = ""
+    var nameEN: String = ""
+    var nameTR: String = ""
+    var nameES: String = ""
+    var nameDE: String = ""
+    var type: String = "strength" // strength, powerlifting, olympic
+    var category: String = "custom" // benchmark, custom
+    var liftDescription: String = ""
+    var descriptionTR: String = ""
+    var descriptionES: String = ""
+    var descriptionDE: String = ""
+    var sets: Int = 5
+    var reps: Int = 5
+    var isCustom: Bool = true
+    var isFavorite: Bool = false
     var shareCode: String?
-    var createdAt: Date
-    var updatedAt: Date
+    var createdAt: Date = Date()
+    var updatedAt: Date = Date()
     
     // Relationships
-    var exercises: [LiftExercise]
-    var results: [LiftResult]
+    var exercises: [LiftExercise]?
+    var results: [LiftResult]?
     
     init(
         name: String,
@@ -92,27 +92,29 @@ extension Lift {
     
     // Get best result (highest weight)
     var personalRecord: LiftResult? {
-        results.max { ($0.totalWeight ?? 0) < ($1.totalWeight ?? 0) }
+        (results ?? []).max { ($0.totalWeight ?? 0) < ($1.totalWeight ?? 0) }
     }
     
     var lastPerformed: Date? {
-        results.map { $0.completedAt }.max()
+        return (results ?? [])
+            .compactMap { $0.completedAt }
+            .max()
     }
     
     var totalVolume: Double {
-        results.reduce(0) { $0 + ($1.totalWeight ?? 0) }
+        (results ?? []).reduce(0) { $0 + ($1.totalWeight ?? 0) }
     }
 }
 
 // MARK: - LiftResult Model
 @Model
 final class LiftResult {
-    var id: UUID
-    var completedAt: Date
+    var id: UUID = UUID()
+    var completedAt: Date = Date()
     var totalWeight: Double?
     var bestSet: Double? // Heaviest single set
-    var totalReps: Int
-    var totalSets: Int
+    var totalReps: Int = 0
+    var totalSets: Int = 0
     var notes: String?
     
     // Relationship

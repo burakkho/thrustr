@@ -1,6 +1,6 @@
 import Foundation
 
-enum WODType: String, Codable, CaseIterable {
+enum WODType: String, Codable, CaseIterable, Sendable {
     case forTime = "for_time"
     case amrap = "amrap"
     case emom = "emom"

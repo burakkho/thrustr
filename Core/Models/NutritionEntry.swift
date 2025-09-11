@@ -3,28 +3,28 @@ import Foundation
 
 @Model
 final class NutritionEntry {
-    var id: UUID
-    var date: Date
-    var mealType: String           // "breakfast", "lunch" etc.
-    var consumedAt: Date
+    var id: UUID = UUID()
+    var date: Date = Date()
+    var mealType: String = "breakfast"           // "breakfast", "lunch" etc.
+    var consumedAt: Date = Date()
     
     // Food bilgisi
     var food: Food?
-    var foodName: String          // Food silinirse diye yedek
+    var foodName: String = ""          // Food silinirse diye yedek
     
     // Porsiyon bilgisi
-    var gramsConsumed: Double     // Tüketilen gram
+    var gramsConsumed: Double = 0.0     // Tüketilen gram
     
     // Hesaplanmış besin değerleri (performans için)
-    var calories: Double
-    var protein: Double
-    var carbs: Double
-    var fat: Double
+    var calories: Double = 0.0
+    var protein: Double = 0.0
+    var carbs: Double = 0.0
+    var fat: Double = 0.0
     
     var notes: String?
     
-    var createdAt: Date
-    var updatedAt: Date
+    var createdAt: Date = Date()
+    var updatedAt: Date = Date()
     
     init(food: Food, gramsConsumed: Double, mealType: String, date: Date = Date()) {
         self.id = UUID()

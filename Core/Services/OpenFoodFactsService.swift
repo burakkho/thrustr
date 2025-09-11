@@ -25,17 +25,17 @@ enum OpenFoodFactsError: Error, LocalizedError, Equatable {
 }
 
 // MARK: - DTOs (limited OFF fields)
-struct OFFResponse: Decodable {
+struct OFFResponse: Decodable, Sendable {
     let status: Int?
     let status_verbose: String?
     let product: OFFProduct?
 }
 
-struct OFFSearchResponse: Decodable {
+struct OFFSearchResponse: Decodable, Sendable {
     let products: [OFFProduct]?
 }
 
-struct OFFProduct: Decodable {
+struct OFFProduct: Decodable, Sendable {
     let code: String?
     let product_name: String?
     let brands: String?
@@ -46,7 +46,7 @@ struct OFFProduct: Decodable {
     let serving_size: String?
 }
 
-struct OFFNutriments: Decodable {
+struct OFFNutriments: Decodable, Sendable {
     let energyKcal100g: OFFNumeric?
     let protein100g: OFFNumeric?
     let carbs100g: OFFNumeric?
@@ -61,7 +61,7 @@ struct OFFNutriments: Decodable {
 }
 
 // OFF bazen sayıları string olarak döndürüyor. Her iki formu da karşılayan decoder.
-struct OFFNumeric: Decodable {
+struct OFFNumeric: Decodable, Sendable {
     let value: Double?
 
     init(from decoder: Decoder) throws {
@@ -91,7 +91,8 @@ struct OpenFoodFactsLookupResult {
 
 // MARK: - Service
 @MainActor
-final class OpenFoodFactsService: ObservableObject {
+@Observable
+final class OpenFoodFactsService {
     // MARK: - Configuration
     private let baseURL = URL(string: "https://world.openfoodfacts.org/api/v2/")!
     private let userAgent = "Thrustr/1.0 (+https://thrustr.app)"
@@ -104,8 +105,8 @@ final class OpenFoodFactsService: ObservableObject {
     private let cache = URLCache(memoryCapacity: 10_000_000, diskCapacity: 50_000_000) // 10MB memory, 50MB disk
     
     // MARK: - Published state (aligning with app patterns)
-    @Published var isLoading: Bool = false
-    @Published var lastError: Error?
+    var isLoading: Bool = false
+    var lastError: Error?
 
     // MARK: - Public API
     init(session: URLSession? = nil) {

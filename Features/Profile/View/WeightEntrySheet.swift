@@ -3,7 +3,7 @@ import SwiftUI
 struct WeightEntrySheet: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
-    @EnvironmentObject private var unitSettings: UnitSettings
+    @Environment(UnitSettings.self) var unitSettings
     
     let user: User
     @State private var weight: String = ""
@@ -73,7 +73,7 @@ struct WeightEntrySheet: View {
                 ActivityLoggerService.shared.logMeasurementUpdate(
                     measurementType: "Kilo",
                     value: weightInKg,
-                    previousValue: nil, // TODO: could track previous weight
+                    previousValue: user.currentWeight,
                     unit: "kg",
                     user: user
                 )
@@ -146,5 +146,5 @@ private struct SaveButton: View {
 #Preview {
     let user = User()
     WeightEntrySheet(user: user)
-        .environmentObject(UnitSettings.shared)
+        .environment(UnitSettings.shared)
 }

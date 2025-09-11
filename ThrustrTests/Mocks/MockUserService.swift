@@ -54,9 +54,10 @@ final class MockUserService {
         user.hasHomeGym = false
         
         // Set some realistic health data
-        user.healthKitSteps = 8500
-        user.healthKitCalories = 2200
-        user.healthKitWeight = 75.0
+        // Legacy fields removed - using new data source tracking
+        // HealthKit data now accessed directly from HealthKitService
+        user.weightSource = DataSource.healthKit.rawValue
+        user.weightLastUpdated = Date()
         user.lastHealthKitSync = Date()
         
         return user
@@ -97,13 +98,16 @@ final class MockUserService {
         }
         
         if let steps = steps {
-            user.healthKitSteps = steps
+            // Steps now accessed from HealthKitService directly
+            print("Mock: Updated steps to \(steps)")
         }
         if let calories = calories {
-            user.healthKitCalories = calories
+            // Calories now accessed from HealthKitService directly
+            print("Mock: Updated calories to \(calories)")
         }
         if let weight = weight {
-            user.healthKitWeight = weight
+            // Use new smart weight update system
+            user.updateWeightIntelligently(weight, source: .healthKit)
         }
         
         user.lastHealthKitSync = Date()

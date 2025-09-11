@@ -11,7 +11,13 @@ struct TrainingDashboardView: View {
     @Query private var wodResults: [WODResult]
     @Query private var user: [User]
     
-    @StateObject private var sessionsCache = RecentSessionsCache()
+    @State private var sessionsCache = RecentSessionsCache()
+    
+    // Quick action sheet states
+    @State private var showingQuickCardio = false
+    @State private var showingQuickWOD = false
+    @State private var showingPrograms = false
+    @State private var selectedQuickWorkout: LiftWorkout?
     
     private var currentUser: User? {
         user.first
@@ -69,33 +75,8 @@ struct TrainingDashboardView: View {
     }
     
     var body: some View {
-        VStack(spacing: 0) {
-            // Dashboard Pills Selector
-            dashboardPillsSelector
-            
-            // Content based on selected section
-            switch coordinator.selectedDashboardSection {
-            case .overview:
-                overviewContent
-                    .animation(.easeInOut(duration: 0.2), value: coordinator.selectedDashboardSection)
-            case .analytics:
-                TrainingAnalyticsView(modelContext: modelContext)
-                    .environment(coordinator)
-                    .animation(.easeInOut(duration: 0.2), value: coordinator.selectedDashboardSection)
-            case .tests:
-                TestsMainView()
-                    .environment(coordinator)
-                    .animation(.easeInOut(duration: 0.2), value: coordinator.selectedDashboardSection)
-            case .goals:
-                if let user = currentUser {
-                    GoalSettingsView(user: user)
-                        .environment(coordinator)
-                        .animation(.easeInOut(duration: 0.2), value: coordinator.selectedDashboardSection)
-                } else {
-                    EmptyView()
-                }
-            }
-        }
+        // Show only overview content - no pills navigation needed
+        overviewContent
         .onAppear {
             updateCacheIfNeeded()
         }
@@ -109,31 +90,26 @@ struct TrainingDashboardView: View {
                 invalidateCacheAndUpdate()
             }
         }
+        .sheet(isPresented: $showingQuickCardio) {
+            CardioQuickStartView()
+        }
+        .sheet(isPresented: $showingQuickWOD) {
+            WODBuilderView()
+        }
+        .sheet(isPresented: $showingPrograms) {
+            LiftProgramsSection()
+                .environment(coordinator)
+        }
+        .sheet(item: $selectedQuickWorkout) { workout in
+            LiftSessionView(workout: workout, programExecution: nil)
+        }
     }
     
-    // MARK: - Dashboard Pills Selector
-    private var dashboardPillsSelector: some View {
-        TrainingTabSelector(
-            selection: Binding(
-                get: { coordinator.selectedDashboardSection.rawValue },
-                set: { coordinator.selectedDashboardSection = DashboardSection(rawValue: $0) ?? .overview }
-            ),
-            tabs: [
-                TrainingTab(title: TrainingKeys.Dashboard.overview.localized, icon: "square.grid.2x2.fill"),
-                TrainingTab(title: TrainingKeys.Dashboard.analytics.localized, icon: "chart.bar.fill"),
-                TrainingTab(title: TrainingKeys.Dashboard.tests.localized, icon: "chart.bar.doc.horizontal.fill"),
-                TrainingTab(title: TrainingKeys.Dashboard.goals.localized, icon: "target")
-            ]
-        )
-    }
     
     // MARK: - Overview Content
     private var overviewContent: some View {
         ScrollView {
             VStack(spacing: theme.spacing.xl) {
-                // Header Section
-                headerSection
-                
                 // Last Workout Card
                 if let lastWorkout = recentSessions.first {
                     // Last Workout Motivation Card (fallback)
@@ -157,26 +133,6 @@ struct TrainingDashboardView: View {
         }
     }
     
-    // MARK: - Header Section
-    private var headerSection: some View {
-        HStack {
-            VStack(alignment: .leading, spacing: 4) {
-                Text(TrainingKeys.Dashboard.title.localized)
-                    .font(theme.typography.title2)
-                    .fontWeight(.bold)
-                    .foregroundColor(theme.colors.textPrimary)
-                
-                if let user = currentUser {
-                    Text(String(format: TrainingKeys.Welcome.welcomeBack.localized, user.name))
-                        .font(theme.typography.body)
-                        .foregroundColor(theme.colors.textSecondary)
-                }
-            }
-            
-            Spacer()
-        }
-        .padding(.horizontal)
-    }
     
     // MARK: - Last Workout Card
     private func lastWorkoutCard(_ session: any WorkoutSession) -> some View {
@@ -301,7 +257,7 @@ struct TrainingDashboardView: View {
                     icon: "dumbbell.fill",
                     color: .strengthColor,
                     action: {
-                        coordinator.selectWorkoutType(.lift)
+                        createQuickLiftWorkout()
                     }
                 )
                 
@@ -311,17 +267,17 @@ struct TrainingDashboardView: View {
                     icon: "heart.fill",
                     color: .cardioColor,
                     action: {
-                        coordinator.selectWorkoutType(.cardio)
+                        showingQuickCardio = true
                     }
                 )
                 
                 QuickActionCard(
-                    title: TrainingKeys.Welcome.dailyWOD.localized,
-                    subtitle: TrainingKeys.Welcome.todaysWorkout.localized,
+                    title: TrainingKeys.Welcome.createWOD.localized,
+                    subtitle: TrainingKeys.Welcome.createWODSubtitle.localized,
                     icon: "flame.fill",
                     color: .wodColor,
                     action: {
-                        coordinator.selectWorkoutType(.wod)
+                        showingQuickWOD = true
                     }
                 )
                 
@@ -331,8 +287,7 @@ struct TrainingDashboardView: View {
                     icon: "rectangle.3.group",
                     color: theme.colors.accent,
                     action: {
-                        coordinator.selectWorkoutType(.lift)
-                        // Navigate to programs tab
+                        showingPrograms = true
                     }
                 )
             }
@@ -372,8 +327,8 @@ struct TrainingDashboardView: View {
             EmptyStateView(
                 systemImage: "figure.strengthtraining.traditional",
                 title: TrainingKeys.Dashboard.noRecentActivity.localized,
-                message: "Start your first workout to see your progress here!",
-                primaryTitle: "Start Workout",
+                message: TrainingKeys.EmptyStatesNew.firstWorkoutMessage.localized,
+                primaryTitle: TrainingKeys.EmptyStatesNew.startWorkout.localized,
                 primaryAction: {
                     coordinator.selectWorkoutType(.lift)
                 }
@@ -445,6 +400,24 @@ struct TrainingDashboardView: View {
         if session is CardioSession { return "heart.fill" }
         return "flame.fill"
     }
+    
+    // MARK: - Quick Action Functions
+    
+    private func createQuickLiftWorkout() {
+        let quickWorkout = LiftWorkout(
+            name: "Quick Lift",
+            isTemplate: false,
+            isCustom: true
+        )
+        modelContext.insert(quickWorkout)
+        
+        do {
+            try modelContext.save()
+            selectedQuickWorkout = quickWorkout
+        } catch {
+            print("Failed to create quick lift workout: \(error)")
+        }
+    }
 }
 
 // MARK: - Supporting Models & Views
@@ -455,42 +428,6 @@ struct TrainingWeeklyStats {
     let streak: Int
 }
 
-protocol WorkoutSession {
-    var workoutName: String { get }
-    var startDate: Date { get }
-    var completedAt: Date? { get }
-    var sessionDuration: TimeInterval { get } // Renamed to avoid conflicts
-    var isCompleted: Bool { get }
-}
-
-extension LiftSession: WorkoutSession {
-    var workoutName: String {
-        workout.name
-    }
-    
-    var completedAt: Date? {
-        endDate // LiftSession uses endDate instead of completedAt
-    }
-    
-    var sessionDuration: TimeInterval {
-        self.duration // LiftSession's duration is already TimeInterval
-    }
-    
-    // startDate and isCompleted already exist in LiftSession model
-}
-
-extension CardioSession: WorkoutSession {
-    // CardioSession already has all required properties:
-    // - workoutName: String
-    // - startDate: Date  
-    // - completedAt: Date?
-    // - duration: Int (but we need TimeInterval)
-    // - isCompleted: Bool
-    
-    var sessionDuration: TimeInterval {
-        TimeInterval(self.duration)
-    }
-}
 
 
 // MARK: - Quick Action Card

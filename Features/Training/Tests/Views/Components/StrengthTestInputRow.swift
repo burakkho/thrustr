@@ -98,7 +98,7 @@ struct StrengthTestInputRow: View {
                     .foregroundColor(theme.colors.textSecondary)
                 
                 UnderlinedNumericField(
-                    placeholder: "0",
+                    placeholder: TrainingKeys.FormsExtended.weightPlaceholder.localized,
                     value: $weight,
                     suffix: "kg",
                     isEnabled: isEnabled,
@@ -119,7 +119,7 @@ struct StrengthTestInputRow: View {
                     .foregroundColor(theme.colors.textSecondary)
                 
                 UnderlinedNumericField(
-                    placeholder: "1",
+                    placeholder: TrainingKeys.FormsExtended.repsPlaceholder.localized,
                     value: $reps,
                     isEnabled: isEnabled,
                     minValue: 0,
@@ -147,7 +147,7 @@ struct StrengthTestInputRow: View {
                     .foregroundColor(theme.colors.textSecondary)
                 
                 UnderlinedNumericField(
-                    placeholder: "1",
+                    placeholder: TrainingKeys.FormsExtended.repsPlaceholder.localized,
                     value: $reps,
                     isEnabled: isEnabled,
                     minValue: 0,

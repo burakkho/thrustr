@@ -4,7 +4,9 @@ import HealthKit
 import SwiftUI
 import Combine
 
-class StepCounterManager: NSObject, ObservableObject {
+@MainActor
+@Observable
+class StepCounterManager: NSObject {
     // MARK: - Shared Instance
     static let shared = StepCounterManager()
     
@@ -18,21 +20,21 @@ class StepCounterManager: NSObject, ObservableObject {
     var isActive = false
     private var isRequestingPermissions = false
     
-    // Session Data - @Published for reactive SwiftUI updates
-    @Published var sessionSteps: Int = 0
-    @Published var sessionDistance: Double = 0 // meters
-    @Published var sessionFloorsAscended: Int = 0
-    @Published var sessionFloorsDescended: Int = 0
-    @Published var sessionPace: Double = 0 // steps/min
-    @Published var sessionCadence: Double = 0 // steps/min
+    // Session Data - reactive SwiftUI updates with @Observable
+    var sessionSteps: Int = 0
+    var sessionDistance: Double = 0 // meters
+    var sessionFloorsAscended: Int = 0
+    var sessionFloorsDescended: Int = 0
+    var sessionPace: Double = 0 // steps/min
+    var sessionCadence: Double = 0 // steps/min
     
     // Current Activity
     var currentActivity: String = "unknown"
     var confidence: CMMotionActivityConfidence = .low
     
-    // Real-time metrics - @Published for reactive SwiftUI updates  
-    @Published var stepsHistory: [(Date, Int)] = []
-    @Published var lastStepUpdate: Date = Date()
+    // Real-time metrics - reactive SwiftUI updates with @Observable
+    var stepsHistory: [(Date, Int)] = []
+    var lastStepUpdate: Date = Date()
     
     // MARK: - Session Management
     private var sessionStartDate: Date?
@@ -190,12 +192,9 @@ class StepCounterManager: NSObject, ObservableObject {
     private func updateSessionData(with data: CMPedometerData) {
         let previousSteps = sessionSteps
         
-        // Ensure @Published properties trigger UI updates with explicit objectWillChange
+        // @Observable automatically handles UI updates
         let newSteps = data.numberOfSteps.intValue
         let newDistance = data.distance?.doubleValue ?? 0
-        
-        // Trigger UI update before changing properties
-        objectWillChange.send()
         
         sessionSteps = newSteps
         sessionDistance = newDistance

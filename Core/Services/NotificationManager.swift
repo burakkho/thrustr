@@ -1,4 +1,4 @@
-import UserNotifications
+@preconcurrency import UserNotifications
 import SwiftUI
 
 // MARK: - Helper Enums
@@ -18,11 +18,12 @@ enum DayOfWeek: Int, CaseIterable {
 }
 
 @MainActor
-final class NotificationManager: NSObject, ObservableObject {
+@Observable
+final class NotificationManager: NSObject {
     static let shared = NotificationManager()
     
-    @Published var authorizationStatus: UNAuthorizationStatus = .notDetermined
-    @Published var settings: UserNotificationSettings?
+    var authorizationStatus: UNAuthorizationStatus = .notDetermined
+    var settings: UserNotificationSettings?
     
     /// Single source of truth for notification enablement
     var isEnabled: Bool {
@@ -356,6 +357,132 @@ final class NotificationManager: NSObject, ObservableObject {
         
         #if DEBUG
         print("🔔 Cancelled \(identifiersToRemove.count) notifications with prefix '\(prefix)'")
+        #endif
+    }
+    
+    // MARK: - Badge Management
+    
+    /// Update app icon badge number
+    func updateBadgeCount(_ count: Int) async {
+        guard authorizationStatus == .authorized else { return }
+        
+        do {
+            try await notificationCenter.setBadgeCount(count)
+            #if DEBUG
+            print("🔔 Badge count updated to: \(count)")
+            #endif
+        } catch {
+            #if DEBUG
+            print("🔔 Failed to update badge count: \(error)")
+            #endif
+        }
+    }
+    
+    /// Clear app icon badge
+    func clearBadge() async {
+        await updateBadgeCount(0)
+    }
+    
+    /// Increment badge count by one
+    func incrementBadgeCount() async {
+        guard authorizationStatus == .authorized else { return }
+        
+        // iOS 17+ doesn't provide a way to get current badge count
+        // We'll increment by 1 from 0 base or track it separately if needed
+        await updateBadgeCount(1)
+    }
+    
+    /// Get current badge count (deprecated method, kept for compatibility)
+    @available(iOS, deprecated: 17.0, message: "Use UNUserNotificationCenter.setBadgeCount instead")
+    var currentBadgeCount: Int {
+        // Note: This is deprecated in iOS 17+, but keeping for backward compatibility
+        UIApplication.shared.applicationIconBadgeNumber
+    }
+    
+    // MARK: - Streak Alerts
+    
+    /// Schedule streak alert notifications to remind users before their streak breaks
+    func scheduleStreakAlerts() async throws {
+        guard let settings = settings, settings.streakAlertsEnabled else { return }
+        guard authorizationStatus == .authorized || authorizationStatus == .provisional else {
+            throw NotificationError.notAuthorized
+        }
+        
+        // Cancel existing streak alerts
+        await cancelNotifications(withPrefix: "streak-alert")
+        
+        // Calculate the time to send streak reminder
+        let calendar = Calendar.current
+        let now = Date()
+        let tomorrow = calendar.date(byAdding: .day, value: 1, to: now)!
+        let streakDeadline = calendar.startOfDay(for: tomorrow)
+        
+        // Schedule alert based on user's preference (hours before streak might break)
+        guard let alertTime = calendar.date(
+            byAdding: .hour, 
+            value: -settings.streakReminderHours, 
+            to: streakDeadline
+        ) else { return }
+        
+        // Only schedule if alert time is in the future
+        guard alertTime > now else { return }
+        
+        let content = UNMutableNotificationContent()
+        content.title = "🔥 " + "notifications.streak.title".localized
+        content.body = String(format: "notifications.streak.body".localized, settings.streakReminderHours)
+        content.categoryIdentifier = NotificationType.streakAlert.rawValue
+        content.sound = authorizationStatus == .authorized ? .default : nil
+        
+        let trigger = UNTimeIntervalNotificationTrigger(
+            timeInterval: alertTime.timeIntervalSinceNow,
+            repeats: false
+        )
+        
+        let request = UNNotificationRequest(
+            identifier: "streak-alert-\(Int(alertTime.timeIntervalSince1970))",
+            content: content,
+            trigger: trigger
+        )
+        
+        try await notificationCenter.add(request)
+        
+        #if DEBUG
+        print("🔔 Streak alert scheduled for \(alertTime) (\(settings.streakReminderHours) hours before deadline)")
+        #endif
+    }
+    
+    /// Schedule recurring daily streak check
+    func scheduleRecurringStreakAlerts() async throws {
+        guard let settings = settings, settings.streakAlertsEnabled else { return }
+        guard authorizationStatus == .authorized || authorizationStatus == .provisional else {
+            throw NotificationError.notAuthorized
+        }
+        
+        // Cancel existing recurring streak alerts
+        await cancelNotifications(withPrefix: "streak-recurring")
+        
+        // Calculate notification time (e.g., 8 PM daily)
+        var dateComponents = DateComponents()
+        dateComponents.hour = 20 // 8 PM
+        dateComponents.minute = 0
+        
+        let content = UNMutableNotificationContent()
+        content.title = "🔥 " + "notifications.streak.daily_title".localized
+        content.body = "notifications.streak.daily_body".localized
+        content.categoryIdentifier = NotificationType.streakAlert.rawValue
+        content.sound = authorizationStatus == .authorized ? .default : nil
+        
+        let trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: true)
+        let request = UNNotificationRequest(
+            identifier: "streak-recurring-daily",
+            content: content,
+            trigger: trigger
+        )
+        
+        try await notificationCenter.add(request)
+        
+        #if DEBUG
+        print("🔔 Recurring streak alerts scheduled for 8 PM daily")
         #endif
     }
 }

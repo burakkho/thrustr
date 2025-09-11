@@ -21,9 +21,9 @@ import Foundation
  */
 @Model
 final class Food {
-    var id: UUID
-    var nameEN: String
-    var nameTR: String
+    var id: UUID = UUID()
+    var nameEN: String = ""
+    var nameTR: String = ""
     var brand: String?
     // Tracking source & barcode for OFF/manual/csv (defaults ensure migration safety)
     var sourceRaw: String = FoodSource.manual.rawValue
@@ -40,22 +40,29 @@ final class Food {
     var servingName: String? = nil
     
     // Besin değerleri (100g başına)
-    var calories: Double    // kalori
-    var protein: Double     // protein (g)
-    var carbs: Double      // karbonhidrat (g)
-    var fat: Double        // yağ (g)
+    var calories: Double = 0.0    // kalori
+    var protein: Double = 0.0     // protein (g)
+    var carbs: Double = 0.0      // karbonhidrat (g)
+    var fat: Double = 0.0        // yağ (g)
     
-    var category: String   // kategori
-    var isActive: Bool     // aktif mi
-    var isVerified: Bool   // Official vs user-added
+    var category: String = "other"   // kategori
+    var isActive: Bool = true     // aktif mi
+    var isVerified: Bool = true   // Official vs user-added
     
     // Usage tracking
     var usageCount: Int = 0    // Kullanım sayısı
     var lastUsed: Date?        // Son kullanım tarihi
     var isFavorite: Bool = false  // Favori mi
     
-    var createdAt: Date
-    var updatedAt: Date
+    var createdAt: Date = Date()
+    var updatedAt: Date = Date()
+    
+    // Relationships
+    @Relationship(deleteRule: .cascade, inverse: \FoodAlias.food) 
+    var aliases: [FoodAlias]?
+    
+    @Relationship(inverse: \NutritionEntry.food) 
+    var nutritionEntries: [NutritionEntry]?
     
     init(nameEN: String, nameTR: String, calories: Double, protein: Double, carbs: Double, fat: Double, category: FoodCategory = .other) {
         self.id = UUID()
@@ -99,6 +106,7 @@ extension Food {
         servingSizeGrams ?? 100.0
     }
     
+    @MainActor
     var servingDisplayText: String {
         let weightDisplay = UnitsFormatter.formatFoodWeight(grams: servingSizeGramsOrDefault, system: UnitSettings.shared.unitSystem)
         if let servingName, !servingName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {

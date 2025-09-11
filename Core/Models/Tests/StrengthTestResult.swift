@@ -10,20 +10,23 @@ import Foundation
 @Model
 final class StrengthTestResult {
     // MARK: - Core Properties
-    var exerciseType: String // StrengthExerciseType rawValue
-    var value: Double // Weight in kg or reps for pull-ups
-    var strengthLevel: Int // StrengthLevel rawValue
-    var percentileScore: Double // 0.0 - 1.0 (position within level)
+    var exerciseType: String = "benchPress" // StrengthExerciseType rawValue
+    var value: Double = 0.0 // Weight in kg or reps for pull-ups
+    var strengthLevel: Int = 0 // StrengthLevel rawValue
+    var percentileScore: Double = 0.0 // 0.0 - 1.0 (position within level)
     
     // MARK: - Additional Data
-    var isWeighted: Bool // For pull-ups: bodyweight vs weighted
+    var isWeighted: Bool = false // For pull-ups: bodyweight vs weighted
     var additionalWeight: Double? // Extra weight for weighted pull-ups
     var bodyWeightAtTest: Double? // User's body weight during test
     var notes: String?
     
     // MARK: - Metadata
-    var testDate: Date
-    var isPersonalRecord: Bool
+    var testDate: Date = Date()
+    var isPersonalRecord: Bool = false
+    
+    // MARK: - Relationships
+    var strengthTest: StrengthTest?
     
     // MARK: - Computed Properties
     var exerciseTypeEnum: StrengthExerciseType {

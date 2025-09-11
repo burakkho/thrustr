@@ -12,7 +12,7 @@ struct MeasurementsStepView: View {
     @Binding var data: OnboardingData
     let onNext: () -> Void
     @State private var validationMessage: String? = nil
-    @EnvironmentObject private var unitSettings: UnitSettings
+    @Environment(UnitSettings.self) var unitSettings
     @FocusState private var neckFocused: Bool
     @FocusState private var waistFocused: Bool
     @FocusState private var hipFocused: Bool

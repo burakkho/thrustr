@@ -4,7 +4,7 @@ import SwiftData
 struct DailyGoalsCard: View {
     let nutritionEntries: [NutritionEntry]
     @Query private var users: [User]
-    @EnvironmentObject private var unitSettings: UnitSettings
+    @Environment(UnitSettings.self) var unitSettings
     
     private var currentUser: User? {
         users.first

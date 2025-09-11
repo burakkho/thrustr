@@ -53,7 +53,7 @@ struct WODMainView: View {
         
         let searchResults = categoryWODs.filter { wod in
             wod.name.localizedCaseInsensitiveContains(searchText) ||
-            wod.movements.contains { $0.name.localizedCaseInsensitiveContains(searchText) }
+            (wod.movements?.contains { $0.name.localizedCaseInsensitiveContains(searchText) } ?? false)
         }
         
         return Array(searchResults.prefix(15))
@@ -238,11 +238,15 @@ struct WODMainView: View {
     }
     
     private func formatMovements(_ wod: WOD) -> String {
-        let movements = wod.movements.prefix(3)
-        let movementNames = movements.map { $0.name }.joined(separator: ", ")
+        guard let movements = wod.movements, !movements.isEmpty else {
+            return "No movements"
+        }
         
-        if wod.movements.count > 3 {
-            return "\(movementNames) +\(wod.movements.count - 3) more"
+        let limitedMovements = Array(movements.prefix(3))
+        let movementNames = limitedMovements.map { $0.name }.joined(separator: ", ")
+        
+        if movements.count > 3 {
+            return "\(movementNames) +\(movements.count - 3) more"
         }
         
         return movementNames
@@ -254,7 +258,7 @@ struct WODMainView: View {
         // Movement count
         stats.append(WorkoutStat(
             label: TrainingKeys.WOD.movements.localized,
-            value: "\(wod.movements.count)",
+            value: "\(wod.movements?.count ?? 0)",
             icon: "figure.strengthtraining.traditional"
         ))
         
@@ -323,13 +327,15 @@ struct WODMainView: View {
     
     private func startWOD(_ wod: WOD) {
         // Set default weights based on user gender
-        for movement in wod.movements {
-            if let rxWeight = movement.rxWeight(for: currentUser?.gender) {
-                // Parse weight value from string (e.g., "43kg" -> 43)
-                let numbers = rxWeight.filter { "0123456789.".contains($0) }
-                if let weight = Double(numbers) {
-                    movement.userWeight = weight
-                    movement.isRX = true
+        if let movements = wod.movements {
+            for movement in movements {
+                if let rxWeight = movement.rxWeight(for: currentUser?.gender) {
+                    // Parse weight value from string (e.g., "43kg" -> 43)
+                    let numbers = rxWeight.filter { "0123456789.".contains($0) }
+                    if let weight = Double(numbers) {
+                        movement.userWeight = weight
+                        movement.isRX = true
+                    }
                 }
             }
         }

@@ -5,7 +5,7 @@ struct CardioWorkoutDetail: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.theme) private var theme
     @Environment(\.modelContext) private var modelContext
-    @EnvironmentObject private var unitSettings: UnitSettings
+    @Environment(UnitSettings.self) var unitSettings
     @Query private var user: [User]
     
     let workout: CardioWorkout
@@ -36,7 +36,7 @@ struct CardioWorkoutDetail: View {
                 }
             }
         }
-        .confirmationDialog("Delete Workout", isPresented: $showingDeleteConfirmation) {
+        .confirmationDialog(TrainingKeys.AlertsExtended.deleteWorkout.localized, isPresented: $showingDeleteConfirmation) {
             Button("Delete", role: .destructive) {
                 deleteWorkout()
             }
@@ -111,7 +111,7 @@ struct CardioWorkoutDetail: View {
                     icon: "heart.fill"
                 )
                 
-                if let exercise = workout.exercises.first {
+                if let exercise = workout.exercises?.first {
                     InfoColumn(
                         title: TrainingKeys.Cardio.activity.localized,
                         value: exercise.exerciseType.capitalized,
@@ -164,8 +164,8 @@ struct CardioWorkoutDetail: View {
     
     @ViewBuilder
     private var recentSessionsSection: some View {
-        if !workout.sessions.isEmpty {
-            RecentSessionsSection(sessions: Array(workout.sessions.filter { $0.isCompleted }.sorted { $0.completedAt ?? $0.startDate > $1.completedAt ?? $1.startDate }.prefix(5)))
+        if !(workout.sessions?.isEmpty ?? true) {
+            RecentSessionsSection(sessions: Array((workout.sessions ?? []).filter { $0.isCompleted }.sorted { $0.completedAt ?? $0.startDate > $1.completedAt ?? $1.startDate }.prefix(5)))
         }
     }
     
@@ -340,7 +340,7 @@ struct PersonalRecordCard: View {
 
 struct StatisticsCard: View {
     @Environment(\.theme) private var theme
-    @EnvironmentObject private var unitSettings: UnitSettings
+    @Environment(UnitSettings.self) var unitSettings
     let workout: CardioWorkout
     
     var body: some View {
@@ -449,6 +449,6 @@ struct RecentSessionsSection: View {
     )
     
     return CardioWorkoutDetail(workout: workout)
-        .environmentObject(UnitSettings.shared)
+        .environment(UnitSettings.shared)
         .modelContainer(for: [CardioWorkout.self, CardioSession.self, User.self], inMemory: true)
 }

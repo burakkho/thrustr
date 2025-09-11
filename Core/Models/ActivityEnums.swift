@@ -106,7 +106,29 @@ enum ActivityType: String, CaseIterable {
             }
         }
     }
+
+// MARK: - ActivitySource Enum
+
+enum ActivitySource: String, CaseIterable {
+    case manual = "manual"      // User created activity
+    case sync = "sync"          // CloudKit sync created activity  
+    case automatic = "automatic" // System created activity (goals, streaks, etc.)
     
+    var displayName: String {
+        switch self {
+        case .manual: return "Manual"
+        case .sync: return "Synced"
+        case .automatic: return "Automatic"
+        }
+    }
+    
+    var shouldDisplayInFeed: Bool {
+        switch self {
+        case .manual, .automatic: return true
+        case .sync: return false  // Hide sync-created duplicate activities
+        }
+    }
+}
 
 // MARK: - ActivityMetadata
 
@@ -150,6 +172,9 @@ final class ActivityMetadata {
     
     // Custom metadata
     var customData: [String: String]?
+    
+    // Relationships
+    var activityEntry: ActivityEntry?
     
     init(
         duration: TimeInterval? = nil,

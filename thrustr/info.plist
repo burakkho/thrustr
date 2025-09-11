@@ -9,13 +9,22 @@
 		<string>bluetooth-central</string>
 		<string>processing</string>
 		<string>location</string>
+		<string>fitness</string>
 		<string>remote-notification</string>
 	</array>
 	<key>NSMotionUsageDescription</key>
 	<string>Bu uygulama antrenman sırasında adımlarınızı saymak ve aktivite takibi yapmak için hareket sensörlerine erişim gerektirir.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Bu uygulama açık havada cardio antrenmanları sırasında mesafe ve hız takibi için GPS erişimi gerektirir.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Bu uygulama cardio antrenmanları sırasında ekran kapalıyken bile koşu rotanızı kaydetmek için sürekli konum erişimi gerektirir.</string>
 	<key>NSBluetoothAlwaysUsageDescription</key>
-	<string>Bu uygulama nabız bandınıza bağlanmak için Bluetooth erişimi gerektirir.</string>
+	<string>Bu uygulama nabız bandınıza bağlanmak ve antrenman sırasında kalp ritmi takibi yapmak için Bluetooth erişimi gerektirir.</string>
 	<key>NSBluetoothPeripheralUsageDescription</key>
-	<string>Bu uygulama nabız bandınıza bağlanmak için Bluetooth erişimi gerektirir.</string>
+	<string>Bu uygulama nabız bandınıza bağlanmak ve antrenman sırasında kalp ritmi takibi yapmak için Bluetooth erişimi gerektirir.</string>
+	<key>NSHealthShareUsageDescription</key>
+	<string>Bu uygulama sağlık verilerini okumak, fitness analizleri yapmak ve kişiselleştirilmiş antrenman önerileri sunmak için HealthKit erişimi gerektirir.</string>
+	<key>NSHealthUpdateUsageDescription</key>
+	<string>Bu uygulama antrenman verilerini kaydetmek, kalori ve egzersiz bilgilerini güncellemek için HealthKit yazma erişimi gerektirir.</string>
 </dict>
 </plist>

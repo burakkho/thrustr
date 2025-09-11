@@ -4,10 +4,10 @@ import SwiftData
 // MARK: - Cardio Exercise Model (Template Components)
 @Model
 final class CardioExercise {
-    var id: UUID
-    var name: String
-    var exerciseType: String // "run", "bike", "row", "ski", "custom"
-    var orderIndex: Int
+    var id: UUID = UUID()
+    var name: String = ""
+    var exerciseType: String = "run" // "run", "bike", "row", "ski", "custom"
+    var orderIndex: Int = 0
     
     // Exercise Parameters (suggestions for template)
     var targetDistance: Int? // in meters
@@ -16,20 +16,20 @@ final class CardioExercise {
     var restTime: Int? // seconds between exercises in circuits
     
     // Equipment and Environment
-    var equipment: String // "outdoor", "treadmill", "row_erg", "bike_erg", "ski_erg"
-    var environment: String? // "outdoor", "indoor"
+    var equipment: String = "outdoor" // "outdoor", "treadmill", "row_erg", "bike_erg", "ski_erg"
+    var environment: String? = nil // "outdoor", "indoor"
     
     // Instructions and Notes
     var instructions: String?
     var notes: String?
     
     // Timestamps
-    var createdAt: Date
-    var updatedAt: Date
+    var createdAt: Date = Date()
+    var updatedAt: Date = Date()
     
     // Relationships
     var workout: CardioWorkout?
-    var results: [CardioResult]
+    var results: [CardioResult]?
     
     init(
         name: String,
@@ -86,6 +86,7 @@ extension CardioExercise {
         }
     }
     
+    @MainActor
     var formattedDistance: String? {
         guard let distance = targetDistance else { return nil }
         return UnitsFormatter.formatDistance(meters: Double(distance), system: UnitSettings.shared.unitSystem)
@@ -106,6 +107,7 @@ extension CardioExercise {
         }
     }
     
+    @MainActor
     var formattedPace: String? {
         guard let pace = targetPace else { return nil }
         let paceMinPerKm = Double(pace) / 60.0 // Convert seconds to minutes per km
@@ -140,25 +142,27 @@ extension CardioExercise {
     
     // Get personal record for this specific exercise
     var personalRecord: CardioResult? {
-        let completedResults = results.filter { $0.isCompleted }
+        let completedResults = (results ?? []).filter { $0.isCompleted }
         
         if targetDistance != nil {
             // Distance-based exercise - fastest time is best
-            return completedResults
-                .filter { $0.completionTime != nil && $0.completionTime! > 0 }
-                .min { ($0.completionTime ?? Int.max) < ($1.completionTime ?? Int.max) }
+            let validTimeResults = completedResults.filter { $0.completionTime != nil && $0.completionTime! > 0 }
+            return validTimeResults.min { result1, result2 in
+                (result1.completionTime ?? Int.max) < (result2.completionTime ?? Int.max)
+            }
         } else if targetTime != nil {
             // Time-based exercise - longest distance is best
-            return completedResults
-                .filter { $0.distanceCovered != nil && $0.distanceCovered! > 0 }
-                .max { ($0.distanceCovered ?? 0) < ($1.distanceCovered ?? 0) }
+            let validDistanceResults = completedResults.filter { $0.distanceCovered != nil && $0.distanceCovered! > 0 }
+            return validDistanceResults.max { result1, result2 in
+                (result1.distanceCovered ?? 0) < (result2.distanceCovered ?? 0)
+            }
         }
         
         return completedResults.first
     }
     
     var averagePace: Double? {
-        let completedResults = results.filter { $0.isCompleted }
+        let completedResults = (results ?? []).filter { $0.isCompleted }
         let validPaces = completedResults.compactMap { result in
             result.calculatePace()
         }
@@ -168,7 +172,7 @@ extension CardioExercise {
     }
     
     var totalAttempts: Int {
-        results.filter { $0.isCompleted }.count
+        (results ?? []).filter { $0.isCompleted }.count
     }
 }
 
@@ -198,7 +202,7 @@ extension CardioExercise {
     }
     
     func calculateSuggestedPace(basedOn lastResults: Int = 5) -> Double? {
-        let recentResults = results
+        let recentResults = (results ?? [])
             .filter { $0.isCompleted }
             .sorted { $0.completedAt > $1.completedAt }
             .prefix(lastResults)

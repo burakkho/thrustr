@@ -3,18 +3,19 @@ import SwiftData
 import Foundation
 
 @MainActor
-class DashboardViewModel: ObservableObject {
-    // MARK: - Published Properties
-    @Published var currentUser: User?
-    @Published var weeklyStats: WeeklyStats = WeeklyStats()
-    @Published var weeklyCardioStats: WeeklyCardioStats = WeeklyCardioStats()
-    @Published var isLoading = true
+@Observable
+class DashboardViewModel {
+    // MARK: - Observable Properties
+    var currentUser: User?
+    var weeklyStats: WeeklyStats = WeeklyStats()
+    var weeklyCardioStats: WeeklyCardioStats = WeeklyCardioStats()
+    var isLoading = true
     
     // Progressive loading states - Performance Enhancement
-    @Published var isUserDataLoaded = false
-    @Published var isHealthDataLoaded = false
-    @Published var isWorkoutDataLoaded = false
-    @Published var isNutritionDataLoaded = false
+    var isUserDataLoaded = false
+    var isHealthDataLoaded = false
+    var isWorkoutDataLoaded = false
+    var isNutritionDataLoaded = false
     
     // MARK: - Services
     private let healthKitService: HealthKitService
@@ -45,7 +46,7 @@ class DashboardViewModel: ObservableObject {
     private var cachedMetrics: (lift: String, cardio: String, calories: String)?
     
     // Temporal metrics cache - Performance optimization
-    @Published private var cachedTemporalMetrics: (
+    private var cachedTemporalMetrics: (
         lift: (daily: String, weekly: String, monthly: String),
         cardio: (daily: String, weekly: String, monthly: String),
         calories: (daily: String, weekly: String, monthly: String)
@@ -63,48 +64,27 @@ class DashboardViewModel: ObservableObject {
     func loadData(with modelContext: ModelContext) async {
         isLoading = true
         
-        // Progressive loading - show content as it becomes available
-        await withTaskGroup(of: Void.self) { group in
-            // Load user data first (required for other operations) - Show immediately
-            await loadUserData(modelContext: modelContext)
-            isUserDataLoaded = true
-            
-            // Request HealthKit permissions and load health data
-            group.addTask {
-                _ = await self.healthKitService.requestPermissions()
-                await self.refreshHealthData(modelContext: modelContext)
-                await MainActor.run {
-                    self.isHealthDataLoaded = true
-                }
-            }
-            
-            // Load workout and cardio data in parallel
-            group.addTask {
-                await self.loadWorkoutData(modelContext: modelContext)
-                await self.loadCardioData(modelContext: modelContext)
-                await MainActor.run {
-                    self.isWorkoutDataLoaded = true
-                }
-            }
-            
-            // Load nutrition data
-            group.addTask {
-                await self.loadNutritionData(modelContext: modelContext)
-                await MainActor.run {
-                    self.isNutritionDataLoaded = true
-                }
-            }
-            
-            // Setup activity logger (background task)
-            group.addTask {
-                await self.setupActivityLogger(modelContext: modelContext)
-            }
-            
-            // Wait for all tasks to complete
-            for await _ in group {
-                // Tasks are completing progressively
-            }
-        }
+        // Sequential loading to avoid Swift 6 concurrency issues
+        // Load user data first (required for other operations)
+        await loadUserData(modelContext: modelContext)
+        isUserDataLoaded = true
+        
+        // Request HealthKit permissions and load health data
+        _ = await healthKitService.requestPermissions()
+        await refreshHealthData(modelContext: modelContext)
+        isHealthDataLoaded = true
+        
+        // Load workout and cardio data
+        await loadWorkoutData(modelContext: modelContext)
+        await loadCardioData(modelContext: modelContext)
+        isWorkoutDataLoaded = true
+        
+        // Load nutrition data  
+        await loadNutritionData(modelContext: modelContext)
+        isNutritionDataLoaded = true
+        
+        // Setup activity logger
+        await setupActivityLogger(modelContext: modelContext)
         
         // Clear temporal cache to ensure fresh data after reload
         clearTemporalCache()

@@ -9,10 +9,12 @@
 "common.finish" = "Bitir";
 "common.add" = "Ekle";
 "common.change" = "Değiştir";
+"common.view_all" = "Tümünü Gör";
 "common.continue_anyway" = "Yine de Devam Et";
 "common.confirm_discard" = "Değişiklikleri kaydetmeden çıkmak istiyor musun?";
 "common.discard" = "Vazgeç";
 "common.discard_message" = "Kaydedilmemiş değişiklikler kaybolacak.";
+"common.unknown" = "Bilinmiyor";
 
 // MARK: - Navigation Titles
 "navigation.program_setup" = "Program Kurulumu";
@@ -39,6 +41,7 @@
 "error.unknown.recovery" = "Lütfen tekrar deneyin. Sorun devam ederse destek ile iletişime geçin.";
 "error.ok_button" = "Tamam";
 "error.retry_button" = "Tekrar Dene";
+"error.save_failed" = "Kayıt başarısız";
 /*
    Localizable.strings (Turkish)
    Thrustr - Turkish Localization
@@ -48,6 +51,78 @@
 "tab.dashboard" = "Ana Sayfa";
 "tab.training" = "Antrenman";
 "tab.nutrition" = "Beslenme";
+"tab.analytics" = "Analizler";
+
+// MARK: - Analytics
+"analytics.title" = "Analizler";
+"analytics.health" = "Sağlık";
+"analytics.training" = "Antrenman";
+"analytics.nutrition" = "Beslenme";
+"analytics.daily_health_overview" = "Günlük Sağlık Özeti";
+"analytics.health_trends" = "Sağlık Trendleri";
+"analytics.ai_insights" = "AI İçgörüleri";
+
+// MARK: - Health Intelligence
+"health.intelligence.title" = "Sağlık Zekası";
+"health.intelligence.tab.overview" = "Genel Bakış";
+"health.intelligence.tab.recovery" = "Toparlanma";
+"health.intelligence.tab.fitness" = "Form";
+"health.intelligence.tab.trends" = "Trendler";
+"health.intelligence.ai_summary" = "AI Sağlık Özeti";
+"health.intelligence.last_update" = "Son güncelleme";
+"health.intelligence.priority_insights" = "Önemli İçgörüler";
+"health.intelligence.quick_actions" = "Hızlı Eylemler";
+"health.intelligence.recovery_insights" = "Toparlanma İçgörüleri";
+"health.intelligence.training_insights" = "Antrenman İçgörüleri";
+"health.intelligence.trend_analysis" = "Trend Analizi";
+"health.intelligence.suggest_workout" = "Antrenman Öner";
+"health.intelligence.nutrition_advice" = "Beslenme";
+"health.intelligence.rest_recommendation" = "Dinlenme";
+"health.intelligence.summary.excellent" = "Toparlanman mükemmel (%d/100) ve fitness seviyeni %@. Performansını maksimize edebileceğin harika bir dönemdesin!";
+"health.intelligence.summary.good" = "Toparlanman iyi seviyede (%d/100) ve fitness seviyeni %@. %d önemli öneri ile daha da gelişebilirsin.";
+"health.intelligence.summary.attention" = "Toparlanman dikkat gerektiriyor (%d/100). %d kritik öneriye odaklanarak sağlığını iyileştirebilirsin.";
+"health.intelligence.loading.title" = "AI Sağlık Analizi";
+"health.intelligence.loading.subtitle" = "Sağlık verileriniz işleniyor...";
+"health.intelligence.loading.step.reading_data" = "HealthKit verisi okunuyor";
+"health.intelligence.loading.step.recovery_analysis" = "Toparlanma analizi";
+"health.intelligence.loading.step.fitness_assessment" = "Fitness değerlendirme";
+"health.intelligence.loading.step.generating_insights" = "İçgörüler oluşturuluyor";
+"health.intelligence.metrics.recovery" = "Toparlanma";
+"health.intelligence.metrics.fitness" = "Form";
+"health.intelligence.metrics.insights" = "İçgörü";
+"health.intelligence.metrics.insights_unit" = " öneri";
+"analytics.trends_preview_placeholder" = "Trend grafikleri yakında geliyor";
+"analytics.strength_progression" = "Kuvvet Gelişimi";
+"analytics.workout_frequency" = "Antrenman Sıklığı";
+"analytics.recent_prs" = "Son Kişisel Rekorlar";
+"analytics.training_patterns" = "Antrenman Desenleri";
+"analytics.this_week" = "Bu Hafta";
+"analytics.this_month" = "Bu Ay";
+"analytics.avg_duration" = "Ort. Süre";
+"analytics.most_active_time" = "En aktif saat";
+"analytics.favorite_workout_day" = "Favori antrenman günü";
+"analytics.avg_weekly_volume" = "Haftalık ortalama hacim";
+"analytics.macro_trends" = "Makro Trendleri";
+"analytics.calorie_balance" = "Kalori Dengesi";
+"analytics.nutrition_patterns" = "Beslenme Desenleri";
+"analytics.meal_timing" = "Öğün Zamanlaması";
+"analytics.avg_intake" = "Ort. Alım";
+"analytics.avg_expenditure" = "Ort. Harcama";
+"analytics.net_balance" = "Net Denge";
+"analytics.weekly_calorie_trend" = "Haftalık kalori trend grafiği";
+"analytics.heaviest_meal" = "En ağır öğün";
+"analytics.top_food_category" = "Top besin kategorisi";
+"analytics.hydration_avg" = "Ortalama hidasyon";
+"analytics.meal_consistency" = "Öğün tutarlılığı";
+"analytics.nutrition_dashboard" = "Beslenme Panosu";
+"analytics.monthly_trends" = "Aylık Trendler";
+"analytics.total_entries" = "Toplam Giriş";
+"analytics.avg_daily_calories" = "Günlük Ortalama Kalori";
+"analytics.most_active_day" = "En Aktif Gün";
+"analytics.highest_calorie_day" = "En Yüksek Kalori Günü";
+"analytics.logging_consistency" = "Kayıt Tutarlılığı";
+"analytics.primary_macro" = "Ana Makro";
+"analytics.calorie_consistency" = "Kalori Tutarlılığı";
 "tab.profile" = "Profil";
 
 // MARK: - Dashboard
@@ -244,6 +319,8 @@
 "training.cardio.noExerciseTypes" = "Egzersiz Türü Yok";
 "training.cardio.noHistory" = "Geçmiş Yok";
 "training.cardio.noHistoryMessage" = "İlk kardio antrenmanınızı başlatarak takibe başlayın";
+"training.cardio.noSessions" = "Henüz Seans Yok";
+"training.cardio.noSessionsDesc" = "İlk kardio antrenmanını başlatarak başla";
 "training.cardio.adjustSearch" = "Aramanızı değiştirin";
 "training.cardio.startSession" = "Antrenman Başlat";
 "training.cardio.clearSearch" = "Aramayı Temizle";
@@ -426,8 +503,12 @@
 "profile.photos_subtitle" = "İlerlemenizi fotoğraflarla takip edin";
 "profile.settings_subtitle" = "Uygulama tercihleri ve ayarları";
 "profile.progress_charts" = "İlerleme Grafikleri";
+"profile.analytics_subtitle" = "Kapsamlı sağlık ve antrenman analizleri";
 "profile.charts_subtitle" = "İlerlemenizi görselleştirin";
 "profile.achievements_subtitle" = "Başarılarınızı takip edin";
+"profile.quick_actions" = "Hızlı İşlemler";
+"profile.progress_analytics" = "İlerleme & Analitik";
+"profile.health_integration_subtitle" = "HealthKit ve AI önerileri";
 "profile.goal_tracking" = "Hedef Takibi";
 "profile.goals_subtitle" = "Hedeflerinizi belirleyin ve takip edin";
 
@@ -479,8 +560,19 @@
 "settings.workout_reminders" = "Antrenman Hatırlatıcıları";
 "settings.nutrition_reminders" = "Beslenme Hatırlatıcıları";
 "settings.version" = "Sürüm";
+"settings.build" = "Yapı";
 "settings.privacy_policy" = "Gizlilik Politikası";
 "settings.terms_of_service" = "Kullanım Şartları";
+"settings.cloud_sync" = "iCloud Senkronizasyonu";
+"settings.icloud_status" = "iCloud Durumu";
+"settings.sync_status" = "Senkronizasyon Durumu";
+"settings.sync_details" = "Senkronizasyon Detayları";
+
+// MARK: - App Info
+"app.name" = "Thrustr";
+"app.description" = "Fitness Takip Uygulaması";
+"app.version" = "1.0.0";
+"app.build" = "100";
 
 // MARK: - Training Celebration
 "training.celebration.congratulations" = "Tebrikler!";
@@ -511,6 +603,18 @@
 // MARK: - Training OneRM
 "training.oneRM.startingWeightsMessage" = "1RM değerlerine göre %@ için başlangıç ağırlıkların";
 "training.oneRM.fallbackProgram" = "programın";
+"training.oneRM.setupComplete" = "Kurulum Tamamlandı!";
+"training.oneRM.startingWeightsCalculated" = "Başlangıç Ağırlıkları Hesaplandı";
+"training.oneRM.title" = "1 Tekrar Maksimum (%@)";
+"training.oneRM.estimateExample" = "Tahmin: 60kg ile 5 tekrar yapabiliyorsan, 1RM'in ~67kg";
+
+// MARK: - Training Analytics Empty States
+"training.analytics.noStrengthDataTitle" = "Henüz güç verisi yok";
+"training.analytics.noStrengthDataDesc" = "İlerlemeni görmek için birkaç ağırlık antrenmanı tamamla";
+"training.analytics.noWorkoutsTitle" = "Henüz antrenman yok";
+"training.analytics.noWorkoutsDesc" = "Antrenman sıklığını görmek için antrenmana başla";
+"training.analytics.noPRsTitle" = "Henüz PR yok";
+"training.analytics.noPRsDesc" = "Kişisel rekorları kırmak için antrenmanları tamamla";
 
 // MARK: - Training Goals
 "training.goals.setMonthlyGoals" = "Aylık Hedefler";
@@ -538,6 +642,7 @@
 "onboarding.welcome.title" = "Thrustr'a\nHoş Geldin! 💪";
 "onboarding.welcome.subtitle" = "Fitness yolculuğunda yanındayız.\nHadi başlayalım!";
 "onboarding.welcome.start" = "Başlayalım!";
+"onboarding.welcome.start_hint" = "Onboarding'a başla";
 "onboarding.feature.workout" = "Akıllı antrenman takibi";
 "onboarding.feature.progress" = "İlerleme analizi";
 "onboarding.feature.nutrition" = "Beslenme kontrolü";
@@ -678,6 +783,7 @@
 "onboarding.summary.label.protein" = "Protein";
 "onboarding.summary.label.carbs" = "Karbonhidrat";
 "onboarding.summary.label.fat" = "Yağ";
+"onboarding.summary.age_format" = "%d yaş";
 
 // MARK: - Dashboard
 // duplicate removed
@@ -879,8 +985,11 @@
 "training.cardio.quickStart" = "Hızlı Başlat";
 "training.cardio.activityType" = "Aktivite Türü";
 "training.cardio.selectActivityToStart" = "Aktivite türünü seç ve başla";
+"training.cardio.modalLocation" = "Konum";
 "training.cardio.location" = "Konum";
+"training.cardio.modalFeatures" = "Özellikler";
 "training.cardio.features" = "Özellikler";
+"training.cardio.modalStart" = "Başla";
 "training.cardio.start" = "Başla";
 "training.cardio.cancel" = "İptal";
 "training.cardio.gpsRealTimeTracking" = "GPS ile gerçek zamanlı mesafe takibi";
@@ -969,6 +1078,7 @@
 "training.category.functional" = "Fonksiyonel";
 "training.category.isolation" = "İzolasyon";
 "training.category.other" = "Diğer";
+"training.category.strength" = "Kuvvet";
 
 // MARK: - Set Tracking
 "training.set.back" = "Geri";
@@ -1236,11 +1346,14 @@
 
 // MARK: - Calculators
 "calculators.title" = "Hesaplayıcılar";
+"calculators.subtitle" = "1RM, FFMI, Navy Method";
 "calculators.fitness_calculators" = "Fitness Hesaplayıcıları";
 "calculators.navy_method" = "Donanma Yöntemi";
 "calculators.ffmi_calculator" = "FFMI Hesaplayıcı";
 "calculators.one_rm_calculator" = "1RM Hesaplayıcı";
+"calculators.bmr" = "BMR";
 "calculators.bmr_calculator" = "BMR Hesaplayıcı";
+"calculators.tdee" = "TDEE";
 "calculators.tdee_calculator" = "TDEE Hesaplayıcı";
 
 // Navy Method
@@ -1573,6 +1686,11 @@
 // Share text components
 "cardio.session.share_workout_completed" = "🏃 Antrenmanımı tamamladım!";
 "cardio.session.share_duration_prefix" = "⏱ Süre:";
+
+// MARK: - Achievement Notifications
+"cardio.session.achievement_title" = "Antrenman Tamamlandı!";
+"cardio.session.achievement_body" = "%@ antrenmanını %d dakikada tamamladın ve %d kalori yaktın! Harika iş!";
+"cardio.session.achievement_in_app" = "%@ antrenmanını %d dakikada tamamladın!";
 
 // MARK: - Navy Method Calculator
 "calculator.navy_method.title" = "Navy Method Hesaplayıcısı";
@@ -2004,11 +2122,14 @@
 "body_measurements.current_measurements" = "Mevcut Ölçümler";
 
 // MARK: - Personal Info Extended
+"personal_info.title" = "Kişisel Bilgiler";
 "personal_info.update_title" = "Kişisel Bilgileri Güncelle";
 "personal_info.update_subtitle" = "Doğru hesaplamalar için bilgilerinizi güncel tutun";
 "personal_info.basic_info" = "Temel Bilgiler";
 "personal_info.name" = "Ad";
+"personal_info.name_placeholder" = "Adınızı giriniz";
 "personal_info.age" = "Yaş";
+"personal_info.age_format" = "%d yaş";
 "personal_info.gender" = "Cinsiyet";
 "personal_info.physical_measurements" = "Fiziksel Ölçümler";
 "personal_info.height" = "Boy";
@@ -2970,6 +3091,10 @@
 "notifications.workout.body" = "Fitness hedeflerinizi parçalama zamanı. Hadi hareket edelim!";
 "notifications.goal.title" = "Günlük Hedef Kontrolü";
 "notifications.goal.body" = "Günlük fitness hedeflerinizde nasıl gidiyorsunuz?";
+"notifications.streak.title" = "Serin Korunuyor!";
+"notifications.streak.body" = "Serinizi kaybetmemek için %d saat içinde antrenman yapın!";
+"notifications.streak.daily_title" = "Günlük Seri Kontrolü";
+"notifications.streak.daily_body" = "Bugünkü antrenmanınızı tamamladınız mı?";
 
 // MARK: - Profile Body Fat Categories
 "profile.bodyFat.essential" = "Temel Yağ";
@@ -3162,6 +3287,13 @@
 "nutrition.categories.nuts" = "Kuruyemişler";
 "nutrition.categories.beverages" = "İçecekler";
 "nutrition.categories.snacks" = "Atıştırmalıklar";
+"nutrition.categories.turkish" = "Türk Yemekleri";
+"nutrition.categories.fastfood" = "Fast Food";
+"nutrition.categories.supplements" = "Takviyeler";
+"nutrition.categories.condiments" = "Soslar & Baharatlar";
+"nutrition.categories.bakery" = "Fırın Ürünleri";
+"nutrition.categories.seafood" = "Deniz Ürünleri";
+"nutrition.categories.desserts" = "Tatlılar";
 "nutrition.categories.other" = "Diğer";
 
 // MARK: - Nutrition Labels
@@ -3235,6 +3367,24 @@
 "nutrition.portionInput.custom" = "Özel";
 "nutrition.portionInput.customAmount" = "Özel Miktar";
 "nutrition.portionInput.set" = "Ayarla";
+
+// MARK: - Nutrition OpenFoodFacts
+"nutrition.openfoodfacts.section" = "OpenFoodFacts";
+"nutrition.openfoodfacts.loadingProduct" = "Ürün getiriliyor...";
+
+// MARK: - Nutrition Macros
+"nutrition.macros.protein" = "Protein";
+"nutrition.macros.carbs" = "Karbonhidrat";
+"nutrition.macros.fat" = "Yağ";
+
+// MARK: - Nutrition Analytics
+"nutrition.analytics.sunday" = "Pazar";
+"nutrition.analytics.monday" = "Pazartesi";
+"nutrition.analytics.tuesday" = "Salı";
+"nutrition.analytics.wednesday" = "Çarşamba";
+"nutrition.analytics.thursday" = "Perşembe";
+"nutrition.analytics.friday" = "Cuma";
+"nutrition.analytics.saturday" = "Cumartesi";
 "training.cardio.elevation" = "Yükseklik";
 
 // MARK: - Status Messages
@@ -3300,10 +3450,10 @@
 "training.welcome.welcomeBack" = "Tekrar hoş geldin, %@!";
 "training.welcome.quickLift" = "Hızlı Kuvvet";
 "training.welcome.quickCardio" = "Hızlı Kardiyo";
-"training.welcome.dailyWOD" = "Günlük WOD";
+"training.welcome.createWOD" = "WOD Oluştur";
 "training.welcome.startStrengthTraining" = "Kuvvet antrenmanını başlat";
 "training.welcome.startCardioSession" = "Kardiyo seansını başlat";
-"training.welcome.todaysWorkout" = "Bugünün antrenmanı";
+"training.welcome.createWODSubtitle" = "WOD oluştur ve başlat";
 "training.welcome.findProgram" = "Program bul";
 
 // MARK: - Warmup
@@ -3450,14 +3600,20 @@
 "training.analytics.total_prs" = "Toplam PR";
 "training.analytics.latest_pr" = "En Son";
 "training.analytics.strength_profile" = "Kuvvet Profili";
+"training.analytics.strengthProfile" = "Kuvvet Profili";
 "training.analytics.level_guide" = "Seviye Rehberi";
+"training.analytics.levelGuide" = "Seviye Rehberi";
 "training.analytics.general_score" = "Genel Skor";
+"training.analytics.generalScore" = "Genel Skor";
 "training.analytics.record_first_pr" = "İlk PR'ını Kaydet";
 "training.analytics.start_strength_test" = "Kuvvet Testi Başlat";
 "training.analytics.start_first_cardio" = "İlk Kardio Seansını Başlat";
 "training.analytics.update_one_rms" = "1RM'leri Güncelle";
 "training.analytics.strength" = "Kuvvet";
 "training.analytics.volume" = "Hacim";
+
+"training.test_results.details" = "Detaylar";
+"training.test_results.percentage_symbol" = "%";
 
 // MARK: - Health Recovery Categories
 "health.recovery.excellent" = "Mükemmel";
@@ -3625,6 +3781,43 @@
 "health.statistics.title" = "HealthKit İstatistikleri (Son 30 Gün)";
 "health.statistics.total_duration" = "Toplam Süre";
 
+// MARK: - Health Dashboard Cards (Profile HealthDashboardCard)
+"health.daily_overview" = "Günlük Sağlık Özeti";
+"health.steps" = "Adımlar";
+"health.calories" = "Kaloriler";
+"health.weight" = "Kilo";
+"health.resting_hr" = "Dinlenim Nabzı";
+"health.authorization_needed" = "HealthKit yetkilendirmesi gerekli";
+"health.setup" = "Ayarla";
+"health.ai_insight" = "AI Öngörüsü";
+"health.analyzing" = "Analiz ediliyor...";
+
+// MARK: - Health AI Insights (Profile HealthDashboardCard)
+"health.insight.active_day" = "Aktif bir gün geçiriyorsun! 💪";
+"health.insight.moderate_day" = "İyi tempoda gidiyorsun 👍";
+"health.insight.light_day" = "Biraz daha hareket edebilirsin 🚶";
+"health.insight.get_moving" = "Harekete geçme zamanı! ⚡";
+
+// MARK: - Health Section Titles (Profile ProgressSection)
+"health.trends" = "Sağlık Trendleri";
+"health.trends_subtitle" = "Geçmiş performans analizi";
+"health.intelligence" = "Sağlık Zekası";
+"health.ai_insights_subtitle" = "AI destekli sağlık öngörüleri";
+
+// MARK: - Health Sync (Profile HealthKitSyncRow/View)
+"health.sync_status" = "HealthKit Senkronizasyonu";
+"health.sync_active" = "Aktif - Veriler senkronize ediliyor";
+"health.sync_setup_needed" = "Kurulum gerekiyor";
+"health.last_sync" = "Son güncelleme: Şimdi";
+"health.sync_enabled" = "Senkronizasyon Aktif";
+"health.sync_disabled" = "Senkronizasyon Devre Dışı";
+"health.data_syncing" = "Sağlık verileri otomatik olarak senkronize ediliyor";
+"health.authorization_required" = "HealthKit yetkilendirmesi gerekli";
+"health.setup_authorization" = "Yetkilendirmeyi Ayarla";
+"health.today_data" = "Bugünkü Veriler";
+"health.refresh_data" = "Verileri Yenile";
+"health.sync_settings" = "Senkronizasyon Ayarları";
+
 // MARK: - Units (HealthKitService)
 "units.steps" = "adım";
 
@@ -3637,7 +3830,96 @@
 "profile.essential_features" = "Temel Özellikler";
 "profile.advanced_features" = "Gelişmiş Özellikler";
 "profile.progress_analytics" = "İlerleme Analitiği";
+"profile.log_weight" = "Kilo Kaydet";
+"profile.track_weight_changes" = "Kilo değişimlerinizi takip edin";
+"profile.progress_photos" = "İlerleme Fotoğrafları";
+"profile.visual_progress_tracking" = "Görsel ilerleme takibi";
+"profile.recent_achievements" = "Son Başarılar";
 "profile.achievements_goals" = "Başarılar & Hedefler";
 "profile.achievements_goals_subtitle" = "Başarılarınızı ve hedefleri takip edin";
 "profile.health_integration" = "Sağlık Entegrasyonu";
 "profile.weight_measurements_photos" = "Kilo, ölçümler ve fotoğraflar";
+
+// Onboarding Notifications
+"onboarding.notifications.title" = "Motive Ol";
+"onboarding.notifications.subtitle" = "Fitness hedeflerine ulaşman için kişiselleştirilmiş hatırlatmalar al";
+"onboarding.notifications.workout_reminders" = "Akıllı antrenman hatırlatmaları";
+"onboarding.notifications.achievement_alerts" = "Başarı kutlamaları";
+"onboarding.notifications.goal_tracking" = "Hedef ilerleme güncellemeleri";
+"onboarding.notifications.enable" = "Bildirimleri Etkinleştir";
+"onboarding.notifications.skip" = "Şimdi değil";
+"onboarding.consent.notifications" = "Push Bildirimleri";
+"onboarding.consent.notifications.desc" = "Antrenman hatırlatmaları ve başarı uyarıları al";
+
+// MARK: - Training Screen Lock
+"training.screen_lock.screen_locked" = "EKRAN KİLİTLİ";
+"training.screen_lock.accidental_press_protection" = "Yanlışlıkla basma koruması aktif";
+"training.screen_lock.or" = "veya";
+"training.screen_lock.volume_buttons_hint" = "Ses tuşlarına 4 kez hızlıca bas";
+"training.screen_lock.slide_to_unlock" = "Kilidi Kaldırmak İçin Kaydır";
+
+// MARK: - Training Common
+"training.common.today" = "Bugün";
+
+// MARK: - Training Program Dashboard
+"training.program_dashboard.active_program" = "AKTİF PROGRAM";
+"training.program_dashboard.next_workout" = "SONRAKİ ANTRENMAN";
+"training.program_dashboard.start_workout" = "ANTRENMANI BAŞLAT";
+"training.program_dashboard.resume_program" = "PROGRAMI DEVAM ET";
+"training.program_dashboard.start_new_program" = "YENİ PROGRAM BAŞLAT";
+"training.program_dashboard.details" = "Detaylar";
+
+// MARK: - Training Workout Preview
+"training.workout_preview.begin_workout" = "ANTRENMANI BAŞLAT";
+"training.workout_preview.view_previous_sessions" = "Önceki Seansları Gör";
+
+// MARK: - Training Forms
+"training.forms.cancel" = "İptal";
+"training.forms.back" = "Geri";
+"training.forms.routine_name" = "Rutin Adı";
+"training.forms.quick_suggestions" = "Hızlı öneriler:";
+"training.forms.weight_placeholder" = "0";
+"training.forms.reps_placeholder" = "1";
+"training.forms.sets_placeholder" = "1";
+
+// MARK: - Training Alerts
+"training.alerts.error" = "Hata";
+"training.alerts.delete_workout" = "Antrenmanı Sil";
+"training.alerts.delete_set_confirmation" = "Bu seti silmek istediğinizden emin misiniz?";
+
+// MARK: - Training Empty States
+"training.empty_states.no_workout_history" = "Antrenman Geçmişi Yok";
+"training.empty_states.no_workout_history_message" = "İlk antrenmanınızı tamamlayarak antrenman geçmişinizi burada görün.";
+"training.empty_states.start_workout" = "Antrenman Başlat";
+"training.empty_states.no_exercises_found" = "Egzersiz bulunamadı";
+"training.empty_states.try_adjusting_filters" = "Filtrelerinizi ayarlamayı deneyin";
+"training.empty_states.start_first_workout" = "İlk antrenmanınızı başlatın";
+"training.empty_states.first_workout_message" = "İlk antrenmanınızı başlatarak ilerlemenizi burada görün!";
+
+// MARK: - Training One RM Setup
+"training.one_rm_setup.pro_tips" = "💡 Pro İpuçları";
+"training.one_rm_setup.starting_conservative_tip" = "• Muhafazakar başlamak doğru formu sağlar";
+"training.one_rm_setup.progression_tip" = "• Her başarılı antrenmanda 2,5kg ekleyeceksiniz";
+"training.one_rm_setup.adjust_weights_tip" = "• Antrenmanlar sırasında ağırlıkları ayarlayabilirsiniz";
+
+// MARK: - Nutrition Goals
+"nutrition.goals.nutritionGoals" = "Beslenme Hedefleri";
+"nutrition.goals.setDailyGoals" = "Günlük Hedefleri Belirle";
+"nutrition.goals.personalizeNutrition" = "Beslenme hedeflerinizi kişiselleştirin";
+"nutrition.goals.goalMode" = "Hedef Modu";
+"nutrition.goals.goalModeDesc" = "Hedeflerinizin nasıl belirleneceğini seçin";
+"nutrition.goals.calculatedGoals" = "Otomatik Hesaplanan";
+"nutrition.goals.calculatedGoalsDesc" = "BMR ve aktivite seviyenize göre hesaplanan hedefler";
+"nutrition.goals.customGoals" = "Özel Hedefler";
+"nutrition.goals.customGoalsDesc" = "Kendi hedeflerinizi manuel olarak ayarlayın";
+"nutrition.goals.dailyTargets" = "Günlük Hedefler";
+"nutrition.goals.dailyTargetsDesc" = "Her güne özel beslenme hedeflerinizi belirleyin";
+"nutrition.goals.macroDistribution" = "Makro Dağılımı";
+"nutrition.goals.macroDistributionDesc" = "Protein, karbonhidrat ve yağ oranları";
+"nutrition.goals.saveGoals" = "Hedefleri Kaydet";
+
+// MARK: - Nutrition Goals Descriptions
+"nutrition.goalsDesc.dailyCalorieTarget" = "Günlük kalori hedefi";
+"nutrition.goalsDesc.dailyProteinTarget" = "Günlük protein hedefi";
+"nutrition.goalsDesc.dailyCarbTarget" = "Günlük karbonhidrat hedefi";
+"nutrition.goalsDesc.dailyFatTarget" = "Günlük yağ hedefi";

@@ -7,6 +7,7 @@ enum CommonKeys {
         static let dashboard = "tab.dashboard"
         static let training = "tab.training"
         static let nutrition = "tab.nutrition"
+        static let analytics = "tab.analytics"
         static let profile = "tab.profile"
     }
     
@@ -59,6 +60,11 @@ enum CommonKeys {
         static let allowNotifications = "settings.allow_notifications"
         static let workoutReminders = "settings.workout_reminders"
         static let nutritionReminders = "settings.nutrition_reminders"
+        static let cloudSync = "settings.cloud_sync"
+        static let icloudSync = "settings.icloud_sync"
+        static let syncStatus = "settings.sync_status"
+        static let syncNow = "settings.sync_now"
+        static let syncError = "settings.sync_error"
         static let version = "settings.version"
         static let privacyPolicy = "settings.privacy_policy"
         static let termsOfService = "settings.terms_of_service"
@@ -84,6 +90,7 @@ enum CommonKeys {
         static let basicInfo = "personal_info.basic_info"
         static let name = "personal_info.name"
         static let age = "personal_info.age"
+        static let ageFormat = "personal_info.age_format"
         static let gender = "personal_info.gender"
         static let physicalMeasurements = "personal_info.physical_measurements"
         static let height = "personal_info.height"
@@ -315,6 +322,8 @@ enum CommonKeys {
         static let labelProtein = "onboarding.summary.label.protein"
         static let labelCarbs = "onboarding.summary.label.carbs"
         static let labelFat = "onboarding.summary.label.fat"
+        
+        static let ageFormat = "onboarding.summary.age_format"
         
         static let infoTitle = "onboarding.summary.info.title"
         static let infoWithNavy = "onboarding.summary.info.withNavy"
@@ -687,6 +696,9 @@ enum CommonKeys {
         static let newRecord = "activity.status.new_record"
         static let strengthTestCompleted = "activity.status.strength_test_completed"
         static let level = "activity.status.level"
+        static let updated = "activity.status.updated"
+        static let logged = "activity.status.logged"
+        static let goalCompleted = "activity.status.goal_completed"
         static let record = "activity.status.record"
         
         // Activity type display names

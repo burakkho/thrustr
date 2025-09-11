@@ -2,7 +2,7 @@ import SwiftUI
 
 // MARK: - Component Tokens
 
-struct ButtonTokens {
+struct ButtonTokens: Sendable {
     let height: CGFloat
     let cornerRadius: CGFloat
     let horizontalPadding: CGFloat

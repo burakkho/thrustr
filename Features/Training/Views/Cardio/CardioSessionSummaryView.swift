@@ -6,8 +6,8 @@ struct CardioSessionSummaryView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.theme) private var theme
     @Environment(\.modelContext) private var modelContext
-    @EnvironmentObject private var unitSettings: UnitSettings
-    @EnvironmentObject private var healthKitService: HealthKitService
+    @Environment(UnitSettings.self) var unitSettings
+    @Environment(HealthKitService.self) var healthKitService
     
     let session: CardioSession
     let user: User
@@ -40,10 +40,7 @@ struct CardioSessionSummaryView: View {
     @State private var editAvgHeartRate: Int = 0
     @State private var editMaxHeartRate: Int = 0
     
-    // Edit tracking
-    @State private var isDurationEdited = false
-    @State private var isDistanceEdited = false
-    @State private var isCaloriesEdited = false
+    // Edit tracking (only for heart rate - others are tracked in session model)
     @State private var isHeartRateEdited = false
     
     private var routeCoordinates: [CLLocationCoordinate2D] {
@@ -171,7 +168,7 @@ struct CardioSessionSummaryView: View {
                     initializeDurationEdit()
                     showingDurationEdit = true 
                 },
-                isEdited: isDurationEdited
+                isEdited: session.isDurationManuallyEdited
             )
             
             MainStatCard(
@@ -183,7 +180,7 @@ struct CardioSessionSummaryView: View {
                     initializeDistanceEdit()
                     showingDistanceEdit = true 
                 },
-                isEdited: isDistanceEdited
+                isEdited: session.isDistanceManuallyEdited
             )
             
             MainStatCard(
@@ -195,7 +192,7 @@ struct CardioSessionSummaryView: View {
                     initializeCaloriesEdit()
                     showingCaloriesEdit = true 
                 },
-                isEdited: isCaloriesEdited
+                isEdited: session.isCaloriesManuallyEdited
             )
         }
     }
@@ -475,19 +472,25 @@ struct CardioSessionSummaryView: View {
         // Update session with feeling and notes
         session.feeling = feeling.rawValue
         session.sessionNotes = notes.isEmpty ? nil : notes
-        session.completeSession()
+        
+        // Mark as completed if not already (without recalculating totals)
+        if !session.isCompleted {
+            session.completedAt = Date()
+            session.isCompleted = true
+        }
         
         // Session is already in context, no need to insert
         
-        // Update user stats
+        // Update user stats (use final edited values)
         user.addCardioSession(
             duration: TimeInterval(session.totalDuration),
-            distance: session.totalDistance
+            distance: session.totalDistance,
+            calories: session.totalCaloriesBurned
         )
         
         do {
             try modelContext.save()
-            Logger.info("Cardio session saved successfully")
+            
             
             // Log activity for dashboard
             ActivityLoggerService.shared.logCardioCompleted(
@@ -513,6 +516,33 @@ struct CardioSessionSummaryView: View {
                 
                 if success {
                     Logger.info("Cardio workout successfully synced to HealthKit")
+                }
+            }
+            
+            // Trigger achievement notification for workout completion
+            Task {
+                do {
+                    let durationMinutes = Int(TimeInterval(session.totalDuration) / 60)
+                    let calories = session.totalCaloriesBurned ?? 0
+                    
+                    // Schedule system notification
+                    try await NotificationManager.shared.scheduleAchievementNotification(
+                        title: CardioKeys.SessionSummary.achievementTitle.localized,
+                        description: String(format: CardioKeys.SessionSummary.achievementBody.localized, 
+                                          session.workoutName, durationMinutes, calories),
+                        delay: 2.0
+                    )
+                    
+                    // Show in-app notification
+                    await MainActor.run {
+                        InAppNotificationManager.shared.showAchievement(
+                            title: CardioKeys.SessionSummary.achievementTitle.localized,
+                            description: String(format: CardioKeys.SessionSummary.achievementInApp.localized,
+                                              session.workoutName, durationMinutes)
+                        )
+                    }
+                } catch {
+                    Logger.error("Failed to send achievement notification: \(error)")
                 }
             }
             
@@ -551,8 +581,18 @@ struct CardioSessionSummaryView: View {
     }
     
     private func createShareImage() -> UIImage? {
-        // TODO: Create a nice share image with stats
-        return nil
+        let cardSize = CGSize(width: 400, height: 500)
+        let hostingController = UIHostingController(
+            rootView: CardioShareCard(session: session)
+                .frame(width: cardSize.width, height: cardSize.height)
+                .background(Color.white)
+        )
+        hostingController.view.bounds = CGRect(origin: .zero, size: cardSize)
+        
+        let renderer = UIGraphicsImageRenderer(size: cardSize)
+        return renderer.image { _ in
+            hostingController.view.drawHierarchy(in: hostingController.view.bounds, afterScreenUpdates: true)
+        }
     }
     
     // MARK: - Edit Methods
@@ -564,29 +604,10 @@ struct CardioSessionSummaryView: View {
     }
     
     private func saveDurationEdit() {
-        let originalDuration = session.totalDuration
         let newDuration = editHours * 3600 + editMinutes * 60 + editSeconds
         
-        if newDuration != originalDuration {
-            isDurationEdited = true
-            
-            // Update user stats with the change
-            user.updateCardioSession(
-                oldDuration: TimeInterval(originalDuration),
-                oldDistance: 0,
-                newDuration: TimeInterval(newDuration),
-                newDistance: 0
-            )
-            
-            session.totalDuration = newDuration
-            
-            // Save changes to database
-            do {
-                try modelContext.save()
-                Logger.info("Cardio session duration updated successfully")
-            } catch {
-                Logger.error("Failed to save duration edit: \(error)")
-            }
+        if newDuration != session.totalDuration {
+            session.updateDurationManually(newDuration)
         }
         
         showingDurationEdit = false
@@ -603,8 +624,6 @@ struct CardioSessionSummaryView: View {
     }
     
     private func saveDistanceEdit() {
-        let originalDistance = session.totalDistance
-        
         // Convert user input back to meters for storage
         let newDistanceMeters: Double
         switch unitSettings.unitSystem {
@@ -614,29 +633,8 @@ struct CardioSessionSummaryView: View {
             newDistanceMeters = editDistance * 1609.34 // miles to meters
         }
         
-        if abs(newDistanceMeters - originalDistance) > 0.1 { // Allow for minor floating point differences
-            isDistanceEdited = true
-            
-            // Update user stats with the change (fix: use proper duration value)
-            user.updateCardioSession(
-                oldDuration: TimeInterval(session.totalDuration),
-                oldDistance: originalDistance,
-                newDuration: TimeInterval(session.totalDuration),
-                newDistance: newDistanceMeters
-            )
-            
-            session.totalDistance = newDistanceMeters
-            
-            // Recalculate dependent metrics
-            session.calculateTotals()
-            
-            // Save changes to database
-            do {
-                try modelContext.save()
-                Logger.info("Cardio session distance updated successfully")
-            } catch {
-                Logger.error("Failed to save distance edit: \(error)")
-            }
+        if abs(newDistanceMeters - session.totalDistance) > 0.1 { // Allow for minor floating point differences
+            session.updateDistanceManually(newDistanceMeters)
         }
         
         showingDistanceEdit = false
@@ -655,14 +653,6 @@ struct CardioSessionSummaryView: View {
             isHeartRateEdited = true
             session.averageHeartRate = editAvgHeartRate > 0 ? editAvgHeartRate : nil
             session.maxHeartRate = editMaxHeartRate > 0 ? editMaxHeartRate : nil
-            
-            // Save changes to database
-            do {
-                try modelContext.save()
-                Logger.info("Cardio session heart rate updated successfully")
-            } catch {
-                Logger.error("Failed to save heart rate edit: \(error)")
-            }
         }
         
         showingHeartRateEdit = false
@@ -673,30 +663,8 @@ struct CardioSessionSummaryView: View {
     }
     
     private func saveCaloriesEdit() {
-        let originalCalories = session.totalCaloriesBurned ?? 0
-        
-        if editCalories != originalCalories {
-            isCaloriesEdited = true
-            
-            // Update user stats with the calorie change
-            user.updateCardioSession(
-                oldDuration: TimeInterval(session.totalDuration),
-                oldDistance: session.totalDistance,
-                newDuration: TimeInterval(session.totalDuration),
-                newDistance: session.totalDistance,
-                oldCalories: originalCalories,
-                newCalories: editCalories > 0 ? editCalories : nil
-            )
-            
-            session.totalCaloriesBurned = editCalories > 0 ? editCalories : nil
-            
-            // Save changes to database
-            do {
-                try modelContext.save()
-                Logger.info("Cardio session calories updated successfully")
-            } catch {
-                Logger.error("Failed to save calories edit: \(error)")
-            }
+        if editCalories != (session.totalCaloriesBurned ?? 0) {
+            session.updateCaloriesManually(editCalories > 0 ? editCalories : nil)
         }
         
         showingCaloriesEdit = false
@@ -1264,4 +1232,249 @@ struct CardioShareSheet: UIViewControllerRepresentable {
     }
     
     func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}
+}
+
+// MARK: - Cardio Share Card
+struct CardioShareCard: View {
+    let session: CardioSession
+    @Environment(\.theme) private var theme
+    @Environment(UnitSettings.self) var unitSettings
+    
+    var body: some View {
+        VStack(spacing: 0) {
+            // Header
+            VStack(spacing: theme.spacing.m) {
+                HStack {
+                    Image(systemName: "figure.run")
+                        .font(.title)
+                        .foregroundColor(.white)
+                    
+                    Text("Thrustr")
+                        .font(.title2)
+                        .fontWeight(.bold)
+                        .foregroundColor(.white)
+                }
+                
+                Text(session.startDate.formatted(date: .abbreviated, time: .omitted))
+                    .font(theme.typography.caption)
+                    .foregroundColor(.white.opacity(0.8))
+            }
+            .frame(maxWidth: .infinity)
+            .padding()
+            .background(
+                LinearGradient(
+                    colors: [theme.colors.success, theme.colors.success.opacity(0.8)],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+            )
+            
+            // Session Stats
+            VStack(alignment: .leading, spacing: theme.spacing.l) {
+                // Main Title
+                HStack {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(CardioKeys.SessionSummary.workoutCompleted.localized)
+                            .font(.title2)
+                            .fontWeight(.bold)
+                            .foregroundColor(theme.colors.textPrimary)
+                        
+                        HStack(spacing: theme.spacing.s) {
+                            Image(systemName: "heart.fill")
+                                .font(.caption)
+                                .foregroundColor(theme.colors.error)
+                            
+                            Text(CardioKeys.Common.cardioWorkout.localized)
+                                .font(theme.typography.caption)
+                                .foregroundColor(theme.colors.textSecondary)
+                        }
+                    }
+                    
+                    Spacer()
+                    
+                    // Achievement badge if PR
+                    if !session.personalRecordsHit.isEmpty {
+                        HStack(spacing: 4) {
+                            Image(systemName: "trophy.fill")
+                                .font(.caption)
+                                .foregroundColor(theme.colors.warning)
+                            Text("PR!")
+                                .font(theme.typography.caption)
+                                .fontWeight(.bold)
+                                .foregroundColor(theme.colors.warning)
+                        }
+                        .padding(.horizontal, theme.spacing.s)
+                        .padding(.vertical, 2)
+                        .background(theme.colors.warning.opacity(0.1))
+                        .cornerRadius(theme.radius.s)
+                    }
+                }
+                
+                Divider()
+                    .background(theme.colors.border.opacity(0.3))
+                
+                // Stats Grid
+                VStack(spacing: theme.spacing.m) {
+                    HStack(spacing: theme.spacing.m) {
+                        // Duration
+                        ShareStatCard(
+                            icon: "timer",
+                            value: formatDuration(session.totalDuration),
+                            label: TrainingKeys.CardioSummary.duration.localized,
+                            color: theme.colors.accent
+                        )
+                        
+                        // Distance
+                        if session.totalDistance > 0 {
+                            ShareStatCard(
+                                icon: "location.fill",
+                                value: formatDistance(session.totalDistance),
+                                label: TrainingKeys.CardioSummary.distance.localized,
+                                color: theme.colors.success
+                            )
+                        } else {
+                            ShareStatCard(
+                                icon: "speedometer",
+                                value: "--",
+                                label: TrainingKeys.CardioSummary.distance.localized,
+                                color: theme.colors.success
+                            )
+                        }
+                    }
+                    
+                    HStack(spacing: theme.spacing.m) {
+                        // Calories
+                        ShareStatCard(
+                            icon: "flame.fill",
+                            value: session.totalCaloriesBurned != nil ? "\(session.totalCaloriesBurned!)" : "--",
+                            label: TrainingKeys.CardioSummary.calories.localized,
+                            color: theme.colors.warning
+                        )
+                        
+                        // Heart Rate
+                        ShareStatCard(
+                            icon: "heart.fill",
+                            value: session.averageHeartRate != nil ? "\(session.averageHeartRate!) bpm" : "--",
+                            label: CardioKeys.SessionSummary.averageHeartRate.localized,
+                            color: theme.colors.error
+                        )
+                    }
+                }
+                
+                // Personal Records Section
+                if !session.personalRecordsHit.isEmpty {
+                    VStack(alignment: .leading, spacing: theme.spacing.s) {
+                        Text("🏆 PERSONAL RECORDS")
+                            .font(theme.typography.caption)
+                            .fontWeight(.semibold)
+                            .foregroundColor(theme.colors.warning)
+                        
+                        ForEach(session.personalRecordsHit, id: \.self) { pr in
+                            HStack {
+                                Image(systemName: "trophy.fill")
+                                    .font(.caption2)
+                                    .foregroundColor(theme.colors.warning)
+                                
+                                Text(pr)
+                                    .font(theme.typography.caption)
+                                    .foregroundColor(theme.colors.textPrimary)
+                                
+                                Spacer()
+                            }
+                        }
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(theme.spacing.m)
+                    .background(theme.colors.warning.opacity(0.1))
+                    .cornerRadius(theme.radius.m)
+                }
+                
+                // Notes if available
+                if let notes = session.sessionNotes, !notes.isEmpty {
+                    VStack(alignment: .leading, spacing: theme.spacing.xs) {
+                        Text(CardioKeys.StatsLabels.notes.localized.uppercased())
+                            .font(theme.typography.caption)
+                            .fontWeight(.semibold)
+                            .foregroundColor(theme.colors.textSecondary)
+                        
+                        Text(notes)
+                            .font(theme.typography.body)
+                            .foregroundColor(theme.colors.textPrimary)
+                            .lineLimit(3)
+                    }
+                }
+            }
+            .padding()
+            
+            // Footer
+            HStack {
+                Text("#Cardio #Fitness #Training")
+                    .font(theme.typography.caption)
+                    .foregroundColor(theme.colors.textSecondary)
+                
+                Spacer()
+                
+                Text("thrustr.app")
+                    .font(theme.typography.caption)
+                    .foregroundColor(theme.colors.accent)
+            }
+            .padding()
+            .background(theme.colors.backgroundSecondary)
+        }
+        .background(Color.white)
+        .cornerRadius(theme.radius.l)
+        .shadow(radius: 10)
+    }
+    
+    private func formatDuration(_ seconds: Int) -> String {
+        let hours = seconds / 3600
+        let minutes = (seconds % 3600) / 60
+        let remainingSeconds = seconds % 60
+        
+        if hours > 0 {
+            return String(format: "%d:%02d:%02d", hours, minutes, remainingSeconds)
+        } else {
+            return String(format: "%d:%02d", minutes, remainingSeconds)
+        }
+    }
+    
+    private func formatDistance(_ meters: Double) -> String {
+        if unitSettings.unitSystem == .metric {
+            let km = meters / 1000.0
+            return String(format: "%.1f km", km)
+        } else {
+            let miles = meters * 0.000621371
+            return String(format: "%.1f mi", miles)
+        }
+    }
+}
+
+// MARK: - Share Stat Card Component
+struct ShareStatCard: View {
+    let icon: String
+    let value: String
+    let label: String
+    let color: Color
+    @Environment(\.theme) private var theme
+    
+    var body: some View {
+        VStack(spacing: theme.spacing.xs) {
+            Image(systemName: icon)
+                .font(.title2)
+                .foregroundColor(color)
+            
+            Text(value)
+                .font(.title3)
+                .fontWeight(.bold)
+                .foregroundColor(theme.colors.textPrimary)
+            
+            Text(label)
+                .font(theme.typography.caption)
+                .foregroundColor(theme.colors.textSecondary)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(theme.spacing.m)
+        .background(theme.colors.backgroundSecondary)
+        .cornerRadius(theme.radius.m)
+    }
 }

@@ -5,7 +5,7 @@ struct CardioMainView: View {
     @Environment(\.theme) private var theme
     @Environment(\.modelContext) private var modelContext
     @Environment(TrainingCoordinator.self) private var coordinator
-    @EnvironmentObject private var unitSettings: UnitSettings
+    @Environment(UnitSettings.self) var unitSettings
     
     @Query private var cardioWorkouts: [CardioWorkout]
     @Query private var cardioSessions: [CardioSession]
@@ -65,7 +65,7 @@ struct CardioMainView: View {
 struct CardioTrainSection: View {
     @Environment(\.theme) private var theme
     @Environment(\.modelContext) private var modelContext
-    @EnvironmentObject private var unitSettings: UnitSettings
+    @Environment(UnitSettings.self) var unitSettings
     
     @Query private var cardioSessions: [CardioSession]
     
@@ -94,6 +94,18 @@ struct CardioTrainSection: View {
                 // Recent Sessions
                 if !recentSessions.isEmpty {
                     recentSessionsSection
+                } else {
+                    // Empty state for first-time users
+                    EmptyStateView(
+                        systemImage: "heart.fill",
+                        title: TrainingKeys.Cardio.noSessions.localized,
+                        message: TrainingKeys.Cardio.noSessionsDesc.localized,
+                        primaryTitle: TrainingKeys.Cardio.quickStart.localized,
+                        primaryAction: { showingQuickStart = true },
+                        secondaryTitle: TrainingKeys.Cardio.browseTemplates.localized,
+                        secondaryAction: { onNavigateToHistory() }
+                    )
+                    .padding(.top, theme.spacing.xl)
                 }
             }
             .padding(.vertical, theme.spacing.m)
@@ -255,7 +267,7 @@ struct CardioTrainSection: View {
 // MARK: - Cardio History Section
 struct CardioHistorySection: View {
     @Environment(\.theme) private var theme
-    @EnvironmentObject private var unitSettings: UnitSettings
+    @Environment(UnitSettings.self) var unitSettings
     let sessions: [CardioSession]
     let currentUser: User?
     
@@ -357,7 +369,7 @@ struct CardioHistorySection: View {
 #Preview {
     CardioMainView()
         .environment(TrainingCoordinator())
-        .environmentObject(UnitSettings.shared)
+        .environment(UnitSettings.shared)
         .modelContainer(for: [
             CardioWorkout.self,
             CardioSession.self,

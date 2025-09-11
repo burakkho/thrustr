@@ -4,22 +4,23 @@ import SwiftData
 // MARK: - Lift Exercise Model
 @Model
 final class LiftExercise {
-    var id: UUID
-    var exerciseId: UUID // Reference to Exercise model
-    var exerciseName: String // Cached for performance
-    var orderIndex: Int
-    var targetSets: Int
-    var targetReps: Int
+    var id: UUID = UUID()
+    var exerciseId: UUID = UUID() // Reference to Exercise model
+    var exerciseName: String = "" // Cached for performance
+    var orderIndex: Int = 0
+    var targetSets: Int = 3
+    var targetReps: Int = 10
     var targetWeight: Double?
     var restTime: Int? // seconds between sets
     var tempo: String? // e.g., "3-1-1-0" (eccentric-pause-concentric-pause)
     var notes: String?
-    var isWarmup: Bool
+    var isWarmup: Bool = false
     var isSupersetWith: Int? // orderIndex of paired exercise
     
     // Relationships
     var workout: LiftWorkout?
-    var results: [LiftExerciseResult]
+    var lift: Lift?
+    @Relationship(deleteRule: .cascade) var results: [LiftExerciseResult]?
     
     init(
         exerciseId: UUID,
@@ -85,7 +86,7 @@ extension LiftExercise {
     }
     
     var lastPerformedWeight: Double? {
-        return results
+        return results?
             .sorted { $0.performedAt > $1.performedAt }
             .first?
             .sets
@@ -94,7 +95,7 @@ extension LiftExercise {
     }
     
     var personalRecord: Double? {
-        return results
+        return results?
             .flatMap { $0.sets }
             .compactMap { $0.weight }
             .max()
@@ -103,14 +104,14 @@ extension LiftExercise {
     func calculateCurrentWorkingWeight(user: User, programExecution: ProgramExecution?) -> Double {
         // If this exercise has a target weight set, use it
         if let targetWeight = targetWeight {
-            return user.roundToPlateIncrement(targetWeight)
+            return user.roundToPlateIncrement(targetWeight, system: .metric)
         }
         
         // If we have previous performed weight, use progression
         if let lastWeight = lastPerformedWeight {
             // Add 2.5kg progression for StrongLifts-style programs
             let newWeight = lastWeight + 2.5
-            return user.roundToPlateIncrement(newWeight)
+            return user.roundToPlateIncrement(newWeight, system: .metric)
         }
         
         // Otherwise, calculate from user's 1RM starting weights
@@ -122,7 +123,7 @@ extension LiftExercise {
         let progressionAmount = calculateProgressionAmount(execution: programExecution)
         let totalWeight = baseWeight + progressionAmount
         
-        return user.roundToPlateIncrement(totalWeight)
+        return user.roundToPlateIncrement(totalWeight, system: .metric)
     }
     
     private func getExerciseKey() -> String {
@@ -146,7 +147,7 @@ extension LiftExercise {
         
         // StrongLifts progression: +2.5kg per workout
         // Calculate total completed workouts for this exercise
-        let completedWorkouts = execution.completedWorkouts.count
+        let completedWorkouts = execution.completedWorkouts?.count ?? 0
         return Double(completedWorkouts) * 2.5
     }
 }
@@ -210,7 +211,8 @@ extension LiftExercise {
 }
 
 // MARK: - Set Data Structure
-struct SetData: Codable {
+struct SetData: Codable, Identifiable {
+    let id: UUID
     var setNumber: Int
     var weight: Double?
     var reps: Int
@@ -231,6 +233,7 @@ struct SetData: Codable {
         rir: Int? = nil,
         notes: String? = nil
     ) {
+        self.id = UUID() // Stable ID set once in init
         self.setNumber = setNumber
         self.weight = weight
         self.reps = reps

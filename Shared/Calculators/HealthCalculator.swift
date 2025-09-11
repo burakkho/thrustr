@@ -13,7 +13,7 @@ import Foundation
  * - Body composition metrics (BMI, body fat percentage)
  * - Fitness level assessments and strength ratings
  */
-struct HealthCalculator {
+struct HealthCalculator: Sendable {
     
     /**
      * Calculates Basal Metabolic Rate using scientifically validated equations.
@@ -132,7 +132,7 @@ struct HealthCalculator {
     
     // MARK: - Workout Calorie Estimation
     
-    enum WorkoutIntensity {
+    enum WorkoutIntensity: Sendable {
         case low, moderate, high, veryHigh
         
         var metValue: Double {

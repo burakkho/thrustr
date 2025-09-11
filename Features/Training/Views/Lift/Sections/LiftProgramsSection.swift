@@ -90,7 +90,7 @@ struct LiftProgramsSection: View {
             .padding(.horizontal)
             
             UnifiedWorkoutCard(
-                title: execution.program.localizedName,
+                title: execution.program?.localizedName ?? "Unknown Program",
                 subtitle: "Week \(execution.currentWeek) • Day \(execution.currentDay)",
                 description: execution.currentWorkout?.localizedName,
                 primaryStats: [
@@ -110,7 +110,7 @@ struct LiftProgramsSection: View {
                         icon: "calendar"
                     )
                 ],
-                isFavorite: execution.program.isFavorite,
+                isFavorite: execution.program?.isFavorite ?? false,
                 cardStyle: .hero,
                 primaryAction: { selectedProgram = execution.program },
                 secondaryAction: { startCurrentWorkout(execution: execution) }
@@ -144,6 +144,6 @@ struct LiftProgramsSection: View {
     
     private func startCurrentWorkout(execution: ProgramExecution) {
         // Implementation for starting workout
-        Logger.info("Starting workout for program: \(execution.program.localizedName)")
+        Logger.info("Starting workout for program: \(execution.program?.localizedName ?? "Unknown")")
     }
 }

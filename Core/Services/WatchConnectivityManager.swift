@@ -2,6 +2,7 @@ import Foundation
 import WatchConnectivity
 import SwiftUI
 
+@MainActor
 @Observable
 class WatchConnectivityManager: NSObject {
     // MARK: - Shared Instance
@@ -158,9 +159,9 @@ class WatchConnectivityManager: NSObject {
 }
 
 // MARK: - WCSessionDelegate
-extension WatchConnectivityManager: WCSessionDelegate {
+extension WatchConnectivityManager: @preconcurrency WCSessionDelegate {
     func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {
-        DispatchQueue.main.async {
+        Task { @MainActor in
             self.watchState = activationState
             self.isPaired = session.isPaired
             self.isWatchAppInstalled = session.isWatchAppInstalled
@@ -174,18 +175,18 @@ extension WatchConnectivityManager: WCSessionDelegate {
         }
     }
     
-    func sessionDidBecomeInactive(_ session: WCSession) {
+    nonisolated func sessionDidBecomeInactive(_ session: WCSession) {
         Logger.info("Watch session became inactive")
     }
     
-    func sessionDidDeactivate(_ session: WCSession) {
+    nonisolated func sessionDidDeactivate(_ session: WCSession) {
         Logger.info("Watch session deactivated")
         // Reactivate the session for iOS
         session.activate()
     }
     
     func sessionReachabilityDidChange(_ session: WCSession) {
-        DispatchQueue.main.async {
+        Task { @MainActor in
             self.isReachable = session.isReachable
             Logger.info("Watch reachability changed: \(session.isReachable)")
         }
@@ -193,13 +194,13 @@ extension WatchConnectivityManager: WCSessionDelegate {
     
     // MARK: - Message Handling
     func session(_ session: WCSession, didReceiveMessage message: [String : Any]) {
-        DispatchQueue.main.async {
+        Task { @MainActor in
             self.handleWatchMessage(message)
         }
     }
     
     func session(_ session: WCSession, didReceiveMessage message: [String : Any], replyHandler: @escaping ([String : Any]) -> Void) {
-        DispatchQueue.main.async {
+        Task { @MainActor in
             self.handleWatchMessage(message)
             
             // Send acknowledgment
@@ -236,7 +237,7 @@ extension WatchConnectivityManager: WCSessionDelegate {
     
     // MARK: - Application Context
     func session(_ session: WCSession, didReceiveApplicationContext applicationContext: [String : Any]) {
-        DispatchQueue.main.async {
+        Task { @MainActor in
             Logger.info("Received application context from watch: \(applicationContext)")
             self.processWatchDataResponse(applicationContext)
         }

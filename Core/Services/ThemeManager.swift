@@ -54,7 +54,7 @@ enum AppTheme: String, CaseIterable {
 extension UserDefaults {
     var selectedTheme: String {
         get {
-            return string(forKey: "app_theme") ?? AppTheme.system.rawValue
+            return string(forKey: "app_theme") ?? AppTheme.dark.rawValue
         }
         set {
             set(newValue, forKey: "app_theme")
@@ -64,11 +64,12 @@ extension UserDefaults {
 
 // MARK: - Theme Manager
 @MainActor
-class ThemeManager: ObservableObject {
+@Observable
+class ThemeManager {
     
-    // MARK: - Published Properties
-    @Published var currentTheme: AppTheme = .system
-    @Published var isDarkMode: Bool = false
+    // MARK: - Properties
+    var currentTheme: AppTheme = .dark
+    var isDarkMode: Bool = false
     
     // MARK: - Private Properties
     private let userDefaults = UserDefaults.standard
@@ -167,13 +168,14 @@ class ThemeManager: ObservableObject {
 extension View {
     /// Theme manager'ı environment'a ekle
     func withThemeManager(_ themeManager: ThemeManager) -> some View {
-        self.environmentObject(themeManager)
+        self.environment(themeManager)
     }
 }
 
 // MARK: - Tab Router for TabView coordination
-final class TabRouter: ObservableObject {
-    @Published var selected: Int = 0
+@Observable
+final class TabRouter {
+    var selected: Int = 0
 }
 
 // MARK: - Color Extensions for Dark Mode

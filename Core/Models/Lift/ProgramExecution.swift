@@ -4,19 +4,19 @@ import SwiftData
 // MARK: - Program Execution Model
 @Model
 final class ProgramExecution {
-    var id: UUID
-    var startDate: Date
+    var id: UUID = UUID()
+    var startDate: Date = Date()
     var endDate: Date?
-    var currentWeek: Int
-    var currentDay: Int
-    var isCompleted: Bool
-    var isPaused: Bool
+    var currentWeek: Int = 1
+    var currentDay: Int = 1
+    var isCompleted: Bool = false
+    var isPaused: Bool = false
     var notes: String?
     
     // Relationships
-    var program: LiftProgram
+    var program: LiftProgram?
     var user: User?
-    var completedWorkouts: [CompletedWorkout]
+    @Relationship(deleteRule: .cascade, inverse: \CompletedWorkout.execution) var completedWorkouts: [CompletedWorkout]?
     
     init(
         program: LiftProgram,
@@ -44,40 +44,47 @@ extension ProgramExecution {
     }
     
     var currentDayOfWeek: Int {
+        guard let program = program else { return 1 }
         let totalDays = ((currentWeek - 1) * program.daysPerWeek) + currentDay
         return ((totalDays - 1) % program.daysPerWeek) + 1
     }
     
     var progressPercentage: Double {
+        guard let program = program else { return 0.0 }
         let totalWorkouts = program.weeks * program.daysPerWeek
-        let completedWorkoutsCount = completedWorkouts.count
+        let completedWorkoutsCount = (completedWorkouts ?? []).count
         return Double(completedWorkoutsCount) / Double(totalWorkouts)
     }
     
     var remainingWeeks: Int {
-        max(0, program.weeks - currentWeek + 1)
+        guard let program = program else { return 0 }
+        return max(0, program.weeks - currentWeek + 1)
     }
     
     var currentWorkout: LiftWorkout? {
         // For StrongLifts: A-B-A-B pattern
         // Week 1: A-B-A, Week 2: B-A-B, Week 3: A-B-A, etc.
+        guard let program = program, let workouts = program.workouts else { return nil }
         let workoutIndex = getWorkoutIndex()
-        guard workoutIndex < program.workouts.count else { return nil }
-        return program.workouts[workoutIndex]
+        guard workoutIndex < workouts.count else { return nil }
+        return workouts[workoutIndex]
     }
     
     private func getWorkoutIndex() -> Int {
         // Calculate which workout (A or B) based on week and day
+        guard let program = program, let workouts = program.workouts else { return 0 }
         let totalWorkoutsSoFar = ((currentWeek - 1) * program.daysPerWeek) + (currentDay - 1)
-        return totalWorkoutsSoFar % program.workouts.count
+        return totalWorkoutsSoFar % workouts.count
     }
     
     var isLastWeek: Bool {
-        currentWeek == program.weeks
+        guard let program = program else { return false }
+        return currentWeek == program.weeks
     }
     
     var formattedProgress: String {
-        "Week \(currentWeek) of \(program.weeks)"
+        guard let program = program else { return "Week \(currentWeek)" }
+        return "Week \(currentWeek) of \(program.weeks)"
     }
     
     var completedWorkoutsThisWeek: Int {
@@ -85,7 +92,7 @@ extension ProgramExecution {
         let currentDate = Date()
         let startOfWeek = calendar.dateInterval(of: .weekOfYear, for: currentDate)?.start ?? currentDate
         
-        return completedWorkouts.filter { workout in
+        return (completedWorkouts ?? []).filter { workout in
             workout.completedAt >= startOfWeek && 
             workout.weekNumber == currentWeek &&
             !workout.isSkipped
@@ -93,7 +100,7 @@ extension ProgramExecution {
     }
     
     var currentStreak: Int {
-        let sortedWorkouts = completedWorkouts
+        let sortedWorkouts = (completedWorkouts ?? [])
             .filter { !$0.isSkipped }
             .sorted { $0.completedAt > $1.completedAt }
         
@@ -112,6 +119,7 @@ extension ProgramExecution {
 
 // MARK: - Methods
 extension ProgramExecution {
+    @MainActor
     func completeCurrentWorkout() {
         guard let workout = currentWorkout else { return }
         
@@ -122,13 +130,18 @@ extension ProgramExecution {
             execution: self
         )
         
-        completedWorkouts.append(completedWorkout)
+        if completedWorkouts == nil {
+            completedWorkouts = []
+        }
+        completedWorkouts?.append(completedWorkout)
         
         // Advance to next workout
         advanceToNextWorkout()
     }
     
+    @MainActor
     private func advanceToNextWorkout() {
+        guard let program = program else { return }
         currentDay += 1
         
         if currentDay > program.daysPerWeek {
@@ -142,22 +155,23 @@ extension ProgramExecution {
         }
     }
     
+    @MainActor
     func completeProgram() {
         endDate = Date()
         isCompleted = true
         
         // Log program completion activity
         let weekCount = currentWeek - 1
-        let totalCompletedWorkouts = completedWorkouts.filter { !$0.isSkipped }.count
+        let totalCompletedWorkouts = (completedWorkouts ?? []).filter { !$0.isSkipped }.count
+        let programName = program?.localizedName ?? "Unknown Program"
         
-        Task { @MainActor in
-            ActivityLoggerService.shared.logProgramCompleted(
-                programName: program.localizedName,
-                totalWorkouts: totalCompletedWorkouts,
-                weekCount: weekCount,
-                user: user
-            )
-        }
+        // Log directly in same SwiftData context - no async boundary
+        ActivityLoggerService.shared.logProgramCompleted(
+            programName: programName,
+            totalWorkouts: totalCompletedWorkouts,
+            weekCount: weekCount,
+            user: user
+        )
     }
     
     func pauseProgram() {
@@ -174,9 +188,10 @@ extension ProgramExecution {
         isCompleted = false
         isPaused = false
         endDate = nil
-        completedWorkouts.removeAll()
+        completedWorkouts?.removeAll()
     }
     
+    @MainActor
     func skipCurrentWorkout(reason: String? = nil) {
         let skippedWorkout = CompletedWorkout(
             workout: currentWorkout,
@@ -187,7 +202,10 @@ extension ProgramExecution {
             skipReason: reason
         )
         
-        completedWorkouts.append(skippedWorkout)
+        if completedWorkouts == nil {
+            completedWorkouts = []
+        }
+        completedWorkouts?.append(skippedWorkout)
         advanceToNextWorkout()
     }
 }
@@ -195,11 +213,11 @@ extension ProgramExecution {
 // MARK: - Completed Workout Model
 @Model
 final class CompletedWorkout {
-    var id: UUID
-    var completedAt: Date
-    var weekNumber: Int
-    var dayNumber: Int
-    var isSkipped: Bool
+    var id: UUID = UUID()
+    var completedAt: Date = Date()
+    var weekNumber: Int = 1
+    var dayNumber: Int = 1
+    var isSkipped: Bool = false
     var skipReason: String?
     var duration: Int? // in minutes
     var notes: String?

@@ -1,15 +1,27 @@
 import SwiftUI
 import SwiftData
+import AVFoundation
+import MediaPlayer
 
 struct CardioLiveTrackingView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.theme) private var theme
     @Environment(\.modelContext) private var modelContext
-    @EnvironmentObject private var unitSettings: UnitSettings
+    @Environment(UnitSettings.self) private var unitSettings
     
     @State private var viewModel: CardioTimerViewModel
     @State private var showingStopConfirmation = false
     @State private var showingBluetoothSheet = false
+    
+    // Screen lock state
+    @State private var isScreenLocked = false
+    @State private var lockSlideOffset: CGFloat = 0
+    
+    // Volume button monitoring for unlock
+    @State private var volumeButtonMonitor: Timer?
+    @State private var lastVolumeLevel: Float = 0
+    @State private var volumeButtonPressCount = 0
+    @State private var volumeUnlockTimer: Timer?
     
     let activityType: CardioTimerViewModel.CardioActivityType
     let isOutdoor: Bool
@@ -65,9 +77,34 @@ struct CardioLiveTrackingView: View {
                 countdownOverlay
                     .zIndex(1000) // Ensure it's above everything else
             }
+            
+            // Screen Lock Overlay - Highest priority
+            if isScreenLocked {
+                screenLockOverlay
+                    .zIndex(2000) // Above everything including countdown
+            }
         }
         .onAppear {
             viewModel.startSession()
+            
+            // Disable idle timer to keep screen on during workout
+            DispatchQueue.main.async {
+                UIApplication.shared.isIdleTimerDisabled = true
+                Logger.info("Idle timer disabled - screen will stay on during cardio workout")
+            }
+            
+            // Setup volume button monitoring for screen unlock
+            setupVolumeButtonMonitoring()
+        }
+        .onDisappear {
+            // Re-enable idle timer when leaving workout
+            DispatchQueue.main.async {
+                UIApplication.shared.isIdleTimerDisabled = false
+                Logger.info("Idle timer re-enabled")
+            }
+            
+            // Cleanup volume monitoring
+            cleanupVolumeButtonMonitoring()
         }
         .onReceive(Timer.publish(every: 0.5, on: .main, in: .common).autoconnect()) { _ in
             // Force UI update on main thread
@@ -131,6 +168,175 @@ struct CardioLiveTrackingView: View {
         .transition(.opacity)
     }
     
+    // MARK: - Screen Lock Overlay
+    private var screenLockOverlay: some View {
+        ZStack {
+            Color.black.opacity(0.95)
+                .ignoresSafeArea()
+                .onTapGesture {
+                    // Prevent any accidental taps
+                }
+            
+            VStack(spacing: theme.spacing.xl) {
+                // Lock Icon
+                VStack(spacing: theme.spacing.m) {
+                    Image(systemName: "lock.fill")
+                        .font(.system(size: 60))
+                        .foregroundColor(.white)
+                    
+                    Text("training.screen_lock.screen_locked".localized)
+                        .font(theme.typography.title2)
+                        .fontWeight(.bold)
+                        .foregroundColor(.white)
+                    
+                    Text("training.screen_lock.accidental_press_protection".localized)
+                        .font(theme.typography.body)
+                        .foregroundColor(.white.opacity(0.7))
+                        .multilineTextAlignment(.center)
+                }
+                
+                Spacer()
+                
+                // Essential metrics display
+                VStack(spacing: theme.spacing.l) {
+                    // Timer
+                    TimerDisplay(
+                        formattedTime: viewModel.formattedDuration,
+                        isRunning: viewModel.timerViewModel.isRunning,
+                        size: .large
+                    )
+                    
+                    // Key metrics in horizontal layout
+                    HStack(spacing: theme.spacing.xl) {
+                        if isOutdoor {
+                            VStack(spacing: 4) {
+                                Text(viewModel.formattedDistance)
+                                    .font(.title2)
+                                    .fontWeight(.bold)
+                                    .foregroundColor(.white)
+                                Text("Mesafe")
+                                    .font(.caption)
+                                    .foregroundColor(.white.opacity(0.7))
+                            }
+                        }
+                        
+                        VStack(spacing: 4) {
+                            Text("\(viewModel.currentCalories)")
+                                .font(.title2)
+                                .fontWeight(.bold)
+                                .foregroundColor(.white)
+                            Text("kcal")
+                                .font(.caption)
+                                .foregroundColor(.white.opacity(0.7))
+                        }
+                        
+                        if viewModel.bluetoothManager.isConnected {
+                            VStack(spacing: 4) {
+                                Text(viewModel.formattedHeartRate)
+                                    .font(.title2)
+                                    .fontWeight(.bold)
+                                    .foregroundColor(.white)
+                                Text("BPM")
+                                    .font(.caption)
+                                    .foregroundColor(.white.opacity(0.7))
+                            }
+                        }
+                    }
+                }
+                
+                Spacer()
+                
+                // Slide to unlock
+                slideToUnlockView
+                
+                // Alternative unlock method hint
+                VStack(spacing: theme.spacing.s) {
+                    Text("training.screen_lock.or".localized)
+                        .font(.caption)
+                        .foregroundColor(.white.opacity(0.5))
+                    
+                    Text("training.screen_lock.volume_buttons_hint".localized)
+                        .font(.caption)
+                        .foregroundColor(.white.opacity(0.7))
+                        .multilineTextAlignment(.center)
+                }
+            }
+            .padding(theme.spacing.l)
+        }
+        .transition(.opacity)
+    }
+    
+    // MARK: - Slide to Unlock
+    private var slideToUnlockView: some View {
+        let sliderWidth: CGFloat = 300
+        let knobSize: CGFloat = 50
+        let maxOffset = sliderWidth - knobSize
+        
+        return ZStack {
+            // Background track
+            RoundedRectangle(cornerRadius: 25)
+                .fill(Color.white.opacity(0.2))
+                .frame(height: 50)
+                .overlay(
+                    Text("training.screen_lock.slide_to_unlock".localized)
+                        .font(.body)
+                        .fontWeight(.medium)
+                        .foregroundColor(.white.opacity(lockSlideOffset > maxOffset * 0.3 ? 0.3 : 0.8))
+                        .opacity(lockSlideOffset > maxOffset * 0.8 ? 0 : 1)
+                )
+            
+            // Sliding knob
+            HStack {
+                RoundedRectangle(cornerRadius: 22.5)
+                    .fill(
+                        LinearGradient(
+                            colors: [theme.colors.accent, theme.colors.accent.opacity(0.8)],
+                            startPoint: .leading,
+                            endPoint: .trailing
+                        )
+                    )
+                    .frame(width: knobSize, height: 45)
+                    .overlay(
+                        Image(systemName: "lock.open.fill")
+                            .font(.title3)
+                            .foregroundColor(.white)
+                    )
+                    .offset(x: lockSlideOffset)
+                    .gesture(
+                        DragGesture()
+                            .onChanged { value in
+                                lockSlideOffset = max(0, min(maxOffset, value.translation.width))
+                            }
+                            .onEnded { value in
+                                if lockSlideOffset >= maxOffset * 0.8 {
+                                    // Unlock successful
+                                    withAnimation(.easeOut(duration: 0.3)) {
+                                        isScreenLocked = false
+                                        lockSlideOffset = 0
+                                    }
+                                    
+                                    // Haptic feedback
+                                    let successFeedback = UINotificationFeedbackGenerator()
+                                    successFeedback.notificationOccurred(.success)
+                                } else {
+                                    // Snap back
+                                    withAnimation(.spring(response: 0.5, dampingFraction: 0.8)) {
+                                        lockSlideOffset = 0
+                                    }
+                                    
+                                    // Light haptic feedback
+                                    let impactFeedback = UIImpactFeedbackGenerator(style: .light)
+                                    impactFeedback.impactOccurred()
+                                }
+                            }
+                    )
+                
+                Spacer()
+            }
+        }
+        .frame(width: sliderWidth)
+    }
+    
     // MARK: - Header
     private var headerView: some View {
         HStack {
@@ -156,6 +362,20 @@ struct CardioLiveTrackingView: View {
             }
             
             Spacer()
+            
+            // Lock button
+            Button(action: { 
+                withAnimation(.easeInOut(duration: 0.3)) {
+                    isScreenLocked = true
+                }
+                // Haptic feedback
+                let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
+                impactFeedback.impactOccurred()
+            }) {
+                Image(systemName: "lock.circle.fill")
+                    .font(.title2)
+                    .foregroundColor(theme.colors.accent)
+            }
             
             Button(action: { showingStopConfirmation = true }) {
                 Image(systemName: "xmark.circle.fill")
@@ -195,71 +415,71 @@ struct CardioLiveTrackingView: View {
         LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: theme.spacing.m) {
             if isOutdoor {
                 // Outdoor metrics: GPS-based performance data
-                MetricCard(
+                QuickStatCard(
                     icon: "speedometer",
                     title: TrainingKeys.Cardio.speed.localized,
                     value: viewModel.formattedSpeed,
-                    unit: UnitsFormatter.formatSpeedUnit(system: unitSettings.unitSystem),
+                    subtitle: UnitsFormatter.formatSpeedUnit(system: unitSettings.unitSystem),
                     color: theme.colors.accent
                 )
                 
-                MetricCard(
+                QuickStatCard(
                     icon: "location.fill",
                     title: TrainingKeys.Cardio.distance.localized,
                     value: viewModel.formattedDistance,
-                    unit: "",
+                    subtitle: "",
                     color: theme.colors.success
                 )
                 
-                MetricCard(
+                QuickStatCard(
                     icon: "flame.fill",
                     title: TrainingKeys.Cardio.calories.localized,
                     value: "\(viewModel.currentCalories)",
-                    unit: "kcal",
+                    subtitle: "kcal",
                     color: theme.colors.warning
                 )
                 .id("calories-\(viewModel.currentCalories)")
                 
-                MetricCard(
+                QuickStatCard(
                     icon: "gauge.medium",
                     title: TrainingKeys.Cardio.pace.localized,
                     value: viewModel.formattedPace,
-                    unit: UnitsFormatter.formatPaceUnit(system: unitSettings.unitSystem),
+                    subtitle: UnitsFormatter.formatPaceUnit(system: unitSettings.unitSystem),
                     color: theme.colors.accent.opacity(0.8)
                 )
                 .id("pace-\(viewModel.currentPace)")
             } else {
                 // Indoor metrics: Focus on effort and physiological data
-                MetricCard(
+                QuickStatCard(
                     icon: "flame.fill",
                     title: TrainingKeys.Cardio.calories.localized,
                     value: "\(viewModel.currentCalories)",
-                    unit: "kcal",
+                    subtitle: "kcal",
                     color: theme.colors.warning
                 )
                 .id("calories-\(viewModel.currentCalories)")
                 
-                MetricCard(
+                QuickStatCard(
                     icon: "heart.fill",
                     title: TrainingKeys.Cardio.heartRate.localized,
                     value: viewModel.formattedHeartRate,
-                    unit: "BPM",
+                    subtitle: "BPM",
                     color: theme.colors.error
                 )
                 
-                MetricCard(
+                QuickStatCard(
                     icon: "bolt.fill",
                     title: TrainingKeys.Cardio.effort.localized,
                     value: viewModel.perceivedEffortLevel,
-                    unit: TrainingKeys.Cardio.rpe.localized,
+                    subtitle: TrainingKeys.Cardio.rpe.localized,
                     color: theme.colors.accent
                 )
                 
-                MetricCard(
+                QuickStatCard(
                     icon: "target",
                     title: TrainingKeys.Cardio.zone.localized,
                     value: viewModel.heartRateZone,
-                    unit: "",
+                    subtitle: "",
                     color: viewModel.heartRateZoneColor
                 )
             }
@@ -463,47 +683,69 @@ struct CardioLiveTrackingView: View {
     private func completeSession() {
         viewModel.stopSession()
     }
-}
-
-// MARK: - Metric Card
-struct MetricCard: View {
-    @Environment(\.theme) private var theme
-    let icon: String
-    let title: String
-    let value: String
-    let unit: String
-    let color: Color
     
-    var body: some View {
-        VStack(alignment: .leading, spacing: theme.spacing.s) {
-            HStack {
-                Image(systemName: icon)
-                    .font(.caption)
-                    .foregroundColor(color)
-                Text(title)
-                    .font(theme.typography.caption)
-                    .foregroundColor(theme.colors.textSecondary)
-                Spacer()
-            }
+    // MARK: - Volume Button Monitoring
+    private func setupVolumeButtonMonitoring() {
+        let audioSession = AVAudioSession.sharedInstance()
+        lastVolumeLevel = audioSession.outputVolume
+        
+        volumeButtonMonitor = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { _ in
+            let currentVolume = audioSession.outputVolume
             
-            HStack(alignment: .lastTextBaseline, spacing: 4) {
-                Text(value)
-                    .font(.system(size: 28, weight: .bold, design: .rounded))
-                    .foregroundColor(theme.colors.textPrimary)
-                
-                if !unit.isEmpty {
-                    Text(unit)
-                        .font(theme.typography.caption)
-                        .foregroundColor(theme.colors.textSecondary)
+            // Detect volume button press (both up and down)
+            Task { @MainActor in
+                if abs(currentVolume - lastVolumeLevel) > 0.01 {
+                    volumeButtonPressed()
+                    lastVolumeLevel = currentVolume
                 }
             }
         }
-        .padding(theme.spacing.m)
-        .background(theme.colors.backgroundSecondary)
-        .cornerRadius(theme.radius.m)
     }
     
+    private func cleanupVolumeButtonMonitoring() {
+        volumeButtonMonitor?.invalidate()
+        volumeButtonMonitor = nil
+        volumeUnlockTimer?.invalidate()
+        volumeUnlockTimer = nil
+    }
+    
+    private func volumeButtonPressed() {
+        guard isScreenLocked else { return }
+        
+        volumeButtonPressCount += 1
+        
+        // If this is the first press, start the timer
+        if volumeButtonPressCount == 1 {
+            volumeUnlockTimer = Timer.scheduledTimer(withTimeInterval: 3.0, repeats: false) { _ in
+                Task { @MainActor in
+                    // Reset count after 3 seconds
+                    volumeButtonPressCount = 0
+                }
+            }
+        }
+        
+        // Check if we have enough presses to unlock (both volume up and down within 3 seconds)
+        if volumeButtonPressCount >= 4 { // Multiple quick presses simulate up+down combo
+            // Unlock screen with volume buttons
+            withAnimation(.easeOut(duration: 0.3)) {
+                isScreenLocked = false
+                lockSlideOffset = 0
+            }
+            
+            // Success haptic feedback
+            let successFeedback = UINotificationFeedbackGenerator()
+            successFeedback.notificationOccurred(.success)
+            
+            // Reset counter
+            volumeButtonPressCount = 0
+            volumeUnlockTimer?.invalidate()
+            volumeUnlockTimer = nil
+            
+            Logger.info("Screen unlocked via volume button combination")
+        }
+    }
 }
+
 
 // MARK: - Bluetooth Device Sheet
 struct BluetoothDeviceSheet: View {
@@ -581,5 +823,5 @@ struct BluetoothDeviceSheet: View {
             selectedLanguage: "tr"
         )
     )
-    .environmentObject(UnitSettings.shared)
+    .environment(UnitSettings.shared)
 }

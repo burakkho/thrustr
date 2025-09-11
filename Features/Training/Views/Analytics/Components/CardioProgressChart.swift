@@ -5,8 +5,8 @@ import Charts
 struct CardioProgressChart: View {
     @Environment(\.theme) private var theme
     @Environment(\.modelContext) private var modelContext
-    @EnvironmentObject private var unitSettings: UnitSettings
-    @EnvironmentObject private var healthKitService: HealthKitService
+    @Environment(UnitSettings.self) var unitSettings
+    @Environment(HealthKitService.self) var healthKitService
     
     let user: User
     @State private var selectedTimeRange: TimeRange = .sixMonths
@@ -606,8 +606,8 @@ struct CardioProgressChart: View {
     }
     
     return CardioProgressChart(user: user)
-        .environmentObject(UnitSettings.shared)
-        .environmentObject(HealthKitService())
+        .environment(UnitSettings.shared)
+        .environment(HealthKitService())
         .modelContainer(container)
         .padding()
 }

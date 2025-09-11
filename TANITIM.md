@@ -232,6 +232,11 @@ thrustr/
 - 🇺🇸 **English**: Complete localization  
 - 🇩🇪 **Deutsch**: Vollständige Lokalisierung
 - 🇪🇸 **Español**: Localización completa
+- 🇮🇹 **Italiano**: Localizzazione completa
+- 🇫🇷 **Français**: Localisation complète
+- 🇵🇹 **Português**: Localização completa
+- 🇮🇩 **Indonesia**: Lokalisasi lengkap
+- 🇵🇱 **Polski**: Pełna lokalizacja
 
 #### Localization Features:
 - **Dynamic Language Switching**: Runtime dil değiştirme

@@ -10,8 +10,8 @@ struct TemplateGuideCard: View {
     let onFavoriteToggle: (() -> Void)?
     
     private var exercisePreview: String {
-        let exerciseNames = template.exercises.prefix(3).map { $0.exerciseName }
-        if template.exercises.count > 3 {
+        let exerciseNames = (template.exercises ?? []).prefix(3).map { $0.exerciseName }
+        if (template.exercises?.count ?? 0) > 3 {
             return exerciseNames.joined(separator: ", ") + "..."
         } else {
             return exerciseNames.joined(separator: ", ")
@@ -19,7 +19,7 @@ struct TemplateGuideCard: View {
     }
     
     private var totalSets: Int {
-        template.exercises.reduce(0) { $0 + $1.targetSets }
+        (template.exercises ?? []).reduce(0) { $0 + $1.targetSets }
     }
     
     private var estimatedDuration: String {
@@ -52,7 +52,7 @@ struct TemplateGuideCard: View {
                         .foregroundColor(theme.colors.textPrimary)
                         .lineLimit(1)
                     
-                    Text("\(template.exercises.count) exercises")
+                    Text("\(template.exercises?.count ?? 0) exercises")
                         .font(.caption)
                         .foregroundColor(theme.colors.textSecondary)
                 }

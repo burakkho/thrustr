@@ -17,22 +17,22 @@ import SwiftData
  */
 @Model
 final class WOD {
-    var id: UUID
-    var name: String
-    var type: String // WODType raw value
-    var category: String // WODCategory raw value (girls, heroes, opens, custom)
-    private var repSchemeData: String // JSON serialized [Int] array
+    var id: UUID = UUID()
+    var name: String = ""
+    var type: String = "amrap" // WODType raw value
+    var category: String = "custom" // WODCategory raw value (girls, heroes, opens, custom)
+    var repScheme: [Int] = [] // Native SwiftData array
     var timeCap: Int? // in seconds
     var rounds: Int? // for EMOM, Tabata etc
     var difficulty: String? // beginner, intermediate, advanced
-    var isCustom: Bool
-    var isFavorite: Bool
-    var createdAt: Date
-    var updatedAt: Date
+    var isCustom: Bool = true
+    var isFavorite: Bool = false
+    var createdAt: Date = Date()
+    var updatedAt: Date = Date()
     
     // Relationships
-    var movements: [WODMovement]
-    var results: [WODResult]
+    @Relationship(deleteRule: .cascade, inverse: \WODMovement.wod) var movements: [WODMovement]?
+    @Relationship(deleteRule: .cascade) var results: [WODResult]?
     
     init(
         name: String,
@@ -48,7 +48,7 @@ final class WOD {
         self.name = name
         self.type = type.rawValue
         self.category = category
-        self.repSchemeData = Self.encodeIntArray(repScheme)
+        self.repScheme = repScheme
         self.timeCap = timeCap
         self.rounds = rounds
         self.difficulty = difficulty
@@ -62,35 +62,6 @@ final class WOD {
 }
 
 // MARK: - Computed Properties
-extension WOD {
-    var repScheme: [Int] {
-        get {
-            Self.decodeIntArray(repSchemeData)
-        }
-        set {
-            repSchemeData = Self.encodeIntArray(newValue)
-        }
-    }
-    
-    // MARK: - Array Serialization Helpers
-    private static func encodeIntArray(_ array: [Int]) -> String {
-        do {
-            let data = try JSONEncoder().encode(array)
-            return String(data: data, encoding: .utf8) ?? "[]"
-        } catch {
-            return "[]"
-        }
-    }
-    
-    private static func decodeIntArray(_ string: String) -> [Int] {
-        guard let data = string.data(using: .utf8) else { return [] }
-        do {
-            return try JSONDecoder().decode([Int].self, from: data)
-        } catch {
-            return []
-        }
-    }
-}
 extension WOD {
     var wodType: WODType {
         WODType(rawValue: type) ?? .custom
@@ -119,12 +90,12 @@ extension WOD {
         switch wodType {
         case .forTime:
             // Lowest time is best for "For Time" WODs
-            return results
+            return (results ?? [])
                 .filter { $0.totalTime != nil }
                 .min { ($0.totalTime ?? Int.max) < ($1.totalTime ?? Int.max) }
         case .amrap:
             // Most rounds/reps is best for AMRAP
-            return results
+            return (results ?? [])
                 .filter { $0.rounds != nil }
                 .max { 
                     let score1 = ($0.rounds ?? 0) * 100 + ($0.extraReps ?? 0)
@@ -132,11 +103,13 @@ extension WOD {
                     return score1 < score2
                 }
         default:
-            return results.first
+            return results?.first
         }
     }
     
     var lastPerformed: Date? {
-        results.map { $0.completedAt }.max()
+        return (results ?? [])
+            .compactMap { $0.completedAt }
+            .max()
     }
 }

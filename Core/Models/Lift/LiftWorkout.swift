@@ -4,23 +4,24 @@ import SwiftData
 // MARK: - Lift Workout Model
 @Model
 final class LiftWorkout {
-    var id: UUID
-    var name: String
-    var nameEN: String
-    var nameTR: String
+    var id: UUID = UUID()
+    var name: String = ""
+    var nameEN: String = ""
+    var nameTR: String = ""
     var dayNumber: Int? // Day 1, Day 2, etc.
     var notes: String?
     var estimatedDuration: Int? // minutes
-    var isTemplate: Bool
-    var isCustom: Bool
-    var isFavorite: Bool
-    var createdAt: Date
-    var updatedAt: Date
+    var isTemplate: Bool = false
+    var isCustom: Bool = false
+    var isFavorite: Bool = false
+    var createdAt: Date = Date()
+    var updatedAt: Date = Date()
     
     // Relationships
     var program: LiftProgram?
-    var exercises: [LiftExercise]
-    var sessions: [LiftSession]
+    @Relationship(deleteRule: .cascade, inverse: \LiftExercise.workout) var exercises: [LiftExercise]?
+    @Relationship(deleteRule: .cascade, inverse: \LiftSession.workout) var sessions: [LiftSession]?
+    @Relationship(deleteRule: .cascade, inverse: \CompletedWorkout.workout) var completedWorkouts: [CompletedWorkout]?
     
     init(
         name: String,
@@ -57,23 +58,23 @@ extension LiftWorkout {
     }
     
     var totalSets: Int {
-        return exercises.reduce(0) { $0 + $1.targetSets }
+        return exercises?.reduce(0) { $0 + $1.targetSets } ?? 0
     }
     
     var totalExercises: Int {
-        return exercises.count
+        return exercises?.count ?? 0
     }
     
     
     var lastPerformed: Date? {
-        return sessions
+        return sessions?
             .filter { $0.isCompleted }
             .sorted { $0.startDate > $1.startDate }
             .first?.startDate
     }
     
     var averageDuration: Int? {
-        let completedSessions = sessions.filter { $0.isCompleted }
+        let completedSessions = sessions?.filter { $0.isCompleted } ?? []
         guard !completedSessions.isEmpty else { return nil }
         
         let totalDuration = completedSessions.reduce(0.0) { total, session in
@@ -85,7 +86,7 @@ extension LiftWorkout {
     
     var isSuperset: Bool {
         // Check if any exercises are marked as superset
-        for (index, exercise) in exercises.enumerated() {
+        for (index, exercise) in exercises?.enumerated() ?? [].enumerated() {
             if index > 0 && exercise.restTime == 0 {
                 return true
             }
@@ -97,23 +98,26 @@ extension LiftWorkout {
 // MARK: - Methods
 extension LiftWorkout {
     func addExercise(_ exercise: LiftExercise) {
-        exercise.orderIndex = exercises.count
-        exercises.append(exercise)
+        if exercises == nil {
+            exercises = []
+        }
+        exercise.orderIndex = exercises?.count ?? 0
+        exercises?.append(exercise)
         exercise.workout = self
         updatedAt = Date()
     }
     
     func removeExercise(_ exercise: LiftExercise) {
-        exercises.removeAll { $0.id == exercise.id }
+        exercises?.removeAll { $0.id == exercise.id }
         // Reorder remaining exercises
-        for (index, ex) in exercises.enumerated() {
+        for (index, ex) in exercises?.enumerated() ?? [].enumerated() {
             ex.orderIndex = index
         }
         updatedAt = Date()
     }
     
     func reorderExercises() {
-        exercises.sort { $0.orderIndex < $1.orderIndex }
+        exercises?.sort { $0.orderIndex < $1.orderIndex }
     }
     
     func duplicate() -> LiftWorkout {
@@ -129,7 +133,7 @@ extension LiftWorkout {
         )
         
         // Duplicate exercises
-        for exercise in exercises {
+        for exercise in exercises ?? [] {
             let newExercise = exercise.duplicate()
             newWorkout.addExercise(newExercise)
         }
@@ -143,7 +147,10 @@ extension LiftWorkout {
             user: user,
             programExecution: programExecution
         )
-        sessions.append(session)
+        if sessions == nil {
+            sessions = []
+        }
+        sessions?.append(session)
         return session
     }
     

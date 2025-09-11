@@ -15,13 +15,13 @@ struct CustomizeTemplateView: View {
     init(template: LiftWorkout) {
         self.sourceTemplate = template
         // Create working copy of exercises
-        self._workingExercises = State(initialValue: template.exercises.map { exercise in
+        self._workingExercises = State(initialValue: template.exercises?.map { exercise in
             LiftExercise(
                 exerciseId: exercise.exerciseId,
                 exerciseName: exercise.exerciseName,
                 orderIndex: exercise.orderIndex
             )
-        })
+        } ?? [])
     }
     
     var body: some View {
@@ -246,74 +246,7 @@ struct CustomizeTemplateView: View {
     }
 }
 
-// MARK: - Exercise Edit Row Component
-struct ExerciseEditRow: View {
-    @Environment(\.theme) private var theme
-    
-    let exercise: LiftExercise
-    let onRemove: () -> Void
-    let onMoveUp: (() -> Void)?
-    let onMoveDown: (() -> Void)?
-    
-    var body: some View {
-        HStack(spacing: theme.spacing.m) {
-            // Exercise info
-            VStack(alignment: .leading, spacing: 4) {
-                Text(exercise.exerciseName)
-                    .font(theme.typography.body)
-                    .fontWeight(.medium)
-                    .foregroundColor(theme.colors.textPrimary)
-                
-                Text("Sets and reps will be entered during workout")
-                    .font(theme.typography.caption)
-                    .foregroundColor(theme.colors.textSecondary)
-            }
-            
-            Spacer()
-            
-            // Action buttons
-            HStack(spacing: theme.spacing.s) {
-                // Move up button
-                if let moveUp = onMoveUp {
-                    Button(action: moveUp) {
-                        Image(systemName: "chevron.up")
-                            .font(.caption)
-                            .foregroundColor(theme.colors.accent)
-                            .frame(width: 28, height: 28)
-                            .background(theme.colors.accent.opacity(0.1))
-                            .cornerRadius(6)
-                    }
-                }
-                
-                // Move down button  
-                if let moveDown = onMoveDown {
-                    Button(action: moveDown) {
-                        Image(systemName: "chevron.down")
-                            .font(.caption)
-                            .foregroundColor(theme.colors.accent)
-                            .frame(width: 28, height: 28)
-                            .background(theme.colors.accent.opacity(0.1))
-                            .cornerRadius(6)
-                    }
-                }
-                
-                // Remove button
-                Button(action: onRemove) {
-                    Image(systemName: "trash")
-                        .font(.caption)
-                        .foregroundColor(theme.colors.error)
-                        .frame(width: 28, height: 28)
-                        .background(theme.colors.error.opacity(0.1))
-                        .cornerRadius(6)
-                }
-            }
-        }
-        .padding()
-        .background(theme.colors.cardBackground)
-        .cornerRadius(theme.radius.m)
-        .padding(.horizontal)
-    }
-}
+// ExerciseEditRow is now available from Shared/Components/EditableRow.swift
 
 // MARK: - Preview
 #Preview {

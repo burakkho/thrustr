@@ -4,7 +4,7 @@ import SwiftData
 struct BodyMeasurementsView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
-    @EnvironmentObject private var unitSettings: UnitSettings
+    @Environment(UnitSettings.self) var unitSettings
     
     let user: User?
     
@@ -199,7 +199,7 @@ struct CurrentMeasurementsSection: View {
 struct MeasurementCard: View {
     let type: MeasurementType
     let measurement: BodyMeasurement?
-    @EnvironmentObject private var unitSettings: UnitSettings
+    @Environment(UnitSettings.self) var unitSettings
     
     var body: some View {
         VStack(spacing: 8) {
@@ -379,7 +379,7 @@ struct RecentEntriesSection: View {
 
 struct RecentMeasurementRow: View {
     let measurement: BodyMeasurement
-    @EnvironmentObject private var unitSettings: UnitSettings
+    @Environment(UnitSettings.self) var unitSettings
     
     var body: some View {
         HStack {

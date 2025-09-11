@@ -4,21 +4,22 @@ import SwiftData
 // MARK: - Lift Session Model
 @Model
 final class LiftSession {
-    var id: UUID
-    var startDate: Date
+    var id: UUID = UUID()
+    var startDate: Date = Date()
     var endDate: Date?
-    var isCompleted: Bool
+    var isCompleted: Bool = false
     var notes: String?
-    var totalVolume: Double
-    var totalSets: Int
-    var totalReps: Int
+    var totalVolume: Double = 0.0
+    var totalSets: Int = 0
+    var totalReps: Int = 0
     var rating: Int? // 1-5 workout rating
     var feeling: Int? // 1-5 feeling scale
     
     // Relationships
-    var workout: LiftWorkout
+    var workout: LiftWorkout?
     var user: User?
-    var exerciseResults: [LiftExerciseResult]
+    @Relationship(deleteRule: .cascade) var exerciseResults: [LiftExerciseResult]?
+    @Relationship(inverse: \CompletedWorkout.liftSession) var completedWorkout: CompletedWorkout?
     
     init(
         workout: LiftWorkout,
@@ -66,10 +67,12 @@ extension LiftSession {
     }
     
     var completionPercentage: Double {
-        let totalTargetSets = workout.exercises.reduce(0) { $0 + $1.targetSets }
+        guard let workoutExercises = workout?.exercises else { return 0 }
+        let totalTargetSets = workoutExercises.reduce(0) { $0 + $1.targetSets }
         guard totalTargetSets > 0 else { return 0 }
         
-        let completedSets = exerciseResults.reduce(0) { total, result in
+        guard let results = exerciseResults else { return 0 }
+        let completedSets = results.reduce(0) { total, result in
             total + result.sets.filter { $0.isCompleted }.count
         }
         
@@ -79,9 +82,10 @@ extension LiftSession {
     var prsHit: [String] {
         var prs: [String] = []
         
-        for result in exerciseResults {
+        guard let results = exerciseResults else { return prs }
+        for result in results {
             if result.isPersonalRecord {
-                prs.append(result.exercise.exerciseName)
+                prs.append(result.exercise?.exerciseName ?? "")
             }
         }
         
@@ -89,7 +93,8 @@ extension LiftSession {
     }
     
     var averageRPE: Double? {
-        let rpes = exerciseResults.flatMap { result in
+        guard let results = exerciseResults else { return nil }
+        let rpes = results.flatMap { result in
             result.sets.compactMap { $0.rpe }
         }
         
@@ -98,14 +103,16 @@ extension LiftSession {
     }
     
     var exercises: [LiftExercise] {
-        workout.exercises
+        workout?.exercises ?? []
     }
 }
 
 // MARK: - Methods
 extension LiftSession {
     private func initializeExerciseResults(user: User?, programExecution: ProgramExecution?) {
-        for exercise in workout.exercises {
+        guard let workoutExercises = workout?.exercises else { return }
+        
+        for exercise in workoutExercises {
             let result = LiftExerciseResult(
                 exercise: exercise,
                 session: self
@@ -116,12 +123,12 @@ extension LiftSession {
                 populateDefaultSets(for: result, user: user, programExecution: programExecution)
             }
             
-            exerciseResults.append(result)
+            exerciseResults?.append(result)
         }
     }
     
     private func populateDefaultSets(for result: LiftExerciseResult, user: User, programExecution: ProgramExecution?) {
-        let exercise = result.exercise
+        guard let exercise = result.exercise else { return }
         let workingWeight = exercise.calculateCurrentWorkingWeight(user: user, programExecution: programExecution)
         
         // Add only working sets with program targets (no warm-up sets)
@@ -148,7 +155,8 @@ extension LiftSession {
         totalSets = 0
         totalReps = 0
         
-        for result in exerciseResults {
+        guard let results = exerciseResults else { return }
+        for result in results {
             for set in result.sets where set.isCompleted {
                 totalSets += 1
                 totalReps += set.reps
@@ -160,47 +168,87 @@ extension LiftSession {
     }
     
     func addExerciseResult(_ result: LiftExerciseResult) {
-        exerciseResults.append(result)
+        if exerciseResults == nil {
+            exerciseResults = []
+        }
+        exerciseResults?.append(result)
         result.session = self
     }
     
     func removeExerciseResult(_ result: LiftExerciseResult) {
-        exerciseResults.removeAll { $0.id == result.id }
+        exerciseResults?.removeAll { $0.id == result.id }
         calculateTotals()
     }
     
     func moveExercise(from sourceIndices: IndexSet, to destination: Int) {
-        exerciseResults.move(fromOffsets: sourceIndices, toOffset: destination)
+        guard var results = exerciseResults else { return }
+        // Safe move operation with bounds checking
+        guard destination >= 0 && destination <= results.count else { return }
+        guard !sourceIndices.isEmpty else { return }
+        
+        results.move(fromOffsets: sourceIndices, toOffset: destination)
+        exerciseResults = results
         
         // Update order indices in underlying workout exercises
-        for (index, result) in exerciseResults.enumerated() {
-            result.exercise.orderIndex = index
+        for (index, result) in results.enumerated() {
+            result.exercise?.orderIndex = index
         }
         
         // Update order indices in workout exercises array too
-        for (index, exercise) in workout.exercises.enumerated() {
-            if let matchingResult = exerciseResults.first(where: { $0.exercise.exerciseId == exercise.exerciseId }) {
-                workout.exercises[index].orderIndex = exerciseResults.firstIndex(of: matchingResult) ?? index
+        guard let workoutExercises = workout?.exercises else { return }
+        for (index, exercise) in workoutExercises.enumerated() {
+            if let matchingResult = results.first(where: { $0.exercise?.exerciseId == exercise.exerciseId }) {
+                workout?.exercises?[index].orderIndex = results.firstIndex(of: matchingResult) ?? index
             }
         }
         
         // Sort workout exercises by new order
-        workout.exercises.sort { $0.orderIndex < $1.orderIndex }
+        workout?.exercises?.sort { $0.orderIndex < $1.orderIndex }
+    }
+    
+    func safeAddExerciseResult(_ result: LiftExerciseResult) {
+        guard let results = exerciseResults else { 
+            addExerciseResult(result)
+            return 
+        }
+        // Prevent duplicate additions
+        guard !results.contains(where: { $0.id == result.id }) else { return }
+        
+        // Set proper order index
+        result.exercise?.orderIndex = results.count
+        
+        // Add to session
+        addExerciseResult(result)
+    }
+    
+    func safeRemoveExerciseResult(by id: UUID) {
+        guard let results = exerciseResults else { return }
+        // Find and remove by ID
+        if let index = results.firstIndex(where: { $0.id == id }) {
+            let result = results[index]
+            removeExerciseResult(result)
+            
+            // Re-index remaining exercises
+            guard let updatedResults = exerciseResults else { return }
+            for (newIndex, remainingResult) in updatedResults.enumerated() {
+                remainingResult.exercise?.orderIndex = newIndex
+            }
+        }
     }
 }
 
 // MARK: - Lift Exercise Result Model
 @Model
 final class LiftExerciseResult {
-    var id: UUID
-    var performedAt: Date
-    var sets: [SetData]
+    var id: UUID = UUID()
+    var performedAt: Date = Date()
+    var sets: [SetData] = []
     var notes: String?
     var videoURL: String?
-    var isPersonalRecord: Bool
+    var isPersonalRecord: Bool = false
     
     // Relationships
-    var exercise: LiftExercise
+    var exercise: LiftExercise?
     var session: LiftSession?
     
     init(
@@ -252,11 +300,11 @@ extension LiftExerciseResult {
 extension LiftExerciseResult {
     func addSet() {
         let lastSet = sets.last
-        let previousWeight = exercise.lastPerformedWeight
+        let previousWeight = exercise?.lastPerformedWeight
         let newSet = SetData(
             setNumber: sets.count + 1,
-            weight: lastSet?.weight ?? previousWeight ?? exercise.targetWeight,
-            reps: lastSet?.reps ?? exercise.targetReps,
+            weight: lastSet?.weight ?? previousWeight ?? exercise?.targetWeight,
+            reps: lastSet?.reps ?? exercise?.targetReps ?? 5,
             isWarmup: false,
             isCompleted: false
         )
@@ -282,7 +330,7 @@ extension LiftExerciseResult {
         
         // Check if this is a PR
         if let weight = sets[index].weight,
-           let pr = exercise.personalRecord,
+           let pr = exercise?.personalRecord,
            weight > pr {
             isPersonalRecord = true
         }

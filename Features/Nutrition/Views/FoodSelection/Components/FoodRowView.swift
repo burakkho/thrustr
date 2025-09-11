@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct FoodRowView: View {
-    @EnvironmentObject private var unitSettings: UnitSettings
+    @Environment(UnitSettings.self) var unitSettings
     let food: Food
     var showAliasIndicator: Bool = false
     let action: () -> Void

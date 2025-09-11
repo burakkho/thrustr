@@ -6,8 +6,8 @@ struct MealEntryView: View {
     let onDismiss: () -> Void
     
     @Environment(\.modelContext) private var modelContext
-    @EnvironmentObject private var unitSettings: UnitSettings
-    @EnvironmentObject private var healthKitService: HealthKitService
+    @Environment(UnitSettings.self) var unitSettings
+    @Environment(HealthKitService.self) var healthKitService
     @State private var gramsConsumed: Double = 100
     @State private var servingCount: Double = 1
     @State private var inputMode: PortionInputMode = .grams
@@ -189,22 +189,25 @@ struct MealEntryView: View {
         do {
             try modelContext.save()
             
-            // Log meal completion activity for dashboard
+            // Log meal completion activity for dashboard - Optimized approach
             let currentUser = fetchCurrentUser()
             ActivityLoggerService.shared.setModelContext(modelContext)
             
-            // For each meal type, calculate total nutrition and log meal completion
+            // Log activity for each selected meal type (ActivityLoggerService now handles updates smartly)
             for meal in selectedMealTypes {
                 let mealDisplayName = mealTypes.first { $0.0 == meal }?.1 ?? meal
-                let mealTotals = calculateMealTotals(for: meal, on: Date())
                 
+                // Calculate fresh meal totals - ActivityLoggerService will update existing entries
+                let freshMealTotals = calculateMealTotals(for: meal, on: Date())
+                
+                // ActivityLoggerService now checks for existing activity and updates instead of duplicating
                 ActivityLoggerService.shared.logMealCompleted(
                     mealType: mealDisplayName,
-                    foodCount: mealTotals.foodCount,
-                    totalCalories: mealTotals.calories,
-                    totalProtein: mealTotals.protein,
-                    totalCarbs: mealTotals.carbs,
-                    totalFat: mealTotals.fat,
+                    foodCount: freshMealTotals.foodCount,
+                    totalCalories: freshMealTotals.calories,
+                    totalProtein: freshMealTotals.protein,
+                    totalCarbs: freshMealTotals.carbs,
+                    totalFat: freshMealTotals.fat,
                     user: currentUser
                 )
             }
@@ -243,7 +246,7 @@ struct MealEntryView: View {
         }
     }
     
-    // Calculate total nutrition for a specific meal type on a given date
+    // Calculate total nutrition for a specific meal type on a given date with duplicate detection
     private func calculateMealTotals(for mealType: String, on date: Date) -> (foodCount: Int, calories: Double, protein: Double, carbs: Double, fat: Double) {
         let startOfDay = Calendar.current.startOfDay(for: date)
         let endOfDay = Calendar.current.date(byAdding: .day, value: 1, to: startOfDay) ?? date
@@ -257,14 +260,18 @@ struct MealEntryView: View {
         let descriptor = FetchDescriptor<NutritionEntry>(predicate: predicate)
         
         do {
-            let entries = try modelContext.fetch(descriptor)
-            let totalCalories = entries.reduce(0) { $0 + $1.calories }
-            let totalProtein = entries.reduce(0) { $0 + $1.protein }
-            let totalCarbs = entries.reduce(0) { $0 + $1.carbs }
-            let totalFat = entries.reduce(0) { $0 + $1.fat }
+            let allEntries = try modelContext.fetch(descriptor)
+            
+            // Remove duplicates using CloudKit-aware deduplication
+            let uniqueEntries = removeDuplicateEntries(allEntries)
+            
+            let totalCalories = uniqueEntries.reduce(0) { $0 + $1.calories }
+            let totalProtein = uniqueEntries.reduce(0) { $0 + $1.protein }
+            let totalCarbs = uniqueEntries.reduce(0) { $0 + $1.carbs }
+            let totalFat = uniqueEntries.reduce(0) { $0 + $1.fat }
             
             return (
-                foodCount: entries.count,
+                foodCount: uniqueEntries.count,
                 calories: totalCalories,
                 protein: totalProtein,
                 carbs: totalCarbs,
@@ -276,7 +283,33 @@ struct MealEntryView: View {
         }
     }
     
-    // Calculate total nutrition for all meals on a given date
+    // Remove duplicate NutritionEntries that may have been created by CloudKit sync
+    private func removeDuplicateEntries(_ entries: [NutritionEntry]) -> [NutritionEntry] {
+        var uniqueEntries: [NutritionEntry] = []
+        var seenEntries: Set<String> = []
+        
+        for entry in entries.sorted(by: { $0.date < $1.date }) { // Sort by date to keep earliest
+            // Create a unique identifier based on food, portion, meal type, and rough timestamp
+            let roughTimestamp = Int(entry.date.timeIntervalSince1970 / 60) // Round to minute precision
+            let uniqueKey = "\(entry.food?.id.uuidString ?? "unknown")_\(entry.gramsConsumed)_\(entry.mealType)_\(roughTimestamp)"
+            
+            if !seenEntries.contains(uniqueKey) {
+                seenEntries.insert(uniqueKey)
+                uniqueEntries.append(entry)
+            } else {
+                Logger.info("🔄 Filtered duplicate nutrition entry: \(entry.food?.displayName ?? "unknown food") - \(entry.gramsConsumed)g")
+            }
+        }
+        
+        let filteredCount = entries.count - uniqueEntries.count
+        if filteredCount > 0 {
+            Logger.info("🧹 Filtered \(filteredCount) duplicate nutrition entries from meal calculation")
+        }
+        
+        return uniqueEntries
+    }
+    
+    // Calculate total nutrition for all meals on a given date with duplicate detection
     private func calculateDailyTotals(for date: Date) -> (calories: Double, protein: Double, carbs: Double, fat: Double) {
         let startOfDay = Calendar.current.startOfDay(for: date)
         let endOfDay = Calendar.current.date(byAdding: .day, value: 1, to: startOfDay) ?? date
@@ -288,11 +321,15 @@ struct MealEntryView: View {
         let descriptor = FetchDescriptor<NutritionEntry>(predicate: predicate)
         
         do {
-            let entries = try modelContext.fetch(descriptor)
-            let totalCalories = entries.reduce(0) { $0 + $1.calories }
-            let totalProtein = entries.reduce(0) { $0 + $1.protein }
-            let totalCarbs = entries.reduce(0) { $0 + $1.carbs }
-            let totalFat = entries.reduce(0) { $0 + $1.fat }
+            let allEntries = try modelContext.fetch(descriptor)
+            
+            // Remove duplicates for accurate daily totals
+            let uniqueEntries = removeDuplicateEntries(allEntries)
+            
+            let totalCalories = uniqueEntries.reduce(0) { $0 + $1.calories }
+            let totalProtein = uniqueEntries.reduce(0) { $0 + $1.protein }
+            let totalCarbs = uniqueEntries.reduce(0) { $0 + $1.carbs }
+            let totalFat = uniqueEntries.reduce(0) { $0 + $1.fat }
             
             return (
                 calories: totalCalories,

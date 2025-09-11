@@ -3,19 +3,19 @@ import SwiftData
 
 @Model
 final class WODMovement {
-    var id: UUID
-    var name: String
+    var id: UUID = UUID()
+    var name: String = ""
     var rxWeightMale: String? // "43kg" or "95lb"
     var rxWeightFemale: String? // "30kg" or "65lb"
     var scaledWeightMale: String? // "30kg" or "65lb"
     var scaledWeightFemale: String? // "20kg" or "45lb"
     var reps: Int? // Reps per round (if not using repScheme)
-    var orderIndex: Int
+    var orderIndex: Int = 0
     var notes: String?
     
     // User's selection for this workout
     var userWeight: Double? // Always stored in kg
-    var isRX: Bool
+    var isRX: Bool = false
     
     // Relationship
     var wod: WOD?

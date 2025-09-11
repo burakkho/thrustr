@@ -16,20 +16,20 @@ import SwiftData
  */
 @Model
 final class Exercise {
-    var id: UUID
-    var nameEN: String
-    var nameTR: String
-    var category: String
-    var equipment: String
-    var supportsWeight: Bool
-    var supportsReps: Bool
-    var supportsTime: Bool
-    var supportsDistance: Bool
+    var id: UUID = UUID()
+    var nameEN: String = ""
+    var nameTR: String = ""
+    var category: String = ""
+    var equipment: String = ""
+    var supportsWeight: Bool = true
+    var supportsReps: Bool = true
+    var supportsTime: Bool = false
+    var supportsDistance: Bool = false
     var instructions: String?
-    var isFavorite: Bool
-    var isActive: Bool
-    var createdAt: Date
-    var updatedAt: Date
+    var isFavorite: Bool = false
+    var isActive: Bool = true
+    var createdAt: Date = Date()
+    var updatedAt: Date = Date()
     
     init(nameEN: String, nameTR: String, category: String, equipment: String = "") {
         self.id = UUID()
@@ -46,6 +46,11 @@ final class Exercise {
         self.isActive = true
         self.createdAt = Date()
         self.updatedAt = Date()
+    }
+    
+    // MARK: - Computed Properties
+    var displayName: String {
+        return nameTR.isEmpty ? nameEN : nameTR
     }
 }
 

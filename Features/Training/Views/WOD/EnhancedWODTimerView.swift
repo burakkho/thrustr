@@ -7,8 +7,8 @@ struct EnhancedWODTimerView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.theme) private var theme
     @Environment(\.modelContext) private var modelContext
-    @EnvironmentObject private var unitSettings: UnitSettings
-    @EnvironmentObject private var healthKitService: HealthKitService
+    @Environment(UnitSettings.self) var unitSettings
+    @Environment(HealthKitService.self) var healthKitService
     @Query private var user: [User]
     
     let wod: WOD
@@ -284,7 +284,7 @@ private struct MovementTimerCard: View {
     let currentRepIndex: Int
     
     @Environment(\.theme) private var theme
-    @EnvironmentObject private var unitSettings: UnitSettings
+    @Environment(UnitSettings.self) var unitSettings
     
     private var repsToDisplay: String {
         if let specificReps = movement.reps {

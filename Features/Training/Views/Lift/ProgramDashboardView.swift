@@ -6,7 +6,7 @@ struct ProgramDashboardView: View {
     @Environment(\.theme) private var theme
     @Environment(\.modelContext) private var modelContext
     @Environment(TrainingCoordinator.self) private var coordinator
-    @EnvironmentObject private var unitSettings: UnitSettings
+    @Environment(UnitSettings.self) var unitSettings
     
     let execution: ProgramExecution?
     let onStartWorkout: () -> Void
@@ -68,7 +68,7 @@ struct ProgramDashboardView: View {
                     .font(.title2)
                     .foregroundColor(theme.colors.accent)
                 
-                Text("ACTIVE PROGRAM")
+                Text("training.program_dashboard.active_program".localized)
                     .font(theme.typography.caption)
                     .fontWeight(.medium)
                     .foregroundColor(theme.colors.textSecondary)
@@ -83,7 +83,7 @@ struct ProgramDashboardView: View {
                 }
             }
             
-            Text(execution.program.localizedName)
+            Text(execution.program?.localizedName ?? "Unknown Program")
                 .font(theme.typography.title2)
                 .fontWeight(.bold)
                 .foregroundColor(theme.colors.textPrimary)
@@ -97,7 +97,7 @@ struct ProgramDashboardView: View {
             // Progress Bar
             VStack(spacing: theme.spacing.s) {
                 HStack {
-                    Text("\(TrainingKeys.ProgramCompletion.weekOf.localized) \(execution.currentWeek) \(TrainingKeys.Charts.of.localized) \(execution.program.weeks)")
+                    Text("\(TrainingKeys.ProgramCompletion.weekOf.localized) \(execution.currentWeek) \(TrainingKeys.Charts.of.localized) \(execution.program?.weeks ?? 0)")
                         .font(theme.typography.body)
                         .fontWeight(.medium)
                         .foregroundColor(theme.colors.textPrimary)
@@ -124,7 +124,7 @@ struct ProgramDashboardView: View {
             statItem(
                 icon: "checkmark.circle.fill",
                 title: "Completed",
-                value: "\(execution.completedWorkouts.count)/\(execution.program.totalWorkouts)"
+                value: "\(execution.completedWorkouts?.count ?? 0)/\(execution.program?.totalWorkouts ?? 0)"
             )
             
             Divider()
@@ -175,7 +175,7 @@ struct ProgramDashboardView: View {
                     .font(.title3)
                     .foregroundColor(theme.colors.success)
                 
-                Text("NEXT WORKOUT")
+                Text("training.program_dashboard.next_workout".localized)
                     .font(theme.typography.caption)
                     .fontWeight(.medium)
                     .foregroundColor(theme.colors.textSecondary)
@@ -201,7 +201,7 @@ struct ProgramDashboardView: View {
                     .foregroundColor(theme.colors.textPrimary)
                 
                 HStack(spacing: theme.spacing.m) {
-                    Label("\(workout.exercises.count) exercises", systemImage: "list.bullet")
+                    Label("\(workout.exercises?.count ?? 0) exercises", systemImage: "list.bullet")
                     Label("\(workout.estimatedDuration ?? 45) min", systemImage: "clock")
                 }
                 .font(theme.typography.caption)
@@ -266,7 +266,7 @@ struct ProgramDashboardView: View {
                 Image(systemName: "play.circle.fill")
                     .font(.title2)
                 
-                Text("START WORKOUT")
+                Text("training.program_dashboard.start_workout".localized)
                     .font(theme.typography.headline)
                     .fontWeight(.bold)
             }
@@ -285,7 +285,7 @@ struct ProgramDashboardView: View {
                 Image(systemName: "play.circle.fill")
                     .font(.title2)
                 
-                Text("RESUME PROGRAM")
+                Text("training.program_dashboard.resume_program".localized)
                     .font(theme.typography.headline)
                     .fontWeight(.bold)
             }
@@ -304,7 +304,7 @@ struct ProgramDashboardView: View {
                 Image(systemName: "plus.circle.fill")
                     .font(.title2)
                 
-                Text("START NEW PROGRAM")
+                Text("training.program_dashboard.start_new_program".localized)
                     .font(theme.typography.headline)
                     .fontWeight(.bold)
             }
@@ -339,7 +339,7 @@ struct ProgramDashboardView: View {
                 HStack(spacing: theme.spacing.s) {
                     Image(systemName: "chart.bar.fill")
                         .font(.body)
-                    Text("Details")
+                    Text("training.program_dashboard.details".localized)
                         .font(theme.typography.body)
                 }
                 .foregroundColor(theme.colors.textSecondary)
@@ -398,7 +398,7 @@ struct ProgramDashboardView: View {
     private func totalVolume(execution: ProgramExecution) -> Double {
         // Calculate total volume from completed workouts
         // This would integrate with LiftSession data
-        return Double(execution.completedWorkouts.count * 1500) // Placeholder
+        return Double((execution.completedWorkouts?.count ?? 0) * 1500) // Placeholder
     }
     
     private func prsThisWeek(execution: ProgramExecution) -> Int {

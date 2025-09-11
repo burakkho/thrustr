@@ -3,7 +3,7 @@ import SwiftUI
 struct NutritionEntryEditSheet: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
-    @EnvironmentObject private var unitSettings: UnitSettings
+    @Environment(UnitSettings.self) var unitSettings
     @State private var grams: Double
     @State private var meal: String
     @State private var saveErrorMessage: String? = nil

@@ -1,7 +1,7 @@
 import Foundation
 
 // MARK: - Standardized CSV Parser
-struct CSVParser {
+struct CSVParser: Sendable {
     static func parseCSVRow(_ row: String) -> [String] {
         // Very simple and safe CSV parsing
         let fields = row.components(separatedBy: ",")

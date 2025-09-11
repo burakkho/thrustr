@@ -9,10 +9,10 @@ import SwiftUI
 
 struct QuickStatusSection: View {
     @Environment(\.theme) private var theme
-    @EnvironmentObject private var tabRouter: TabRouter
+    @Environment(TabRouter.self) var tabRouter
     
     // MARK: - Properties
-    @ObservedObject var viewModel: DashboardViewModel
+    var viewModel: DashboardViewModel
     
     // MARK: - Body
     var body: some View {
@@ -109,6 +109,6 @@ extension Notification.Name {
     let viewModel = DashboardViewModel(healthKitService: HealthKitService(), unitSettings: UnitSettings.shared)
     
     QuickStatusSection(viewModel: viewModel)
-        .environmentObject(TabRouter())
+        .environment(TabRouter())
         .padding()
 }

@@ -126,7 +126,7 @@ private struct TemplateSelectionCard: View {
                             .fontWeight(.semibold)
                             .foregroundColor(theme.colors.textPrimary)
                         
-                        Text("\(template.exercises.count) \("routine.exercises".localized)")
+                        Text("\(template.exercises?.count ?? 0) \("routine.exercises".localized)")
                             .font(theme.typography.caption)
                             .foregroundColor(theme.colors.textSecondary)
                     }
@@ -148,7 +148,7 @@ private struct TemplateSelectionCard: View {
                 }
                 
                 // Exercise preview
-                if !template.exercises.isEmpty {
+                if !(template.exercises?.isEmpty ?? true) {
                     exercisePreviewSection
                 }
                 
@@ -187,15 +187,15 @@ private struct TemplateSelectionCard: View {
                 GridItem(.flexible()),
                 GridItem(.flexible())
             ], alignment: .leading, spacing: 4) {
-                ForEach(template.exercises.prefix(4), id: \.id) { exercise in
+                ForEach(Array((template.exercises ?? []).prefix(4)), id: \.id) { exercise in
                     Text("• \(exercise.exerciseName)")
                         .font(theme.typography.caption)
                         .foregroundColor(theme.colors.textSecondary)
                         .lineLimit(1)
                 }
                 
-                if template.exercises.count > 4 {
-                    Text("• +\(template.exercises.count - 4) more")
+                if (template.exercises?.count ?? 0) > 4 {
+                    Text("• +\((template.exercises?.count ?? 0) - 4) more")
                         .font(theme.typography.caption)
                         .foregroundColor(theme.colors.accent)
                 }

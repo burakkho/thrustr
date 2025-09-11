@@ -186,7 +186,7 @@ extension CrossFitMovement {
 
 // MARK: - Static Data Helpers
 extension CrossFitMovement {
-    static let sampleMovements: [CrossFitMovement] = [
+    nonisolated(unsafe) static let sampleMovements: [CrossFitMovement] = [
         CrossFitMovement(
             nameEN: "Pull-ups",
             nameTR: "Barfiks",

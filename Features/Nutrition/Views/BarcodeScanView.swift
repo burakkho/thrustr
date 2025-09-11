@@ -236,10 +236,12 @@ private struct AVScannerContainer: UIViewControllerRepresentable {
             session.startRunning()
         }
 
-        func metadataOutput(_ output: AVCaptureMetadataOutput, didOutput metadataObjects: [AVMetadataObject], from connection: AVCaptureConnection) {
+        nonisolated func metadataOutput(_ output: AVCaptureMetadataOutput, didOutput metadataObjects: [AVMetadataObject], from connection: AVCaptureConnection) {
             guard let obj = metadataObjects.first as? AVMetadataMachineReadableCodeObject, let str = obj.stringValue, !str.isEmpty else { return }
-            session.stopRunning()
-            onCode(str)
+            Task { @MainActor in
+                session.stopRunning()
+                onCode(str)
+            }
         }
     }
 

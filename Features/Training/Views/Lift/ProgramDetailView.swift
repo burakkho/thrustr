@@ -18,73 +18,100 @@ struct ProgramDetailView: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: theme.spacing.l) {
-                    // Program Header
-                    VStack(alignment: .leading, spacing: theme.spacing.m) {
-                        Text(program.localizedName)
-                            .font(theme.typography.title2)
-                            .fontWeight(.bold)
-                        
-                        Text(program.localizedDescription)
-                            .font(theme.typography.body)
-                            .foregroundColor(theme.colors.textSecondary)
-                        
-                        HStack(spacing: theme.spacing.m) {
-                            Label("\(program.weeks) weeks", systemImage: "calendar")
-                            Label("\(program.daysPerWeek) days/week", systemImage: "clock")
-                            Label(program.level.capitalized, systemImage: "chart.bar")
-                        }
-                        .font(theme.typography.caption)
-                        .foregroundColor(theme.colors.textSecondary)
-                    }
-                    .padding()
-                    .background(theme.colors.backgroundSecondary)
-                    .cornerRadius(theme.radius.m)
-                    
-                    // Week Overview
-                    ForEach(1...program.weeks, id: \.self) { week in
-                        VStack(alignment: .leading, spacing: theme.spacing.m) {
-                            Text("Week \(week)")
-                                .font(theme.typography.headline)
-                                .fontWeight(.semibold)
-                            
-                            ForEach(program.workouts.prefix(program.daysPerWeek), id: \.id) { workout in
-                                HStack {
-                                    Text(workout.localizedName)
-                                        .font(theme.typography.body)
-                                    Spacer()
-                                    Text("\(workout.exercises.count) exercises")
-                                        .font(theme.typography.caption)
-                                        .foregroundColor(theme.colors.textSecondary)
-                                }
-                                .padding()
-                                .background(theme.colors.cardBackground)
-                                .cornerRadius(theme.radius.s)
-                            }
-                        }
-                    }
+                    programHeaderSection
+                    weekOverviewSection
                 }
                 .padding()
             }
             .navigationTitle(CommonKeys.Navigation.programDetails.localized)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button(CommonKeys.Onboarding.Common.close.localized) { dismiss() }
-                }
-                
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(TrainingKeys.Common.startProgram.localized) {
-                        checkAndStartProgram()
-                    }
-                    .foregroundColor(theme.colors.accent)
-                }
+                toolbarContent
             }
         }
         .sheet(isPresented: $showingOneRMSetup) {
-            OneRMSetupView(program: program) { user in
-                // After 1RM setup completion, start the program
-                startProgramWithUser(user)
+            oneRMSetupSheet
+        }
+    }
+    
+    private var programHeaderSection: some View {
+        VStack(alignment: .leading, spacing: theme.spacing.m) {
+            Text(program.localizedName)
+                .font(theme.typography.title2)
+                .fontWeight(.bold)
+            
+            Text(program.localizedDescription)
+                .font(theme.typography.body)
+                .foregroundColor(theme.colors.textSecondary)
+            
+            programStatsRow
+        }
+        .padding()
+        .background(theme.colors.backgroundSecondary)
+        .cornerRadius(theme.radius.m)
+    }
+    
+    private var programStatsRow: some View {
+        HStack(spacing: theme.spacing.m) {
+            Label("\(program.weeks) weeks", systemImage: "calendar")
+            Label("\(program.daysPerWeek) days/week", systemImage: "clock")
+            Label(program.level.capitalized, systemImage: "chart.bar")
+        }
+        .font(theme.typography.caption)
+        .foregroundColor(theme.colors.textSecondary)
+    }
+    
+    private var weekOverviewSection: some View {
+        ForEach(1...program.weeks, id: \.self) { week in
+            weekView(week: week)
+        }
+    }
+    
+    private func weekView(week: Int) -> some View {
+        VStack(alignment: .leading, spacing: theme.spacing.m) {
+            Text("Week \(week)")
+                .font(theme.typography.headline)
+                .fontWeight(.semibold)
+            
+            ForEach(Array((program.workouts ?? []).prefix(program.daysPerWeek)), id: \.id) { workout in
+                workoutRow(workout: workout)
             }
+        }
+    }
+    
+    private func workoutRow(workout: LiftWorkout) -> some View {
+        HStack {
+            Text(workout.localizedName)
+                .font(theme.typography.body)
+            Spacer()
+            Text("\(workout.exercises?.count ?? 0) exercises")
+                .font(theme.typography.caption)
+                .foregroundColor(theme.colors.textSecondary)
+        }
+        .padding()
+        .background(theme.colors.cardBackground)
+        .cornerRadius(theme.radius.s)
+    }
+    
+    @ToolbarContentBuilder
+    private var toolbarContent: some ToolbarContent {
+        ToolbarItem(placement: .navigationBarLeading) {
+            Button(CommonKeys.Onboarding.Common.close.localized) { 
+                dismiss() 
+            }
+        }
+        
+        ToolbarItem(placement: .navigationBarTrailing) {
+            Button(TrainingKeys.Common.startProgram.localized) {
+                checkAndStartProgram()
+            }
+            .foregroundColor(theme.colors.accent)
+        }
+    }
+    
+    private var oneRMSetupSheet: some View {
+        OneRMSetupView(program: program) { user in
+            startProgramWithUser(user)
         }
     }
     

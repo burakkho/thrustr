@@ -3,7 +3,7 @@ import SwiftData
 
 struct NutritionAnalyticsView: View {
     let nutritionEntries: [NutritionEntry]
-    @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.theme) private var theme
     
     private var weeklyData: [DayData] {
         let calendar = Calendar.current
@@ -81,123 +81,124 @@ struct NutritionAnalyticsView: View {
     }
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
+        VStack(alignment: .leading, spacing: theme.spacing.l) {
             Text(NutritionKeys.Analytics.title.localized)
-                .font(.title2)
+                .font(theme.typography.title2)
                 .fontWeight(.semibold)
+                .foregroundColor(theme.colors.textPrimary)
                 .padding(.horizontal)
             
-            // Kalori chart
-            VStack(alignment: .leading, spacing: 8) {
-                Text(NutritionKeys.Analytics.dailyCalories.localized)
-                    .font(.headline)
-                    .padding(.horizontal)
-                
-                HStack(alignment: .bottom, spacing: 8) {
-                    ForEach(weeklyData, id: \.date) { day in
-                        VStack(spacing: 4) {
-                            // Bar
-                            Rectangle()
-                                .fill(day.calories > 0 ? Color.orange : Color.gray.opacity(0.3))
-                                .frame(width: 32, height: max(4, (day.calories / maxCalories) * 100))
-                                .cornerRadius(4)
-                            
-                            // Kalori değeri
-                            Text("\(Int(day.calories))")
-                                .font(.caption2)
-                                .foregroundColor(.secondary)
-                            
-                            // Gün adı
-                            Text(day.dayName)
-                                .font(.caption)
-                                .fontWeight(.medium)
-                        }
-                    }
-                }
-                .padding(.horizontal)
-            }
+            // Use shared calorie bar chart
+            CalorieBarChart(weeklyData: weeklyData)
             
-            // Macro özeti
-            VStack(alignment: .leading, spacing: 12) {
-                Text(NutritionKeys.Analytics.weeklyAverage.localized)
-                    .font(.headline)
-                    .padding(.horizontal)
-                
-                let avgCalories = weeklyData.map { $0.calories }.reduce(0, +) / 7
-                let avgProtein = weeklyData.map { $0.protein }.reduce(0, +) / 7
-                let avgCarbs = weeklyData.map { $0.carbs }.reduce(0, +) / 7
-                let avgFat = weeklyData.map { $0.fat }.reduce(0, +) / 7
-                
-                HStack(spacing: 20) {
-                    MacroSummaryView(
-                        value: Int(avgCalories),
-                        label: NutritionKeys.calories.localized,
-                        color: .orange,
-                        unit: NutritionKeys.Units.kcal.localized
-                    )
-                    MacroSummaryView(
-                        value: Int(avgProtein),
-                        label: NutritionKeys.DailySummary.protein.localized,
-                        color: .red,
-                        unit: NutritionKeys.Units.g.localized
-                    )
-                    MacroSummaryView(
-                        value: Int(avgCarbs),
-                        label: NutritionKeys.DailySummary.carbs.localized,
-                        color: .blue,
-                        unit: NutritionKeys.Units.g.localized
-                    )
-                    MacroSummaryView(
-                        value: Int(avgFat),
-                        label: NutritionKeys.DailySummary.fat.localized,
-                        color: .yellow,
-                        unit: NutritionKeys.Units.g.localized
-                    )
-                }
-                .padding(.horizontal)
-            }
+            // Compact macro summary
+            compactMacroSummary
+            
+            // Quick insights
+            quickInsightsSection
         }
-        .padding(.vertical, 12)
-        .background(colorScheme == .dark ? Color.black : Color.white)
-        .cornerRadius(12)
+        .padding(.vertical, theme.spacing.m)
+        .background(theme.colors.cardBackground)
+        .cornerRadius(theme.radius.l)
+        .cardStyle()
         .padding(.horizontal)
     }
-}
-
-struct DayData {
-    let date: Date
-    let dayName: String
-    let calories: Double
-    let protein: Double
-    let carbs: Double
-    let fat: Double
-}
-
-struct MacroSummaryView: View {
-    let value: Int
-    let label: String
-    let color: Color
-    let unit: String
     
-    var body: some View {
-        VStack(spacing: 2) {
-            Text("\(value)")
-                .font(.headline)
-                .fontWeight(.semibold)
-                .foregroundColor(color)
-            Text(unit)
-                .font(.caption2)
-                .foregroundColor(color)
-            Text(label)
-                .font(.caption)
-                .foregroundColor(.secondary)
+    // MARK: - Compact Macro Summary
+    private var compactMacroSummary: some View {
+        VStack(alignment: .leading, spacing: theme.spacing.m) {
+            Text(NutritionKeys.Analytics.weeklyAverage.localized)
+                .font(theme.typography.headline)
+                .foregroundColor(theme.colors.textPrimary)
+                .padding(.horizontal)
+            
+            let avgCalories = weeklyData.map { $0.calories }.reduce(0, +) / 7
+            let avgProtein = weeklyData.map { $0.protein }.reduce(0, +) / 7
+            let avgCarbs = weeklyData.map { $0.carbs }.reduce(0, +) / 7
+            let avgFat = weeklyData.map { $0.fat }.reduce(0, +) / 7
+            
+            HStack(spacing: theme.spacing.m) {
+                MacroSummaryView(
+                    value: Int(avgCalories),
+                    label: NutritionKeys.calories.localized,
+                    color: theme.colors.warning,
+                    unit: NutritionKeys.Units.kcal.localized
+                )
+                MacroSummaryView(
+                    value: Int(avgProtein),
+                    label: NutritionKeys.DailySummary.protein.localized,
+                    color: theme.colors.error,
+                    unit: NutritionKeys.Units.g.localized
+                )
+                MacroSummaryView(
+                    value: Int(avgCarbs),
+                    label: NutritionKeys.DailySummary.carbs.localized,
+                    color: theme.colors.info,
+                    unit: NutritionKeys.Units.g.localized
+                )
+                MacroSummaryView(
+                    value: Int(avgFat),
+                    label: NutritionKeys.DailySummary.fat.localized,
+                    color: theme.colors.accent,
+                    unit: NutritionKeys.Units.g.localized
+                )
+            }
+            .padding(.horizontal)
         }
-        .frame(maxWidth: .infinity)
     }
+    
+    // MARK: - Quick Insights (Compact)
+    private var quickInsightsSection: some View {
+        VStack(alignment: .leading, spacing: theme.spacing.m) {
+            Text("Insights")
+                .font(theme.typography.headline)
+                .foregroundColor(theme.colors.textPrimary)
+                .padding(.horizontal)
+            
+            VStack(alignment: .leading, spacing: theme.spacing.s) {
+                // Show only top 2 insights for compact view
+                if let highestCalorieDay = weeklyData.max(by: { $0.calories < $1.calories }), highestCalorieDay.calories > 0 {
+                    NutritionInsightView(
+                        icon: "flame.fill",
+                        insight: "Highest: \(highestCalorieDay.dayName) (\(Int(highestCalorieDay.calories)) cal)",
+                        color: theme.colors.warning
+                    )
+                }
+                
+                let avgCalories = weeklyData.map { $0.calories }.reduce(0, +) / 7
+                if avgCalories > 0 {
+                    let activeDays = weeklyData.filter { $0.calories > 0 }.count
+                    NutritionInsightView(
+                        icon: "chart.bar.fill",
+                        insight: "Logged \(activeDays)/7 days this week",
+                        color: activeDays > 5 ? theme.colors.success : theme.colors.warning
+                    )
+                }
+            }
+            .padding(.horizontal)
+        }
+    }
+    
 }
 
 #Preview {
-    NutritionAnalyticsView(nutritionEntries: [])
+    // Create sample food for preview
+    let sampleFood = Food(
+        nameEN: "Sample Food",
+        nameTR: "Örnek Yemek", 
+        calories: 150,
+        protein: 20,
+        carbs: 5,
+        fat: 8
+    )
+    
+    let sampleEntries = [
+        NutritionEntry(food: sampleFood, gramsConsumed: 200, mealType: "breakfast", date: Date()),
+        NutritionEntry(food: sampleFood, gramsConsumed: 150, mealType: "lunch", date: Calendar.current.date(byAdding: .day, value: -1, to: Date()) ?? Date())
+    ]
+    
+    NutritionAnalyticsView(nutritionEntries: sampleEntries)
+        .environment(ThemeManager())
         .modelContainer(for: [Food.self, NutritionEntry.self], inMemory: true)
 }
 

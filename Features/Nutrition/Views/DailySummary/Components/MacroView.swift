@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct MacroView: View {
-    @EnvironmentObject private var unitSettings: UnitSettings
+    @Environment(UnitSettings.self) var unitSettings
     let value: Int
     let label: String
     let color: Color

@@ -5,7 +5,7 @@ struct LiftResultEntryView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.theme) private var theme
     @Environment(\.modelContext) private var modelContext
-    @EnvironmentObject private var unitSettings: UnitSettings
+    @Environment(UnitSettings.self) var unitSettings
     @Query private var user: [User]
     
     let lift: Lift
@@ -65,7 +65,7 @@ struct LiftResultEntryView: View {
                     .cardStyle()
                     
                     // Exercise Entry Cards
-                    ForEach(lift.exercises.sorted(by: { $0.orderIndex < $1.orderIndex }), id: \.id) { exercise in
+                    ForEach(lift.exercises?.sorted(by: { $0.orderIndex < $1.orderIndex }) ?? [], id: \.id) { exercise in
                         ExerciseEntryCard(
                             exercise: exercise,
                             lift: lift,
@@ -161,7 +161,7 @@ struct LiftResultEntryView: View {
     }
     
     private func initializeExerciseResults() {
-        for exercise in lift.exercises {
+        for exercise in lift.exercises ?? [] {
             var result = ExerciseResult()
             for _ in 0..<lift.sets {
                 result.sets.append(ExerciseResult.SetResult(

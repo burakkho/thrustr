@@ -55,7 +55,7 @@ final class StrengthTestTests: XCTestCase {
         XCTAssertEqual(strengthTest.overallScore, 0.0, "Initial score should be 0")
         XCTAssertEqual(strengthTest.strengthProfile, "unknown", "Initial profile should be unknown")
         XCTAssertEqual(strengthTest.testDuration, 0, "Initial duration should be 0")
-        XCTAssertEqual(strengthTest.results.count, 0, "Should have no results initially")
+        XCTAssertEqual(strengthTest.results?.count ?? 0, 0, "Should have no results initially")
         XCTAssertFalse(strengthTest.wasNewOverallPR, "Should not be PR initially")
         XCTAssertNotNil(strengthTest.testDate)
     }
@@ -196,7 +196,7 @@ final class StrengthTestTests: XCTestCase {
         strengthTest.addResult(benchResult)
         
         // Then
-        XCTAssertEqual(strengthTest.results.count, 1)
+        XCTAssertEqual(strengthTest.results?.count ?? 0, 1)
         XCTAssertFalse(strengthTest.isCompleted, "Test should not be completed with 1/5 results")
         XCTAssertEqual(strengthTest.completionPercentage, 0.2, accuracy: 0.01) // 1/5 = 20%
         
@@ -232,7 +232,7 @@ final class StrengthTestTests: XCTestCase {
         strengthTest.addResult(improvedResult)
         
         // Then - Should replace, not add
-        XCTAssertEqual(strengthTest.results.count, 1, "Should still have only 1 result")
+        XCTAssertEqual(strengthTest.results?.count ?? 0, 1, "Should still have only 1 result")
         
         let currentResult = strengthTest.result(for: .benchPress)
         XCTAssertEqual(currentResult?.value, 110.0, "Should have updated value")
@@ -262,7 +262,7 @@ final class StrengthTestTests: XCTestCase {
         
         // Then - Test should be completed
         XCTAssertTrue(strengthTest.isCompleted, "Test should be completed with all 5 results")
-        XCTAssertEqual(strengthTest.results.count, 5)
+        XCTAssertEqual(strengthTest.results?.count ?? 0, 5)
         XCTAssertEqual(strengthTest.completionPercentage, 1.0, "Completion should be 100%")
         
         // Overall score should be calculated (average of percentiles)
@@ -573,7 +573,7 @@ final class StrengthTestTests: XCTestCase {
         XCTAssertEqual(savedTest.userGenderEnum, .male)
         XCTAssertEqual(savedTest.userWeight, 80.0)
         XCTAssertEqual(savedTest.results.count, 1)
-        XCTAssertEqual(savedTest.results.first?.value, 120.0)
+        XCTAssertEqual(savedTest.results?.first?.value, 120.0)
     }
     
     func testStrengthTestResultUpdate() {

@@ -143,6 +143,15 @@ enum NutritionKeys {
         static let weeklyAnalysis = "nutrition.analytics.weeklyAnalysis"
         static let dailyCalories = "nutrition.analytics.dailyCalories"
         static let weeklyAverage = "nutrition.analytics.weeklyAverage"
+        
+        // Day names
+        static let sunday = "nutrition.analytics.sunday"
+        static let monday = "nutrition.analytics.monday"
+        static let tuesday = "nutrition.analytics.tuesday"
+        static let wednesday = "nutrition.analytics.wednesday"
+        static let thursday = "nutrition.analytics.thursday"
+        static let friday = "nutrition.analytics.friday"
+        static let saturday = "nutrition.analytics.saturday"
     }
     
     enum Units {
@@ -174,6 +183,30 @@ enum NutritionKeys {
         static let serverError = "nutrition.error.serverError"
     }
     
+    enum Goals {
+        static let nutritionGoals = "nutrition.goals.nutritionGoals"
+        static let setDailyGoals = "nutrition.goals.setDailyGoals"
+        static let personalizeNutrition = "nutrition.goals.personalizeNutrition"
+        static let goalMode = "nutrition.goals.goalMode"
+        static let goalModeDesc = "nutrition.goals.goalModeDesc"
+        static let calculatedGoals = "nutrition.goals.calculatedGoals"
+        static let calculatedGoalsDesc = "nutrition.goals.calculatedGoalsDesc"
+        static let customGoals = "nutrition.goals.customGoals"
+        static let customGoalsDesc = "nutrition.goals.customGoalsDesc"
+        static let dailyTargets = "nutrition.goals.dailyTargets"
+        static let dailyTargetsDesc = "nutrition.goals.dailyTargetsDesc"
+        static let macroDistribution = "nutrition.goals.macroDistribution"
+        static let macroDistributionDesc = "nutrition.goals.macroDistributionDesc"
+        static let saveGoals = "nutrition.goals.saveGoals"
+    }
+
+    enum GoalsDesc {
+        static let dailyCalorieTarget = "nutrition.goalsDesc.dailyCalorieTarget"
+        static let dailyProteinTarget = "nutrition.goalsDesc.dailyProteinTarget"
+        static let dailyCarbTarget = "nutrition.goalsDesc.dailyCarbTarget"
+        static let dailyFatTarget = "nutrition.goalsDesc.dailyFatTarget"
+    }
+
     enum Actions {
         static let close = "nutrition.actions.close"
         static let retry = "nutrition.actions.retry"
@@ -192,6 +225,13 @@ enum NutritionKeys {
         static let nuts = "nutrition.categories.nuts"
         static let beverages = "nutrition.categories.beverages"
         static let snacks = "nutrition.categories.snacks"
+        static let turkish = "nutrition.categories.turkish"
+        static let fastfood = "nutrition.categories.fastfood"
+        static let supplements = "nutrition.categories.supplements"
+        static let condiments = "nutrition.categories.condiments"
+        static let bakery = "nutrition.categories.bakery"
+        static let seafood = "nutrition.categories.seafood"
+        static let desserts = "nutrition.categories.desserts"
         static let other = "nutrition.categories.other"
     }
     
@@ -230,4 +270,16 @@ enum NutritionKeys {
         static let searchOptimized = "nutrition.search.searchOptimized"
         static let multiLanguageSupport = "nutrition.search.multiLanguageSupport"
     }
+    
+    enum OpenFoodFacts {
+        static let section = "nutrition.openfoodfacts.section"
+        static let loadingProduct = "nutrition.openfoodfacts.loadingProduct"
+    }
+    
+    enum Macros {
+        static let protein = "nutrition.macros.protein"
+        static let carbs = "nutrition.macros.carbs"
+        static let fat = "nutrition.macros.fat"
+    }
+    
 }

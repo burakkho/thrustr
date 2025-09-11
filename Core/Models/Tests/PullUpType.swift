@@ -6,7 +6,7 @@ import Foundation
  * Distinguishes between bodyweight and weighted pull-ups
  * for accurate strength assessment.
  */
-public enum PullUpType: String, CaseIterable {
+public enum PullUpType: String, CaseIterable, Sendable {
     case bodyweight = "bodyweight"
     case weighted = "weighted"
     

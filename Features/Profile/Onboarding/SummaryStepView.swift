@@ -12,7 +12,7 @@ struct SummaryStepView: View {
     let data: OnboardingData
     let onComplete: () -> Void
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @EnvironmentObject private var unitSettings: UnitSettings
+    @Environment(UnitSettings.self) var unitSettings
     
     var body: some View {
         VStack(spacing: 24) {
@@ -44,7 +44,7 @@ struct SummaryStepView: View {
                             )
                             SummaryRow(
                                 label: CommonKeys.Onboarding.labelAge.localized,
-                                value: "\(data.age) yaş"
+                                value: String(format: CommonKeys.Onboarding.ageFormat.localized, data.age)
                             )
                             SummaryRow(
                                 label: CommonKeys.Onboarding.labelGender.localized,
@@ -247,7 +247,7 @@ struct SummaryStepView: View {
         case "cut": return CommonKeys.Onboarding.goalCutTitle.localized
         case "bulk": return CommonKeys.Onboarding.goalBulkTitle.localized
         case "maintain": return CommonKeys.Onboarding.goalMaintainTitle.localized
-        default: return "Unknown"
+        default: return "common.unknown".localized
         }
     }
     
@@ -258,7 +258,7 @@ struct SummaryStepView: View {
         case "moderate": return CommonKeys.Onboarding.activityModerate.localized
         case "active": return CommonKeys.Onboarding.activityActive.localized
         case "very_active": return CommonKeys.Onboarding.activityVeryActive.localized
-        default: return "Unknown"
+        default: return "common.unknown".localized
         }
     }
 }

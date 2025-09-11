@@ -5,7 +5,7 @@ struct WODBuilderView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.theme) private var theme
     @Environment(\.modelContext) private var modelContext
-    @EnvironmentObject private var unitSettings: UnitSettings
+    @Environment(UnitSettings.self) var unitSettings
     @Query private var exercises: [Exercise]
     
     @State private var wodName = ""
@@ -17,6 +17,7 @@ struct WODBuilderView: View {
     @State private var editingMovement: WODMovementData?
     @State private var errorMessage: String?
     @State private var successMessage: String?
+    @State private var showingCancelAlert = false
     
     // Temporary data structure for building
     struct WODMovementData: Identifiable {
@@ -53,6 +54,13 @@ struct WODBuilderView: View {
         guard wodType == .forTime && !repScheme.isEmpty else { return true }
         let components = repScheme.split(separator: "-")
         return components.allSatisfy { Int($0.trimmingCharacters(in: .whitespaces)) != nil }
+    }
+    
+    private var hasUnsavedChanges: Bool {
+        !wodName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ||
+        !movements.isEmpty ||
+        !repScheme.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ||
+        !timeCap.isEmpty
     }
     
     private var suggestedMovements: [String] {
@@ -238,7 +246,13 @@ struct WODBuilderView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button("common.cancel".localized) { dismiss() }
+                    Button("common.cancel".localized) {
+                        if hasUnsavedChanges {
+                            showingCancelAlert = true
+                        } else {
+                            dismiss()
+                        }
+                    }
                 }
                 
                 ToolbarItem(placement: .navigationBarTrailing) {
@@ -258,6 +272,14 @@ struct WODBuilderView: View {
                         movements[index] = updated
                     }
                 }
+            }
+            .alert("common.confirm_discard".localized, isPresented: $showingCancelAlert) {
+                Button("common.cancel".localized, role: .cancel) { }
+                Button("common.discard".localized, role: .destructive) {
+                    dismiss()
+                }
+            } message: {
+                Text("common.discard_message".localized)
             }
         }
         .overlay(alignment: .bottom) {
@@ -341,7 +363,8 @@ struct WODBuilderView: View {
                 notes: movementData.notes.isEmpty ? nil : movementData.notes
             )
             movement.wod = wod
-            wod.movements.append(movement)
+            if wod.movements == nil { wod.movements = [] }
+            wod.movements!.append(movement)
             modelContext.insert(movement)
         }
         
@@ -427,7 +450,7 @@ private struct MovementRow: View {
 // MARK: - Movement Edit
 private struct MovementEditView: View {
     @Environment(\.dismiss) private var dismiss
-    @EnvironmentObject private var unitSettings: UnitSettings
+    @Environment(UnitSettings.self) var unitSettings
     let movement: WODBuilderView.WODMovementData
     let onSave: (WODBuilderView.WODMovementData) -> Void
     

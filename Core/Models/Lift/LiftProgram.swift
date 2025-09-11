@@ -4,30 +4,31 @@ import SwiftData
 // MARK: - Lift Program Model
 @Model
 final class LiftProgram {
-    var id: UUID
-    var name: String
-    var nameEN: String
-    var nameTR: String
-    var nameDE: String
-    var nameES: String
-    var nameIT: String
-    var programDescription: String
-    var descriptionEN: String
-    var descriptionTR: String
-    var descriptionDE: String
-    var descriptionES: String
-    var descriptionIT: String
-    var weeks: Int
-    var daysPerWeek: Int
-    var level: String // beginner, intermediate, advanced
-    var category: String // strength, hypertrophy, powerlifting
-    var isFavorite: Bool
-    var createdAt: Date
-    var updatedAt: Date
+    var id: UUID = UUID()
+    var name: String = ""
+    var nameEN: String = ""
+    var nameTR: String = ""
+    var nameDE: String = ""
+    var nameES: String = ""
+    var nameIT: String = ""
+    var programDescription: String = ""
+    var descriptionEN: String = ""
+    var descriptionTR: String = ""
+    var descriptionDE: String = ""
+    var descriptionES: String = ""
+    var descriptionIT: String = ""
+    var weeks: Int = 4
+    var daysPerWeek: Int = 3
+    var level: String = "beginner" // beginner, intermediate, advanced
+    var category: String = "strength" // strength, hypertrophy, powerlifting
+    var isFavorite: Bool = false
+    var createdAt: Date = Date()
+    var updatedAt: Date = Date()
     
     // Relationships
-    var workouts: [LiftWorkout]
+    @Relationship(deleteRule: .cascade, inverse: \LiftWorkout.program) var workouts: [LiftWorkout]?
     var creator: User?
+    @Relationship(deleteRule: .cascade, inverse: \ProgramExecution.program) var executions: [ProgramExecution]?
     
     init(
         name: String,
@@ -123,8 +124,8 @@ extension LiftProgram {
     
     var uniqueExercises: Set<String> {
         var exercises = Set<String>()
-        for workout in workouts {
-            for exercise in workout.exercises {
+        for workout in workouts ?? [] {
+            for exercise in workout.exercises ?? [] {
                 exercises.insert(exercise.exerciseName)
             }
         }
@@ -135,13 +136,14 @@ extension LiftProgram {
 // MARK: - Methods
 extension LiftProgram {
     func addWorkout(_ workout: LiftWorkout) {
-        workouts.append(workout)
+        if workouts == nil { workouts = [] }
+        workouts!.append(workout)
         workout.program = self
         updatedAt = Date()
     }
     
     func removeWorkout(_ workout: LiftWorkout) {
-        workouts.removeAll { $0.id == workout.id }
+        workouts?.removeAll { $0.id == workout.id }
         updatedAt = Date()
     }
     
@@ -160,7 +162,7 @@ extension LiftProgram {
         )
         
         // Duplicate workouts
-        for workout in workouts {
+        for workout in workouts ?? [] {
             let newWorkout = workout.duplicate()
             newProgram.addWorkout(newWorkout)
         }

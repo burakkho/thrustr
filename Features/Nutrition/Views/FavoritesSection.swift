@@ -3,7 +3,7 @@ import SwiftData
 
 struct FavoritesSection: View {
     @Environment(\.theme) private var theme
-    @EnvironmentObject private var unitSettings: UnitSettings
+    @Environment(UnitSettings.self) var unitSettings
     let foods: [Food]
     let onFoodSelected: (Food) -> Void
     
@@ -148,7 +148,7 @@ private enum ListType: Hashable {
 }
 
 struct QuickFoodCard: View {
-    @EnvironmentObject private var unitSettings: UnitSettings
+    @Environment(UnitSettings.self) var unitSettings
     let food: Food
     let type: QuickFoodType
     let action: () -> Void

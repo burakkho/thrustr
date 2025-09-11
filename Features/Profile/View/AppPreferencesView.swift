@@ -2,9 +2,11 @@ import SwiftUI
 
 struct AppPreferencesView: View {
     @Environment(\.dismiss) private var dismiss
-    @EnvironmentObject var themeManager: ThemeManager
-    @StateObject private var languageManager = LanguageManager.shared
-    @EnvironmentObject var unitSettings: UnitSettings
+    @Environment(ThemeManager.self) var themeManager
+    @State private var languageManager = LanguageManager.shared
+    @Environment(UnitSettings.self) var unitSettings
+    @Environment(CloudKitAvailabilityService.self) var cloudAvailability
+    @Environment(CloudSyncManager.self) var cloudSyncManager
     @AppStorage("notificationsEnabled") private var notificationsEnabled = true
     @AppStorage("workoutReminders") private var workoutReminders = true
     @AppStorage("nutritionReminders") private var nutritionReminders = true
@@ -17,7 +19,7 @@ struct AppPreferencesView: View {
                 // Language Section
                 Section {
                     LanguageSelector()
-                        .environmentObject(languageManager)
+                        .environment(languageManager)
                 } header: {
                     SectionHeaderView(title: "settings.language".localized, icon: "globe")
                 }
@@ -35,7 +37,7 @@ struct AppPreferencesView: View {
                 // Appearance Section
                 Section {
                     AppearanceSettings()
-                        .environmentObject(themeManager)
+                        .environment(themeManager)
                 } header: {
                     SectionHeaderView(title: "settings.theme".localized, icon: "paintbrush")
                 }
@@ -45,6 +47,15 @@ struct AppPreferencesView: View {
                     NotificationSettingsSection()
                 } header: {
                     SectionHeaderView(title: "settings.notifications".localized, icon: "bell")
+                }
+                
+                // CloudKit Sync Section
+                Section {
+                    CloudKitSyncSettings()
+                        .environment(cloudAvailability)
+                        .environment(cloudSyncManager)
+                } header: {
+                    SectionHeaderView(title: "settings.cloud_sync".localized, icon: "icloud")
                 }
                 
                 // Audio & Haptic Section
@@ -80,7 +91,7 @@ struct AppPreferencesView: View {
 
 // MARK: - Language Selector
 struct LanguageSelector: View {
-    @EnvironmentObject private var languageManager: LanguageManager
+    @Environment(LanguageManager.self) var languageManager
     @State private var showingRestartAlert = false
     @State private var selectedLanguage: LanguageManager.Language?
     
@@ -187,7 +198,7 @@ struct UnitSystemSelector: View {
 
 // MARK: - Appearance Settings
 struct AppearanceSettings: View {
-    @EnvironmentObject var themeManager: ThemeManager
+    @Environment(ThemeManager.self) var themeManager
     
     private var appearances: [(AppTheme, String, String)] {
         [
@@ -383,6 +394,7 @@ struct AudioHapticSettings: View {
     }
 }
 
+
 // MARK: - App Info Section
 struct AppInfoSection: View {
     var body: some View {
@@ -395,11 +407,11 @@ struct AppInfoSection: View {
                     .frame(width: 32, height: 32)
                 
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("Thrustr")
+                    Text("app.name".localized)
                         .font(.headline)
                         .foregroundColor(Color.textPrimary)
                     
-                    Text("Fitness Tracking App")
+                    Text("app.description".localized)
                         .font(.caption)
                         .foregroundColor(Color.textSecondary)
                 }
@@ -411,12 +423,12 @@ struct AppInfoSection: View {
             Divider()
                 .padding(.vertical, 8)
             
-            AppInfoRow(title: "settings.version".localized, value: "1.0.0")
+            AppInfoRow(title: "settings.version".localized, value: "app.version".localized)
             
             Divider()
                 .padding(.vertical, 8)
             
-            AppInfoRow(title: "Build", value: "100")
+            AppInfoRow(title: "settings.build".localized, value: "app.build".localized)
             
             Divider()
                 .padding(.vertical, 8)
@@ -483,6 +495,248 @@ struct AppInfoRow: View {
     }
 }
 
+// MARK: - CloudKit Sync Settings
+struct CloudKitSyncSettings: View {
+    @Environment(CloudKitAvailabilityService.self) var cloudAvailability
+    @Environment(CloudSyncManager.self) var cloudSyncManager
+    @State private var showingSyncDetails = false
+    @State private var isManualSyncing = false
+    
+    var body: some View {
+        VStack(spacing: 0) {
+            // iCloud Status Row
+            HStack {
+                Image(systemName: cloudAvailability.statusIcon)
+                    .foregroundColor(cloudAvailability.isAvailable ? .green : .orange)
+                    .frame(width: 24)
+                
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("settings.icloud_status".localized)
+                        .font(.body)
+                        .foregroundColor(Color.textPrimary)
+                    
+                    Text(cloudAvailability.statusMessage)
+                        .font(.caption)
+                        .foregroundColor(Color.textSecondary)
+                }
+                
+                Spacer()
+                
+                if cloudAvailability.isAvailable {
+                    Toggle("", isOn: Binding(
+                        get: { cloudSyncManager.isEnabled },
+                        set: { enabled in
+                            if enabled {
+                                cloudSyncManager.enableSync()
+                                cloudSyncManager.startAutomaticSync()
+                            } else {
+                                cloudSyncManager.disableSync()
+                            }
+                        }
+                    ))
+                    .labelsHidden()
+                }
+            }
+            .padding(.vertical, 4)
+            
+            if cloudSyncManager.isEnabled && cloudAvailability.isAvailable {
+                Divider()
+                    .padding(.vertical, 8)
+                
+                // Sync Status Row
+                HStack {
+                    Image(systemName: cloudSyncManager.syncStatus.icon)
+                        .foregroundColor(Color(cloudSyncManager.syncStatusColor))
+                        .frame(width: 24)
+                    
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("settings.sync_status".localized)
+                            .font(.body)
+                            .foregroundColor(Color.textPrimary)
+                        
+                        Text(cloudSyncManager.syncStatusSummary)
+                            .font(.caption)
+                            .foregroundColor(Color.textSecondary)
+                    }
+                    
+                    Spacer()
+                    
+                    Button {
+                        Task {
+                            isManualSyncing = true
+                            await cloudSyncManager.sync()
+                            isManualSyncing = false
+                        }
+                    } label: {
+                        if isManualSyncing || cloudSyncManager.syncStatus == .syncing {
+                            ProgressView()
+                                .scaleEffect(0.8)
+                        } else {
+                            Image(systemName: "arrow.clockwise")
+                                .font(.caption)
+                        }
+                    }
+                    .disabled(isManualSyncing || cloudSyncManager.syncStatus == .syncing)
+                }
+                .padding(.vertical, 4)
+                
+                // Error Display
+                if let error = cloudSyncManager.error {
+                    Divider()
+                        .padding(.vertical, 8)
+                    
+                    HStack {
+                        Image(systemName: error.recoveryIcon)
+                            .foregroundColor(.red)
+                            .frame(width: 24)
+                        
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(error.localizedDescription)
+                                .font(.caption)
+                                .foregroundColor(.red)
+                            
+                            Text(error.userActionMessage)
+                                .font(.caption2)
+                                .foregroundColor(Color.textSecondary)
+                        }
+                        
+                        Spacer()
+                    }
+                    .padding(.vertical, 4)
+                }
+                
+                // Sync Details Button
+                Divider()
+                    .padding(.vertical, 8)
+                
+                Button {
+                    showingSyncDetails.toggle()
+                } label: {
+                    HStack {
+                        Image(systemName: "info.circle")
+                            .foregroundColor(Color.appPrimary)
+                            .frame(width: 24)
+                        
+                        Text("settings.sync_details".localized)
+                            .foregroundColor(Color.textPrimary)
+                        
+                        Spacer()
+                        
+                        Image(systemName: "chevron.right")
+                            .font(.caption)
+                            .foregroundColor(Color.textSecondary)
+                    }
+                }
+            }
+        }
+        .sheet(isPresented: $showingSyncDetails) {
+            CloudKitSyncDetailsView()
+                .environment(cloudSyncManager)
+                .environment(cloudAvailability)
+        }
+    }
+}
+
+// MARK: - CloudKit Sync Details View
+struct CloudKitSyncDetailsView: View {
+    @Environment(\.dismiss) private var dismiss
+    @Environment(CloudSyncManager.self) var cloudSyncManager
+    @Environment(CloudKitAvailabilityService.self) var cloudAvailability
+    
+    var body: some View {
+        NavigationStack {
+            List {
+                Section {
+                    DetailRow(title: "Status", value: cloudSyncManager.syncStatusSummary)
+                    DetailRow(title: "iCloud Account", value: cloudAvailability.statusMessage)
+                    
+                    if let lastSync = cloudSyncManager.lastSyncDate {
+                        DetailRow(title: "Last Sync", value: DateFormatter.shortDateTime.string(from: lastSync))
+                    }
+                } header: {
+                    Text("Sync Information")
+                }
+                
+                Section {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("How iCloud Sync Works")
+                            .font(.headline)
+                        
+                        Text("Your workout data, nutrition logs, and settings automatically sync across all your devices using iCloud.")
+                            .font(.body)
+                        
+                        Text("• Data is encrypted and stored securely in your iCloud account\n• Sync happens automatically when you have an internet connection\n• Works on iPhone, iPad, and other devices signed into your iCloud account")
+                            .font(.caption)
+                            .foregroundColor(Color.textSecondary)
+                    }
+                    .padding(.vertical, 4)
+                }
+                
+                if let error = cloudSyncManager.error {
+                    Section {
+                        VStack(alignment: .leading, spacing: 8) {
+                            HStack {
+                                Image(systemName: error.recoveryIcon)
+                                    .foregroundColor(.red)
+                                
+                                Text("Sync Issue")
+                                    .font(.headline)
+                                    .foregroundColor(.red)
+                            }
+                            
+                            Text(error.localizedDescription)
+                                .font(.body)
+                            
+                            Text("To fix this: \(error.userActionMessage)")
+                                .font(.caption)
+                                .foregroundColor(Color.textSecondary)
+                        }
+                        .padding(.vertical, 4)
+                    }
+                }
+            }
+            .navigationTitle("iCloud Sync")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Done") {
+                        dismiss()
+                    }
+                }
+            }
+        }
+    }
+}
+
+struct DetailRow: View {
+    let title: String
+    let value: String
+    
+    var body: some View {
+        HStack {
+            Text(title)
+                .foregroundColor(Color.textPrimary)
+            
+            Spacer()
+            
+            Text(value)
+                .foregroundColor(Color.textSecondary)
+                .multilineTextAlignment(.trailing)
+        }
+        .padding(.vertical, 2)
+    }
+}
+
+// MARK: - Date Formatter Extension
+extension DateFormatter {
+    static let shortDateTime: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .short
+        formatter.timeStyle = .short
+        return formatter
+    }()
+}
+
 // MARK: - Reusable Components
 struct SectionHeaderView: View {
     let title: String
@@ -503,6 +757,6 @@ struct SectionHeaderView: View {
 
 #Preview {
     AppPreferencesView()
-        .environmentObject(ThemeManager())
-        .environmentObject(LanguageManager.shared)
+        .environment(ThemeManager())
+        .environment(LanguageManager.shared)
 }

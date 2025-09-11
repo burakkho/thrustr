@@ -6,7 +6,9 @@ import Foundation
  * Handles test result calculations, personal record tracking, and
  * provides recommendations based on test outcomes.
  */
-class TestScoringService: ObservableObject {
+@MainActor
+@Observable
+class TestScoringService {
     
     // MARK: - Singleton Instance
     static let shared = TestScoringService()
@@ -120,7 +122,7 @@ class TestScoringService: ObservableObject {
         var recommendations: [String] = []
         
         // Analyze individual exercise weaknesses
-        let sortedResults = strengthTest.results.sorted { $0.percentileScore < $1.percentileScore }
+        let sortedResults = (strengthTest.results ?? []).sorted { $0.percentileScore < $1.percentileScore }
         
         if let weakest = sortedResults.first {
             let exerciseName = weakest.exerciseTypeEnum.name
@@ -177,7 +179,7 @@ class TestScoringService: ObservableObject {
     func calculateTrainingWeights(from strengthTest: StrengthTest) -> [String: [String: Double]] {
         var trainingWeights: [String: [String: Double]] = [:]
         
-        for result in strengthTest.results {
+        for result in strengthTest.results ?? [] {
             let exerciseKey = result.exerciseTypeEnum.rawValue
             let oneRM = result.value
             
@@ -219,7 +221,7 @@ class TestScoringService: ObservableObject {
         
         // Individual results
         summary += "📋 \("strength.summary.results".localized):\n"
-        let sortedResults = strengthTest.results.sorted { $0.exerciseTypeEnum.rawValue < $1.exerciseTypeEnum.rawValue }
+        let sortedResults = (strengthTest.results ?? []).sorted { $0.exerciseTypeEnum.rawValue < $1.exerciseTypeEnum.rawValue }
         for result in sortedResults {
             summary += "• \(result.formattedSummary())\n"
         }

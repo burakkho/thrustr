@@ -96,11 +96,12 @@ struct InAppNotificationData {
 
 // MARK: - Notification Manager for In-App Notifications
 @MainActor
-final class InAppNotificationManager: ObservableObject {
+@Observable
+final class InAppNotificationManager {
     static let shared = InAppNotificationManager()
     
-    @Published var currentNotification: InAppNotificationData?
-    @Published var isVisible = false
+    var currentNotification: InAppNotificationData?
+    var isVisible = false
     
     private init() {}
     
@@ -148,7 +149,7 @@ extension View {
 
 // MARK: - Notification Overlay
 struct InAppNotificationOverlay: View {
-    @StateObject private var manager = InAppNotificationManager.shared
+    @State private var manager = InAppNotificationManager.shared
     
     var body: some View {
         VStack {

@@ -3,14 +3,14 @@ import SwiftData
 
 @Model
 final class WODResult {
-    var id: UUID
+    var id: UUID = UUID()
     var totalTime: Int? // seconds for "For Time" WODs
     var rounds: Int? // completed rounds for AMRAP
     var extraReps: Int? // extra reps in incomplete round for AMRAP
     var splits: String? // JSON string for round/movement splits
     var notes: String?
-    var isRX: Bool
-    var completedAt: Date
+    var isRX: Bool = false
+    var completedAt: Date = Date()
     
     // Relationships
     var wod: WOD?

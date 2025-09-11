@@ -8,20 +8,67 @@ import Foundation
  * Integrates with all major app components to track user activities.
  */
 @MainActor
-class ActivityLoggerService: ObservableObject {
+@Observable
+class ActivityLoggerService {
     
     // MARK: - Properties
     private var modelContext: ModelContext?
     private let maxRetentionDays = 30
     private let unitSettings = UnitSettings.shared
+    private var isSyncInProgress = false
+    private var lastSyncCompletedTime: Date?
+    private var activitiesProcessedDuringSync: Set<String> = []
     
     // MARK: - Singleton
     static let shared = ActivityLoggerService()
-    private init() {}
+    private init() {
+        setupCloudSyncObservers()
+    }
     
     // MARK: - Configuration
     func setModelContext(_ context: ModelContext) {
         self.modelContext = context
+    }
+    
+    // MARK: - CloudKit Sync Observers
+    
+    private func setupCloudSyncObservers() {
+        NotificationCenter.default.addObserver(
+            forName: .cloudSyncStarted,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            Task { @MainActor in
+                self?.isSyncInProgress = true
+                Logger.info("🔄 ActivityLogger: Sync started, pausing activity logging")
+            }
+        }
+        
+        NotificationCenter.default.addObserver(
+            forName: .cloudSyncCompleted,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            Task { @MainActor in
+                self?.isSyncInProgress = false
+                self?.lastSyncCompletedTime = Date()
+                Logger.info("✅ ActivityLogger: Sync completed, resuming activity logging")
+                
+                // Cleanup duplicate activities that might have been synced
+                await self?.cleanupPostSyncDuplicates()
+            }
+        }
+        
+        NotificationCenter.default.addObserver(
+            forName: .cloudSyncFailed,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            Task { @MainActor in
+                self?.isSyncInProgress = false
+                Logger.info("❌ ActivityLogger: Sync failed, resuming activity logging")
+            }
+        }
     }
     
     // MARK: - Core Logging Methods
@@ -82,6 +129,7 @@ class ActivityLoggerService: ObservableObject {
     
     /**
      * Logs meal completion with multiple food items
+     * Smart update: Updates existing meal activity instead of creating duplicates
      */
     func logMealCompleted(
         mealType: String,
@@ -92,16 +140,28 @@ class ActivityLoggerService: ObservableObject {
         totalFat: Double,
         user: User?
     ) {
+        Logger.info("🍽️ Attempting to log meal: \(mealType) - \(totalCalories) cal, \(foodCount) foods")
+        
+        // Check for existing meal activity on the same day
+        if let existingActivity = findExistingMealActivity(mealType: mealType, user: user) {
+            Logger.info("🔄 Updating existing meal activity: \(mealType)")
+            updateMealActivity(
+                existingActivity,
+                foodCount: foodCount,
+                totalCalories: totalCalories,
+                totalProtein: totalProtein,
+                totalCarbs: totalCarbs,
+                totalFat: totalFat
+            )
+            return
+        }
+        
+        Logger.info("✨ Creating new meal activity: \(mealType)")
         let metadata = ActivityMetadata()
         metadata.calories = totalCalories
         metadata.protein = totalProtein
         metadata.carbs = totalCarbs
         metadata.fat = totalFat
-        
-        _ = ActivityFormatter.mealSubtitle(
-            foodCount: foodCount,
-            calories: totalCalories
-        )
         
         let activity = ActivityEntry.mealCompleted(
             mealType: mealType,
@@ -112,6 +172,13 @@ class ActivityLoggerService: ObservableObject {
             fat: totalFat,
             user: user
         )
+        
+        Logger.info("📊 Meal activity created - CloudKit sync: \(isSyncInProgress ? "IN PROGRESS" : "NOT ACTIVE")")
+        if let lastSync = lastSyncCompletedTime {
+            let timeSinceSync = Date().timeIntervalSince(lastSync)
+            Logger.info("⏱️ Time since last CloudKit sync: \(String(format: "%.1f", timeSinceSync))s")
+        }
+        
         saveActivity(activity)
     }
     
@@ -525,14 +592,16 @@ class ActivityLoggerService: ObservableObject {
         do {
             let allActivities = try modelContext.fetch(descriptor)
             
-            // Manual filtering for better performance and compatibility
+            // Enhanced filtering: exclude sync activities and archived activities
             let filteredActivities = allActivities.filter { activity in
-                !activity.isArchived && activity.user?.id == user?.id
+                !activity.isArchived && 
+                activity.user?.id == user?.id &&
+                activity.sourceEnum.shouldDisplayInFeed  // Only show manual and automatic activities
             }
             
             return Array(filteredActivities.prefix(limit))
         } catch {
-            print("Error fetching activities: \(error)")
+            Logger.error("❌ Error fetching activities: \(error)")
             return []
         }
     }
@@ -605,15 +674,95 @@ class ActivityLoggerService: ObservableObject {
     
     // MARK: - Private Methods
     
+    /**
+     * Finds existing meal activity for the same meal type and user on the same day
+     */
+    private func findExistingMealActivity(mealType: String, user: User?) -> ActivityEntry? {
+        guard let modelContext = modelContext else { return nil }
+        
+        let calendar = Calendar.current
+        let startOfDay = calendar.startOfDay(for: Date())
+        let endOfDay = calendar.date(byAdding: .day, value: 1, to: startOfDay) ?? Date()
+        
+        let descriptor = FetchDescriptor<ActivityEntry>(
+            sortBy: [SortDescriptor(\ActivityEntry.timestamp, order: .reverse)]
+        )
+        
+        do {
+            let allActivities = try modelContext.fetch(descriptor)
+            
+            // Find matching meal activity on the same day
+            return allActivities.first { activity in
+                activity.timestamp >= startOfDay &&
+                activity.timestamp < endOfDay &&
+                activity.typeEnum == .mealCompleted &&
+                activity.title.contains(mealType) &&
+                activity.user?.id == user?.id
+            }
+        } catch {
+            Logger.error("❌ Error finding existing meal activity: \(error)")
+            return nil
+        }
+    }
+    
+    /**
+     * Updates existing meal activity with new totals
+     */
+    private func updateMealActivity(
+        _ activity: ActivityEntry,
+        foodCount: Int,
+        totalCalories: Double,
+        totalProtein: Double,
+        totalCarbs: Double,
+        totalFat: Double
+    ) {
+        // Update metadata with new totals
+        if activity.metadata == nil {
+            activity.metadata = ActivityMetadata()
+        }
+        
+        activity.metadata?.calories = totalCalories
+        activity.metadata?.protein = totalProtein
+        activity.metadata?.carbs = totalCarbs
+        activity.metadata?.fat = totalFat
+        
+        // Update subtitle with new food count and calories
+        activity.subtitle = ActivityFormatter.mealSubtitle(
+            foodCount: foodCount,
+            calories: totalCalories
+        )
+        
+        // Update timestamp to current time
+        activity.timestamp = Date()
+        
+        do {
+            try modelContext?.save()
+            Logger.info("✅ Updated meal activity: \(activity.title) - \(foodCount) foods, \(Int(totalCalories)) cal")
+            
+            // Notify UI for refresh
+            DispatchQueue.main.async {
+                NotificationCenter.default.post(name: .activityLogged, object: nil)
+            }
+        } catch {
+            Logger.error("❌ Error updating meal activity: \(error)")
+        }
+    }
+    
     private func saveActivity(_ activity: ActivityEntry) {
         guard let modelContext = modelContext else {
             print("ModelContext not set - cannot save activity")
             return
         }
         
-        // Check for duplicates (prevent spam)
-        if isDuplicateActivity(activity) {
-            print("Duplicate activity detected, skipping save")
+        // Skip logging during CloudKit sync to prevent duplicates
+        if isSyncInProgress {
+            Logger.info("⏸️ Skipping activity logging during CloudKit sync")
+            return
+        }
+        
+        // Enhanced duplicate detection
+        if isEnhancedDuplicateActivity(activity) {
+            Logger.info("🔄 Enhanced duplicate activity detected, skipping save")
             return
         }
         
@@ -621,12 +770,14 @@ class ActivityLoggerService: ObservableObject {
             modelContext.insert(activity)
             try modelContext.save()
             
+            Logger.info("💾 Activity saved: \(activity.title) (\(activity.sourceEnum.displayName))")
+            
             // Notify UI for real-time refresh
             DispatchQueue.main.async {
                 NotificationCenter.default.post(name: .activityLogged, object: nil)
             }
         } catch {
-            print("Error saving activity: \(error)")
+            Logger.error("❌ Error saving activity: \(error)")
         }
     }
     
@@ -656,4 +807,194 @@ class ActivityLoggerService: ObservableObject {
             return false
         }
     }
+    
+    /**
+     * Enhanced duplicate detection specifically for meal/nutrition activities
+     */
+    private func isEnhancedDuplicateActivity(_ newActivity: ActivityEntry) -> Bool {
+        guard modelContext != nil else { return false }
+        
+        // For meal activities, check for duplicates on the same date
+        if newActivity.typeEnum == .mealCompleted || newActivity.typeEnum == .nutritionLogged {
+            return isMealDuplicate(newActivity)
+        }
+        
+        // For other activities, use standard duplicate check
+        return isDuplicateActivity(newActivity)
+    }
+    
+    /**
+     * Meal-specific duplicate detection with CloudKit sync awareness
+     */
+    private func isMealDuplicate(_ newActivity: ActivityEntry) -> Bool {
+        guard modelContext != nil else { return false }
+        
+        // Enhanced duplicate detection considering CloudKit sync
+        let duplicateCheckResult = performEnhancedMealDuplicateCheck(newActivity)
+        
+        if duplicateCheckResult.isDuplicate {
+            Logger.info("🔄 Meal duplicate detected: \(duplicateCheckResult.reason)")
+            
+            if let existingActivity = duplicateCheckResult.existingActivity {
+                updateExistingMealActivity(existingActivity, with: newActivity)
+            }
+            
+            return true
+        }
+        
+        return false
+    }
+    
+    /**
+     * Enhanced meal duplicate detection with multiple strategies
+     */
+    private func performEnhancedMealDuplicateCheck(_ newActivity: ActivityEntry) -> (isDuplicate: Bool, existingActivity: ActivityEntry?, reason: String) {
+        guard let modelContext = modelContext else { 
+            return (false, nil, "No model context")
+        }
+        
+        // Check for same meal on same date
+        let calendar = Calendar.current
+        let startOfDay = calendar.startOfDay(for: newActivity.timestamp)
+        let endOfDay = calendar.date(byAdding: .day, value: 1, to: startOfDay) ?? newActivity.timestamp
+        
+        let descriptor = FetchDescriptor<ActivityEntry>(
+            sortBy: [SortDescriptor(\ActivityEntry.timestamp, order: .reverse)]
+        )
+        
+        do {
+            let allActivities = try modelContext.fetch(descriptor)
+            
+            // Find matching meal activities on the same date
+            let exactMatches = allActivities.filter { activity in
+                activity.timestamp >= startOfDay &&
+                activity.timestamp < endOfDay &&
+                (activity.type == "meal_completed" || activity.type == "nutrition_logged") &&
+                activity.title == newActivity.title &&
+                activity.user?.id == newActivity.user?.id
+            }
+            
+            // Strategy 1: Exact same meal on same day with similar timing (30 min window)
+            for existingActivity in exactMatches {
+                let timeDifference = abs(existingActivity.timestamp.timeIntervalSince(newActivity.timestamp))
+                
+                if timeDifference < 1800 { // 30 minutes
+                    return (true, existingActivity, "Same meal within 30 minutes")
+                }
+            }
+            
+            // Strategy 2: CloudKit sync duplicate detection
+            if let lastSync = lastSyncCompletedTime,
+               newActivity.timestamp.timeIntervalSince(lastSync) < 60 { // Within 1 minute of sync
+                
+                for existingActivity in exactMatches {
+                    // Check if this might be a CloudKit sync duplicate
+                    if abs(existingActivity.timestamp.timeIntervalSince(newActivity.timestamp)) < 300 { // 5 minutes
+                        Logger.info("📡 Potential CloudKit sync duplicate detected")
+                        return (true, existingActivity, "CloudKit sync duplicate")
+                    }
+                }
+            }
+            
+            // Strategy 3: Same meal content but different timestamp (CloudKit timing issues)
+            for existingActivity in exactMatches {
+                if let existingMeta = existingActivity.metadata,
+                   let newMeta = newActivity.metadata,
+                   abs((existingMeta.calories ?? 0) - (newMeta.calories ?? 0)) < 5 && // Similar calories
+                   abs((existingMeta.protein ?? 0) - (newMeta.protein ?? 0)) < 1 { // Similar protein
+                    return (true, existingActivity, "Same meal content detected")
+                }
+            }
+            
+            return (false, nil, "No duplicate found")
+        } catch {
+            Logger.error("❌ Error checking meal duplicates: \(error)")
+            return (false, nil, "Error during check")
+        }
+    }
+    
+    /**
+     * Update existing meal activity with new totals instead of creating duplicate
+     */
+    private func updateExistingMealActivity(_ existingActivity: ActivityEntry, with newActivity: ActivityEntry) {
+        // Update the existing activity with new nutrition totals
+        existingActivity.subtitle = newActivity.subtitle
+        existingActivity.metadata = newActivity.metadata
+        existingActivity.timestamp = newActivity.timestamp // Update to latest timestamp
+        
+        do {
+            try modelContext?.save()
+            Logger.info("✅ Updated existing meal activity: \(existingActivity.title)")
+            
+            // Notify UI for refresh
+            DispatchQueue.main.async {
+                NotificationCenter.default.post(name: .activityLogged, object: nil)
+            }
+        } catch {
+            Logger.error("❌ Error updating meal activity: \(error)")
+        }
+    }
+    
+    /**
+     * Cleans up duplicate activities that might have been created during CloudKit sync
+     */
+    @MainActor
+    private func cleanupPostSyncDuplicates() async {
+        guard let modelContext = modelContext else { return }
+        
+        Logger.info("🧹 Starting post-sync duplicate cleanup")
+        
+        do {
+            let descriptor = FetchDescriptor<ActivityEntry>(
+                sortBy: [SortDescriptor(\ActivityEntry.timestamp, order: .reverse)]
+            )
+            
+            let allActivities = try modelContext.fetch(descriptor)
+            let recentActivities = allActivities.filter { 
+                $0.timestamp.timeIntervalSinceNow > -3600 // Last 1 hour
+            }
+            
+            var duplicatesToRemove: [ActivityEntry] = []
+            var processedMeals: Set<String> = []
+            
+            // Group activities by meal type and user
+            let mealActivities = recentActivities.filter { 
+                $0.typeEnum == .mealCompleted || $0.typeEnum == .nutritionLogged 
+            }
+            
+            for activity in mealActivities {
+                let calendar = Calendar.current
+                let dayKey = calendar.startOfDay(for: activity.timestamp)
+                let mealKey = "\(activity.title)_\(activity.user?.id.uuidString ?? "unknown")_\(dayKey)"
+                
+                if processedMeals.contains(mealKey) {
+                    duplicatesToRemove.append(activity)
+                    Logger.info("🗑️ Marking duplicate meal for removal: \(activity.title)")
+                } else {
+                    processedMeals.insert(mealKey)
+                }
+            }
+            
+            // Remove duplicates
+            for duplicate in duplicatesToRemove {
+                modelContext.delete(duplicate)
+            }
+            
+            if !duplicatesToRemove.isEmpty {
+                try modelContext.save()
+                Logger.success("✅ Removed \(duplicatesToRemove.count) duplicate meal activities")
+                
+                // Notify UI to refresh
+                NotificationCenter.default.post(name: .activityLogged, object: nil)
+            } else {
+                Logger.info("ℹ️ No duplicate activities found during cleanup")
+            }
+            
+        } catch {
+            Logger.error("❌ Error during post-sync cleanup: \(error)")
+        }
+    }
 }
+
+// MARK: - Notification Names Extension
+// Note: activityLogged is defined in RecentActivitySection.swift to avoid duplication

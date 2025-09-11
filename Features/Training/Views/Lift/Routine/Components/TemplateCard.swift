@@ -17,7 +17,7 @@ struct TemplateCard: View {
                     .fontWeight(.semibold)
                     .foregroundColor(theme.colors.textPrimary)
                 
-                Text("\(workout.exercises.count) exercises")
+                Text("\(workout.exercises?.count ?? 0) exercises")
                     .font(theme.typography.caption)
                     .foregroundColor(theme.colors.textSecondary)
             }

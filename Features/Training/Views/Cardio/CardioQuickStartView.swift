@@ -5,16 +5,21 @@ struct CardioQuickStartView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.theme) private var theme
     @Environment(\.modelContext) private var modelContext
-    @EnvironmentObject private var unitSettings: UnitSettings
+    @Environment(UnitSettings.self) var unitSettings
     @Query private var user: [User]
     
     @State private var selectedActivity: CardioTimerViewModel.CardioActivityType = .running
     @State private var isOutdoor = true
     @State private var selectedPreset: DistancePreset?
     @State private var showingPreparation = false
+    @State private var showingCancelAlert = false
     
     private var currentUser: User? {
         user.first
+    }
+    
+    private var hasChanges: Bool {
+        selectedActivity != .running || !isOutdoor || selectedPreset != nil
     }
     
     var body: some View {
@@ -117,7 +122,13 @@ struct CardioQuickStartView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button(TrainingKeys.Cardio.cancel.localized) { dismiss() }
+                    Button(TrainingKeys.Cardio.cancel.localized) {
+                        if hasChanges {
+                            showingCancelAlert = true
+                        } else {
+                            dismiss()
+                        }
+                    }
                 }
             }
             .fullScreenCover(isPresented: $showingPreparation) {
@@ -128,6 +139,14 @@ struct CardioQuickStartView: View {
                         user: user
                     )
                 }
+            }
+            .alert("common.confirm_discard".localized, isPresented: $showingCancelAlert) {
+                Button("common.cancel".localized, role: .cancel) { }
+                Button("common.discard".localized, role: .destructive) {
+                    dismiss()
+                }
+            } message: {
+                Text("common.discard_message".localized)
             }
         }
     }
@@ -371,6 +390,6 @@ struct PresetCard: View {
 
 #Preview {
     CardioQuickStartView()
-        .environmentObject(UnitSettings.shared)
+        .environment(UnitSettings.shared)
         .modelContainer(for: User.self, inMemory: true)
 }

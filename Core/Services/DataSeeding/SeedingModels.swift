@@ -102,9 +102,15 @@ typealias ProgressCallback = @MainActor (SeedingProgress) async -> Void
 
 // MARK: - Seeding Configuration
 struct SeedingConfig {
-    static let batchSize = 50
+    // Fast initial seeding - CloudKit will sync later
+    static let batchSize = 100       // Larger batches for faster initial loading
     static let maxRetries = 3
-    static let yieldInterval = 25
+    static let yieldInterval = 50    // Less frequent yielding for better performance
+    static let cloudKitDelay: UInt64 = 1_000_000  // 1ms delay - minimal but allows UI updates
+    
+    // CloudKit-specific config for sync operations (not initial seeding)
+    static let cloudKitSyncBatchSize = 10
+    static let cloudKitSyncDelay: UInt64 = 100_000_000  // 0.1 second for sync
 }
 
 // MARK: - DataSeederError

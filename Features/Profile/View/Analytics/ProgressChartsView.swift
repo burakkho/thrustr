@@ -5,7 +5,7 @@ import Charts
 struct ProgressChartsView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var users: [User]
-    @EnvironmentObject private var unitSettings: UnitSettings
+    @Environment(UnitSettings.self) var unitSettings
     
     @State private var selectedTimeRange: TimeRange = .month3
     @State private var selectedChartType: ChartType = .weight
@@ -257,7 +257,7 @@ struct MainChartSection: View {
 // MARK: - Weight Chart View
 struct WeightChartView: View {
     let entries: [WeightEntry]
-    @EnvironmentObject private var unitSettings: UnitSettings
+    @Environment(UnitSettings.self) var unitSettings
     
     @State private var selectedPoint: Date? = nil
     
@@ -413,7 +413,7 @@ struct WorkoutFrequencyChartView: View {
 // MARK: - Body Measurements Chart View
 struct BodyMeasurementsChartView: View {
     let measurements: [BodyMeasurement]
-    @EnvironmentObject private var unitSettings: UnitSettings
+    @Environment(UnitSettings.self) var unitSettings
     
     @State private var selectedMeasurementType: MeasurementType = .waist
     
@@ -619,7 +619,7 @@ struct SummaryStatisticsSection: View {
 // MARK: - Weight Statistics Cards
 struct WeightStatisticsCards: View {
     let entries: [WeightEntry]
-    @EnvironmentObject private var unitSettings: UnitSettings
+    @Environment(UnitSettings.self) var unitSettings
     
     private var weightChange: Double {
         guard entries.count >= 2 else { return 0 }
@@ -637,24 +637,28 @@ struct WeightStatisticsCards: View {
         StatCard(
             title: ProfileKeys.Analytics.weightChange.localized,
             value: UnitsFormatter.formatWeight(kg: weightChange, system: unitSettings.unitSystem),
+            icon: weightChange >= 0 ? "arrow.up" : "arrow.down",
             color: weightChange >= 0 ? .green : .red
         )
         
         StatCard(
             title: ProfileKeys.Analytics.averageWeight.localized,
             value: UnitsFormatter.formatWeight(kg: averageWeight, system: unitSettings.unitSystem),
+            icon: "scalemass.fill",
             color: .blue
         )
         
         StatCard(
             title: ProfileKeys.Analytics.entries.localized,
             value: "\(entries.count)",
+            icon: "list.number",
             color: .orange
         )
         
         StatCard(
             title: ProfileKeys.Analytics.latest.localized,
             value: UnitsFormatter.formatWeight(kg: entries.first?.weight ?? 0, system: unitSettings.unitSystem),
+            icon: "clock.badge.checkmark",
             color: .purple
         )
     }
@@ -664,7 +668,7 @@ struct WeightStatisticsCards: View {
 struct WorkoutStatisticsCards: View {
     let liftSessions: [LiftSession]
     let timeRange: TimeRange
-    @EnvironmentObject private var unitSettings: UnitSettings
+    @Environment(UnitSettings.self) var unitSettings
     
     private var totalWorkouts: Int {
         liftSessions.count
@@ -687,24 +691,28 @@ struct WorkoutStatisticsCards: View {
         StatCard(
             title: ProfileKeys.Analytics.totalWorkouts.localized,
             value: "\(totalWorkouts)",
+            icon: "figure.strengthtraining.traditional",
             color: .blue
         )
         
         StatCard(
             title: ProfileKeys.Analytics.weeklyAverage.localized,
             value: String(format: "%.1f", averageWorkoutsPerWeek),
+            icon: "calendar.badge.plus",
             color: .green
         )
         
         StatCard(
             title: ProfileKeys.Analytics.totalVolume.localized,
             value: UnitsFormatter.formatWeight(kg: totalVolume, system: unitSettings.unitSystem),
+            icon: "chart.bar.fill",
             color: .orange
         )
         
         StatCard(
             title: ProfileKeys.Analytics.averageVolume.localized,
             value: UnitsFormatter.formatWeight(kg: averageVolume, system: unitSettings.unitSystem),
+            icon: "chart.line.uptrend.xyaxis",
             color: .purple
         )
     }
@@ -716,40 +724,20 @@ struct BodyMeasurementStatisticsCards: View {
         StatCard(
             title: ProfileKeys.Analytics.change.localized,
             value: ProfileKeys.Analytics.calculating.localized,
+            icon: "arrow.up.arrow.down",
             color: .blue
         )
         
         StatCard(
             title: ProfileKeys.Analytics.average.localized,
             value: ProfileKeys.Analytics.calculating.localized,
+            icon: "chart.line.flattrend.xyaxis",
             color: .green
         )
     }
 }
 
-// MARK: - Stat Card
-struct StatCard: View {
-    let title: String
-    let value: String
-    let color: Color
-    
-    var body: some View {
-        VStack(spacing: 8) {
-            Text(title)
-                .font(.caption)
-                .foregroundColor(.secondary)
-            
-            Text(value)
-                .font(.title3)
-                .fontWeight(.bold)
-                .foregroundColor(color)
-        }
-        .frame(maxWidth: .infinity)
-        .padding()
-        .background(Color(.secondarySystemBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 8))
-    }
-}
+// StatCard now imported from StrengthProgressionDetailView
 
 // MARK: - Insights Section
 struct InsightsSection: View {

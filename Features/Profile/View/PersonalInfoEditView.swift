@@ -171,7 +171,7 @@ struct BasicInfoSection: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            SectionHeader(title: "personal_info.basic_info".localized, icon: "info.circle.fill")
+            SectionHeader(icon: "info.circle.fill", title: "personal_info.basic_info".localized, color: .blue)
             
             VStack(spacing: 12) {
                 InputField(
@@ -205,7 +205,7 @@ struct PhysicalMeasurementsSection: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            SectionHeader(title: "personal_info.physical_measurements".localized, icon: "ruler.fill")
+            SectionHeader(icon: "ruler.fill", title: "personal_info.physical_measurements".localized, color: .green)
             
             VStack(spacing: 12) {
                 InputField(
@@ -238,7 +238,7 @@ struct GoalsSection: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            SectionHeader(title: "personal_info.goals_activity".localized, icon: "target")
+            SectionHeader(icon: "target", title: "personal_info.goals_activity".localized, color: .orange)
             
             VStack(spacing: 16) {
                 FitnessGoalSelector(selectedGoal: $selectedFitnessGoal)
@@ -277,7 +277,7 @@ struct CalculatedValuesPreview: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            SectionHeader(title: "personal_info.calculated_values".localized, icon: "function")
+            SectionHeader(icon: "function", title: "personal_info.calculated_values".localized, color: .purple)
             
             LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 2), spacing: 12) {
                 CalculatedValueCard(
@@ -357,22 +357,6 @@ struct CalculatedValueCard: View {
 }
 
 // MARK: - Reusable Components
-struct SectionHeader: View {
-    let title: String
-    let icon: String
-    
-    var body: some View {
-        HStack(spacing: 8) {
-            Image(systemName: icon)
-                .font(.title3)
-                .foregroundColor(.blue)
-            
-            Text(title)
-                .font(.headline)
-                .fontWeight(.semibold)
-        }
-    }
-}
 
 struct InputField: View {
     let title: String

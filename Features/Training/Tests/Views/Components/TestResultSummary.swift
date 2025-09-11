@@ -135,7 +135,7 @@ struct TestResultSummary: View {
             
             // Exercise cards
             LazyVStack(spacing: theme.spacing.m) {
-                ForEach(Array(strengthTest.results.enumerated()), id: \.element.exerciseType) { index, result in
+                ForEach(Array((strengthTest.results ?? []).enumerated()), id: \.element.exerciseType) { index, result in
                     ModernExerciseResultCard(result: result)
                         .opacity(animateResults ? 1.0 : 0.0)
                         .offset(x: animateResults ? 0 : 50)
@@ -388,7 +388,7 @@ struct TestResultSummary: View {
     
     private func safeGenerateRecommendations() -> [String] {
         // Check if test is properly completed
-        guard !strengthTest.results.isEmpty else {
+        guard !(strengthTest.results?.isEmpty ?? true) else {
             return [TrainingKeys.TestResults.resultsNotReady.localized]
         }
         
@@ -621,12 +621,12 @@ private extension TestResultSummary {
      * Uses direct calculation to avoid infinite loops.
      */
     private var safeAverageStrengthLevel: StrengthLevel {
-        guard !strengthTest.results.isEmpty else {
+        guard !(strengthTest.results?.isEmpty ?? true) else {
             return .beginner
         }
         
         // Direct calculation to avoid calling the computed property
-        let validStrengthLevels = strengthTest.results.compactMap { result -> Int? in
+        let validStrengthLevels = (strengthTest.results ?? []).compactMap { result -> Int? in
             let level = result.strengthLevel
             if level >= 0 && level <= 5 {
                 return level
@@ -678,7 +678,7 @@ private extension TestResultSummary {
         let profileText = profile == "balanced" ? TrainingKeys.TestResults.balanced.localized : 
                          profile == "upper_dominant" ? TrainingKeys.TestResults.upperBodyDominant.localized : 
                          profile == "lower_dominant" ? TrainingKeys.TestResults.lowerBodyDominant.localized : TrainingKeys.TestResults.unknownDominance.localized
-        let resultsCount = strengthTest.results.count
+        let resultsCount = strengthTest.results?.count ?? 0
         
         return HStack(spacing: theme.spacing.m) {
             SummaryMetricCard(

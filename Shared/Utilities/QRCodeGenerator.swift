@@ -1,10 +1,10 @@
 import SwiftUI
-import CoreImage
-import CoreImage.CIFilterBuiltins
+@preconcurrency import CoreImage
+@preconcurrency import CoreImage.CIFilterBuiltins
 
-class QRCodeGenerator {
+final class QRCodeGenerator: Sendable {
     static let shared = QRCodeGenerator()
-    private let context = CIContext()
+    private nonisolated(unsafe) let context = CIContext()
     
     private init() {}
     
@@ -95,13 +95,15 @@ struct QRCodeView: View {
     }
     
     private func generateQRCode() {
-        DispatchQueue.global(qos: .userInitiated).async {
-            let image = QRCodeGenerator.shared.generateQRCode(
-                from: data,
-                size: CGSize(width: size * 3, height: size * 3) // Higher res for quality
-            )
+        Task {
+            let image = await Task.detached {
+                QRCodeGenerator.shared.generateQRCode(
+                    from: data,
+                    size: CGSize(width: size * 3, height: size * 3) // Higher res for quality
+                )
+            }.value
             
-            DispatchQueue.main.async {
+            await MainActor.run {
                 withAnimation {
                     self.qrImage = image
                 }

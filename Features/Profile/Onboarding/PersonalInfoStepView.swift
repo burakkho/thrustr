@@ -14,12 +14,12 @@ struct PersonalInfoStepView: View {
     @FocusState private var focusedField: Field?
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @AppStorage("preferredUnitSystem") private var preferredUnitSystem: String = "metric" // persists globally
-    @EnvironmentObject private var unitSettings: UnitSettings
+    @Environment(UnitSettings.self) var unitSettings
 		@State private var nameDebounceWork: DispatchWorkItem? = nil
     
     // Service-based validation
     @State private var validationErrors: [UserService.ValidationError] = []
-    private let userService = UserService()
+    @State private var userService = UserService()
     
     private enum Field { case name }
     

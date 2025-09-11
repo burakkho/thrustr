@@ -4,7 +4,7 @@ import SwiftData
 struct CardioSessionDetailView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.theme) private var theme
-    @EnvironmentObject private var unitSettings: UnitSettings
+    @Environment(UnitSettings.self) var unitSettings
     
     let session: CardioSession
     
@@ -235,5 +235,5 @@ struct CardioSessionDetailView: View {
     let session = CardioSession()
     
     CardioSessionDetailView(session: session)
-        .environmentObject(UnitSettings.shared)
+        .environment(UnitSettings.shared)
 }

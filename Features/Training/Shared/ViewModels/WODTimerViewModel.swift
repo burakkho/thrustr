@@ -1,6 +1,7 @@
 import SwiftUI
 import SwiftData
 
+@MainActor
 @Observable
 class WODTimerViewModel {
     // MARK: - Timer
@@ -110,7 +111,8 @@ class WODTimerViewModel {
         modelContext.insert(result)
         result.wod = wod
         result.user = currentUser
-        wod.results.append(result)
+        if wod.results == nil { wod.results = [] }
+        wod.results!.append(result)
         
         // Save splits as JSON
         if !roundSplits.isEmpty {

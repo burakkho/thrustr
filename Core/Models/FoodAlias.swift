@@ -3,14 +3,14 @@ import Foundation
 
 @Model
 final class FoodAlias {
-    var id: UUID
-    var term: String
-    var language: String // e.g., "tr", "en"
-    var createdAt: Date
-    var updatedAt: Date
+    var id: UUID = UUID()
+    var term: String = ""
+    var language: String = "en" // e.g., "tr", "en"
+    var createdAt: Date = Date()
+    var updatedAt: Date = Date()
 
     // Relationship
-    var food: Food?
+    @Relationship var food: Food?
 
     init(term: String, language: String, food: Food? = nil) {
         self.id = UUID()

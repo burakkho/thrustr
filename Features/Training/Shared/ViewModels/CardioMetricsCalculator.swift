@@ -50,7 +50,7 @@ class CardioMetricsCalculator {
         self.totalPausedTime = totalPausedTime
         
         // Calculate in background
-        Task.detached { [weak self] in
+        Task.detached { @Sendable [weak self] in
             await self?.performCalculations(
                 elapsedTime: elapsedTime,
                 totalDistance: totalDistance,

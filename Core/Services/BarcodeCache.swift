@@ -4,7 +4,7 @@ import UIKit
 #endif
 
 // MARK: - DTO for cache persistence (Codable)
-struct CachedFoodDTO: Codable, Equatable {
+struct CachedFoodDTO: Codable, Equatable, Sendable {
     let barcode: String
     let nameEN: String
     let nameTR: String
@@ -21,7 +21,7 @@ struct CachedFoodDTO: Codable, Equatable {
 }
 
 // MARK: - Cache Entry (LRU bookkeeping)
-private struct CacheEntry: Codable, Equatable {
+private struct CacheEntry: Codable, Equatable, Sendable {
     var dto: CachedFoodDTO
     var lastAccess: Date
 }
@@ -50,11 +50,11 @@ actor BarcodeCache {
     }()
 
     init() {
-        Task { await loadFromDisk() }
+        Task { @Sendable in await loadFromDisk() }
         #if canImport(UIKit)
         NotificationCenter.default.addObserver(forName: UIApplication.didReceiveMemoryWarningNotification, object: nil, queue: .main) { [weak self] _ in
             guard let self else { return }
-            Task { await self.trimTo(limit: self.capacity / 2) }
+            Task { @Sendable in await self.trimTo(limit: self.capacity / 2) }
         }
         #endif
     }
@@ -86,18 +86,18 @@ actor BarcodeCache {
         map[dto.barcode] = entry
         moveKeyToMRU(dto.barcode)
         enforceCapacity()
-        Task { await saveToDisk() }
+        Task { @Sendable in await saveToDisk() }
     }
 
     func remove(barcode: String) {
         removeInternal(for: barcode)
-        Task { await saveToDisk() }
+        Task { @Sendable in await saveToDisk() }
     }
 
     func clearAll() {
         map.removeAll()
         lruKeys.removeAll()
-        Task { await saveToDisk() }
+        Task { @Sendable in await saveToDisk() }
     }
 
     func trimTo(limit: Int) {
@@ -105,7 +105,7 @@ actor BarcodeCache {
         while map.count > target, let lru = lruKeys.first {
             removeInternal(for: lru)
         }
-        Task { await saveToDisk() }
+        Task { @Sendable in await saveToDisk() }
     }
 
     func stats() -> (hits: Int, misses: Int, count: Int) {

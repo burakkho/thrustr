@@ -130,7 +130,7 @@ struct WODQRScannerView: View {
                 if let wod = scannedWOD {
                     EnhancedWODTimerView(
                         wod: wod,
-                        movements: wod.movements,
+                        movements: wod.movements ?? [],
                         isRX: true,
                         onCompletion: {
                             showingTimer = false
@@ -172,13 +172,15 @@ struct WODQRScannerView: View {
             let wod = qrData.toWOD()
             
             // Set default weights based on user gender
-            for movement in wod.movements {
-                if let rxWeight = movement.rxWeight(for: currentUser?.gender) {
-                    // Parse weight value
-                    let numbers = rxWeight.filter { "0123456789.".contains($0) }
-                    if let weight = Double(numbers) {
-                        movement.userWeight = weight
-                        movement.isRX = true
+            if let movements = wod.movements {
+                for movement in movements {
+                    if let rxWeight = movement.rxWeight(for: currentUser?.gender) {
+                        // Parse weight value
+                        let numbers = rxWeight.filter { "0123456789.".contains($0) }
+                        if let weight = Double(numbers) {
+                            movement.userWeight = weight
+                            movement.isRX = true
+                        }
                     }
                 }
             }
@@ -235,6 +237,7 @@ protocol QRScannerDelegate: AnyObject {
     func didScanCode(_ code: String)
 }
 
+@MainActor
 class QRScannerViewController: UIViewController {
     weak var delegate: QRScannerDelegate?
     var isProcessing = false
@@ -329,9 +332,7 @@ class QRScannerViewController: UIViewController {
     }
     
     private func startScanning() {
-        DispatchQueue.global(qos: .background).async { [weak self] in
-            self?.captureSession?.startRunning()
-        }
+        captureSession?.startRunning()
     }
     
     private func stopScanning() {
@@ -341,14 +342,16 @@ class QRScannerViewController: UIViewController {
 
 // MARK: - Metadata Output Delegate
 extension QRScannerViewController: AVCaptureMetadataOutputObjectsDelegate {
-    func metadataOutput(_ output: AVCaptureMetadataOutput,
+    nonisolated func metadataOutput(_ output: AVCaptureMetadataOutput,
                        didOutput metadataObjects: [AVMetadataObject],
                        from connection: AVCaptureConnection) {
-        guard !isProcessing else { return }
+        // Extract string value in nonisolated context
+        guard let metadataObject = metadataObjects.first as? AVMetadataMachineReadableCodeObject,
+              metadataObject.type == .qr,
+              let stringValue = metadataObject.stringValue else { return }
         
-        if let metadataObject = metadataObjects.first as? AVMetadataMachineReadableCodeObject,
-           metadataObject.type == .qr,
-           let stringValue = metadataObject.stringValue {
+        Task { @MainActor in
+            guard !isProcessing else { return }
             delegate?.didScanCode(stringValue)
         }
     }

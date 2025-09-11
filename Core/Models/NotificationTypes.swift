@@ -1,7 +1,7 @@
 import Foundation
 
 // MARK: - Notification Types
-enum NotificationType: String, CaseIterable {
+enum NotificationType: String, CaseIterable, Sendable {
     case workoutReminder = "workout_reminder"
     case achievementUnlock = "achievement_unlock" 
     case goalReminder = "goal_reminder"
@@ -23,14 +23,14 @@ protocol Schedulable {
 }
 
 // MARK: - Repeat Intervals
-enum NotificationRepeatInterval {
+enum NotificationRepeatInterval: Sendable {
     case daily
     case weekly
     case custom(TimeInterval)
 }
 
 // MARK: - Notification Priority
-enum NotificationPriority {
+enum NotificationPriority: Sendable {
     case low
     case normal
     case high

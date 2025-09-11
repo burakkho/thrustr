@@ -22,7 +22,7 @@ struct FoodSelectionView: View {
     @State private var toastMessage: String? = nil
     
     // Enhanced search with service integration
-    @StateObject private var searchService = FoodSearchService()
+    @State private var searchService = FoodSearchService()
     @State private var aliasSearchTask: Task<Void, Never>? = nil
     
     // Enhanced search results via FoodSearchService
@@ -165,7 +165,7 @@ struct FoodSelectionView: View {
                         
                         // Show OFF results as they load
                         if hasOffResults {
-                            Section(header: Text("nutrition.openfoodfacts_section".localized)) {
+                            Section(header: Text(NutritionKeys.OpenFoodFacts.section.localized)) {
                                 ForEach(offResults, id: \.id) { food in
                                     FoodRowView(food: food) {
                                         handleOFFResultSelection(food)
@@ -176,7 +176,7 @@ struct FoodSelectionView: View {
                         
                         // Show loading skeleton while OFF search is in progress
                         if isLoadingOFF && isSearching {
-                            Section(header: Text("nutrition.openfoodfacts_section".localized)) {
+                            Section(header: Text(NutritionKeys.OpenFoodFacts.section.localized)) {
                                 ForEach(0..<3, id: \.self) { _ in
                                     FoodSkeletonRow()
                                 }
@@ -278,7 +278,7 @@ private struct LoadingOverlay: View {
             Color.black.opacity(0.25).ignoresSafeArea()
             VStack(spacing: 12) {
                 ProgressView()
-                Text("nutrition.loading_product".localized)
+                Text(NutritionKeys.OpenFoodFacts.loadingProduct.localized)
                     .font(.subheadline)
                     .foregroundColor(.white)
             }

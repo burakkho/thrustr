@@ -1,7 +1,7 @@
 import Foundation
 
 // MARK: - Gender Enum
-enum Gender: String, CaseIterable, Codable {
+enum Gender: String, CaseIterable, Codable, Sendable {
     case male = "male"
     case female = "female"
     

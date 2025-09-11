@@ -13,6 +13,7 @@ struct ContentView: View {
                 OnboardingView()
             }
         }
+        .withInAppNotifications()
         .overlay {
             // Global error handling overlay
             ErrorAlertView()
@@ -28,7 +29,7 @@ struct ContentView: View {
 
 // MARK: - LocalizationView Wrapper
 struct LocalizationView<Content: View>: View {
-    @StateObject private var languageManager = LanguageManager.shared
+    @State private var languageManager = LanguageManager.shared
     @State private var refreshID = UUID()
     
     let content: Content
@@ -44,7 +45,7 @@ struct LocalizationView<Content: View>: View {
                 refreshID = UUID() // Force view refresh
                 print("🔄 UI refreshed due to language change")
             }
-            .environmentObject(languageManager)
+            .environment(languageManager)
     }
 }
 

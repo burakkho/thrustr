@@ -1,7 +1,20 @@
 import Foundation
-import CoreBluetooth
+@preconcurrency import CoreBluetooth
 import SwiftUI
 
+// MARK: - CoreBluetooth Constants
+// Static constants accessible from any concurrency context
+private struct BluetoothUUIDs {
+    static let heartRateService = CBUUID(string: "0x180D")
+    static let heartRateMeasurement = CBUUID(string: "0x2A37")
+    static let batteryService = CBUUID(string: "0x180F")
+    static let batteryLevel = CBUUID(string: "0x2A19")
+}
+
+// MARK: - Swift 6 Concurrency Notes
+// CoreBluetooth delegate methods use nonisolated pattern with @preconcurrency import
+
+@MainActor
 @Observable
 class BluetoothManager: NSObject {
     // MARK: - Shared Instance
@@ -28,14 +41,11 @@ class BluetoothManager: NSObject {
     var restingHeartRate: Int = 60
     var currentZone: HeartRateZone = .resting
     
-    // MARK: - Constants
-    private let heartRateServiceUUID = CBUUID(string: "0x180D")
-    private let heartRateMeasurementUUID = CBUUID(string: "0x2A37")
-    private let batteryServiceUUID = CBUUID(string: "0x180F")
-    private let batteryLevelUUID = CBUUID(string: "0x2A19")
-    
     // UserDefaults key for storing last connected device UUID
     private let lastConnectedDeviceKey = "LastConnectedBluetoothDevice"
+    
+    // Peripheral reference storage for Swift 6 compliance
+    private var peripheralRefs: [UUID: CBPeripheral] = [:]
     
     // MARK: - Models
     struct BluetoothDevice: Identifiable {
@@ -284,15 +294,51 @@ class BluetoothManager: NSObject {
     }
     
     func getTimeInZones() -> [HeartRateZone: TimeInterval] {
-        // TODO: Calculate time spent in each zone
-        return [:]
+        guard !heartRateHistory.isEmpty, maxHeartRate > 0 else { 
+            return HeartRateZone.allCases.reduce(into: [:]) { $0[$1] = 0 }
+        }
+        
+        var zoneTimeSpent: [HeartRateZone: TimeInterval] = HeartRateZone.allCases.reduce(into: [:]) { $0[$1] = 0 }
+        
+        // Calculate time between heart rate readings (approximate)
+        let timeInterval: TimeInterval = 5.0 // Assume ~5 seconds between readings
+        
+        for (_, heartRate) in heartRateHistory {
+            let zone = calculateZoneForHeartRate(heartRate)
+            zoneTimeSpent[zone, default: 0] += timeInterval
+        }
+        
+        return zoneTimeSpent
+    }
+    
+    private func calculateZoneForHeartRate(_ heartRate: Int) -> HeartRateZone {
+        guard maxHeartRate > 0 else { return .resting }
+        
+        let percentage = Double(heartRate) / Double(maxHeartRate)
+        
+        switch percentage {
+        case 0..<0.5:
+            return .resting
+        case 0.5..<0.6:
+            return .zone1
+        case 0.6..<0.7:
+            return .zone2
+        case 0.7..<0.8:
+            return .zone3
+        case 0.8..<0.9:
+            return .zone4
+        default:
+            return .zone5
+        }
     }
 }
 
 // MARK: - CBCentralManagerDelegate
 extension BluetoothManager: CBCentralManagerDelegate {
-    func centralManagerDidUpdateState(_ central: CBCentralManager) {
-        switch central.state {
+    nonisolated func centralManagerDidUpdateState(_ central: CBCentralManager) {
+        let state = central.state
+        Task { @MainActor in
+        switch state {
         case .poweredOn:
             isBluetoothEnabled = true
             Logger.info("Bluetooth is powered on")
@@ -306,12 +352,21 @@ extension BluetoothManager: CBCentralManagerDelegate {
         default:
             break
         }
+        }
     }
     
-    func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral,
+    nonisolated func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral,
                        advertisementData: [String : Any], rssi RSSI: NSNumber) {
+        // Extract all Sendable data immediately in nonisolated context
+        let peripheralId = peripheral.identifier
+        let peripheralName = peripheral.name
+        let rssiValue = RSSI.intValue
+        let localName = advertisementData[CBAdvertisementDataLocalNameKey] as? String
+        let serviceUUIDs = (advertisementData[CBAdvertisementDataServiceUUIDsKey] as? [CBUUID])?.map { $0.uuidString } ?? []
         
-        let name = peripheral.name ?? advertisementData[CBAdvertisementDataLocalNameKey] as? String ?? "Unknown Device"
+        Task { @MainActor in
+        
+        let name = peripheralName ?? localName ?? "Unknown Device"
         
         // Filter potential heart rate devices by name patterns
         let heartRateDevicePatterns = [
@@ -324,54 +379,73 @@ extension BluetoothManager: CBCentralManagerDelegate {
             name.lowercased().contains(pattern.lowercased())
         }
         
-        // Also check if device advertises heart rate service
-        let advertisesHeartRate = advertisementData[CBAdvertisementDataServiceUUIDsKey] as? [CBUUID] ?? []
-        let hasHeartRateService = advertisesHeartRate.contains(heartRateServiceUUID)
+        // Also check if device advertises heart rate service  
+        let hasHeartRateService = serviceUUIDs.contains(BluetoothUUIDs.heartRateService.uuidString)
         
         // Only add devices that are likely heart rate monitors or advertise heart rate service
         if (isLikelyHeartRateDevice || hasHeartRateService) && 
-           !discoveredDevices.contains(where: { $0.peripheral.identifier == peripheral.identifier }) {
+           !discoveredDevices.contains(where: { $0.peripheral.identifier == peripheralId }) {
+            
+            // Store reference to peripheral for later use
+            peripheralRefs[peripheralId] = peripheral
             
             let device = BluetoothDevice(
                 peripheral: peripheral,
                 name: name,
-                rssi: RSSI.intValue
+                rssi: rssiValue
             )
             discoveredDevices.append(device)
             
-            Logger.info("Discovered heart rate device: \(name) with RSSI: \(RSSI), hasService: \(hasHeartRateService)")
+            Logger.info("Discovered heart rate device: \(name) with RSSI: \(rssiValue), hasService: \(hasHeartRateService)")
         } else {
             // Log all devices for debugging
             Logger.info("Skipped device: \(name) (not heart rate related)")
         }
+        }
     }
     
-    func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
+    nonisolated func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
+        let peripheralId = peripheral.identifier
+        let peripheralName = peripheral.name
+        
+        // Immediately handle CoreBluetooth operations in nonisolated context
+        peripheral.discoverServices([BluetoothUUIDs.heartRateService, BluetoothUUIDs.batteryService])
+        
+        Task { @MainActor in
         isConnected = true
         connectionAttempts = 0 // Reset on successful connection
         lastError = nil
-        connectedDevice = discoveredDevices.first { $0.peripheral.identifier == peripheral.identifier }
+        connectedDevice = discoveredDevices.first { $0.peripheral.identifier == peripheralId }
         
-        // Discover services
-        peripheral.discoverServices([heartRateServiceUUID, batteryServiceUUID])
+        // Store peripheral reference
+        peripheralRefs[peripheralId] = peripheral
         
-        Logger.success("Successfully connected to \(peripheral.name ?? "device")")
+        Logger.success("Successfully connected to \(peripheralName ?? "device")")
+        }
     }
     
-    func centralManager(_ central: CBCentralManager, didFailToConnect peripheral: CBPeripheral, error: Error?) {
-        let errorMessage = error?.localizedDescription ?? "Unknown connection error"
+    nonisolated func centralManager(_ central: CBCentralManager, didFailToConnect peripheral: CBPeripheral, error: Error?) {
+        let peripheralName = peripheral.name
+        let errorDescription = error?.localizedDescription
+        Task { @MainActor in
+        let errorMessage = errorDescription ?? "Unknown connection error"
         lastError = errorMessage
         isConnected = false
         connectedDevice = nil
         
-        Logger.error("Failed to connect to \(peripheral.name ?? "device"): \(errorMessage)")
+        Logger.error("Failed to connect to \(peripheralName ?? "device"): \(errorMessage)")
         
         // Don't auto-retry here - let the timeout handler manage retries
+        }
     }
     
-    func centralManager(_ central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: Error?) {
-        if let error = error {
-            Logger.error("Disconnected with error: \(error.localizedDescription)")
+    nonisolated func centralManager(_ central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: Error?) {
+        let _ = peripheral.name // Unused variable fix
+        let peripheralId = peripheral.identifier
+        let errorDescription = error?.localizedDescription
+        Task { @MainActor in
+        if let errorDescription = errorDescription {
+            Logger.error("Disconnected with error: \(errorDescription)")
         } else {
             Logger.info("Device disconnected")
         }
@@ -379,53 +453,76 @@ extension BluetoothManager: CBCentralManagerDelegate {
         isConnected = false
         connectedDevice = nil
         currentHeartRate = 0
+        
+        // Clean up peripheral reference
+        peripheralRefs.removeValue(forKey: peripheralId)
+        }
     }
 }
 
 // MARK: - CBPeripheralDelegate
 extension BluetoothManager: CBPeripheralDelegate {
-    func peripheral(_ peripheral: CBPeripheral, didDiscoverServices error: Error?) {
-        guard error == nil else {
-            Logger.error("Error discovering services: \(error!.localizedDescription)")
+    nonisolated func peripheral(_ peripheral: CBPeripheral, didDiscoverServices error: Error?) {
+        let errorDescription = error?.localizedDescription
+        
+        if let errorDescription = errorDescription {
+            Task { @MainActor in
+                Logger.error("Error discovering services: \(errorDescription)")
+            }
             return
         }
         
+        // Handle CoreBluetooth operations immediately in nonisolated context
         for service in peripheral.services ?? [] {
-            if service.uuid == heartRateServiceUUID {
-                peripheral.discoverCharacteristics([heartRateMeasurementUUID], for: service)
-            } else if service.uuid == batteryServiceUUID {
-                peripheral.discoverCharacteristics([batteryLevelUUID], for: service)
+            if service.uuid == BluetoothUUIDs.heartRateService {
+                peripheral.discoverCharacteristics([BluetoothUUIDs.heartRateMeasurement], for: service)
+            } else if service.uuid == BluetoothUUIDs.batteryService {
+                peripheral.discoverCharacteristics([BluetoothUUIDs.batteryLevel], for: service)
             }
         }
     }
     
-    func peripheral(_ peripheral: CBPeripheral, didDiscoverCharacteristicsFor service: CBService, error: Error?) {
-        guard error == nil else {
-            Logger.error("Error discovering characteristics: \(error!.localizedDescription)")
+    nonisolated func peripheral(_ peripheral: CBPeripheral, didDiscoverCharacteristicsFor service: CBService, error: Error?) {
+        let errorDescription = error?.localizedDescription
+        
+        if let errorDescription = errorDescription {
+            Task { @MainActor in
+                Logger.error("Error discovering characteristics: \(errorDescription)")
+            }
             return
         }
         
+        // Handle CoreBluetooth operations immediately in nonisolated context
         for characteristic in service.characteristics ?? [] {
-            if characteristic.uuid == heartRateMeasurementUUID {
-                heartRateCharacteristic = characteristic
+            if characteristic.uuid == BluetoothUUIDs.heartRateMeasurement {
                 peripheral.setNotifyValue(true, for: characteristic)
-                Logger.info("Started monitoring heart rate")
-            } else if characteristic.uuid == batteryLevelUUID {
+                Task { @MainActor in
+                    heartRateCharacteristic = characteristic
+                    Logger.info("Started monitoring heart rate")
+                }
+            } else if characteristic.uuid == BluetoothUUIDs.batteryLevel {
                 peripheral.readValue(for: characteristic)
             }
         }
     }
     
-    func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error: Error?) {
-        guard error == nil else {
-            Logger.error("Error updating value: \(error!.localizedDescription)")
+    nonisolated func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error: Error?) {
+        let characteristicUUID = characteristic.uuid
+        let errorDescription = error?.localizedDescription
+        
+        if let errorDescription = errorDescription {
+            Task { @MainActor in
+                Logger.error("Error updating value: \(errorDescription)")
+            }
             return
         }
         
-        if characteristic.uuid == heartRateMeasurementUUID {
-            parseHeartRate(from: characteristic)
-        } else if characteristic.uuid == batteryLevelUUID {
-            parseBatteryLevel(from: characteristic)
+        Task { @MainActor in
+            if characteristicUUID == BluetoothUUIDs.heartRateMeasurement {
+                parseHeartRate(from: characteristic)
+            } else if characteristicUUID == BluetoothUUIDs.batteryLevel {
+                parseBatteryLevel(from: characteristic)
+            }
         }
     }
     

@@ -10,24 +10,24 @@ import Foundation
 @Model
 final class StrengthTest {
     // MARK: - Core Properties
-    var testDate: Date
-    var isCompleted: Bool
-    var overallScore: Double // Averaged percentile across exercises
-    var strengthProfile: String // "balanced", "upper_dominant", "lower_dominant"
-    var testDuration: TimeInterval // Time to complete test
+    var testDate: Date = Date()
+    var isCompleted: Bool = false
+    var overallScore: Double = 0.0 // Averaged percentile across exercises
+    var strengthProfile: String = "unknown" // "balanced", "upper_dominant", "lower_dominant"
+    var testDuration: TimeInterval = 0.0 // Time to complete test
     
     // MARK: - Test Results
-    @Relationship(deleteRule: .cascade) var results: [StrengthTestResult]
+    @Relationship(deleteRule: .cascade) var results: [StrengthTestResult]?
     
     // MARK: - User Context
-    var userAge: Int
-    var userGender: String // Gender rawValue
-    var userWeight: Double // kg at time of test
+    var userAge: Int = 25
+    var userGender: String = "male" // Gender rawValue
+    var userWeight: Double = 70.0 // kg at time of test
     
     // MARK: - Metadata
     var notes: String?
     var testEnvironment: String? // "gym", "home", etc.
-    var wasNewOverallPR: Bool // If overall score improved
+    var wasNewOverallPR: Bool = false // If overall score improved
     
     // MARK: - Computed Properties
     
@@ -38,14 +38,14 @@ final class StrengthTest {
     
     var resultsByExercise: [StrengthExerciseType: StrengthTestResult] {
         var dict: [StrengthExerciseType: StrengthTestResult] = [:]
-        for result in results {
+        for result in results ?? [] {
             dict[result.exerciseTypeEnum] = result
         }
         return dict
     }
     
     var completedExercises: [StrengthExerciseType] {
-        return results.map { $0.exerciseTypeEnum }
+        return results?.map { $0.exerciseTypeEnum } ?? []
     }
     
     var remainingExercises: [StrengthExerciseType] {
@@ -54,11 +54,11 @@ final class StrengthTest {
     }
     
     var completionPercentage: Double {
-        return Double(results.count) / Double(StrengthExerciseType.allCases.count)
+        return Double(results?.count ?? 0) / Double(StrengthExerciseType.allCases.count)
     }
     
     var averageStrengthLevel: StrengthLevel {
-        guard !results.isEmpty else {
+        guard let results = results, !results.isEmpty else {
             return .beginner
         }
         
@@ -113,7 +113,7 @@ final class StrengthTest {
         self.overallScore = 0.0
         self.strengthProfile = "unknown"
         self.testDuration = 0
-        self.results = []
+        self.results = nil
         self.userAge = userAge
         self.userGender = userGender.rawValue
         self.userWeight = userWeight
@@ -128,14 +128,19 @@ final class StrengthTest {
      * Adds a test result for a specific exercise.
      */
     func addResult(_ result: StrengthTestResult) {
+        // Initialize results array if needed
+        if results == nil {
+            results = []
+        }
+        
         // Remove existing result for same exercise if present
-        results.removeAll { $0.exerciseTypeEnum == result.exerciseTypeEnum }
+        results!.removeAll { $0.exerciseTypeEnum == result.exerciseTypeEnum }
         
         // Add new result
-        results.append(result)
+        results!.append(result)
         
         // Update completion status
-        if results.count == StrengthExerciseType.allCases.count {
+        if results!.count == StrengthExerciseType.allCases.count {
             completeTest()
         }
     }
@@ -152,6 +157,8 @@ final class StrengthTest {
      * Calculates overall test metrics and strength profile.
      */
     private func calculateOverallMetrics() {
+        guard let results = results, !results.isEmpty else { return }
+        
         // Calculate overall score as average percentile
         let totalScore = results.map { $0.percentileScore }.reduce(0, +)
         overallScore = totalScore / Double(results.count)
@@ -164,6 +171,8 @@ final class StrengthTest {
      * Analyzes results to determine user's strength profile.
      */
     private func calculateStrengthProfile() -> String {
+        guard let results = results else { return "incomplete" }
+        
         let upperBodyExercises: [StrengthExerciseType] = [.benchPress, .overheadPress, .pullUp]
         let lowerBodyExercises: [StrengthExerciseType] = [.backSquat, .deadlift]
         
@@ -190,7 +199,7 @@ final class StrengthTest {
      * Gets the result for a specific exercise type.
      */
     func result(for exerciseType: StrengthExerciseType) -> StrengthTestResult? {
-        return results.first { $0.exerciseTypeEnum == exerciseType }
+        return results?.first { $0.exerciseTypeEnum == exerciseType }
     }
     
     /**
@@ -206,7 +215,7 @@ final class StrengthTest {
         summary += "💪 Genel Seviye: \(averageStrengthLevel.emoji) \(averageStrengthLevel.name)\n"
         summary += "📊 Profil: \(strengthProfile.capitalized)\n\n"
         
-        for result in results.sorted(by: { $0.exerciseTypeEnum.rawValue < $1.exerciseTypeEnum.rawValue }) {
+        for result in (results ?? []).sorted(by: { $0.exerciseTypeEnum.rawValue < $1.exerciseTypeEnum.rawValue }) {
             summary += result.formattedSummary() + "\n"
         }
         
@@ -219,7 +228,7 @@ final class StrengthTest {
     func exportOneRMValues() -> [String: Double] {
         var oneRMs: [String: Double] = [:]
         
-        for result in results {
+        for result in results ?? [] {
             let key = result.exerciseTypeEnum.rawValue
             oneRMs[key] = result.value
         }

@@ -7,7 +7,7 @@ struct OneRMSetupView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.theme) private var theme
     @Environment(\.modelContext) private var modelContext
-    @EnvironmentObject private var unitSettings: UnitSettings
+    @Environment(UnitSettings.self) var unitSettings
     
     let program: LiftProgram
     let onComplete: (User) -> Void
@@ -61,7 +61,7 @@ struct OneRMSetupView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Cancel") {
+                    Button(TrainingKeys.FormsExtended.cancel.localized) {
                         dismiss()
                     }
                 }
@@ -126,7 +126,7 @@ struct OneRMSetupView: View {
                     .font(.system(size: 48))
                     .foregroundColor(theme.colors.success)
                 
-                Text("Setup Complete!")
+                Text(TrainingKeys.OneRM.setupComplete.localized)
                     .font(theme.typography.title2)
                     .fontWeight(.bold)
                     .foregroundColor(theme.colors.textPrimary)
@@ -139,7 +139,7 @@ struct OneRMSetupView: View {
         VStack(spacing: theme.spacing.l) {
             // 1RM Input
             VStack(alignment: .leading, spacing: theme.spacing.s) {
-                Text("1 Rep Max (\(unitSettings.unitSystem == .metric ? "kg" : "lb"))")
+                Text(String(format: TrainingKeys.OneRM.oneRMTitle.localized, unitSettings.unitSystem == .metric ? "kg" : "lb"))
                     .font(theme.typography.body)
                     .fontWeight(.medium)
                     .foregroundColor(theme.colors.textPrimary)
@@ -193,7 +193,7 @@ struct OneRMSetupView: View {
                 }
                 .buttonStyle(PlainButtonStyle())
                 
-                helpTip(icon: "lightbulb", text: "Estimate: If you can do 5 reps with 60kg, your 1RM is ~67kg")
+                helpTip(icon: "lightbulb", text: TrainingKeys.OneRM.estimateExample.localized)
                 helpTip(icon: "exclamationmark.circle", text: TrainingKeys.OneRM.underestimateWarning.localized)
             }
         }
@@ -334,7 +334,7 @@ struct OneRMSetupView: View {
 struct StartingWeightsPreviewView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.theme) private var theme
-    @EnvironmentObject private var unitSettings: UnitSettings
+    @Environment(UnitSettings.self) var unitSettings
     
     let program: LiftProgram
     let startingWeights: [String: Double]
@@ -355,7 +355,7 @@ struct StartingWeightsPreviewView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Back") {
+                    Button(TrainingKeys.FormsExtended.back.localized) {
                         dismiss()
                     }
                 }
@@ -369,7 +369,7 @@ struct StartingWeightsPreviewView: View {
                 .font(.system(size: 48))
                 .foregroundColor(.green)
             
-            Text("Starting Weights Calculated")
+            Text(TrainingKeys.OneRM.startingWeightsCalculated.localized)
                 .font(.title2)
                 .fontWeight(.bold)
             
@@ -395,14 +395,14 @@ struct StartingWeightsPreviewView: View {
     
     private var proTipsSection: some View {
         VStack(alignment: .leading, spacing: theme.spacing.s) {
-            Text("💡 Pro Tips")
+            Text(TrainingKeys.OneRMSetup.proTips.localized)
                 .font(theme.typography.headline)
                 .fontWeight(.semibold)
             
             VStack(alignment: .leading, spacing: theme.spacing.xs) {
-                Text("• Starting conservative ensures proper form")
-                Text("• You'll add \(unitSettings.unitSystem == .metric ? "2.5kg" : "5lb") every successful workout")
-                Text("• You can adjust weights during workouts")
+                Text(TrainingKeys.OneRMSetup.startingConservativeTip.localized)
+                Text(TrainingKeys.OneRMSetup.progressionTip.localized)
+                Text(TrainingKeys.OneRMSetup.adjustWeightsTip.localized)
             }
             .font(theme.typography.body)
             .foregroundColor(theme.colors.textSecondary)
@@ -429,7 +429,7 @@ struct StartingWeightsPreviewView: View {
 // MARK: - Starting Weight Row
 struct StartingWeightRow: View {
     @Environment(\.theme) private var theme
-    @EnvironmentObject private var unitSettings: UnitSettings
+    @Environment(UnitSettings.self) var unitSettings
     let exercise: String
     let weight: Double
     
