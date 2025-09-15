@@ -9,40 +9,23 @@ import SwiftData
  */
 struct RecentActivitySection: View {
     @Environment(\.theme) private var theme
-    @Environment(\.modelContext) private var modelContext
     @Environment(TabRouter.self) var tabRouter
-    
+
     var viewModel: DashboardViewModel
-    @State private var activityLogger = ActivityLoggerService.shared
-    
-    @State private var groupedActivities: [(String, [ActivityEntry])] = []
-    @State private var isLoading = false
     @State private var showingAllActivities = false
-    @State private var lastRefreshTime: Date = Date.distantPast
     
     var body: some View {
         VStack(alignment: .leading, spacing: theme.spacing.m) {
             // Section Header
             sectionHeader
             
-            // Content
-            if isLoading {
+            // Content (data from ViewModel)
+            if viewModel.isActivitiesLoading {
                 loadingView
-            } else if groupedActivities.isEmpty {
+            } else if viewModel.groupedActivities.isEmpty {
                 EmptyActivityView(user: viewModel.currentUser)
             } else {
                 activityList
-            }
-        }
-        .onAppear {
-            loadActivities()
-        }
-        .onReceive(NotificationCenter.default.publisher(for: .activityLogged)) { _ in
-            // Enhanced throttle refresh to prevent spam (increased from 1s to 3s)
-            let now = Date()
-            if now.timeIntervalSince(lastRefreshTime) > 3.0 {
-                lastRefreshTime = now
-                loadActivities()
             }
         }
         .sheet(isPresented: $showingAllActivities) {
@@ -59,7 +42,7 @@ struct RecentActivitySection: View {
                     .font(.headline.weight(.semibold))
                     .foregroundColor(theme.colors.textPrimary)
                 
-                if !groupedActivities.isEmpty {
+                if !viewModel.groupedActivities.isEmpty {
                     Text("\(totalActivityCount) \(DashboardKeys.Activities.activity.localized)")
                         .font(.caption)
                         .foregroundColor(theme.colors.textSecondary)
@@ -68,7 +51,7 @@ struct RecentActivitySection: View {
             
             Spacer()
             
-            if !groupedActivities.isEmpty {
+            if !viewModel.groupedActivities.isEmpty {
                 Button(DashboardKeys.Activities.seeAll.localized) {
                     showingAllActivities = true
                 }
@@ -94,7 +77,7 @@ struct RecentActivitySection: View {
     
     private var activityList: some View {
         LazyVStack(alignment: .leading, spacing: theme.spacing.s) {
-            ForEach(Array(groupedActivities.enumerated()), id: \.offset) { index, group in
+            ForEach(Array(viewModel.groupedActivities.enumerated()), id: \.offset) { index, group in
                 let (dateTitle, activities) = group
                 
                 // Date header
@@ -141,7 +124,7 @@ struct RecentActivitySection: View {
     // MARK: - Computed Properties
     
     private var totalActivityCount: Int {
-        groupedActivities.reduce(0) { $0 + $1.1.count }
+        viewModel.groupedActivities.reduce(0) { $0 + $1.1.count }
     }
     
     private func maxActivitiesPerGroup(_ groupIndex: Int) -> Int {
@@ -153,27 +136,6 @@ struct RecentActivitySection: View {
         }
     }
     
-    // MARK: - Methods
-    
-    private func loadActivities() {
-        // Disable implicit animations during state updates
-        withAnimation(nil) {
-            isLoading = true
-        }
-        activityLogger.setModelContext(modelContext)
-        
-        Task { @MainActor in
-            let activities = activityLogger.fetchRecentActivities(
-                limit: 20,
-                for: viewModel.currentUser
-            )
-            
-            withAnimation(nil) {
-                groupedActivities = ActivityFormatter.groupActivitiesByDate(activities)
-                isLoading = false
-            }
-        }
-    }
 }
 
 // MARK: - Enhanced Skeleton Loading View

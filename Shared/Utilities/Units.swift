@@ -9,7 +9,6 @@ enum UnitSystem: String, Codable, CaseIterable, Equatable, Sendable {
 }
 
 // MARK: - Global Unit Settings
-@MainActor
 @Observable
 final class UnitSettings {
     static let shared = UnitSettings()

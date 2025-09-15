@@ -66,24 +66,21 @@ struct FFMICalculatorView: View {
         guard let weightValue = Double(weight.replacingOccurrences(of: ",", with: ".")),
               let heightValue = Double(height.replacingOccurrences(of: ",", with: ".")),
               let bodyFatValue = Double(bodyFat.replacingOccurrences(of: ",", with: ".")) else { return }
-        
+
         // Normalize inputs to metric if needed
         let weightKg = unitSettings.unitSystem == .imperial ? UnitsConverter.lbsToKg(weightValue) : weightValue
         let heightCm = heightValue // keep cm input for now
 
-        // Calculate lean mass
-        let fatMass = weightKg * (bodyFatValue / 100)
-        let leanMassValue = weightKg - fatMass
-        
-        // Calculate FFMI
-        let heightInMeters = heightCm / 100
-        let ffmiValue = leanMassValue / (heightInMeters * heightInMeters)
-        
-        // Normalized FFMI (adjust for height)
-        let normalizedFFMI = ffmiValue + 6.1 * (1.8 - heightInMeters)
-        
-        leanMass = leanMassValue
-        calculatedFFMI = normalizedFFMI
+        // Use FitnessLevelCalculator service for FFMI calculation
+        if let ffmi = FitnessLevelCalculator.calculateNormalizedFFMI(
+            weightKg: weightKg,
+            heightCm: heightCm,
+            bodyFatPercent: bodyFatValue
+        ) {
+            calculatedFFMI = ffmi
+            // Calculate lean mass for display
+            leanMass = weightKg * (1.0 - bodyFatValue / 100.0)
+        }
     }
 }
 

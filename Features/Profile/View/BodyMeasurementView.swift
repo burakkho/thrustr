@@ -5,15 +5,9 @@ struct BodyMeasurementsView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
     @Environment(UnitSettings.self) var unitSettings
-    
+
     let user: User?
-    
-    @State private var selectedMeasurement: MeasurementType = .chest
-    @State private var measurementValue = ""
-    @State private var selectedDate = Date()
-    @State private var notes = ""
-    @State private var showingAddMeasurement = false
-    @State private var showingSuccessAlert = false
+    @State private var viewModel = BodyMeasurementsViewModel()
     
     // Fixed: Remove date predicates that aren't supported
     @Query(sort: \BodyMeasurement.date, order: .reverse)
@@ -24,13 +18,11 @@ struct BodyMeasurementsView: View {
     
     // Computed properties for filtering
     private var recentMeasurements: [BodyMeasurement] {
-        let sixMonthsAgo = Calendar.current.date(byAdding: .month, value: -6, to: Date()) ?? Date()
-        return allMeasurements.filter { $0.date >= sixMonthsAgo }
+        return viewModel.filterRecentMeasurements(allMeasurements)
     }
-    
+
     private var weightEntries: [WeightEntry] {
-        let sixMonthsAgo = Calendar.current.date(byAdding: .month, value: -6, to: Date()) ?? Date()
-        return allWeightEntries.filter { $0.date >= sixMonthsAgo }
+        return viewModel.filterRecentWeightEntries(allWeightEntries)
     }
     
     var body: some View {
@@ -41,18 +33,19 @@ struct BodyMeasurementsView: View {
                     MeasurementsHeaderSection()
                     
                     // Current Measurements Overview
-                    CurrentMeasurementsSection(measurements: recentMeasurements)
+                    CurrentMeasurementsSection(viewModel: viewModel, measurements: recentMeasurements)
                     
                     // Progress Charts Section (Simplified)
-                    if !recentMeasurements.isEmpty || !weightEntries.isEmpty {
+                    if viewModel.shouldShowProgress(measurements: recentMeasurements, weightEntries: weightEntries) {
                         ProgressOverviewSection(
+                            viewModel: viewModel,
                             measurements: recentMeasurements,
                             weightEntries: weightEntries
                         )
                     }
-                    
+
                     // Recent Measurements List
-                    if !recentMeasurements.isEmpty || !weightEntries.isEmpty {
+                    if viewModel.shouldShowProgress(measurements: recentMeasurements, weightEntries: weightEntries) {
                         RecentEntriesSection(
                             measurements: recentMeasurements,
                             weightEntries: weightEntries
@@ -75,7 +68,7 @@ struct BodyMeasurementsView: View {
                 
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button {
-                        showingAddMeasurement = true
+                        viewModel.showAddMeasurementForm()
                     } label: {
                         Image(systemName: "plus")
                             .fontWeight(.semibold)
@@ -84,58 +77,19 @@ struct BodyMeasurementsView: View {
             }
             .background(Color(.systemGroupedBackground))
         }
-        .sheet(isPresented: $showingAddMeasurement) {
+        .sheet(isPresented: $viewModel.showingAddMeasurement) {
             AddMeasurementView(
-                selectedMeasurement: $selectedMeasurement,
-                measurementValue: $measurementValue,
-                selectedDate: $selectedDate,
-                notes: $notes,
-                onSave: { saveMeasurement() }
+                selectedMeasurement: $viewModel.selectedMeasurement,
+                measurementValue: $viewModel.measurementValue,
+                selectedDate: $viewModel.selectedDate,
+                notes: $viewModel.notes,
+                onSave: { viewModel.saveMeasurement(user: user, modelContext: modelContext) }
             )
         }
-        .alert("body_measurements.measurement_saved".localized, isPresented: $showingSuccessAlert) {
+        .alert("body_measurements.measurement_saved".localized, isPresented: $viewModel.showingSuccessAlert) {
             Button("common.ok".localized) { }
         } message: {
             Text("body_measurements.saved_message".localized)
-        }
-    }
-    
-    private func saveMeasurement() {
-        guard let value = Double(measurementValue.replacingOccurrences(of: ",", with: ".")) else { return }
-        
-        let measurement = BodyMeasurement(
-            type: selectedMeasurement.rawValue,
-            value: value,
-            date: selectedDate,
-            notes: notes.isEmpty ? nil : notes
-        )
-        
-        modelContext.insert(measurement)
-        
-        do {
-            try modelContext.save()
-            
-            // Log activity for dashboard
-            ActivityLoggerService.shared.setModelContext(modelContext)
-            
-            // Regular measurement update
-            ActivityLoggerService.shared.logMeasurementUpdate(
-                measurementType: selectedMeasurement.displayName,
-                value: value,
-                previousValue: nil,
-                unit: "cm",
-                user: user
-            )
-            
-            showingSuccessAlert = true
-            
-            // Reset form
-            measurementValue = ""
-            notes = ""
-            selectedDate = Date()
-            showingAddMeasurement = false
-        } catch {
-            print("Error saving measurement: \(error)")
         }
     }
 }
@@ -168,10 +122,11 @@ struct MeasurementsHeaderSection: View {
 
 // MARK: - Current Measurements Section
 struct CurrentMeasurementsSection: View {
+    let viewModel: BodyMeasurementsViewModel
     let measurements: [BodyMeasurement]
-    
+
     private func latestMeasurement(for type: MeasurementType) -> BodyMeasurement? {
-        measurements.first { $0.typeEnum == type }
+        return viewModel.getLatestMeasurement(for: type, from: measurements)
     }
     
     var body: some View {
@@ -248,8 +203,13 @@ struct MeasurementCard: View {
 
 // MARK: - Progress Overview Section (Simplified)
 struct ProgressOverviewSection: View {
+    let viewModel: BodyMeasurementsViewModel
     let measurements: [BodyMeasurement]
     let weightEntries: [WeightEntry]
+
+    private var progressStats: ProgressStats {
+        return viewModel.calculateProgressStats(measurements: measurements, weightEntries: weightEntries)
+    }
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -260,28 +220,28 @@ struct ProgressOverviewSection: View {
             LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 2), spacing: 12) {
                 ProgressStatCard(
                     title: "body_measurements.total_measurements".localized,
-                    value: "\(measurements.count)",
+                    value: "\(progressStats.totalMeasurements)",
                     subtitle: "body_measurements.last_6_months".localized,
                     color: .blue
                 )
                 
                 ProgressStatCard(
                     title: "body_measurements.weight_entries".localized,
-                    value: "\(weightEntries.count)",
+                    value: "\(progressStats.totalWeightEntries)",
                     subtitle: "body_measurements.last_6_months".localized,
                     color: .green
                 )
                 
                 ProgressStatCard(
                     title: "body_measurements.last_measurement".localized,
-                    value: latestMeasurementDate,
+                    value: progressStats.latestMeasurementDate,
                     subtitle: "measurements.date".localized,
                     color: .orange
                 )
                 
                 ProgressStatCard(
                     title: "body_measurements.active_tracking".localized,
-                    value: "\(activeMeasurementTypes)",
+                    value: "\(progressStats.activeMeasurementTypes)",
                     subtitle: "body_measurements.measurement_types".localized,
                     color: .purple
                 )
@@ -291,20 +251,6 @@ struct ProgressOverviewSection: View {
         .background(Color(.systemBackground))
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .shadow(color: .black.opacity(0.05), radius: 5, x: 0, y: 2)
-    }
-    
-    private var latestMeasurementDate: String {
-        let latest = measurements.max(by: { $0.date < $1.date })
-        guard let date = latest?.date else { return "analytics.no_data".localized }
-        
-        let formatter = DateFormatter()
-        formatter.dateStyle = .short
-        return formatter.string(from: date)
-    }
-    
-    private var activeMeasurementTypes: Int {
-        let types = Set(measurements.map { $0.type })
-        return types.count
     }
 }
 

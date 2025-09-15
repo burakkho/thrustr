@@ -13,7 +13,7 @@ struct WODHistoryView: View {
     @Environment(TrainingCoordinator.self) private var coordinator
     @Query private var user: [User]
     
-    @Query(sort: [SortDescriptor(\WODResult.completedAt, order: .reverse)]) 
+    @Query(sort: [SortDescriptor(\WODResult.completedAt, order: .reverse)])
     private var wodResults: [WODResult]
     
     @State private var selectedWOD: WOD?

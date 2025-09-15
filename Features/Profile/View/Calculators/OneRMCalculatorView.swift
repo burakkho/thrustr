@@ -3,13 +3,10 @@ import Foundation
 
 struct OneRMCalculatorView: View {
     @Environment(UnitSettings.self) var unitSettings
-    @State private var weight = ""
-    @State private var reps = ""
-    @State private var selectedFormula: RMFormula = .brzycki
-    @State private var calculatedRM: Double?
-    
+    @State private var viewModel = OneRMCalculatorViewModel()
+
     let onCalculated: ((Double) -> Void)?
-    
+
     init(onCalculated: ((Double) -> Void)? = nil) {
         self.onCalculated = onCalculated
     }
@@ -19,38 +16,53 @@ struct OneRMCalculatorView: View {
             VStack(spacing: 24) {
                 // Header
                 OneRMHeaderSection()
-                
+
                 // Input Section
                 OneRMInputSection(
                     unitSystem: unitSettings.unitSystem,
-                    weight: $weight,
-                    reps: $reps,
-                    selectedFormula: $selectedFormula
+                    weight: $viewModel.weight,
+                    reps: $viewModel.reps,
+                    selectedFormula: $viewModel.selectedFormula
                 )
-                
+
                 // Calculate Button
                 Button {
-                    calculateOneRM()
+                    viewModel.calculateOneRM()
+
+                    // Handle callback for OneRMSetupView
+                    if let result = viewModel.getCurrentResultValue() {
+                        onCalculated?(result)
+                    }
                 } label: {
-                    Text(ProfileKeys.OneRMCalculator.calculate.localized)
-                        .font(.headline)
-                        .foregroundColor(.white)
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(isFormValid ? Color.blue : Color.gray)
-                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                    HStack {
+                        if viewModel.isCalculating {
+                            ProgressView()
+                                .scaleEffect(0.8)
+                        }
+                        Text(ProfileKeys.OneRMCalculator.calculate.localized)
+                            .font(.headline)
+                    }
+                    .foregroundColor(.white)
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(viewModel.isFormValid ? Color.blue : Color.gray)
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
                 }
-                .disabled(!isFormValid)
+                .disabled(!viewModel.isFormValid || viewModel.isCalculating)
                 .padding(.horizontal)
-                
+
                 // Results Section
-                if let oneRM = calculatedRM {
-                    OneRMResultsSection(oneRM: oneRM, selectedFormula: selectedFormula, unitSystem: unitSettings.unitSystem)
+                if let result = viewModel.calculatedRM {
+                    OneRMResultsSection(result: result, unitSystem: unitSettings.unitSystem)
                 }
-                
+
+                if let errorMessage = viewModel.errorMessage {
+                    ErrorMessageSection(message: errorMessage)
+                }
+
                 // Formula Info Section
                 FormulaInfoSection()
-                
+
                 // Tips Section
                 OneRMTipsSection()
             }
@@ -59,25 +71,13 @@ struct OneRMCalculatorView: View {
         .navigationTitle(ProfileKeys.OneRMCalculator.title.localized)
         .navigationBarTitleDisplayMode(.inline)
         .background(Color(.systemGroupedBackground))
-    }
-    
-    private var isFormValid: Bool {
-        guard let weightValue = Double(weight.replacingOccurrences(of: ",", with: ".")),
-              let repsValue = Int(reps) else { return false }
-        return weightValue > 0 && repsValue >= 1 && repsValue <= 15
-    }
-    
-    private func calculateOneRM() {
-        guard let weightValue = Double(weight.replacingOccurrences(of: ",", with: ".")),
-              let repsValue = Int(reps) else { return }
-        
-        // Convert weight to kg if needed for calculation
-        let weightKg = unitSettings.unitSystem == .imperial ? UnitsConverter.lbsToKg(weightValue) : weightValue
-        let result = selectedFormula.calculate(weight: weightKg, reps: repsValue)
-        calculatedRM = result
-        
-        // Call the callback if provided
-        onCalculated?(result)
+        .onAppear {
+            // Update ViewModel's unit settings reference with modern NVVM pattern
+            viewModel.updateUnitSettings(unitSettings)
+        }
+        .onChange(of: unitSettings.unitSystem) { _, _ in
+            viewModel.updateUnitSettings(unitSettings)
+        }
     }
 }
 
@@ -178,21 +178,11 @@ struct OneRMInputSection: View {
 
 // MARK: - Results Section
 struct OneRMResultsSection: View {
-    let oneRM: Double
-    let selectedFormula: RMFormula
+    let result: OneRMResult
     let unitSystem: UnitSystem
-    
+
     private var percentageTable: [(percentage: Int, weight: Double)] {
-        [
-            (95, oneRM * 0.95),
-            (90, oneRM * 0.90),
-            (85, oneRM * 0.85),
-            (80, oneRM * 0.80),
-            (75, oneRM * 0.75),
-            (70, oneRM * 0.70),
-            (65, oneRM * 0.65),
-            (60, oneRM * 0.60)
-        ]
+        result.trainingPercentages
     }
     
     var body: some View {
@@ -207,13 +197,13 @@ struct OneRMResultsSection: View {
                     Text(ProfileKeys.OneRMCalculator.oneRMValue.localized)
                         .font(.subheadline)
                         .foregroundColor(.secondary)
-                    
-                    Text(UnitsFormatter.formatWeight(kg: oneRM, system: unitSystem))
+
+                    Text(result.formattedValue)
                         .font(.largeTitle)
                         .fontWeight(.bold)
                         .foregroundColor(.blue)
-                    
-                    Text("\(selectedFormula.displayName) formülü")
+
+                    Text("\(result.formula.displayName) formülü")
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
@@ -388,6 +378,36 @@ struct TipRow: View {
             
             Spacer()
         }
+    }
+}
+
+// MARK: - Error Message Section
+struct ErrorMessageSection: View {
+    let message: String
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Image(systemName: "exclamationmark.triangle.fill")
+                    .foregroundColor(.red)
+                Text("Error")
+                    .font(.headline)
+                    .fontWeight(.semibold)
+                    .foregroundColor(.red)
+                Spacer()
+            }
+
+            Text(message)
+                .font(.body)
+                .foregroundColor(.primary)
+        }
+        .padding()
+        .background(Color.red.opacity(0.1))
+        .cornerRadius(12)
+        .overlay(
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(Color.red.opacity(0.3), lineWidth: 1)
+        )
     }
 }
 

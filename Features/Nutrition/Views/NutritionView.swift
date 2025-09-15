@@ -1,16 +1,10 @@
 import SwiftUI
 import SwiftData
 
-// File-scope constants for #Predicate usage
-fileprivate let NV_TODAY_START: Date = Calendar.current.startOfDay(for: Date())
-fileprivate let NV_TODAY_END: Date = Calendar.current.date(byAdding: .day, value: 1, to: NV_TODAY_START) ?? NV_TODAY_START
-fileprivate let NV_7D_START: Date = {
-    let date = Calendar.current.date(byAdding: .day, value: -6, to: Date()) ?? Date()
-    return Calendar.current.startOfDay(for: date)
-}()
 
 struct NutritionView: View {
     @Environment(\.modelContext) private var modelContext
+    @StateObject private var viewModel = NutritionViewModel()
     
     // PERFORMANCE: Single consolidated query for foods
     @Query(
@@ -20,34 +14,20 @@ struct NutritionView: View {
         ]
     ) private var foods: [Food]
     
-    // PERFORMANCE: Single query for all nutrition entries (last 7 days)
+    // PERFORMANCE: Query for all nutrition entries (filtering done in computed properties)
     @Query(
-        filter: #Predicate<NutritionEntry> { entry in
-            entry.date >= NV_7D_START
-        },
         sort: \NutritionEntry.date,
         order: .reverse
     ) private var allEntries: [NutritionEntry]
     
-    // PERFORMANCE: Computed properties for filtered data
+    // PERFORMANCE: Computed properties using ViewModel for filtering
     private var todayEntries: [NutritionEntry] {
-        allEntries.filter { entry in
-            entry.date >= NV_TODAY_START && entry.date < NV_TODAY_END
-        }
+        return viewModel.getTodayEntries(from: allEntries)
     }
-    
+
     private var weekEntries: [NutritionEntry] {
-        allEntries // Already filtered by query
+        return viewModel.getWeekEntries(from: allEntries)
     }
-    // State properties
-    @State private var selectedFood: Food?
-    @State private var showingMealEntry = false
-    @State private var showingFoodSelection = false
-    @State private var showingCustomFoodEntry = false
-    @State private var forceStartWithScanner = false
-    @State private var saveErrorMessage: String? = nil
-    @State private var showRealEmptyState = false
-    @State private var errorHandler = ErrorHandlingService.shared
 
     init() {}
     
@@ -72,28 +52,23 @@ struct NutritionView: View {
                             .padding(.vertical, 60)
                             .onAppear {
                                 // After 3 seconds, if foods still empty, show the real empty state
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
-                                    if foods.isEmpty {
-                                        showRealEmptyState = true
-                                    }
-                                }
+                                viewModel.triggerEmptyStateCheck()
                             }
                         }
                         
                         
                         // Boş durumlar - gerçek empty state (only check foods, not entries)
-                        if foods.isEmpty && showRealEmptyState {
+                        if foods.isEmpty && viewModel.showRealEmptyState {
                             EmptyStateView(
                                 systemImage: "fork.knife.circle.fill",
                                 title: NutritionKeys.Empty.firstTitle.localized,
                                 message: NutritionKeys.Empty.firstMessage.localized,
                                 primaryTitle: NutritionKeys.Empty.addMeal.localized,
                                 primaryAction: {
-                                    forceStartWithScanner = false
-                                    showingFoodSelection = true
+                                    viewModel.showFoodSelection()
                                 },
                                 secondaryTitle: NutritionKeys.Empty.addCustomFood.localized,
-                                secondaryAction: { showingCustomFoodEntry = true }
+                                secondaryAction: { viewModel.showCustomFoodEntry() }
                             )
                             .padding(.top, 40)
                         }
@@ -109,11 +84,7 @@ struct NutritionView: View {
                         // Favorites & Recent Foods (sadece food varsa gÃ¶ster)
                         if !foods.isEmpty {
                             FavoritesSection(foods: foods) { food in
-                                selectedFood = food
-                                // Small delay to ensure state is properly set
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                                    showingMealEntry = true
-                                }
+                                viewModel.showMealEntryForm(with: food)
                             }
                         }
                         
@@ -134,8 +105,7 @@ struct NutritionView: View {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     HStack(spacing: 12) {
                         Button(action: {
-                            forceStartWithScanner = true
-                            showingFoodSelection = true
+                            viewModel.startWithScanner()
                         }) {
                             Image(systemName: "barcode.viewfinder")
                                 .font(.headline)
@@ -143,8 +113,7 @@ struct NutritionView: View {
                         }
 
                         Button(action: {
-                            forceStartWithScanner = false
-                            showingFoodSelection = true
+                            viewModel.showFoodSelection()
                         }) {
                             Image(systemName: "plus")
                                 .font(.headline)
@@ -154,27 +123,17 @@ struct NutritionView: View {
                 }
             }
         }
-        .sheet(isPresented: $showingFoodSelection) {
+        .sheet(isPresented: $viewModel.showingFoodSelection) {
             FoodSelectionView(foods: foods, onFoodSelected: { food in
-                selectedFood = food
-                // Don't immediately dismiss - let delay handle it
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                    showingFoodSelection = false  // Dismiss first sheet
-                    if selectedFood != nil {
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                            showingMealEntry = true  // Then open second sheet
-                        }
-                    }
-                }
-            }, startWithScanner: forceStartWithScanner)
+                viewModel.showMealEntryForm(with: food)
+            }, startWithScanner: viewModel.forceStartWithScanner)
             .presentationDetents([.medium, .large])
             .presentationDragIndicator(.visible)
         }
-        .sheet(isPresented: $showingMealEntry) {
-            if let food = selectedFood {
+        .sheet(isPresented: $viewModel.showingMealEntry) {
+            if let food = viewModel.selectedFood {
                 MealEntryView(food: food) {
-                    selectedFood = nil
-                    showingMealEntry = false
+                    viewModel.dismissAllModals()
                 }
                 .presentationDetents([.medium, .large])
                 .presentationDragIndicator(.visible)
@@ -190,13 +149,13 @@ struct NutritionView: View {
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                     Button(NutritionKeys.Actions.close.localized) {
-                        showingMealEntry = false
+                        viewModel.dismissAllModals()
                     }
                     .buttonStyle(.borderedProminent)
                     Button(NutritionKeys.Actions.tryAgain.localized) {
-                        showingMealEntry = false
+                        viewModel.dismissAllModals()
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                            showingFoodSelection = true
+                            viewModel.showFoodSelection()
                         }
                     }
                     .buttonStyle(.bordered)
@@ -205,23 +164,21 @@ struct NutritionView: View {
                 .padding()
             }
         }
-        .sheet(isPresented: $showingCustomFoodEntry) {
+        .sheet(isPresented: $viewModel.showingCustomFoodEntry) {
             CustomFoodEntryView { newFood in
-                selectedFood = newFood
-                showingCustomFoodEntry = false
-                showingMealEntry = true
+                viewModel.showMealEntryForm(with: newFood)
             }
             .presentationDetents([.medium, .large])
             .presentationDragIndicator(.visible)
         }
-        .toast($errorHandler.toastMessage, type: errorHandler.toastType)
+        .toast($viewModel.errorHandler.toastMessage, type: viewModel.errorHandler.toastType)
         .alert(isPresented: Binding<Bool>(
-            get: { saveErrorMessage != nil },
-            set: { if !$0 { saveErrorMessage = nil } }
+            get: { viewModel.saveErrorMessage != nil },
+            set: { if !$0 { viewModel.clearErrors() } }
         )) {
             Alert(
                 title: Text(CommonKeys.Onboarding.Common.error.localized),
-                message: Text(saveErrorMessage ?? ""),
+                message: Text(viewModel.saveErrorMessage ?? ""),
                 dismissButton: .default(Text(CommonKeys.Onboarding.Common.ok.localized))
             )
         }

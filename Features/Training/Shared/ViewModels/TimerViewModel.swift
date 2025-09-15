@@ -39,16 +39,14 @@ class TimerViewModel {
         countdownStartTime = Date()
         
         timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
-            Task { @MainActor in
-                self?.updateCountdown()
-            }
+            self?.updateCountdown()
         }
     }
     
     func startTimer() {
         guard timerState == .stopped else { return }
         
-        Task { @MainActor in
+        DispatchQueue.main.async {
             HapticManager.shared.impact(.medium)
         }
         
@@ -58,16 +56,14 @@ class TimerViewModel {
         startTime = Date()
         
         timer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { [weak self] _ in
-            Task { @MainActor in
-                self?.updateMainTimer()
-            }
+            self?.updateMainTimer()
         }
     }
     
     func pauseTimer() {
         guard timerState == .running else { return }
         
-        Task { @MainActor in
+        DispatchQueue.main.async {
             HapticManager.shared.impact(.light)
         }
         
@@ -86,14 +82,12 @@ class TimerViewModel {
         isPaused = false
         
         timer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { [weak self] _ in
-            Task { @MainActor in
-                self?.updateMainTimer()
-            }
+            self?.updateMainTimer()
         }
     }
     
     func stopTimer() {
-        Task { @MainActor in
+        DispatchQueue.main.async {
             HapticManager.shared.notification(.success)
         }
         

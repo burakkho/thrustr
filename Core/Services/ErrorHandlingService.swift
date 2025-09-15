@@ -81,7 +81,6 @@ struct ErrorContext: Sendable {
 }
 
 // MARK: - Error Handling Service
-@MainActor
 @Observable
 class ErrorHandlingService {
     static let shared = ErrorHandlingService()
@@ -159,12 +158,16 @@ class ErrorHandlingService {
     
     func showSuccessToast(_ message: String) {
         showToast(message, type: .success)
-        HapticManager.shared.notification(.success)
+        DispatchQueue.main.async {
+            HapticManager.shared.notification(.success)
+        }
     }
     
     func showErrorToast(_ message: String) {
         showToast(message, type: .error)
-        HapticManager.shared.notification(.error)
+        DispatchQueue.main.async {
+            HapticManager.shared.notification(.error)
+        }
     }
     
     // MARK: - UI Error Display

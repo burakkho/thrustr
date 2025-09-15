@@ -3,13 +3,14 @@ import SwiftUI
 struct WelcomeSection: View {
     @Environment(\.theme) private var theme
     let user: User
+    let greeting: String
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
                 VStack(alignment: .leading) {
-                    // Time-based greeting with user name
-                    Text(timeBasedGreeting)
+                    // Time-based greeting with user name (from ViewModel)
+                    Text(greeting)
                         .font(.title2.bold())
                         .foregroundColor(theme.colors.textPrimary)
                     
@@ -49,31 +50,8 @@ struct WelcomeSection: View {
         .padding()
         .cardStyle()
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("\(timeBasedGreeting) \(user.streakDisplayText.isEmpty ? "" : "\(DashboardKeys.General.streakLabel.localized): \(user.streakDisplayText)")")
+        .accessibilityLabel("\(greeting) \(user.streakDisplayText.isEmpty ? "" : "\(DashboardKeys.General.streakLabel.localized): \(user.streakDisplayText)")")
         .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
-    }
-    
-    // MARK: - Private Properties
-    private var displayName: String {
-        user.name.isEmpty ? "User" : user.name
-    }
-    
-    private var timeBasedGreeting: String {
-        let hour = Calendar.current.component(.hour, from: Date())
-        let greeting: String
-        
-        switch hour {
-        case 6..<12:
-            greeting = DashboardKeys.Greeting.goodMorning.localized
-        case 12..<18:
-            greeting = DashboardKeys.Greeting.goodAfternoon.localized
-        case 18..<22:
-            greeting = DashboardKeys.Greeting.goodEvening.localized
-        default:
-            greeting = DashboardKeys.Greeting.goodNight.localized
-        }
-        
-        return "\(greeting), \(displayName)!"
     }
 }
 
@@ -81,7 +59,7 @@ struct WelcomeSection: View {
 #Preview {
     let user = User()
     user.name = "Burak"
-    
-    return WelcomeSection(user: user)
+
+    return WelcomeSection(user: user, greeting: "Good Morning, Burak!")
         .padding()
 }

@@ -14,11 +14,13 @@ Thrustr is a comprehensive iOS fitness tracking application built with SwiftUI a
 ### 🌟 Key Features
 
 - **Multi-Modal Training**: Strength training, cardio workouts, and CrossFit-style WODs
-- **Nutrition Tracking**: Barcode scanning, meal logging, and macro tracking
+- **Advanced Analytics**: Comprehensive performance tracking, trend analysis, and AI-powered insights
+- **Nutrition Tracking**: Barcode scanning, meal logging, and macro tracking with OpenFoodFacts integration
 - **HealthKit Integration**: Seamless sync with Apple Health for steps, calories, and weight
-- **Multi-Language Support**: 9 languages currently supported with 3 more planned (Turkish, English, German, Spanish, Italian, French, Portuguese, Indonesian, Polish + Dutch, Swedish, Norwegian)
-- **Smart Analytics**: Progress tracking, PR monitoring, and performance insights
-- **Comprehensive Tools**: Body fat calculators, 1RM calculators, and fitness assessments
+- **Multi-Language Support**: Complete localization in 9 languages (Turkish, English, German, Spanish, Italian, French, Portuguese, Indonesian, Polish) with 3 more planned
+- **Smart Analytics**: Progress tracking, PR monitoring, performance insights, and health intelligence
+- **Comprehensive Tools**: Body fat calculators, 1RM calculators, fitness assessments, and legal compliance
+- **Privacy-First Design**: Local data storage with optional cloud sync and comprehensive legal documentation
 
 ## 🏗️ Architecture
 
@@ -38,10 +40,14 @@ thrustr/
 │   ├── Models/            # SwiftData models
 │   │   ├── Cardio/        # Cardio tracking models
 │   │   ├── Lift/          # Strength training models
-│   │   └── WOD/           # Workout of the Day models
-│   └── Services/          # Business logic services
+│   │   ├── WOD/           # Workout of the Day models
+│   │   ├── Extensions/    # Model extensions and utilities
+│   │   └── Tests/         # Model test files
+│   ├── Services/          # Business logic services
+│   └── Validation/        # Data validation utilities
 ├── Features/              # Feature modules
-│   ├── Dashboard/         # Main dashboard
+│   ├── Analytics/         # Performance tracking and insights
+│   ├── Dashboard/         # Main dashboard with health stats
 │   ├── Nutrition/         # Food tracking and meal logging
 │   ├── Profile/           # User profile and settings
 │   └── Training/          # Multi-modal workout tracking
@@ -49,8 +55,13 @@ thrustr/
 │   ├── Components/        # Reusable UI components
 │   ├── DesignSystem/      # Theme and design tokens
 │   ├── Calculators/       # Fitness calculation utilities
+│   ├── Enums/             # Shared enumeration types
+│   ├── Localization/      # Multi-language support system
 │   └── Utilities/         # Helper classes and extensions
 └── Resources/             # CSV data, localizations, assets
+    ├── Legal/             # Privacy policy and legal documents
+    ├── Training/          # Exercise and program data
+    └── *.lproj/           # 9 language localization files
 ```
 
 ## 🚀 Getting Started

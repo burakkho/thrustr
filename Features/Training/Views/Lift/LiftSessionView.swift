@@ -386,9 +386,6 @@ struct LiftSessionView: View {
     }
     
     private func handleSetCompletion(for exerciseResult: LiftExerciseResult) {
-        // Check if exercise just became completed
-        let isCompleted = exerciseResult.sets.allSatisfy { $0.isCompleted }
-        
         // Auto-expand logic now handled by ViewModel
         // The ViewModel automatically manages expansion state
     }

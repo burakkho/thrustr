@@ -16,6 +16,13 @@ class DashboardViewModel {
     var isHealthDataLoaded = false
     var isWorkoutDataLoaded = false
     var isNutritionDataLoaded = false
+
+    // Activity management properties - Pure View support
+    var isActivitiesLoading = false
+    var groupedActivities: [(String, [ActivityEntry])] = []
+
+    // Greeting management - Business logic centralized
+    var currentGreeting: String = ""
     
     // MARK: - Services
     private let healthKitService: HealthKitService
@@ -79,10 +86,13 @@ class DashboardViewModel {
         await loadCardioData(modelContext: modelContext)
         isWorkoutDataLoaded = true
         
-        // Load nutrition data  
+        // Load nutrition data
         await loadNutritionData(modelContext: modelContext)
         isNutritionDataLoaded = true
-        
+
+        // Load recent activities
+        await loadRecentActivities(with: modelContext)
+
         // Setup activity logger
         await setupActivityLogger(modelContext: modelContext)
         
@@ -126,6 +136,36 @@ class DashboardViewModel {
         // Recalculate with new unit settings
         preCalculateTemporalMetrics()
     }
+
+    // MARK: - Greeting Management
+
+    private func updateGreeting(for user: User) {
+        currentGreeting = GreetingService.generateGreeting(for: user)
+    }
+
+    func refreshGreeting() {
+        guard let user = currentUser else { return }
+        updateGreeting(for: user)
+    }
+
+    // MARK: - Activity Management
+
+    func loadRecentActivities(with modelContext: ModelContext) async {
+        isActivitiesLoading = true
+        activityLogger.setModelContext(modelContext)
+
+        let activities = activityLogger.fetchRecentActivities(
+            limit: 20,
+            for: currentUser
+        )
+
+        groupedActivities = ActivityFormatter.groupActivitiesByDate(activities)
+        isActivitiesLoading = false
+    }
+
+    func refreshActivities(with modelContext: ModelContext) async {
+        await loadRecentActivities(with: modelContext)
+    }
     
     
     // MARK: - Private Methods
@@ -136,12 +176,14 @@ class DashboardViewModel {
             let users = try modelContext.fetch(descriptor)
             if let user = users.first {
                 currentUser = user
+                updateGreeting(for: user)
             } else {
                 // Create default user
                 let newUser = User()
                 modelContext.insert(newUser)
                 try modelContext.save()
                 currentUser = newUser
+                updateGreeting(for: newUser)
             }
         } catch {
             print("Error loading user data: \(error)")

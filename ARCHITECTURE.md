@@ -25,19 +25,34 @@ thrustr/
 │   │   ├── User.swift         # Central user profile model
 │   │   ├── Exercise.swift     # Exercise database model
 │   │   ├── Food.swift         # Nutrition database model
+│   │   ├── HealthIntelligence.swift # AI-powered health analytics
+│   │   ├── HealthTrends.swift       # Trend analysis and predictions
 │   │   ├── Cardio/           # Cardio workout models
 │   │   │   └── EquipmentItem.swift # Equipment tracking
 │   │   ├── Lift/             # Strength training models
 │   │   ├── WOD/              # CrossFit workout models
+│   │   ├── Extensions/       # Model extensions and utilities
+│   │   │   ├── User+Analytics.swift # User analytics extensions
+│   │   │   ├── Workout+Stats.swift  # Workout statistics extensions
+│   │   │   └── Model+Validation.swift # Validation extensions
+│   │   ├── Tests/            # Model test files and data fixtures
+│   │   │   ├── MockData.swift       # Test data generation
+│   │   │   ├── ModelTests.swift     # Unit tests for models
+│   │   │   └── TestFixtures.swift   # Test data fixtures
 │   │   └── WorkoutSession.swift  # Unified workout sessions
 │   ├── Services/             # Business logic services
 │   │   ├── HealthKitService.swift    # Apple HealthKit integration
 │   │   ├── DataSeeder.swift          # Database initialization
 │   │   ├── ThemeManager.swift        # App theming system
 │   │   ├── LanguageManager.swift     # Localization management
+│   │   ├── ErrorHandlingService.swift # Unified error handling
 │   │   └── UserService.swift         # User data operations
 │   └── Validation/           # Data validation utilities
 ├── Features/                  # Feature modules
+│   ├── Analytics/            # Performance tracking and insights
+│   │   ├── Views/           # Analytics dashboard and charts
+│   │   ├── ViewModels/      # Analytics data processing
+│   │   └── Services/        # Health intelligence algorithms
 │   ├── Dashboard/            # Main dashboard with health stats
 │   ├── Nutrition/            # Food tracking and meal logging
 │   ├── Profile/              # User profile and settings
@@ -50,11 +65,26 @@ thrustr/
 │   ├── Components/           # Reusable UI components
 │   ├── DesignSystem/         # Theming and design tokens
 │   ├── Calculators/          # Fitness calculation utilities
+│   ├── Enums/               # Shared enumeration definitions
+│   ├── Localization/        # Multi-language support system
+│   │   ├── LanguageManager.swift  # Runtime language switching
+│   │   ├── LocalizationKeys.swift # Type-safe localization keys
+│   │   └── Extensions/      # String localization extensions
 │   └── Utilities/            # Helper functions and extensions
 └── Resources/                # Static resources and data files
-    ├── CSV files             # Exercise and food databases
-    ├── JSON templates        # Workout program templates
-    └── Localizations         # Multi-language support
+    ├── Legal/               # Privacy policy and legal documents
+    ├── Training/            # Exercise and program data
+    ├── *.lproj/             # 9 language localization files
+    │   ├── tr.lproj/        # Turkish localization
+    │   ├── en.lproj/        # English localization
+    │   ├── de.lproj/        # German localization
+    │   ├── es.lproj/        # Spanish localization
+    │   ├── it.lproj/        # Italian localization
+    │   ├── fr.lproj/        # French localization
+    │   ├── pt.lproj/        # Portuguese localization
+    │   ├── id.lproj/        # Indonesian localization
+    │   └── pl.lproj/        # Polish localization
+    └── CSV files             # Exercise and food databases
 ```
 
 ## 🔄 Data Flow Architecture
@@ -290,5 +320,109 @@ Multi-language Support
 - **SwiftUI Previews**: Rapid UI development and testing
 - **Automatic Seeding**: Database populated on first launch
 - **Resource Management**: Efficient CSV/JSON processing
+
+## 📊 Analytics Module Architecture
+
+### Health Intelligence Engine
+The **Analytics** module provides advanced health and fitness insights through AI-powered analysis:
+
+```
+Features/Analytics/
+├── Views/
+│   ├── AnalyticsView.swift          # Main analytics dashboard
+│   ├── TrendChartView.swift         # Interactive trend visualizations
+│   ├── PerformanceInsightsView.swift # AI-generated insights
+│   └── HealthIntelligenceView.swift  # Health intelligence dashboard
+├── ViewModels/
+│   ├── AnalyticsViewModel.swift     # Analytics data coordination
+│   ├── TrendAnalysisViewModel.swift # Trend calculation and display
+│   └── HealthInsightsViewModel.swift # AI insights processing
+└── Services/
+    ├── TrendAnalysisService.swift  # Statistical trend analysis
+    ├── HealthIntelligenceService.swift # AI-powered health insights
+    └── PerformanceMetricsService.swift # Performance calculations
+```
+
+### Key Analytics Features
+- **Trend Analysis**: Statistical analysis of workout performance over time
+- **Health Intelligence**: AI-powered insights from HealthIntelligence.swift model
+- **Performance Metrics**: Advanced calculations for strength, cardio, and body composition
+- **Predictive Analytics**: Future performance predictions based on current trends
+
+## 🌍 Localization Architecture
+
+### Multi-Language Support System
+Complete localization infrastructure supporting **9 languages** with runtime switching:
+
+```
+Shared/Localization/
+├── LanguageManager.swift           # Runtime language switching
+├── LocalizationKeys.swift          # Type-safe localization keys
+├── Extensions/
+│   ├── String+Localization.swift   # String localization extensions
+│   └── View+Localization.swift     # SwiftUI localization helpers
+└── Utilities/
+    └── LocalizationValidator.swift # Localization completeness validation
+```
+
+### Supported Languages
+- **Turkish (tr)** - Primary market and native language
+- **English (en)** - International market
+- **German (de)** - European market expansion
+- **Spanish (es)** - Hispanic market
+- **Italian (it)** - European market
+- **French (fr)** - European market
+- **Portuguese (pt)** - Brazilian market
+- **Indonesian (id)** - Southeast Asian market
+- **Polish (pl)** - Eastern European market
+
+### Localization Features
+- **Runtime Switching**: Users can change language without app restart
+- **Type-Safe Keys**: LocalizationKeys enum prevents missing translations
+- **Validation System**: Automated checks for translation completeness
+- **Context-Aware**: Different translations for different contexts (UI vs. voice)
+
+## 🧪 Testing Infrastructure
+
+### Model Testing Framework
+Comprehensive testing infrastructure with mock data and test fixtures:
+
+```
+Core/Models/Tests/
+├── MockData.swift              # Test data generation for all models
+├── ModelTests.swift            # Unit tests for SwiftData models
+├── TestFixtures.swift          # Standardized test data fixtures
+├── UserModelTests.swift        # User model specific tests
+├── WorkoutModelTests.swift     # Workout model specific tests
+└── ValidationTests.swift       # Data validation tests
+```
+
+### Test Coverage Areas
+- **Model Validation**: SwiftData model integrity and relationships
+- **Analytics Calculations**: Health intelligence and trend analysis accuracy
+- **Localization**: Translation completeness across all 9 languages
+- **Data Seeding**: CSV import and database initialization
+- **HealthKit Integration**: Authorization and data sync reliability
+
+## 🏛️ Legal & Compliance Architecture
+
+### Privacy-First Design
+Comprehensive legal compliance infrastructure:
+
+```
+Resources/Legal/
+├── PrivacyPolicy.md            # Comprehensive privacy policy
+├── TermsOfService.md          # Terms of service agreement
+├── DataUsagePolicy.md         # Health data usage policies
+├── CookiePolicy.md            # Cookie and tracking policy
+└── ComplianceChecklist.md     # GDPR/CCPA compliance verification
+```
+
+### Compliance Features
+- **Local-First Storage**: All data stored locally with optional cloud sync
+- **Granular Permissions**: Fine-grained control over data sharing
+- **Data Portability**: Export functionality for user data ownership
+- **Right to Deletion**: Complete data removal capabilities
+- **Transparent Policies**: Clear, readable legal documentation
 
 This architecture provides a solid foundation for a comprehensive fitness tracking application while maintaining flexibility for future enhancements and scalability.

@@ -119,6 +119,8 @@ enum ProfileKeys {
     enum NavyMethodCalculator {
         static let title = "profile.navy.title"
         static let calculate = "profile.navy.calculate"
+        static let male = "profile.navy.male"
+        static let female = "profile.navy.female"
     }
     
     // MARK: - FFMI Calculator

@@ -24,7 +24,7 @@ struct DashboardView: View {
                     if let viewModel = viewModel {
                         // Welcome Section - Show when user data is loaded
                         if viewModel.isUserDataLoaded, let user = viewModel.currentUser {
-                            WelcomeSection(user: user)
+                            WelcomeSection(user: user, greeting: viewModel.currentGreeting)
                         } else {
                             SkeletonWelcomeSection()
                         }

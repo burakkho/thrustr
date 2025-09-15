@@ -8,7 +8,8 @@ struct ProfileView: View {
     @Environment(UnitSettings.self) private var unitSettings
     @Environment(CloudSyncManager.self) private var cloudSyncManager
     @State private var errorHandler = ErrorHandlingService.shared
-    
+    @State private var viewModel: ProfileViewModel?
+
     @State private var showingPersonalInfoSheet = false
     @State private var showingPreferencesSheet = false
     @State private var showingAccountSheet = false
@@ -25,7 +26,9 @@ struct ProfileView: View {
             ScrollView {
                 VStack(spacing: 32) {
                     // 🎯 HERO SECTION - Primary Focus (Profile + Strength Level + CTA)
-                    ProfileHeaderCard(user: currentUser)
+                    if let viewModel = viewModel {
+                        ProfileHeaderCard(user: currentUser, viewModel: viewModel)
+                    }
                     
                     // ⚡ QUICK ACTIONS - Essential Daily Actions  
                     if let user = currentUser {
@@ -38,7 +41,9 @@ struct ProfileView: View {
                     }
                     
                     // 🏆 ACHIEVEMENT SHOWCASE - Recent Accomplishments
-                    AchievementShowcaseSection(user: currentUser)
+                    if let viewModel = viewModel {
+                        AchievementShowcaseSection(viewModel: viewModel)
+                    }
                     
                     // 📊 PROGRESSIVE SECTIONS - Expandable Advanced Features
                     VStack(spacing: 20) {
@@ -75,6 +80,17 @@ struct ProfileView: View {
             }
             .background(theme.colors.backgroundPrimary)
         }
+        .onAppear {
+            // Initialize ViewModel with modern dependency injection pattern
+            if viewModel == nil {
+                viewModel = ProfileViewModel()
+            }
+
+            // Load profile data
+            if let viewModel = viewModel {
+                loadProfileData(viewModel: viewModel)
+            }
+        }
         .sheet(isPresented: $showingPersonalInfoSheet) {
             if let user = currentUser {
                 PersonalInfoEditView(user: user)
@@ -103,31 +119,31 @@ struct ProfileView: View {
         }
         .toast($errorHandler.toastMessage, type: errorHandler.toastType)
     }
+
+    // MARK: - Private Methods
+
+    private func loadProfileData(viewModel: ProfileViewModel) {
+        // Load required data for ViewModel using SwiftData queries
+        let healthKitService = HealthKitService.shared
+
+        // Pass SwiftData query results to ViewModel
+        viewModel.loadProfileData(
+            user: currentUser,
+            healthKitService: healthKitService,
+            liftSessions: [],
+            nutritionEntries: [],
+            weightEntries: []
+        )
+    }
 }
 
 // MARK: - Achievement Showcase Section
 struct AchievementShowcaseSection: View {
-    let user: User?
-    
-    @Query(sort: \StrengthTest.testDate, order: .reverse) private var strengthTests: [StrengthTest]
-    @Query private var liftSessions: [LiftSession]
-    @Query private var nutritionEntries: [NutritionEntry]
-    @Query private var weightEntries: [WeightEntry]
-    @State private var healthKitService = HealthKitService.shared
+    let viewModel: ProfileViewModel
     @Environment(\.theme) private var theme
     
-    private var recentAchievements: [Achievement] {
-        AchievementComputer.computeRecentAchievements(
-            user: user,
-            healthKitService: healthKitService,
-            liftSessions: liftSessions,
-            nutritionEntries: nutritionEntries,
-            weightEntries: weightEntries
-        )
-    }
-    
     var body: some View {
-        if !recentAchievements.isEmpty {
+        if viewModel.hasAchievements {
             VStack(spacing: 16) {
                 // Section Header
                 HStack {
@@ -148,7 +164,7 @@ struct AchievementShowcaseSection: View {
                 
                 // Achievement Display - Showcase Style with titles
                 HStack(spacing: 20) {
-                    ForEach(Array(recentAchievements.prefix(3).enumerated()), id: \.element.id) { index, achievement in
+                    ForEach(Array(viewModel.showcaseAchievements.enumerated()), id: \.element.id) { index, achievement in
                         VStack(spacing: 8) {
                             NavigationLink(destination: AchievementsView()) {
                                 AchievementBadge(achievement: achievement, size: .showcase)
@@ -181,13 +197,13 @@ struct AchievementShowcaseSection: View {
                     Spacer()
                     
                     // Next achievement preview
-                    if recentAchievements.count > 3 {
+                    if viewModel.additionalAchievementsCount > 0 {
                         VStack(spacing: 4) {
-                            Text("+\\(recentAchievements.count - 3)")
+                            Text("+\\(viewModel.additionalAchievementsCount)")
                                 .font(.caption)
                                 .fontWeight(.bold)
                                 .foregroundColor(theme.colors.accent)
-                            
+
                             Text("profile.more_achievements".localized)
                                 .font(.caption2)
                                 .foregroundColor(theme.colors.textSecondary)
@@ -209,12 +225,7 @@ struct AchievementShowcaseSection: View {
 // MARK: - Profile Header Card (Modern with Achievements)
 struct ProfileHeaderCard: View {
     let user: User?
-    
-    @Query(sort: \StrengthTest.testDate, order: .reverse) private var strengthTests: [StrengthTest]
-    @Query private var liftSessions: [LiftSession]
-    @Query private var nutritionEntries: [NutritionEntry]
-    @Query private var weightEntries: [WeightEntry]
-    @State private var healthKitService = HealthKitService.shared
+    let viewModel: ProfileViewModel
     
     @Environment(\.theme) private var theme
     @Environment(\.modelContext) private var modelContext
@@ -223,17 +234,6 @@ struct ProfileHeaderCard: View {
     
     @State private var showingStrengthTest = false
     @State private var showingNavyCalculator = false
-    
-    // Computed achievements
-    private var recentAchievements: [Achievement] {
-        AchievementComputer.computeRecentAchievements(
-            user: user,
-            healthKitService: healthKitService,
-            liftSessions: liftSessions,
-            nutritionEntries: nutritionEntries,
-            weightEntries: weightEntries
-        )
-    }
     
     var body: some View {
         VStack(spacing: 24) {
@@ -262,11 +262,8 @@ struct ProfileHeaderCard: View {
         .clipShape(RoundedRectangle(cornerRadius: theme.radius.xl))
         .shadow(color: theme.shadows.card, radius: 6, x: 0, y: 3)
         .onAppear {
-            if healthKitService.isAuthorized {
-                Task {
-                    await healthKitService.readTodaysData()
-                }
-            }
+            // HealthKit data refresh handled by ViewModel
+            viewModel.refreshHealthData(healthKitService: HealthKitService.shared)
         }
         .fullScreenCover(isPresented: $showingStrengthTest) {
             if let user = user {
@@ -286,22 +283,20 @@ struct ProfileHeaderCard: View {
     
     private func strengthLevelDisplay(user: User) -> some View {
         VStack(spacing: 12) {
-            let (levelString, _) = getOverallStrengthLevel(user: user)
-            
-            if levelString != "--" {
+            if viewModel.strengthLevelString != "--" {
                 // Strength Level Badge
-                Text(levelString)
+                Text(viewModel.strengthLevelString)
                     .font(.title3)
                     .fontWeight(.semibold)
-                    .foregroundColor(strengthLevelColor(user: user))
+                    .foregroundColor(viewModel.strengthLevelColor)
                 .padding(.horizontal, 16)
                 .padding(.vertical, 8)
                 .background(
                     Capsule()
-                        .fill(strengthLevelColor(user: user).opacity(0.1))
+                        .fill(viewModel.strengthLevelColor.opacity(0.1))
                         .overlay(
                             Capsule()
-                                .stroke(strengthLevelColor(user: user).opacity(0.3), lineWidth: 1)
+                                .stroke(viewModel.strengthLevelColor.opacity(0.3), lineWidth: 1)
                         )
                 )
                 
@@ -364,65 +359,6 @@ struct ProfileHeaderCard: View {
     @State private var isPressed = false
     
     
-    
-    // MARK: - Helper Methods
-    
-    
-    
-    private func strengthLevelColor(user: User) -> Color {
-        let (_, strengthLevel) = getOverallStrengthLevel(user: user)
-        
-        guard let level = strengthLevel else { return .gray }
-        
-        switch level {
-        case .beginner: return .red
-        case .novice: return .orange
-        case .intermediate: return .yellow
-        case .advanced: return .green
-        case .expert: return .blue
-        case .elite: return .purple
-        }
-    }
-    
-    private func getOverallStrengthLevel(user: User) -> (level: String, strengthLevel: StrengthLevel?) {
-        guard user.hasCompleteOneRMData else { return ("--", nil) }
-        guard user.age > 0, user.currentWeight > 0 else { return ("--", nil) }
-        
-        let exercises: [StrengthExerciseType] = [.benchPress, .backSquat, .deadlift, .overheadPress, .pullUp]
-        var strengthLevels: [StrengthLevel] = []
-        
-        for exercise in exercises {
-            guard let oneRM = user.getCurrentOneRM(for: exercise), oneRM > 0 else { continue }
-            
-            let (level, _) = StrengthStandardsConfig.strengthLevel(
-                for: oneRM,
-                exerciseType: exercise,
-                userGender: user.genderEnum,
-                userAge: user.age,
-                userWeight: user.currentWeight
-            )
-            
-            strengthLevels.append(level)
-        }
-        
-        guard !strengthLevels.isEmpty else { return ("--", nil) }
-        
-        let averageRawValue = strengthLevels.map { $0.rawValue }.reduce(0, +) / strengthLevels.count
-        let clampedValue = max(0, min(5, averageRawValue))
-        let overallLevel = StrengthLevel(rawValue: clampedValue) ?? .beginner
-        
-        let abbreviation: String
-        switch overallLevel {
-        case .beginner: abbreviation = DashboardKeys.StrengthLevels.beginnerShort.localized
-        case .novice: abbreviation = DashboardKeys.StrengthLevels.noviceShort.localized
-        case .intermediate: abbreviation = DashboardKeys.StrengthLevels.intermediateShort.localized
-        case .advanced: abbreviation = DashboardKeys.StrengthLevels.advancedShort.localized
-        case .expert: abbreviation = DashboardKeys.StrengthLevels.expertShort.localized
-        case .elite: abbreviation = DashboardKeys.StrengthLevels.eliteShort.localized
-        }
-        
-        return (abbreviation, overallLevel)
-    }
     
     
 }

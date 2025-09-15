@@ -9,15 +9,15 @@ struct WODMainView: View {
     
     @Query(
         filter: #Predicate<WOD> { $0.isCustom == true },
-        sort: [SortDescriptor(\WOD.updatedAt, order: .reverse)]
+        sort: [SortDescriptor<WOD>(\.updatedAt, order: .reverse)]
     ) private var customWODs: [WOD]
     
-    @Query(sort: [SortDescriptor(\WODResult.completedAt, order: .reverse)]) 
+    @Query(sort: [SortDescriptor<WODResult>(\.completedAt, order: .reverse)])
     private var wodResults: [WODResult]
     
     @Query(
         filter: #Predicate<WOD> { $0.isCustom == false },
-        sort: [SortDescriptor(\WOD.name)]
+        sort: [SortDescriptor<WOD>(\.name)]
     ) private var benchmarkWODs: [WOD]
     
     @State private var selectedCategory: WODCategory = .custom

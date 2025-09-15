@@ -4,60 +4,46 @@ import SwiftData
 struct PersonalInfoEditView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
-    
+
     let user: User?
-    
-    @State private var name: String = ""
-    @State private var age: String = ""
-    @State private var height: String = ""
-    @State private var currentWeight: String = ""
-    @State private var selectedGender: Gender = .male
-    @State private var selectedFitnessGoal: FitnessGoal = .maintain
-    @State private var selectedActivityLevel: ActivityLevel = .moderate
-    
-    @State private var showingSaveAlert = false
-    @State private var isLoading = false
+    @State private var viewModel: PersonalInfoEditViewModel?
     
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(spacing: 24) {
-                    // Header Section
-                    HeaderSection()
-                    
-                    // Basic Info Section
-                    BasicInfoSection(
-                        name: $name,
-                        age: $age,
-                        selectedGender: $selectedGender
-                    )
-                    
-                    // Physical Measurements Section
-                    PhysicalMeasurementsSection(
-                        height: $height,
-                        currentWeight: $currentWeight
-                    )
-                    
-                    // Goals Section
-                    GoalsSection(
-                        selectedFitnessGoal: $selectedFitnessGoal,
-                        selectedActivityLevel: $selectedActivityLevel
-                    )
-                    
-                    // Calculated Values Preview
-                    if let user = user {
-                        CalculatedValuesPreview(
-                            user: user,
-                            fitnessGoal: selectedFitnessGoal,
-                            activityLevel: selectedActivityLevel,
-                            weight: Double(currentWeight) ?? user.currentWeight,
-                            height: Double(height) ?? user.height,
-                            age: Int(age) ?? user.age,
-                            gender: selectedGender
+                if let viewModel = viewModel {
+                    @Bindable var bindableViewModel = viewModel
+
+                    VStack(spacing: 24) {
+                        // Header Section
+                        HeaderSection()
+
+                        // Basic Info Section
+                        BasicInfoSection(
+                            name: $bindableViewModel.name,
+                            age: $bindableViewModel.age,
+                            selectedGender: $bindableViewModel.selectedGender
                         )
+
+                        // Physical Measurements Section
+                        PhysicalMeasurementsSection(
+                            height: $bindableViewModel.height,
+                            currentWeight: $bindableViewModel.currentWeight
+                        )
+
+                        // Goals Section
+                        GoalsSection(
+                            selectedFitnessGoal: $bindableViewModel.selectedFitnessGoal,
+                            selectedActivityLevel: $bindableViewModel.selectedActivityLevel
+                        )
+
+                        // Calculated Values Preview
+                        if let previewCalculations = viewModel.previewCalculations {
+                            CalculatedValuesPreviewFromViewModel(calculations: previewCalculations)
+                        }
                     }
+                    .padding()
                 }
-                .padding()
             }
             .navigationTitle("personal_info.title".localized)
             .navigationBarTitleDisplayMode(.inline)
@@ -70,18 +56,24 @@ struct PersonalInfoEditView: View {
                 
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("common.save".localized) {
-                        saveChanges()
+                        viewModel?.saveUserData(user, modelContext: modelContext)
                     }
                     .fontWeight(.semibold)
-                    .disabled(isLoading || !isFormValid)
+                    .disabled(viewModel?.isLoading ?? true || !(viewModel?.isFormValid ?? false))
                 }
             }
             .background(Color(.systemGroupedBackground))
         }
         .onAppear {
-            loadUserData()
+            if viewModel == nil {
+                viewModel = PersonalInfoEditViewModel()
+            }
+            viewModel?.loadUserData(user)
         }
-        .alert("personal_info.info_updated".localized, isPresented: $showingSaveAlert) {
+        .alert("personal_info.info_updated".localized, isPresented: Binding(
+            get: { viewModel?.showingSaveAlert ?? false },
+            set: { viewModel?.showingSaveAlert = $0 }
+        )) {
             Button("common.ok".localized) {
                 dismiss()
             }
@@ -90,55 +82,6 @@ struct PersonalInfoEditView: View {
         }
     }
     
-    private var isFormValid: Bool {
-        !name.isEmpty &&
-        !age.isEmpty &&
-        !height.isEmpty &&
-        !currentWeight.isEmpty &&
-        (Int(age) ?? 0) > 0 &&
-        (Double(height) ?? 0) > 0 &&
-        (Double(currentWeight) ?? 0) > 0
-    }
-    
-    private func loadUserData() {
-        guard let user = user else { return }
-        
-        name = user.name
-        age = String(user.age)
-        height = String(Int(user.height))
-        currentWeight = String(Int(user.currentWeight))
-        selectedGender = user.genderEnum
-        selectedFitnessGoal = user.fitnessGoalEnum
-        selectedActivityLevel = user.activityLevelEnum
-    }
-    
-    private func saveChanges() {
-        guard let user = user, isFormValid else { return }
-        
-        isLoading = true
-        
-        // Update user data
-        user.name = name
-        user.age = Int(age) ?? user.age
-        user.height = Double(height) ?? user.height
-        user.currentWeight = Double(currentWeight) ?? user.currentWeight
-        user.gender = selectedGender.rawValue
-        user.fitnessGoal = selectedFitnessGoal.rawValue
-        user.activityLevel = selectedActivityLevel.rawValue
-        
-        // Recalculate metrics
-        user.calculateMetrics()
-        
-        // Save to database
-        do {
-            try modelContext.save()
-            isLoading = false
-            showingSaveAlert = true
-        } catch {
-            isLoading = false
-            print("Error saving user data: \(error)")
-        }
-    }
 }
 
 // MARK: - Header Section
@@ -252,6 +195,53 @@ struct GoalsSection: View {
 }
 
 // MARK: - Calculated Values Preview
+struct CalculatedValuesPreviewFromViewModel: View {
+    let calculations: PreviewCalculations
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            SectionHeader(icon: "function", title: "personal_info.calculated_values".localized, color: .purple)
+
+            LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 2), spacing: 12) {
+                CalculatedValueCard(
+                    title: "calculators.bmr".localized,
+                    value: "\\(Int(calculations.bmr))",
+                    unit: "nutrition.units.kcal".localized,
+                    subtitle: "personal_info.basal_metabolism".localized,
+                    color: .green
+                )
+
+                CalculatedValueCard(
+                    title: "calculators.tdee".localized,
+                    value: "\\(Int(calculations.tdee))",
+                    unit: "nutrition.units.kcal".localized,
+                    subtitle: "personal_info.daily_expenditure".localized,
+                    color: .blue
+                )
+
+                CalculatedValueCard(
+                    title: "personal_info.calorie_goal".localized,
+                    value: "\\(Int(calculations.dailyCalories))",
+                    unit: "nutrition.units.kcal".localized,
+                    subtitle: "personal_info.daily_target".localized,
+                    color: .orange
+                )
+
+                CalculatedValueCard(
+                    title: "nutrition.dailySummary.protein".localized,
+                    value: String(format: "%.1f", calculations.protein),
+                    unit: "nutrition.units.g".localized,
+                    subtitle: "personal_info.daily_target".localized,
+                    color: .red
+                )
+            }
+            .padding()
+            .background(Color(.systemBackground))
+            .clipShape(RoundedRectangle(cornerRadius: 12))
+        }
+    }
+}
+
 struct CalculatedValuesPreview: View {
     let user: User
     let fitnessGoal: FitnessGoal

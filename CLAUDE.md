@@ -27,6 +27,7 @@ thrustr/
 │   │   ├── Lift/          # Strength training models
 │   │   └── WOD/           # Workout of the Day models
 │   └── Services/          # Business logic services
+│       └── Calculators/   # Fitness calculation utilities and business logic
 ├── Features/              # Feature modules
 │   ├── Dashboard/         # Main dashboard with health stats
 │   ├── Nutrition/         # Food tracking, barcode scanning, meal logging
@@ -38,7 +39,6 @@ thrustr/
 ├── Shared/                # Shared utilities and reusable components
 │   ├── Components/        # Reusable UI components
 │   ├── DesignSystem/      # Theme, tokens, and modifiers
-│   ├── Calculators/       # Fitness calculation utilities
 │   └── Utilities/         # Helper classes and extensions
 └── Resources/             # CSV data files, localizations, assets
 ```
@@ -52,7 +52,8 @@ thrustr/
 
 #### State Management
 - **EnvironmentObjects**: Used for global state (ThemeManager, LanguageManager, UnitSettings)
-- **@StateObject/@ObservedObject**: For local view state management
+- **@State + @Observable**: Modern iOS 17+ view state management (preferred)
+- **@StateObject/@ObservedObject**: Legacy pattern, avoid in new code
 - **TabRouter**: Centralized navigation state management
 
 #### Core Services
@@ -65,6 +66,11 @@ thrustr/
 - **LocationManager**: GPS tracking for outdoor activities
 - **UserService**: Centralized user data management and operations
 - **ErrorHandlingService**: Unified error handling and user feedback
+
+#### Calculator Services (`Core/Services/Calculators/`)
+- **OneRMCalculator**: 1RM calculations with multiple formulas (Brzycki, Epley, Lander)
+- **HealthCalculator**: BMR, TDEE, macro calculations with scientific validation
+- **FitnessLevelCalculator**: FFMI, body fat analysis, and fitness scoring system
 
 #### Design System
 - **Theme Protocol**: Centralized theming with tokens (colors, spacing, typography)
@@ -195,11 +201,65 @@ When working with localization files (`*.lproj/Localizable.strings`), follow the
 
 ## Development Guidelines
 
+### Modern NVVM Pattern (iOS 17+ Recommended)
+
+#### ViewModels
+- Use `@MainActor @Observable` for all new ViewModels
+- Implement dependency injection via constructor
+- No `@Published` properties needed with `@Observable`
+- Example:
+```swift
+@MainActor
+@Observable
+class ProfileViewModel {
+    var achievements: [Achievement] = []
+    var isLoading = false
+
+    private let achievementService: AchievementServiceProtocol
+
+    init(achievementService: AchievementServiceProtocol = AchievementService.self) {
+        self.achievementService = achievementService
+    }
+}
+```
+
+#### Views
+- Use `@State private var viewModel: ViewModelType?` for ViewModels
+- Initialize ViewModels in `onAppear` for dependency injection
+- Example:
+```swift
+struct ProfileView: View {
+    @State private var viewModel: ProfileViewModel?
+
+    var body: some View {
+        // UI code
+        .onAppear {
+            if viewModel == nil {
+                viewModel = ProfileViewModel()
+            }
+        }
+    }
+}
+```
+
+#### Services
+- Keep services as static methods with no UI state
+- Use `Sendable` protocols for thread safety
+- Return `Result` types instead of mutating UI state
+- Example:
+```swift
+struct UserService: Sendable {
+    static func updateUser(...) async throws -> UserUpdateResult {
+        // Pure business logic
+    }
+}
+```
+
 ### Model Usage
 - Always use enum computed properties (e.g., `user.genderEnum`) rather than raw string values
 - Call `calculateMetrics()` on User model after updating health data
 - Use SwiftData descriptors for efficient querying
-- Prefer `@Model` classes for persistent data, `ObservableObject` for transient state
+- Prefer `@Model` classes for persistent data, `@Observable` for transient state (iOS 17+)
 
 ### Theming
 - Access theme via `@Environment(\.theme)` in views
@@ -211,7 +271,8 @@ When working with localization files (`*.lproj/Localizable.strings`), follow the
 - Use TabRouter for main navigation state
 - Implement view-specific navigation state as needed
 - Follow iOS navigation patterns with NavigationStack
-- Use `@StateObject` for view-specific router instances
+- Use `@State` with `@Observable` ViewModels for modern iOS 17+ patterns
+- Use `@StateObject` only for legacy compatibility when needed
 
 ### Data Seeding
 - CSV files in Resources/ are automatically imported on first launch
@@ -426,9 +487,175 @@ When file corruption occurs:
   - Offer to explain implementation approaches and their benefits
   - Always provide reasoning behind architectural decisions
   - Suggest improvements when working in related code areas
-- **Teaching Moments**: 
+- **Teaching Moments**:
   - Explain complex iOS concepts when encountered
   - Reference Apple documentation and best practices
   - Provide learning resources for advanced topics
   - Connect fitness domain knowledge with technical implementation
+
+## Analytics Module Development Guidelines
+
+### Working with Health Intelligence
+When developing analytics features, always consider the athlete's perspective:
+
+**Analytics Implementation Principles:**
+- **Meaningful Metrics**: Focus on metrics that actually help athletes improve
+- **Context-Aware Insights**: Provide insights that consider training history and goals
+- **Visual Clarity**: Use charts and graphs that athletes can quickly understand
+- **Actionable Recommendations**: Every insight should suggest concrete next steps
+
+**Analytics Module Structure:**
+```swift
+Features/Analytics/
+├── Views/                    # SwiftUI analytics dashboard components
+├── ViewModels/              # Analytics data processing and state management
+└── Services/                # Health intelligence algorithms and calculations
+```
+
+**Key Analytics Components:**
+- **TrendAnalysisService**: Statistical analysis of performance over time
+- **HealthIntelligenceService**: AI-powered insights from workout and health data
+- **PerformanceMetricsService**: Advanced calculations for strength, cardio, and body composition
+
+### Analytics Best Practices
+- Always validate health data before analysis
+- Use background processing for heavy statistical calculations
+- Implement caching for frequently accessed analytics data
+- Provide fallback displays when analytics data is insufficient
+
+## Localization Development Guidelines
+
+### Multi-Language Support System
+The app supports **9 languages** with runtime switching capability. Always consider localization impact when adding new features.
+
+**Localization Architecture:**
+```swift
+Shared/Localization/
+├── LanguageManager.swift           # Runtime language switching
+├── LocalizationKeys.swift          # Type-safe localization keys
+├── Extensions/                     # String and View localization helpers
+└── Utilities/                      # Localization validation tools
+```
+
+**Supported Languages Priority:**
+1. **Turkish (tr)** - Primary market, developer's native language
+2. **English (en)** - International market, secondary priority
+3. **German (de)** - European expansion, tertiary priority
+4. **Spanish (es)**, **Italian (it)**, **French (fr)** - European markets
+5. **Portuguese (pt)** - Brazilian market
+6. **Indonesian (id)**, **Polish (pl)** - Emerging markets
+
+### Localization Best Practices
+- **Always use LocalizationKeys enum** - never hardcode strings
+- **Test with longest language** - German tends to be longest, ensure UI doesn't break
+- **Cultural sensitivity** - fitness terminology varies significantly across cultures
+- **Context-aware translations** - same English word may need different translations in different contexts
+- **Use Turkish for developer communications** - maintain native language for explanations
+
+**Example Implementation:**
+```swift
+// ✅ GOOD: Type-safe localization
+Text(LocalizationKeys.workout_completed.localized)
+
+// ❌ BAD: Hardcoded string
+Text("Workout Completed")
+```
+
+## Testing Infrastructure Guidelines
+
+### Model Testing Strategy
+Comprehensive testing ensures data integrity across all fitness tracking features:
+
+**Test Structure:**
+```swift
+Core/Models/Tests/
+├── MockData.swift              # Realistic test data for all models
+├── ModelTests.swift            # SwiftData model validation tests
+├── TestFixtures.swift          # Standardized test scenarios
+├── UserModelTests.swift        # User-specific functionality tests
+└── ValidationTests.swift       # Data validation and edge case tests
+```
+
+### Testing Best Practices
+- **Use realistic fitness data** - leverage developer's 12+ years athletic experience
+- **Test edge cases** - what happens with incomplete workouts, missing data, etc.
+- **Validate relationships** - ensure SwiftData relationships work correctly
+- **Test across languages** - verify localization doesn't break functionality
+- **Mock HealthKit data** - test HealthKit integration without requiring real health data
+
+**Example Test Data:**
+```swift
+// Real-world inspired test data
+let mockUser = User(
+    age: 28,
+    weight: 75.0,
+    activityLevel: .highlyActive,
+    fitnessGoal: .strength
+)
+
+let mockWorkout = LiftSession(
+    exercises: [mockSquat, mockBench, mockDeadlift],
+    duration: 4200, // 70 minutes - realistic strength training duration
+    totalVolume: 8500.0 // Realistic total volume for intermediate lifter
+)
+```
+
+## Legal & Compliance Guidelines
+
+### Privacy-First Development
+All health and fitness data must be handled with utmost care and transparency:
+
+**Privacy Implementation Principles:**
+- **Local-First Storage**: Default to local storage, cloud sync is optional
+- **Granular Permissions**: Request only necessary permissions with clear explanations
+- **Data Transparency**: Users should always know what data is collected and why
+- **Export Capability**: Users must be able to export their complete data set
+- **Deletion Rights**: Complete data removal must be possible at any time
+
+**Legal Documentation Structure:**
+```
+Resources/Legal/
+├── PrivacyPolicy.md            # GDPR/CCPA compliant privacy policy
+├── TermsOfService.md          # Clear terms of service
+├── DataUsagePolicy.md         # Specific health data usage policies
+└── ComplianceChecklist.md     # Verification checklist for legal compliance
+```
+
+### Legal Best Practices
+- **Clear, Simple Language**: Legal documents should be readable by average users
+- **Specific Purpose Declaration**: Clearly state why each type of data is collected
+- **Retention Policies**: Define how long data is stored and when it's deleted
+- **Third-Party Disclosures**: Clearly list any third-party integrations (HealthKit, OpenFoodFacts, etc.)
+- **Update Notifications**: Users must be notified of policy changes
+
+### HealthKit Compliance
+- Always request minimal necessary permissions
+- Provide clear explanations for each HealthKit permission request
+- Implement proper error handling for denied permissions
+- Never store HealthKit data in backup systems without explicit consent
+- Follow Apple's HealthKit Review Guidelines exactly
+
+## Performance Optimization Guidelines
+
+### Athletics-Informed Performance
+Understanding athletic training patterns helps optimize app performance:
+
+**Training Session Patterns:**
+- **Strength Training**: 45-90 minutes, high data write frequency during sets
+- **Cardio Sessions**: 20-120 minutes, continuous data streaming
+- **WOD Tracking**: 10-30 minutes, intense burst data recording
+
+**Performance Optimization Strategies:**
+- **Background Processing**: Heavy analytics calculations during off-peak usage
+- **Intelligent Caching**: Cache frequently accessed workout templates and programs
+- **Batch Operations**: Group database writes during active workout sessions
+- **Progressive Loading**: Load workout history progressively as user scrolls
+
+### SwiftData Performance Best Practices
+- Use descriptors for efficient querying large workout datasets
+- Implement proper relationships to minimize data duplication
+- Use background contexts for heavy data processing
+- Optimize for typical athlete usage patterns (viewing recent workouts most frequently)
+
+This comprehensive guidance ensures that development maintains both technical excellence and authentic fitness expertise throughout the codebase.
 

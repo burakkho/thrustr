@@ -1,7 +1,6 @@
 import UIKit
 
-@MainActor
-final class HapticManager: Sendable {
+final class HapticManager {
     static let shared = HapticManager()
     private init() {}
 
