@@ -3,41 +3,15 @@ import SwiftData
 import Charts
 
 struct ProgressChartsView: View {
+    @State private var viewModel = ProgressChartsViewModel()
     @Environment(\.modelContext) private var modelContext
     @Query private var users: [User]
     @Environment(UnitSettings.self) var unitSettings
-    
-    @State private var selectedTimeRange: TimeRange = .month3
-    @State private var selectedChartType: ChartType = .weight
-    @State private var isLoading = true
-    @State private var showingChartDetail = false
-    @State private var selectedDataPoint: Date? = nil
-    
-    // PERFORMANCE: Lazy loaded queries based on selected time range
-    private var cutoffDate: Date {
-        selectedTimeRange.cutoffDate
-    }
-    
-    // PERFORMANCE: Dynamic queries with date filtering
+
+    // SwiftData queries
     @Query private var allWeightEntries: [WeightEntry]
     @Query private var allLiftSessions: [LiftSession]
     @Query private var allBodyMeasurements: [BodyMeasurement]
-    
-    private var weightEntries: [WeightEntry] {
-        allWeightEntries.filter { $0.date >= cutoffDate }
-    }
-    
-    private var liftSessions: [LiftSession] {
-        allLiftSessions.filter { $0.isCompleted && $0.startDate >= cutoffDate }
-    }
-    
-    private var bodyMeasurements: [BodyMeasurement] {
-        allBodyMeasurements.filter { $0.date >= cutoffDate }
-    }
-    
-    private var currentUser: User? {
-        users.first
-    }
     
     // PERFORMANCE: Removed redundant filtering - now handled by computed properties
     
@@ -48,38 +22,38 @@ struct ProgressChartsView: View {
                 ProgressChartsHeaderSection()
                 
                 // Time Range Selector
-                TimeRangeSelector(selectedRange: $selectedTimeRange)
-                
+                TimeRangeSelector(selectedRange: $viewModel.selectedTimeRange)
+
                 // Chart Type Selector
-                ChartTypeSelector(selectedType: $selectedChartType)
-                
-                // Main Chart Section - PERFORMANCE: Use computed filtered data
-                if isLoading {
+                ChartTypeSelector(selectedType: $viewModel.selectedChartType)
+
+                // Main Chart Section
+                if viewModel.isLoading {
                     ChartSkeletonView()
                 } else {
                     MainChartSection(
-                        chartType: selectedChartType,
-                        timeRange: selectedTimeRange,
-                        weightEntries: weightEntries,
-                        liftSessions: liftSessions,
-                        bodyMeasurements: bodyMeasurements,
-                        user: currentUser
+                        chartType: viewModel.selectedChartType,
+                        timeRange: viewModel.selectedTimeRange,
+                        weightEntries: viewModel.filteredWeightEntries,
+                        liftSessions: viewModel.filteredLiftSessions,
+                        bodyMeasurements: viewModel.filteredBodyMeasurements,
+                        user: viewModel.currentUser
                     )
                 }
-                
+
                 // Summary Statistics
                 SummaryStatisticsSection(
-                    chartType: selectedChartType,
-                    weightEntries: weightEntries,
-                    liftSessions: liftSessions,
-                    timeRange: selectedTimeRange
+                    chartType: viewModel.selectedChartType,
+                    weightEntries: viewModel.filteredWeightEntries,
+                    liftSessions: viewModel.filteredLiftSessions,
+                    timeRange: viewModel.selectedTimeRange
                 )
-                
+
                 // Insights Section
                 InsightsSection(
-                    weightEntries: weightEntries,
-                    liftSessions: liftSessions,
-                    timeRange: selectedTimeRange
+                    weightEntries: viewModel.filteredWeightEntries,
+                    liftSessions: viewModel.filteredLiftSessions,
+                    timeRange: viewModel.selectedTimeRange
                 )
             }
             .padding()
@@ -88,35 +62,30 @@ struct ProgressChartsView: View {
         .navigationBarTitleDisplayMode(.inline)
         .background(Color(.systemGroupedBackground))
         .onAppear {
-            // Simulate initial loading delay
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                withAnimation(.easeInOut(duration: 0.3)) {
-                    isLoading = false
-                }
-            }
+            viewModel.loadProgressData(
+                allWeightEntries: allWeightEntries,
+                allLiftSessions: allLiftSessions,
+                allBodyMeasurements: allBodyMeasurements,
+                user: users.first
+            )
         }
-        .onChange(of: selectedTimeRange) {
-            // Show loading when changing time range
-            withAnimation(.easeInOut(duration: 0.2)) {
-                isLoading = true
-            }
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                withAnimation(.easeInOut(duration: 0.3)) {
-                    isLoading = false
-                }
-            }
+        .onChange(of: viewModel.selectedTimeRange) { _, newRange in
+            viewModel.changeTimeRange(
+                to: newRange,
+                allWeightEntries: allWeightEntries,
+                allLiftSessions: allLiftSessions,
+                allBodyMeasurements: allBodyMeasurements,
+                user: users.first
+            )
         }
-        .onChange(of: selectedChartType) {
-            // Show loading when changing chart type
-            withAnimation(.easeInOut(duration: 0.2)) {
-                isLoading = true
-            }
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                withAnimation(.easeInOut(duration: 0.3)) {
-                    isLoading = false
-                }
-            }
-        }
+        .onChange(of: viewModel.selectedChartType) { _, newType in
+            viewModel.changeChartType(
+                to: newType,
+                allWeightEntries: allWeightEntries,
+                allLiftSessions: allLiftSessions,
+                allBodyMeasurements: allBodyMeasurements,
+                user: users.first
+            )
     }
 }
 

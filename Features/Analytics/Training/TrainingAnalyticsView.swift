@@ -2,43 +2,38 @@ import SwiftUI
 import SwiftData
 
 struct TrainingAnalyticsView: View {
+    @State private var viewModel = TrainingAnalyticsViewModel()
     @Environment(\.theme) private var theme
     @Environment(UnitSettings.self) var unitSettings
-    
-    // Real SwiftData queries for lift exercise results
+
+    // SwiftData query for lift exercise results
     @Query(
         sort: \LiftExerciseResult.performedAt,
         order: .reverse
     ) private var allLiftExerciseResults: [LiftExerciseResult]
     
-    // Calculate 30 days ago for trend analysis
-    private var thirtyDaysAgo: Date {
-        Calendar.current.date(byAdding: .day, value: -30, to: Date()) ?? Date()
-    }
-    
-    // Filter recent lift exercise results
-    private var recentLiftResults: [LiftExerciseResult] {
-        allLiftExerciseResults.filter { result in
-            result.performedAt >= thirtyDaysAgo
-        }
-    }
-    
     var body: some View {
         LazyVStack(spacing: 32) {
             // 🎯 HERO TRAINING STORY - Your strength journey overview
-            TrainingStoryHeroCard(liftResults: recentLiftResults)
-            
+            TrainingStoryHeroCard(liftResults: viewModel.recentLiftResults)
+
             // 💪 STRENGTH PROGRESSION SHOWCASE - ActionableStatCard grid
-            EnhancedStrengthProgressionSection(liftResults: recentLiftResults)
-            
-            // 🏆 PR CELEBRATION TIMELINE - Achievement showcase  
+            StrengthProgressionSection(exerciseMaxes: Array(viewModel.exerciseMaxes.prefix(3)))
+
+            // 🏆 PR CELEBRATION TIMELINE - Achievement showcase
             EnhancedPRTimelineSection()
-            
+
             // 📊 TRAINING INSIGHTS GRID - Frequency + patterns combined
             TrainingInsightsGridSection()
-            
+
             // 🎯 GOALS & MOTIVATION - Next milestones
-            TrainingGoalsMotivationSection(liftResults: recentLiftResults)
+            TrainingGoalsMotivationSection(liftResults: viewModel.recentLiftResults)
+        }
+        .onAppear {
+            viewModel.updateData(allLiftExerciseResults)
+        }
+        .onChange(of: allLiftExerciseResults) { _, newResults in
+            viewModel.updateData(newResults)
         }
     }
 }
@@ -47,40 +42,7 @@ struct TrainingAnalyticsView: View {
 struct StrengthProgressionSection: View {
     @Environment(\.theme) private var theme
     @Environment(UnitSettings.self) var unitSettings
-    let liftResults: [LiftExerciseResult]
-    
-    // Calculate real exercise maxes from lift results
-    private var exerciseMaxes: [(name: String, currentMax: Double, trend: TrendDirection, improvement: Double)] {
-        let exerciseGroups = Dictionary(grouping: liftResults) { result in
-            result.exercise?.exerciseName ?? "Unknown"
-        }
-        
-        return exerciseGroups.compactMap { (exerciseName, results) in
-            guard !results.isEmpty else { return nil }
-            
-            // Find current max (best set from all results)
-            let currentMax = results.compactMap { $0.maxWeight }.max() ?? 0.0
-            
-            // Calculate trend (compare last 2 weeks vs previous 2 weeks)
-            let twoWeeksAgo = Calendar.current.date(byAdding: .day, value: -14, to: Date()) ?? Date()
-            let fourWeeksAgo = Calendar.current.date(byAdding: .day, value: -28, to: Date()) ?? Date()
-            
-            let recentResults = results.filter { $0.performedAt >= twoWeeksAgo }
-            let previousResults = results.filter { $0.performedAt >= fourWeeksAgo && $0.performedAt < twoWeeksAgo }
-            
-            let recentMax = recentResults.compactMap { $0.maxWeight }.max() ?? 0.0
-            let previousMax = previousResults.compactMap { $0.maxWeight }.max() ?? 0.0
-            
-            let improvement = recentMax - previousMax
-            let trend: TrendDirection = {
-                if improvement > 2.5 { return .increasing }
-                if improvement < -2.5 { return .decreasing }
-                return .stable
-            }()
-            
-            return (exerciseName, currentMax, trend, abs(improvement))
-        }.prefix(3).map { $0 } // Show top 3 exercises
-    }
+    let exerciseMaxes: [(name: String, currentMax: Double, trend: TrendDirection, improvement: Double)]
     
     var body: some View {
         VStack(spacing: theme.spacing.m) {
@@ -1445,69 +1407,6 @@ struct MotivationCard: View {
 
 // MARK: - Supporting Components
 
-enum CelebrationType {
-    case none, celebration, progress, fire
-}
-
-struct TrainingStoryMetric: View {
-    let icon: String
-    let title: String
-    let value: String
-    let color: Color
-    let celebrationType: CelebrationType
-    @Environment(\.theme) private var theme
-    
-    var body: some View {
-        VStack(spacing: 8) {
-            HStack {
-                Image(systemName: icon)
-                    .font(.title3)
-                    .foregroundColor(color)
-                
-                if celebrationType != .none {
-                    Image(systemName: celebrationIcon)
-                        .font(.caption)
-                        .foregroundColor(celebrationColor)
-                }
-                
-                Spacer()
-            }
-            
-            VStack(alignment: .leading, spacing: 2) {
-                Text(value)
-                    .font(.title2)
-                    .fontWeight(.bold)
-                    .foregroundColor(theme.colors.textPrimary)
-                
-                Text(title)
-                    .font(.caption)
-                    .foregroundColor(theme.colors.textSecondary)
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-        }
-        .padding(12)
-        .background(theme.colors.backgroundSecondary.opacity(0.5))
-        .cornerRadius(12)
-    }
-    
-    private var celebrationIcon: String {
-        switch celebrationType {
-        case .celebration: return "party.popper.fill"
-        case .progress: return "arrow.up.circle.fill"
-        case .fire: return "flame.fill"
-        case .none: return ""
-        }
-    }
-    
-    private var celebrationColor: Color {
-        switch celebrationType {
-        case .celebration: return .yellow
-        case .progress: return .green
-        case .fire: return .red
-        case .none: return .clear
-        }
-    }
-}
 
 struct ActionableStrengthCard: View {
     let exerciseName: String

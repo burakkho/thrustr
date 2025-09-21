@@ -2,32 +2,32 @@ import SwiftUI
 import SwiftData
 
 struct HealthAnalyticsView: View {
+    @State private var viewModel = HealthAnalyticsViewModel()
     @Query private var users: [User]
-    @State private var healthKitService = HealthKitService.shared
     @Environment(\.theme) private var theme
-    
-    private var currentUser: User? {
-        users.first
-    }
     
     var body: some View {
         VStack(spacing: 32) {
             // 🎯 HERO HEALTH STORY - Your wellness journey overview
-            HealthStoryHeroCard(user: currentUser)
-            
+            HealthStoryHeroCard(user: viewModel.currentUser)
+
             // 💫 ANIMATED HEALTH RINGS - Visual progress showcase
-            EnhancedHealthRingsSection(user: currentUser)
-            
+            EnhancedHealthRingsSection(user: viewModel.currentUser)
+
             // 🧠 AI HEALTH INTELLIGENCE - Smart insights grid
             EnhancedHealthIntelligenceSection()
-            
+
             // 📈 HEALTH TRENDS TIMELINE - Historical patterns
             EnhancedHealthTrendsSection()
         }
         .onAppear {
+            viewModel.updateUser(users.first)
             Task {
-                await healthKitService.readTodaysData()
+                await viewModel.loadTodaysHealthData()
             }
+        }
+        .onChange(of: users) { _, newUsers in
+            viewModel.updateUser(newUsers.first)
         }
     }
 }
@@ -35,7 +35,6 @@ struct HealthAnalyticsView: View {
 // 🎯 HEALTH STORY HERO CARD
 struct HealthStoryHeroCard: View {
     let user: User?
-    @State private var healthKitService = HealthKitService.shared
     @Environment(\.theme) private var theme
     @Environment(UnitSettings.self) var unitSettings
     @State private var animateHealth = false
@@ -134,13 +133,13 @@ struct HealthStoryHeroCard: View {
         let recovery = calculateRecoveryScore()
         
         if steps >= 10000 && recovery >= 85 {
-            return "🌟 Exceptional day! You're crushing your health goals."
+            return "Exceptional day! You're crushing your health goals."
         } else if steps >= 7500 || recovery >= 70 {
-            return "💪 Great progress! Your body is responding well."
+            return "Great progress! Your body is responding well."
         } else if steps == 0 && calories == 0 {
             return "Ready to start your wellness journey? Every step counts!"
         } else {
-            return "🎯 Building healthy habits. Consistency is key to success."
+            return "Building healthy habits. Consistency is key to success."
         }
     }
     
