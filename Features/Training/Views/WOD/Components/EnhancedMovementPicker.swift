@@ -6,7 +6,7 @@ struct EnhancedMovementPicker: View {
     @Environment(\.theme) private var theme
     @Query private var crossfitMovements: [CrossFitMovement]
     
-    let onAdd: (WODBuilderView.WODMovementData) -> Void
+    let onAdd: (WODBuilderViewModel.WODMovementData) -> Void
     
     @State private var searchText = ""
     @State private var selectedCategory = "All"
@@ -242,7 +242,7 @@ struct EnhancedMovementPicker: View {
     private func addMovement() {
         guard let movement = selectedMovement else { return }
         
-        let wodMovement = WODBuilderView.WODMovementData(
+        let wodMovement = WODBuilderViewModel.WODMovementData(
             name: movement.displayName,
             reps: reps,
             rxWeightMale: rxWeightMale,

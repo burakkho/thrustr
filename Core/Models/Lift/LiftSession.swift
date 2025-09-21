@@ -47,6 +47,11 @@ final class LiftSession {
 
 // MARK: - Computed Properties
 extension LiftSession {
+    /// Display date for UI consistency
+    var displayDate: Date {
+        return endDate ?? startDate
+    }
+
     var duration: TimeInterval {
         if let endDate = endDate {
             return endDate.timeIntervalSince(startDate)
@@ -246,6 +251,7 @@ final class LiftExerciseResult {
     var notes: String?
     var videoURL: String?
     var isPersonalRecord: Bool = false
+    var isCompleted: Bool = false
     
     // Relationships
     var exercise: LiftExercise?

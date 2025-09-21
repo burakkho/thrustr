@@ -14,7 +14,7 @@ import Foundation
  * RESPONSIBILITIES:
  * ✅ UI State Management - All @State properties centralized here
  * ✅ Business Logic Coordination - Services orchestration
- * ✅ Error Handling - Centralized ErrorHandlingService integration
+ * ✅ Error Handling - Centralized ErrorUIService integration
  * ✅ Data Filtering - Date ranges, meal groupings, analytics
  * ✅ Navigation State - Modals, sheets, form flows
  * ✅ Loading States - Progress indicators and async operations
@@ -28,26 +28,27 @@ import Foundation
  * INTEGRATION POINTS:
  * - FoodSearchService: Food database search and caching
  * - OpenFoodFactsService: Barcode scanning API integration
- * - ErrorHandlingService: Centralized error handling and user feedback
+ * - ErrorUIService: Centralized error handling and user feedback
  * - SwiftData: Database operations with proper error handling
  */
 @MainActor
-class NutritionViewModel: ObservableObject {
+@Observable
+class NutritionViewModel {
 
-    // MARK: - Published Properties
+    // MARK: - Observable Properties
 
     // UI State
-    @Published var selectedFood: Food?
-    @Published var showingMealEntry = false
-    @Published var showingFoodSelection = false
-    @Published var showingCustomFoodEntry = false
-    @Published var forceStartWithScanner = false
-    @Published var showRealEmptyState = false
+    var selectedFood: Food?
+    var showingMealEntry = false
+    var showingFoodSelection = false
+    var showingCustomFoodEntry = false
+    var forceStartWithScanner = false
+    var showRealEmptyState = false
 
     // Loading and Error States
-    @Published var isLoading = false
-    @Published var saveErrorMessage: String?
-    @Published var errorMessage: String?
+    var isLoading = false
+    var saveErrorMessage: String?
+    var errorMessage: String?
 
     // MARK: - Dependencies
 
@@ -56,7 +57,7 @@ class NutritionViewModel: ObservableObject {
 
     // MARK: - Error Handling (Centralized)
 
-    @Published var errorHandler = ErrorHandlingService.shared
+    var errorHandler = ErrorUIService.shared
 
     // MARK: - Data Filtering
 
@@ -203,30 +204,38 @@ class NutritionViewModel: ObservableObject {
      * - Parameter food: Food to add to meal
      */
     func showMealEntryForm(with food: Food) {
+        print("🍎 ViewModel - showMealEntryForm() called with food: \(food.nameTR)")
         selectedFood = food
         showingMealEntry = true
+        print("🍎 ViewModel - showingMealEntry set to: \(showingMealEntry)")
     }
 
     /**
      * Shows food selection interface.
      */
     func showFoodSelection() {
+        print("🍎 ViewModel - showFoodSelection() called")
         showingFoodSelection = true
+        print("🍎 ViewModel - showingFoodSelection set to: \(showingFoodSelection)")
     }
 
     /**
      * Shows custom food entry form.
      */
     func showCustomFoodEntry() {
+        print("🍎 ViewModel - showCustomFoodEntry() called")
         showingCustomFoodEntry = true
+        print("🍎 ViewModel - showingCustomFoodEntry set to: \(showingCustomFoodEntry)")
     }
 
     /**
      * Forces scanner to start when opening food selection.
      */
     func startWithScanner() {
+        print("🍎 ViewModel - startWithScanner() called")
         forceStartWithScanner = true
         showingFoodSelection = true
+        print("🍎 ViewModel - forceStartWithScanner: \(forceStartWithScanner), showingFoodSelection: \(showingFoodSelection)")
     }
 
     /**
@@ -264,7 +273,7 @@ class NutritionViewModel: ObservableObject {
     // MARK: - Error Handling
 
     /**
-     * Shows error message to user via centralized ErrorHandlingService.
+     * Shows error message to user via centralized ErrorUIService.
      *
      * - Parameter message: Error message to display
      */
@@ -275,7 +284,7 @@ class NutritionViewModel: ObservableObject {
     }
 
     /**
-     * Shows success message via ErrorHandlingService.
+     * Shows success message via ErrorUIService.
      *
      * - Parameter message: Success message to display
      */
@@ -333,18 +342,67 @@ class NutritionViewModel: ObservableObject {
      * Processes scanned barcode using OpenFoodFactsService.
      *
      * - Parameter barcode: Scanned barcode string
+     * - Parameter modelContext: SwiftData model context for database operations
      */
-    func processBarcodeSearch(barcode: String) async {
+    func processBarcodeSearch(barcode: String, modelContext: ModelContext) async {
+        guard let normalized = BarcodeValidator.normalizeAndValidate(barcode) else {
+            showError(NutritionKeys.Scan.invalidBarcode.localized)
+            return
+        }
+
         isLoading = true
         clearErrors()
+        defer { isLoading = false }
+
+        let service = OpenFoodFactsService()
 
         do {
-            // This would integrate with OpenFoodFactsService
-            // Implementation depends on existing OpenFoodFactsService API
-            isLoading = false
+            // Check existing by barcode first
+            if let existing = try? fetchFood(byBarcode: normalized, context: modelContext) {
+                // Food already exists in database
+                selectedFood = existing
+                return
+            }
+
+            // Cache lookup (LRU) before network
+            if let cached = await BarcodeCache.shared.get(barcode: normalized) {
+                let food = cached.toFood()
+                modelContext.insert(food)
+                try modelContext.save()
+                selectedFood = food
+                return
+            }
+
+            // Network fetch from OpenFoodFacts
+            let result = try await service.fetchProduct(barcode: normalized, modelContext: modelContext)
+
+            // Ensure TR name is present for Turkish searches
+            if result.food.nameTR.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                result.food.nameTR = result.food.nameEN
+            }
+
+            modelContext.insert(result.food)
+            try modelContext.save()
+
+            // Update cache
+            let dto = CachedFoodDTO(barcode: normalized, from: result.food)
+            await BarcodeCache.shared.set(dto)
+
+            selectedFood = result.food
+
         } catch {
             showError("Failed to process barcode: \(error.localizedDescription)")
         }
+    }
+
+    /**
+     * Helper method to fetch food by barcode from database.
+     */
+    private func fetchFood(byBarcode code: String, context: ModelContext) throws -> Food? {
+        let descriptor = FetchDescriptor<Food>(
+            predicate: #Predicate { $0.barcode == code }
+        )
+        return try context.fetch(descriptor).first
     }
 
     // MARK: - Analytics Support

@@ -7,43 +7,10 @@ struct StrengthProgressionDetailView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(UnitSettings.self) var unitSettings
     @Query private var users: [User]
-    @State private var selectedTimeRange: TimeRange = .sixMonths
-    @State private var selectedExercise: String = "Bench Press"
+    @State private var viewModel = StrengthProgressionDetailViewModel()
     
     private var currentUser: User? {
         users.first
-    }
-    
-    enum TimeRange: String, CaseIterable {
-        case threeMonths = "3M"
-        case sixMonths = "6M"
-        case oneYear = "1Y"
-        case allTime = "All"
-        
-        var displayName: String {
-            switch self {
-            case .threeMonths: return "analytics.last_3_months".localized
-            case .sixMonths: return "analytics.last_6_months".localized
-            case .oneYear: return "analytics.last_year".localized
-            case .allTime: return "analytics.all_time".localized
-            }
-        }
-        
-        var months: Int {
-            switch self {
-            case .threeMonths: return 3
-            case .sixMonths: return 6
-            case .oneYear: return 12
-            case .allTime: return 24
-            }
-        }
-    }
-    
-    struct ProgressDataPoint: Identifiable {
-        let id = UUID()
-        let date: Date
-        let weight: Double
-        let exercise: String
     }
     
     var body: some View {
@@ -68,6 +35,9 @@ struct StrengthProgressionDetailView: View {
         }
         .navigationTitle("analytics.strength_progression".localized)
         .navigationBarTitleDisplayMode(.large)
+        .onAppear {
+            viewModel.setup(modelContext: modelContext, user: currentUser)
+        }
     }
     
     private var headerSection: some View {
@@ -85,14 +55,14 @@ struct StrengthProgressionDetailView: View {
     
     private var exerciseSelector: some View {
         Menu {
-            ForEach(availableExercises, id: \.self) { exercise in
+            ForEach(viewModel.availableExercises, id: \.self) { exercise in
                 Button(exercise) {
-                    selectedExercise = exercise
+                    viewModel.updateSelectedExercise(exercise)
                 }
             }
         } label: {
             HStack {
-                Text(selectedExercise)
+                Text(viewModel.selectedExercise)
                     .font(theme.typography.body)
                     .fontWeight(.medium)
                 Image(systemName: "chevron.down")
@@ -110,14 +80,14 @@ struct StrengthProgressionDetailView: View {
         HStack(spacing: theme.spacing.s) {
             ForEach(TimeRange.allCases, id: \.self) { range in
                 Button(range.displayName) {
-                    selectedTimeRange = range
+                    viewModel.updateTimeRange(range)
                 }
                 .font(.caption)
                 .fontWeight(.medium)
-                .foregroundColor(selectedTimeRange == range ? .white : theme.colors.textSecondary)
+                .foregroundColor(viewModel.selectedTimeRange == range ? .white : theme.colors.textSecondary)
                 .padding(.horizontal, theme.spacing.m)
                 .padding(.vertical, theme.spacing.s)
-                .background(selectedTimeRange == range ? theme.colors.accent : theme.colors.backgroundSecondary)
+                .background(viewModel.selectedTimeRange == range ? theme.colors.accent : theme.colors.backgroundSecondary)
                 .cornerRadius(theme.radius.s)
             }
             
@@ -135,7 +105,7 @@ struct StrengthProgressionDetailView: View {
                 exerciseSelector
             }
             
-            if progressData.isEmpty {
+            if viewModel.progressData.isEmpty {
                 EmptyStateView(
                     systemImage: "chart.line.uptrend.xyaxis",
                     title: "analytics.no_progress_data_title".localized,
@@ -145,7 +115,7 @@ struct StrengthProgressionDetailView: View {
                 )
                 .frame(height: 200)
             } else {
-                Chart(progressData) { dataPoint in
+                Chart(viewModel.progressData) { dataPoint in
                     LineMark(
                         x: .value("Date", dataPoint.date),
                         y: .value("Weight", dataPoint.weight)
@@ -176,7 +146,7 @@ struct StrengthProgressionDetailView: View {
                     AxisMarks(position: .bottom) { value in
                         if let date = value.as(Date.self) {
                             AxisValueLabel {
-                                Text(formatDate(date))
+                                Text(viewModel.formatDate(date, short: true))
                                     .font(.caption)
                                     .foregroundColor(theme.colors.textSecondary)
                             }
@@ -198,28 +168,28 @@ struct StrengthProgressionDetailView: View {
         ], spacing: theme.spacing.m) {
             StatCard(
                 title: "analytics.current_max".localized,
-                value: formatWeight(currentMax),
+                value: formatWeight(viewModel.currentMax),
                 icon: "dumbbell.fill",
                 color: .orange
             )
-            
+
             StatCard(
                 title: "analytics.total_improvement".localized,
-                value: "+\(String(format: "%.1f", totalImprovement))%",
+                value: "+\(String(format: "%.1f", viewModel.totalImprovement))%",
                 icon: "chart.line.uptrend.xyaxis",
                 color: .green
             )
-            
+
             StatCard(
                 title: "analytics.last_pr".localized,
-                value: lastPRDate,
+                value: viewModel.lastPRDate,
                 icon: "calendar",
                 color: .blue
             )
-            
+
             StatCard(
                 title: "analytics.training_frequency".localized,
-                value: "\(trainingFrequency)x/week",
+                value: "\(viewModel.trainingFrequency)x/week",
                 icon: "repeat",
                 color: .purple
             )
@@ -233,7 +203,7 @@ struct StrengthProgressionDetailView: View {
                 .fontWeight(.semibold)
             
             VStack(spacing: theme.spacing.s) {
-                ForEach(exerciseComparison, id: \.exercise) { comparison in
+                ForEach(viewModel.exerciseComparison, id: \.exercise) { comparison in
                     ExerciseComparisonRow(comparison: comparison)
                 }
             }
@@ -244,147 +214,6 @@ struct StrengthProgressionDetailView: View {
         .cardStyle()
     }
     
-    // MARK: - Data Properties
-    
-    private var availableExercises: [String] {
-        ["Bench Press", "Squat", "Deadlift", "Overhead Press", "Pull Up"]
-    }
-    
-    private var progressData: [ProgressDataPoint] {
-        generateProgressData(for: selectedExercise, timeRange: selectedTimeRange)
-    }
-    
-    private var currentMax: Double {
-        guard let user = currentUser else { return 0 }
-        switch selectedExercise {
-        case "Bench Press": return user.benchPressOneRM ?? 0
-        case "Squat": return user.squatOneRM ?? 0
-        case "Deadlift": return user.deadliftOneRM ?? 0
-        case "Overhead Press": return user.overheadPressOneRM ?? 0
-        default: return 0
-        }
-    }
-    
-    private var totalImprovement: Double {
-        guard progressData.count > 1 else { return 0 }
-        let first = progressData.first?.weight ?? 0
-        let last = progressData.last?.weight ?? 0
-        guard first > 0 else { return 0 }
-        return ((last - first) / first) * 100
-    }
-    
-    private var lastPRDate: String {
-        guard let lastPoint = progressData.last else { return "--" }
-        return formatDate(lastPoint.date, short: true)
-    }
-    
-    private var trainingFrequency: Int {
-        // Calculate real training frequency from last 4 weeks
-        let fourWeeksAgo = Calendar.current.date(byAdding: .day, value: -28, to: Date()) ?? Date()
-        let liftSessions = getLiftSessionsFromLast4Weeks(since: fourWeeksAgo)
-        return max(1, liftSessions.count / 4) // Average sessions per week
-    }
-    
-    private var exerciseComparison: [ExerciseComparison] {
-        availableExercises.map { exercise in
-            ExerciseComparison(
-                exercise: exercise,
-                currentMax: getCurrentMax(for: exercise),
-                improvement: getImprovement(for: exercise)
-            )
-        }
-    }
-    
-    // MARK: - Helper Methods
-    
-    private func generateProgressData(for exercise: String, timeRange: TimeRange) -> [ProgressDataPoint] {
-        let endDate = Date()
-        let _ = Calendar.current.date(byAdding: .month, value: -timeRange.months, to: endDate) ?? endDate
-        let baseWeight = currentMax > 0 ? currentMax * 0.85 : 60.0 // Start at 85% of current max
-        
-        var data: [ProgressDataPoint] = []
-        let numberOfPoints = min(timeRange.months * 2, 12) // Bi-weekly data points
-        
-        for i in 0..<numberOfPoints {
-            let date = Calendar.current.date(byAdding: .weekOfYear, value: i * 2 - numberOfPoints * 2, to: endDate) ?? endDate
-            let progressionFactor = Double(i) / Double(numberOfPoints - 1)
-            let weight = baseWeight + (currentMax - baseWeight) * progressionFactor
-            
-            data.append(ProgressDataPoint(
-                date: date,
-                weight: weight,
-                exercise: exercise
-            ))
-        }
-        
-        return data.sorted { $0.date < $1.date }
-    }
-    
-    private func getCurrentMax(for exercise: String) -> Double {
-        guard let user = currentUser else { return 0 }
-        switch exercise {
-        case "Bench Press": return user.benchPressOneRM ?? 0
-        case "Squat": return user.squatOneRM ?? 0
-        case "Deadlift": return user.deadliftOneRM ?? 0
-        case "Overhead Press": return user.overheadPressOneRM ?? 0
-        case "Pull Up": return user.pullUpOneRM ?? 0
-        default: return 0
-        }
-    }
-    
-    private func getImprovement(for exercise: String) -> Double {
-        // Calculate real improvement from exercise progression
-        let twoMonthsAgo = Calendar.current.date(byAdding: .month, value: -2, to: Date()) ?? Date()
-        
-        // Get recent and older exercise results
-        let recentResults = getExerciseResults(for: exercise, since: Calendar.current.date(byAdding: .month, value: -1, to: Date()) ?? Date())
-        let olderResults = getExerciseResults(for: exercise, since: twoMonthsAgo, until: Calendar.current.date(byAdding: .month, value: -1, to: Date()) ?? Date())
-        
-        guard let recentMax = recentResults.compactMap({ $0.maxWeight }).max(),
-              let olderMax = olderResults.compactMap({ $0.maxWeight }).max(),
-              olderMax > 0 else {
-            return 0.0 // No improvement data available
-        }
-        
-        return ((recentMax - olderMax) / olderMax) * 100.0
-    }
-    
-    // MARK: - Data Helper Methods
-    
-    private func getLiftSessionsFromLast4Weeks(since date: Date) -> [LiftSession] {
-        let descriptor = FetchDescriptor<LiftSession>(
-            predicate: #Predicate<LiftSession> { session in
-                (session.endDate ?? session.startDate) >= date
-            },
-            sortBy: [SortDescriptor(\.startDate, order: .reverse)]
-        )
-        
-        do {
-            return try modelContext.fetch(descriptor)
-        } catch {
-            return []
-        }
-    }
-    
-    private func getExerciseResults(for exerciseName: String, since startDate: Date, until endDate: Date? = nil) -> [LiftExerciseResult] {
-        let end = endDate ?? Date()
-        
-        let descriptor = FetchDescriptor<LiftExerciseResult>(
-            predicate: #Predicate<LiftExerciseResult> { result in
-                result.exercise?.exerciseName == exerciseName &&
-                result.performedAt >= startDate &&
-                result.performedAt <= end
-            },
-            sortBy: [SortDescriptor(\.performedAt, order: .reverse)]
-        )
-        
-        do {
-            return try modelContext.fetch(descriptor)
-        } catch {
-            return []
-        }
-    }
-    
     private func formatWeight(_ weight: Double) -> String {
         if unitSettings.unitSystem == .metric {
             return "\(Int(weight))kg"
@@ -392,16 +221,6 @@ struct StrengthProgressionDetailView: View {
             let weightInLbs = weight * 2.20462
             return "\(Int(weightInLbs))lb"
         }
-    }
-    
-    private func formatDate(_ date: Date, short: Bool = false) -> String {
-        let formatter = DateFormatter()
-        if short {
-            formatter.dateFormat = "d MMM"
-        } else {
-            formatter.dateFormat = "MMM d"
-        }
-        return formatter.string(from: date)
     }
 }
 
@@ -439,12 +258,6 @@ struct StatCard: View {
         .cornerRadius(theme.radius.m)
         .cardStyle()
     }
-}
-
-struct ExerciseComparison {
-    let exercise: String
-    let currentMax: Double
-    let improvement: Double
 }
 
 struct ExerciseComparisonRow: View {

@@ -5,34 +5,12 @@ struct FoodSelectionView: View {
     let foods: [Food]
     let onFoodSelected: (Food) -> Void
     var startWithScanner: Bool = false
-    
+
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
-    @State private var searchText = ""
-    @State private var debouncedSearchText = ""
-    @State private var searchTask: Task<Void, Never>? = nil
-    @State private var offSearchTask: Task<Void, Never>? = nil
-    @State private var selectedCategory: FoodCategory? = nil
-    @State private var showingCustomFoodEntry = false
-    @State private var showingScanner = false
-    @State private var isLoadingOFF = false
-    @State private var offErrorMessage: String? = nil
-    @State private var offResults: [Food] = []
-    @State private var recentSearches: [String] = []
-    @State private var toastMessage: String? = nil
-    
-    // Enhanced search with service integration
-    @State private var searchService = FoodSearchService()
-    @State private var aliasSearchTask: Task<Void, Never>? = nil
-    
-    // Enhanced search results via FoodSearchService
-    private var filteredFoods: [Food] {
-        return searchService.searchResults
-    }
-    
-    private var aliasMatches: [Food] {
-        return searchService.aliasResults
-    }
+    @State private var viewModel: FoodSelectionViewModel?
+
+    // All state management delegated to ViewModel - no computed properties needed
     
     var body: some View {
         VStack(spacing: 0) {
@@ -55,15 +33,15 @@ struct FoodSelectionView: View {
                 
                 HStack(spacing: 16) {
                     Button {
-                        showingScanner = true
+                        viewModel?.startScanning()
                     } label: {
                         Image(systemName: "barcode.viewfinder")
                             .font(.title3)
                             .foregroundColor(.blue)
                     }
-                    
+
                     Button(NutritionKeys.FoodSelection.addNew.localized) {
-                        showingCustomFoodEntry = true
+                        viewModel?.showCustomFoodEntry()
                     }
                     .font(.body)
                     .foregroundColor(.blue)
@@ -80,61 +58,46 @@ struct FoodSelectionView: View {
             VStack(spacing: 0) {
                 // Arama çubuğu
                 FoodSearchBar(
-                    searchText: $searchText,
-                    recentSearches: $recentSearches
+                    searchText: Binding(
+                        get: { viewModel?.searchText ?? "" },
+                        set: { viewModel?.updateSearchText($0, foods: foods) }
+                    ),
+                    recentSearches: Binding(
+                        get: { viewModel?.recentSearches ?? [] },
+                        set: { viewModel?.recentSearches = $0 }
+                    )
                 )
                 .padding(.horizontal)
                 .padding(.top, 8)
-                .onChange(of: searchText) { _, newValue in
-                    searchTask?.cancel()
-                    searchTask = Task { @MainActor in
-                        try? await Task.sleep(nanoseconds: 250_000_000)
-                        if Task.isCancelled { return }
-                        debouncedSearchText = newValue
-                        
-                        // Trigger enhanced search via service
-                        searchService.search(
-                            query: newValue,
-                            foods: foods,
-                            selectedCategory: selectedCategory,
-                            modelContext: modelContext
-                        )
-                    }
+                .onChange(of: viewModel?.searchText ?? "") { _, newValue in
+                    viewModel?.updateSearchText(newValue, foods: foods)
                 }
-                .onChange(of: selectedCategory) { _, _ in
-                    // Re-trigger search when category changes
-                    if !searchText.isEmpty {
-                        searchService.search(
-                            query: searchText,
-                            foods: foods,
-                            selectedCategory: selectedCategory,
-                            modelContext: modelContext
-                        )
-                    }
-                }
-                
+
                 // Kategori filtreleri
-                FoodCategoryFilter(selectedCategory: $selectedCategory)
+                FoodCategoryFilter(selectedCategory: Binding(
+                    get: { viewModel?.selectedCategory },
+                    set: { viewModel?.updateSelectedCategory($0, foods: foods) }
+                ))
                 
                 // Progressive food list - enhanced with alias support
-                let hasLocalResults = !filteredFoods.isEmpty
-                let hasAliasResults = !aliasMatches.isEmpty
-                let hasOffResults = !offResults.isEmpty
-                let isSearching = !debouncedSearchText.isEmpty
-                let hasAnyResults = hasLocalResults || hasAliasResults || hasOffResults
-                let shouldShowLoading = (isLoadingOFF || searchService.isSearching) && !hasAnyResults
-                
+                let hasLocalResults = !(viewModel?.filteredFoods.isEmpty ?? true)
+                let hasAliasResults = !(viewModel?.aliasMatches.isEmpty ?? true)
+                let hasOffResults = !(viewModel?.offResults.isEmpty ?? true)
+                let isSearching = !(viewModel?.debouncedSearchText.isEmpty ?? true)
+                let hasAnyResults = viewModel?.hasAnyResults ?? false
+                let shouldShowLoading = viewModel?.shouldShowLoading ?? false
+
                 if !hasAnyResults && !isSearching {
                     // Empty state when not searching
                     FoodSelectionEmptyStateView(
-                        searchText: searchText,
-                        onAddNew: { showingCustomFoodEntry = true }
+                        searchText: viewModel?.searchText ?? "",
+                        onAddNew: { viewModel?.showCustomFoodEntry() }
                     )
                 } else if !hasAnyResults && isSearching && !shouldShowLoading {
                     // No results for search
                     FoodSelectionEmptyStateView(
-                        searchText: searchText,
-                        onAddNew: { showingCustomFoodEntry = true }
+                        searchText: viewModel?.searchText ?? "",
+                        onAddNew: { viewModel?.showCustomFoodEntry() }
                     )
                 } else {
                     // Progressive results - show what we have
@@ -142,7 +105,7 @@ struct FoodSelectionView: View {
                         // Enhanced local results (immediate)
                         if hasLocalResults {
                             Section(header: Text(NutritionKeys.Search.localResults.localized)) {
-                                ForEach(filteredFoods, id: \.id) { food in
+                                ForEach(viewModel?.filteredFoods ?? [], id: \.id) { food in
                                     FoodRowView(food: food) {
                                         onFoodSelected(food)
                                         HapticManager.shared.impact(.light)
@@ -150,11 +113,11 @@ struct FoodSelectionView: View {
                                 }
                             }
                         }
-                        
+
                         // Alias-enhanced results (via FoodSearchService)
-                        if !aliasMatches.isEmpty {
+                        if hasAliasResults {
                             Section(header: Text(NutritionKeys.Search.aliasResults.localized)) {
-                                ForEach(aliasMatches, id: \.id) { food in
+                                ForEach(viewModel?.aliasMatches ?? [], id: \.id) { food in
                                     FoodRowView(food: food, showAliasIndicator: true) {
                                         onFoodSelected(food)
                                         HapticManager.shared.impact(.light)
@@ -166,16 +129,19 @@ struct FoodSelectionView: View {
                         // Show OFF results as they load
                         if hasOffResults {
                             Section(header: Text(NutritionKeys.OpenFoodFacts.section.localized)) {
-                                ForEach(offResults, id: \.id) { food in
+                                ForEach(viewModel?.offResults ?? [], id: \.id) { food in
                                     FoodRowView(food: food) {
-                                        handleOFFResultSelection(food)
+                                        Task {
+                                            await viewModel?.handleOFFResultSelection(food)
+                                            onFoodSelected(food)
+                                        }
                                     }
                                 }
                             }
                         }
-                        
+
                         // Show loading skeleton while OFF search is in progress
-                        if isLoadingOFF && isSearching {
+                        if (viewModel?.isLoadingOFF ?? false) && isSearching {
                             Section(header: Text(NutritionKeys.OpenFoodFacts.section.localized)) {
                                 ForEach(0..<3, id: \.self) { _ in
                                     FoodSkeletonRow()
@@ -189,51 +155,56 @@ struct FoodSelectionView: View {
             }
         }
         .overlay(alignment: .center) {
-            if isLoadingOFF {
+            if (viewModel?.isLoadingOFF ?? false) {
                 LoadingOverlay()
             }
         }
-        .alert(CommonKeys.Onboarding.Common.error.localized, isPresented: .constant(offErrorMessage != nil)) {
-            Button(CommonKeys.Onboarding.Common.ok.localized) { offErrorMessage = nil }
+        .alert(CommonKeys.Onboarding.Common.error.localized, isPresented: .constant((viewModel?.offErrorMessage) != nil)) {
+            Button(CommonKeys.Onboarding.Common.ok.localized) { viewModel?.offErrorMessage = nil }
         } message: {
-            Text(offErrorMessage ?? "")
+            Text(viewModel?.offErrorMessage ?? "")
         }
-        .onChange(of: debouncedSearchText) { _, newValue in
-            offSearchTask?.cancel()
-            let query = newValue.trimmingCharacters(in: .whitespacesAndNewlines)
-            guard !query.isEmpty else { 
-                offResults = []
-                searchService.clearSearch()
-                return 
-            }
-            
-            offSearchTask = Task { @MainActor in
-                await performOFFSearch(query: query)
-            }
+        .onChange(of: viewModel?.debouncedSearchText ?? "") { _, newValue in
+            viewModel?.handleDebouncedSearchChange(newValue)
         }
-        .sheet(isPresented: $showingCustomFoodEntry) {
+        .sheet(isPresented: Binding(
+            get: { viewModel?.showingCustomFoodEntry ?? false },
+            set: { viewModel?.showingCustomFoodEntry = $0 }
+        )) {
             CustomFoodEntryView(onFoodCreated: { newFood in
-                showingCustomFoodEntry = false
+                viewModel?.showingCustomFoodEntry = false
                 onFoodSelected(newFood)
-            }, prefillBarcode: debouncedSearchText.isEmpty ? nil : debouncedSearchText)
+            }, prefillBarcode: (viewModel?.debouncedSearchText.isEmpty ?? true) ? nil : viewModel?.debouncedSearchText)
         }
-        .sheet(isPresented: $showingScanner) {
+        .sheet(isPresented: Binding(
+            get: { viewModel?.showingScanner ?? false },
+            set: { viewModel?.showingScanner = $0 }
+        )) {
             BarcodeScanView { code in
-                Task { await handleScannedBarcode(code) }
+                Task {
+                    await viewModel?.handleScannedBarcode(code)
+                    // Handle food selection if needed through callback
+                }
             }
             .ignoresSafeArea()
         }
-        .background(ToastPresenter(message: $toastMessage, icon: "checkmark.circle.fill", type: .success) { EmptyView() })
+        .background(ToastPresenter(message: Binding(
+            get: { viewModel?.toastMessage },
+            set: { viewModel?.toastMessage = $0 }
+        ), icon: "checkmark.circle.fill", type: .success) { EmptyView() })
         .onAppear {
+            if viewModel == nil {
+                viewModel = FoodSelectionViewModel()
+                viewModel?.setModelContext(modelContext)
+            }
+
             if startWithScanner && !showingScanner {
-                showingScanner = true
+                viewModel?.startScanning()
             }
         }
         .onDisappear {
             // Performance optimization - cancel ongoing tasks to prevent memory leaks
-            searchTask?.cancel()
-            offSearchTask?.cancel()
-            searchService.clearSearch()
+            viewModel?.clearSearchState()
         }
         .animation(.easeInOut(duration: 0.3), value: isLoadingOFF)
         .animation(.easeInOut(duration: 0.3), value: offResults.count)
@@ -289,178 +260,6 @@ private struct LoadingOverlay: View {
     }
 }
 
-// MARK: - OFF Integration
-extension FoodSelectionView {
-    @MainActor
-    private func performOFFSearch(query: String) async {
-        isLoadingOFF = true
-        defer { isLoadingOFF = false }
-        
-        let service = OpenFoodFactsService()
-        do {
-            let results = try await service.searchProducts(query: query, lc: "tr", limit: 20)
-            // Map to transient Food objects (not yet in DB). Avoid simple duplicates by display/name/brand/barcode
-            let existingNames = Set(filteredFoods.map { $0.displayName.lowercased() })
-            let mapped: [Food] = results.map { $0.food }.map { f in
-                let nf = f
-                if nf.nameTR.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                    nf.nameTR = nf.nameEN
-                }
-                return nf
-            }.filter { !existingNames.contains($0.displayName.lowercased()) }
-
-            var seen: Set<String> = []
-            let unique = mapped.filter { food in
-                let key = "\(food.barcode?.lowercased() ?? "")|\(SearchUtilities.normalizeForSearch(food.nameEN))|\(SearchUtilities.normalizeForSearch(food.brand ?? ""))"
-                if seen.contains(key) { return false }
-                seen.insert(key)
-                return true
-            }
-            offResults = unique
-        } catch {
-            offResults = []
-            if let offError = error as? OpenFoodFactsError {
-                switch offError {
-                case .rateLimited:
-                    offErrorMessage = NutritionKeys.Scan.rateLimited.localized
-                case .networkUnavailable:
-                    offErrorMessage = NutritionKeys.Scan.networkError.localized
-                case .productNotFound:
-                    offErrorMessage = OpenFoodFactsError.productNotFound.localizedDescription
-                default:
-                    offErrorMessage = offError.localizedDescription
-                }
-            } else {
-                offErrorMessage = error.localizedDescription
-            }
-        }
-    }
-    
-    @MainActor
-    private func handleScannedBarcode(_ code: String) async {
-        guard let normalized = BarcodeValidator.normalizeAndValidate(code) else {
-            offErrorMessage = NutritionKeys.Scan.invalidBarcode.localized
-            return
-        }
-        isLoadingOFF = true
-        defer { isLoadingOFF = false }
-
-        let service = OpenFoodFactsService()
-        do {
-            // Check existing by barcode
-            if let existing = try? fetchFood(byBarcode: normalized) {
-                HapticManager.shared.notification(.success)
-                toastMessage = NutritionKeys.Scan.existing.localized
-                onFoodSelected(existing)
-                showingScanner = false
-                return
-            }
-
-            // Cache lookup (LRU) before network
-            if let cached = await BarcodeCache.shared.get(barcode: normalized) {
-                let food = cached.toFood()
-                modelContext.insert(food)
-                do { try modelContext.save() } catch {
-                    offErrorMessage = error.localizedDescription
-                    return
-                }
-                HapticManager.shared.notification(.success)
-                toastMessage = NutritionKeys.Scan.cached.localized
-                onFoodSelected(food)
-                showingScanner = false
-                return
-            }
-
-            let result = try await service.fetchProduct(barcode: normalized, modelContext: modelContext)
-            // Persist new food; ensure TR name is present for TR searches
-            if result.food.nameTR.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                result.food.nameTR = result.food.nameEN
-            }
-            modelContext.insert(result.food)
-            do { try modelContext.save() } catch {
-                offErrorMessage = error.localizedDescription
-                return
-            }
-
-            // Update cache
-            let dto = CachedFoodDTO(barcode: normalized, from: result.food)
-            await BarcodeCache.shared.set(dto)
-
-            #if canImport(UIKit)
-            UINotificationFeedbackGenerator().notificationOccurred(.success)
-            #endif
-            toastMessage = NutritionKeys.Scan.scanned.localized
-            onFoodSelected(result.food)
-            showingScanner = false
-        } catch {
-            HapticManager.shared.notification(.error)
-            if let offError = error as? OpenFoodFactsError {
-                offErrorMessage = offError.localizedDescription
-                // Product not found -> offer manual creation flow
-                if offError == .productNotFound {
-                    showingScanner = false
-                    // Show custom food entry prefilled with barcode
-                    showingCustomFoodEntry = true
-                    toastMessage = NutritionKeys.Scan.notFound.localized
-                } else if offError == .rateLimited {
-                    toastMessage = NutritionKeys.Scan.rateLimited.localized
-                }
-            } else {
-                offErrorMessage = error.localizedDescription
-                toastMessage = NutritionKeys.Scan.networkError.localized
-            }
-        }
-    }
-
-    private func handleOFFResultSelection(_ food: Food) {
-        // Prevent duplicates by barcode if exists
-        if let code = food.barcode {
-            do {
-                if let existing = try fetchFood(byBarcode: code) {
-                    #if canImport(UIKit)
-                    UINotificationFeedbackGenerator().notificationOccurred(.success)
-                    #endif
-                    toastMessage = NutritionKeys.Scan.existing.localized
-                    onFoodSelected(existing)
-                    return
-                }
-            } catch {
-                offErrorMessage = error.localizedDescription
-            }
-        }
-
-        if food.nameTR.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-            food.nameTR = food.nameEN
-        }
-        modelContext.insert(food)
-        do { try modelContext.save() } catch {
-            offErrorMessage = error.localizedDescription
-            return
-        }
-        HapticManager.shared.notification(.success)
-        toastMessage = NutritionKeys.Scan.scanned.localized
-        onFoodSelected(food)
-    }
-
-    private func fetchFood(byBarcode code: String) throws -> Food? {
-        let descriptor = FetchDescriptor<Food>(
-            predicate: #Predicate { $0.barcode == code }
-        )
-        return try modelContext.fetch(descriptor).first
-    }
-    
-    // MARK: - Service Integration Helpers
-    
-    private func triggerInitialSearch() {
-        guard !searchText.isEmpty else { return }
-        searchService.search(
-            query: searchText,
-            foods: foods,
-            selectedCategory: selectedCategory,
-            modelContext: modelContext
-        )
-    }
-}
 
 #Preview {
     FoodSelectionView(foods: [

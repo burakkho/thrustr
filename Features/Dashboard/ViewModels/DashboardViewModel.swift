@@ -154,7 +154,7 @@ class DashboardViewModel {
         isActivitiesLoading = true
         activityLogger.setModelContext(modelContext)
 
-        let activities = activityLogger.fetchRecentActivities(
+        let activities = await activityLogger.fetchRecentActivities(
             limit: 20,
             for: currentUser
         )
@@ -408,9 +408,9 @@ class DashboardViewModel {
     private func setupActivityLogger(modelContext: ModelContext) async {
         activityLogger.setModelContext(modelContext)
         
-        // Perform background cleanup
-        Task.detached(priority: .background) {
-            await self.activityLogger.performCleanup()
+        // Perform cleanup safely within MainActor context
+        Task {
+            await activityLogger.performCleanup()
         }
     }
 }

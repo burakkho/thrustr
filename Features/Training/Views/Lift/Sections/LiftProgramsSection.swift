@@ -4,12 +4,19 @@ import SwiftData
 struct LiftProgramsSection: View {
     @Environment(\.theme) private var theme
     @Environment(\.modelContext) private var modelContext
+    @Environment(TrainingCoordinator.self) private var coordinator
     @Query private var programs: [LiftProgram]
     @Query(filter: #Predicate<ProgramExecution> { !$0.isCompleted })
     private var activeProgramExecutions: [ProgramExecution]
-    
+    @Query private var users: [User]
+
     @State private var selectedProgram: LiftProgram?
+    @State private var selectedWorkout: LiftWorkout?
     @State private var searchText = ""
+
+    private var currentUser: User? {
+        users.first
+    }
     
     private var filteredPrograms: [LiftProgram] {
         let featured = programs
@@ -57,6 +64,9 @@ struct LiftProgramsSection: View {
         }
         .sheet(item: $selectedProgram) { program in
             ProgramDetailView(program: program)
+        }
+        .fullScreenCover(item: $selectedWorkout) { workout in
+            LiftSessionView(workout: workout, programExecution: nil)
         }
     }
     
@@ -141,9 +151,31 @@ struct LiftProgramsSection: View {
         }
     }
     
-    
+
     private func startCurrentWorkout(execution: ProgramExecution) {
-        // Implementation for starting workout
-        Logger.info("Starting workout for program: \(execution.program?.localizedName ?? "Unknown")")
+        guard let user = currentUser,
+              let currentWorkout = execution.currentWorkout else {
+            Logger.error("Missing user or current workout for program execution")
+            return
+        }
+
+        // Create a new LiftSession for the current workout
+        let liftSession = LiftSession(
+            workout: currentWorkout,
+            user: user,
+            programExecution: execution
+        )
+
+        do {
+            modelContext.insert(liftSession)
+            try modelContext.save()
+
+            // Start the lift session
+            selectedWorkout = currentWorkout
+
+            Logger.success("Started workout: \(currentWorkout.localizedName)")
+        } catch {
+            Logger.error("Failed to start workout: \(error)")
+        }
     }
 }

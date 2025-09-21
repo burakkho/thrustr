@@ -45,6 +45,13 @@ final class CardioSession {
     // Relationships
     var user: User?
     @Relationship(deleteRule: .cascade, inverse: \CardioResult.session) var results: [CardioResult]?
+
+    // MARK: - Computed Properties
+
+    /// Display date for UI consistency
+    var displayDate: Date {
+        return completedAt ?? startDate
+    }
     
     init(
         workout: CardioWorkout? = nil,
@@ -129,7 +136,7 @@ extension CardioSession {
     
     var feelingEmoji: String {
         guard let feeling = feeling else { return "😐" }
-        return SessionFeeling(rawValue: feeling)?.emoji ?? "😐"
+        return CardioSessionFeeling(rawValue: feeling)?.emoji ?? "😐"
     }
     
     var formattedDuration: String {
@@ -357,7 +364,7 @@ extension CardioSession {
 }
 
 // MARK: - Session Feelings
-enum SessionFeeling: String, CaseIterable {
+enum CardioSessionFeeling: String, CaseIterable {
     case great = "great"
     case good = "good"
     case okay = "okay"

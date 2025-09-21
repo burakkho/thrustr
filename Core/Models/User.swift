@@ -16,7 +16,7 @@ import Foundation
  * - Body measurements and equipment preferences
  */
 @Model
-final class User {
+final class User: @unchecked Sendable {
     // MARK: - Personal Information  
     var id: UUID = UUID()
     var name: String = ""

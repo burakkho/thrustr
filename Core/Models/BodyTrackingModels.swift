@@ -33,7 +33,12 @@ final class WeightEntry {
     }
     
     // MARK: - Computed Properties
-    
+
+    /// Display date for UI consistency
+    var displayDate: Date {
+        return date
+    }
+
     /// Calculate BMI if user height available
     var bmi: Double? {
         guard let user = user, user.height > 0 else { return nil }
@@ -54,8 +59,8 @@ final class WeightEntry {
         }
     }
     
-    /// Display date string
-    var displayDate: String {
+    /// Display date string (renamed to avoid conflict)
+    var displayDateString: String {
         let formatter = DateFormatter()
         formatter.dateStyle = .medium
         formatter.timeStyle = .none
@@ -194,8 +199,13 @@ final class ProgressPhoto {
         }
     }
     
+    /// Display date for UI consistency
+    var displayDate: Date {
+        return date
+    }
+
     /// Display date string
-    var displayDate: String {
+    var displayDateString: String {
         let formatter = DateFormatter()
         formatter.dateStyle = .short
         formatter.timeStyle = .none
@@ -211,7 +221,7 @@ final class ProgressPhoto {
 
 // MARK: - Goal Model (Enhanced)
 @Model
-final class Goal {
+final class Goal: @unchecked Sendable {
     var id: UUID = UUID()
     var title: String = ""
     var goalDescription: String?

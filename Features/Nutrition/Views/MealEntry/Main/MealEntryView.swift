@@ -1,20 +1,16 @@
 import SwiftUI
 import SwiftData
+import Foundation
 
 struct MealEntryView: View {
     let food: Food
     let onDismiss: () -> Void
-    
+
     @Environment(\.modelContext) private var modelContext
     @Environment(UnitSettings.self) var unitSettings
     @Environment(HealthKitService.self) var healthKitService
-    @State private var gramsConsumed: Double = 100
-    @State private var servingCount: Double = 1
-    @State private var inputMode: PortionInputMode = .grams
-    // Çoklu öğün seçimi desteği
-    @State private var selectedMealTypes: Set<String> = ["breakfast"]
-    @State private var saveErrorMessage: String? = nil
-    
+    @State private var viewModel: MealEntryViewModel?
+
     private var mealTypes: [(String, String)] {
         [
             ("breakfast", NutritionKeys.MealEntry.MealTypes.breakfast.localized),
@@ -22,6 +18,34 @@ struct MealEntryView: View {
             ("dinner", NutritionKeys.MealEntry.MealTypes.dinner.localized),
             ("snack", NutritionKeys.MealEntry.MealTypes.snack.localized)
         ]
+    }
+
+    private var selectedMealTypes: Set<String> {
+        return viewModel?.selectedMealTypes ?? []
+    }
+
+    private var effectiveGrams: Double {
+        return viewModel?.effectiveGrams ?? 0
+    }
+
+    private var inputMode: PortionInputMode {
+        get { viewModel?.inputMode ?? .grams }
+        set { viewModel?.setInputMode(newValue) }
+    }
+
+    private var gramsConsumed: Double {
+        get { viewModel?.gramsConsumed ?? 100 }
+        set { viewModel?.updateGramsConsumed(newValue) }
+    }
+
+    private var servingCount: Double {
+        get { viewModel?.servingCount ?? 1 }
+        set { viewModel?.updateServingCount(newValue) }
+    }
+
+    private var saveErrorMessage: String? {
+        get { viewModel?.saveErrorMessage }
+        set { viewModel?.saveErrorMessage = newValue }
     }
     
     var body: some View {
@@ -79,9 +103,19 @@ struct MealEntryView: View {
         .alert(isPresented: errorAlertBinding) {
             Alert(
                 title: Text(CommonKeys.Onboarding.Common.error.localized),
-                message: Text(saveErrorMessage ?? ""),
+                message: Text(viewModel?.saveErrorMessage ?? ""),
                 dismissButton: .default(Text(CommonKeys.Onboarding.Common.ok.localized))
             )
+        }
+        .onAppear {
+            if viewModel == nil {
+                viewModel = MealEntryViewModel(
+                    unitSettings: unitSettings,
+                    healthKitService: healthKitService,
+                    activityLoggerService: ActivityLoggerService.shared
+                )
+                viewModel?.setFood(food, modelContext: modelContext)
+            }
         }
     }
     
@@ -96,9 +130,7 @@ struct MealEntryView: View {
                 
                 // Favori butonu
                 Button {
-                    food.toggleFavorite()
-                    do { try food.modelContext?.save() } catch { saveErrorMessage = error.localizedDescription }
-                    HapticManager.shared.impact(.light)
+                    viewModel?.toggleFoodFavorite()
                 } label: {
                     Image(systemName: food.isFavorite ? "heart.fill" : "heart")
                         .foregroundColor(food.isFavorite ? .red : .gray)
@@ -120,13 +152,16 @@ struct MealEntryView: View {
             
             HStack(spacing: 8) {
                 ForEach(mealTypes, id: \.0) { type, name in
-                    let isOn = selectedMealTypes.contains(type)
+                    let isOn = viewModel?.selectedMealTypes.contains(type) ?? false
                     Button {
+                        guard let viewModel = viewModel else { return }
+                        var newMealTypes = viewModel.selectedMealTypes
                         if isOn {
-                            selectedMealTypes.remove(type)
+                            newMealTypes.remove(type)
                         } else {
-                            selectedMealTypes.insert(type)
+                            newMealTypes.insert(type)
                         }
+                        viewModel.updateSelectedMealTypes(newMealTypes)
                     } label: {
                         Text(name)
                             .font(.subheadline)
@@ -144,12 +179,11 @@ struct MealEntryView: View {
     
     private var nutritionCalculationSection: some View {
         Group {
-            if effectiveGrams > 0 {
-                let nutrition = food.calculateNutrition(for: effectiveGrams)
+            if let nutrition = viewModel?.calculatedNutrition {
                 VStack(spacing: 4) {
                     Text(NutritionKeys.MealEntry.total.localized(with: Int(nutrition.calories)))
                         .font(.headline)
-                    Text("\(NutritionKeys.CustomFood.protein.localized): \(Int(nutrition.protein))\(NutritionKeys.Units.g.localized) • \(NutritionKeys.CustomFood.carbs.localized): \(Int(nutrition.carbs))\(NutritionKeys.Units.g.localized) • \(NutritionKeys.CustomFood.fat.localized): \(Int(nutrition.fat))\(NutritionKeys.Units.g.localized)")
+                    Text(viewModel?.getFormattedNutrition() ?? "")
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
@@ -163,251 +197,61 @@ struct MealEntryView: View {
     private var addButton: some View {
         Button(NutritionKeys.MealEntry.addToMeal.localized) { addMealEntry() }
             .buttonStyle(.borderedProminent)
-            .disabled(effectiveGrams <= 0 || selectedMealTypes.isEmpty)
+            .disabled(!(viewModel?.isValidEntry ?? false))
     }
     
     private var errorAlertBinding: Binding<Bool> {
         Binding<Bool>(
-            get: { saveErrorMessage != nil },
-            set: { if !$0 { saveErrorMessage = nil } }
+            get: { viewModel?.saveErrorMessage != nil },
+            set: { if !$0 { viewModel?.saveErrorMessage = nil } }
         )
     }
     
     private func addMealEntry() {
-        // Seçilen her öğün için ayrı giriş oluştur
-        for meal in selectedMealTypes {
-            let entry = NutritionEntry(
-                food: food,
-                gramsConsumed: effectiveGrams,
-                mealType: meal
-            )
-            modelContext.insert(entry)
-        }
-        
-        // Usage tracking
-        food.recordUsage()
-        do {
-            try modelContext.save()
-            
-            // Log meal completion activity for dashboard - Optimized approach
-            let currentUser = fetchCurrentUser()
-            ActivityLoggerService.shared.setModelContext(modelContext)
-            
-            // Log activity for each selected meal type (ActivityLoggerService now handles updates smartly)
-            for meal in selectedMealTypes {
-                let mealDisplayName = mealTypes.first { $0.0 == meal }?.1 ?? meal
-                
-                // Calculate fresh meal totals - ActivityLoggerService will update existing entries
-                let freshMealTotals = calculateMealTotals(for: meal, on: Date())
-                
-                // ActivityLoggerService now checks for existing activity and updates instead of duplicating
-                ActivityLoggerService.shared.logMealCompleted(
-                    mealType: mealDisplayName,
-                    foodCount: freshMealTotals.foodCount,
-                    totalCalories: freshMealTotals.calories,
-                    totalProtein: freshMealTotals.protein,
-                    totalCarbs: freshMealTotals.carbs,
-                    totalFat: freshMealTotals.fat,
-                    user: currentUser
-                )
+        guard let viewModel = viewModel else { return }
+
+        Task {
+            let result = await viewModel.saveMealEntry()
+            switch result {
+            case .success:
+                onDismiss()
+            case .failure(_):
+                // Error is handled by ViewModel's saveErrorMessage
+                break
             }
-            
-            // Save daily nutrition totals to HealthKit
-            Task {
-                let dailyTotals = calculateDailyTotals(for: Date())
-                let success = await healthKitService.saveNutritionData(
-                    calories: dailyTotals.calories,
-                    protein: dailyTotals.protein,
-                    carbs: dailyTotals.carbs,
-                    fat: dailyTotals.fat,
-                    date: Date()
-                )
-                
-                if success {
-                    Logger.info("Daily nutrition data successfully synced to HealthKit")
-                }
-            }
-            
-            HapticManager.shared.notification(.success)
-            onDismiss()
-        } catch {
-            saveErrorMessage = error.localizedDescription
         }
     }
 
-    // Helper to get current user
-    private func fetchCurrentUser() -> User? {
-        let descriptor = FetchDescriptor<User>(sortBy: [SortDescriptor(\User.createdAt)])
-        do {
-            let users = try modelContext.fetch(descriptor)
-            return users.first
-        } catch {
-            return nil
-        }
-    }
-    
-    // Calculate total nutrition for a specific meal type on a given date with duplicate detection
-    private func calculateMealTotals(for mealType: String, on date: Date) -> (foodCount: Int, calories: Double, protein: Double, carbs: Double, fat: Double) {
-        let startOfDay = Calendar.current.startOfDay(for: date)
-        let endOfDay = Calendar.current.date(byAdding: .day, value: 1, to: startOfDay) ?? date
-        
-        let predicate = #Predicate<NutritionEntry> { entry in
-            entry.mealType == mealType &&
-            entry.date >= startOfDay &&
-            entry.date < endOfDay
-        }
-        
-        let descriptor = FetchDescriptor<NutritionEntry>(predicate: predicate)
-        
-        do {
-            let allEntries = try modelContext.fetch(descriptor)
-            
-            // Remove duplicates using CloudKit-aware deduplication
-            let uniqueEntries = removeDuplicateEntries(allEntries)
-            
-            let totalCalories = uniqueEntries.reduce(0) { $0 + $1.calories }
-            let totalProtein = uniqueEntries.reduce(0) { $0 + $1.protein }
-            let totalCarbs = uniqueEntries.reduce(0) { $0 + $1.carbs }
-            let totalFat = uniqueEntries.reduce(0) { $0 + $1.fat }
-            
-            return (
-                foodCount: uniqueEntries.count,
-                calories: totalCalories,
-                protein: totalProtein,
-                carbs: totalCarbs,
-                fat: totalFat
-            )
-        } catch {
-            print("Error calculating meal totals: \(error)")
-            return (foodCount: 0, calories: 0, protein: 0, carbs: 0, fat: 0)
-        }
-    }
-    
-    // Remove duplicate NutritionEntries that may have been created by CloudKit sync
-    private func removeDuplicateEntries(_ entries: [NutritionEntry]) -> [NutritionEntry] {
-        var uniqueEntries: [NutritionEntry] = []
-        var seenEntries: Set<String> = []
-        
-        for entry in entries.sorted(by: { $0.date < $1.date }) { // Sort by date to keep earliest
-            // Create a unique identifier based on food, portion, meal type, and rough timestamp
-            let roughTimestamp = Int(entry.date.timeIntervalSince1970 / 60) // Round to minute precision
-            let uniqueKey = "\(entry.food?.id.uuidString ?? "unknown")_\(entry.gramsConsumed)_\(entry.mealType)_\(roughTimestamp)"
-            
-            if !seenEntries.contains(uniqueKey) {
-                seenEntries.insert(uniqueKey)
-                uniqueEntries.append(entry)
-            } else {
-                Logger.info("🔄 Filtered duplicate nutrition entry: \(entry.food?.displayName ?? "unknown food") - \(entry.gramsConsumed)g")
-            }
-        }
-        
-        let filteredCount = entries.count - uniqueEntries.count
-        if filteredCount > 0 {
-            Logger.info("🧹 Filtered \(filteredCount) duplicate nutrition entries from meal calculation")
-        }
-        
-        return uniqueEntries
-    }
-    
-    // Calculate total nutrition for all meals on a given date with duplicate detection
-    private func calculateDailyTotals(for date: Date) -> (calories: Double, protein: Double, carbs: Double, fat: Double) {
-        let startOfDay = Calendar.current.startOfDay(for: date)
-        let endOfDay = Calendar.current.date(byAdding: .day, value: 1, to: startOfDay) ?? date
-        
-        let predicate = #Predicate<NutritionEntry> { entry in
-            entry.date >= startOfDay && entry.date < endOfDay
-        }
-        
-        let descriptor = FetchDescriptor<NutritionEntry>(predicate: predicate)
-        
-        do {
-            let allEntries = try modelContext.fetch(descriptor)
-            
-            // Remove duplicates for accurate daily totals
-            let uniqueEntries = removeDuplicateEntries(allEntries)
-            
-            let totalCalories = uniqueEntries.reduce(0) { $0 + $1.calories }
-            let totalProtein = uniqueEntries.reduce(0) { $0 + $1.protein }
-            let totalCarbs = uniqueEntries.reduce(0) { $0 + $1.carbs }
-            let totalFat = uniqueEntries.reduce(0) { $0 + $1.fat }
-            
-            return (
-                calories: totalCalories,
-                protein: totalProtein,
-                carbs: totalCarbs,
-                fat: totalFat
-            )
-        } catch {
-            print("Error calculating daily totals: \(error)")
-            return (calories: 0, protein: 0, carbs: 0, fat: 0)
-        }
-    }
-    
     private func suggestedQuickAmounts() -> [Int] {
-        // Basit heuristik: bazı yaygın ürünler için pratik gram önerileri
-        let name = food.displayName.lowercased()
-        if name.contains("muz") || name.contains("banana") {
-            return [80, 100, 120, 150, 200]
-        } else if name.contains("yoğurt") || name.contains("yoghurt") || name.contains("yogurt") {
-            return [100, 150, 200, 250]
-        } else if name.contains("süt") || name.contains("milk") {
-            return [200, 250, 300]
-        } else if name.contains("pirinç") || name.contains("rice") {
-            return [50, 100, 150, 200, 250]
-        } else if name.contains("tavuk") || name.contains("chicken") {
-            return [100, 120, 150, 180, 200]
-        }
-        return []
+        return viewModel?.getSuggestedQuickAmounts() ?? []
     }
 }
 
 // MARK: - Portion Input Helpers
 extension MealEntryView {
-    enum PortionInputMode: String, CaseIterable { case grams, serving }
-    
-    private var effectiveGrams: Double {
-        switch inputMode {
-        case .grams:
-            return gramsConsumed
-        case .serving:
-            return max(servingCount, 0) * food.servingSizeGramsOrDefault
-        }
-    }
-    
     // Unit-aware binding for TextField display
     private var displayBinding: Binding<Double> {
-        Binding<Double>(
-            get: {
-                switch unitSettings.unitSystem {
-                case .metric:
-                    return gramsConsumed
-                case .imperial:
-                    return UnitsConverter.gramToOz(gramsConsumed)
-                }
-            },
-            set: { newValue in
-                switch unitSettings.unitSystem {
-                case .metric:
-                    gramsConsumed = newValue
-                case .imperial:
-                    gramsConsumed = UnitsConverter.ozToGram(newValue)
-                }
-            }
-        )
+        return viewModel?.displayBinding ?? Binding.constant(0)
     }
     
     @ViewBuilder
     private var portionInputSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             // Mode toggle
-            Picker("", selection: $inputMode) {
+            Picker("", selection: Binding(
+                get: { inputMode },
+                set: { viewModel?.setInputMode($0) }
+            )) {
                 Text(NutritionKeys.PortionInput.grams.localized).tag(PortionInputMode.grams)
                 Text(NutritionKeys.PortionInput.serving.localized).tag(PortionInputMode.serving)
             }
             .pickerStyle(.segmented)
             
             if inputMode == .grams {
-                PortionQuickSelect(quantity: $gramsConsumed, suggested: suggestedQuickAmounts())
+                PortionQuickSelect(quantity: Binding(
+                    get: { gramsConsumed },
+                    set: { viewModel?.updateGramsConsumed($0) }
+                ), suggested: suggestedQuickAmounts())
                 VStack(alignment: .leading, spacing: 8) {
                     Text(NutritionKeys.MealEntry.portion.localized)
                         .font(.headline)
@@ -428,7 +272,10 @@ extension MealEntryView {
                         .foregroundColor(.secondary)
                     HStack(spacing: 8) {
                         Text("nutrition.portion_input.count".localized)
-                        TextField("1", value: $servingCount, format: .number)
+                        TextField("1", value: Binding(
+                            get: { servingCount },
+                            set: { viewModel?.updateServingCount($0) }
+                        ), format: .number)
                             .textFieldStyle(.roundedBorder)
                             .keyboardType(.decimalPad)
                     }

@@ -8,7 +8,7 @@ struct DashboardView: View {
     @Environment(HealthKitService.self) private var healthKitService
     @Environment(UnitSettings.self) private var unitSettings
     
-    @State private var errorHandler = ErrorHandlingService.shared
+    @State private var errorHandler = ErrorUIService.shared
     @State private var viewModel: DashboardViewModel?
     
     init() {

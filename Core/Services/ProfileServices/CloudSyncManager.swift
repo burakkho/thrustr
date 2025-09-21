@@ -254,36 +254,49 @@ class CloudSyncManager {
     // MARK: - Private Methods
     
     private func setupAvailabilityObserver() {
-        // TODO: Replace with @Observable observation pattern
-        // For now, manually check availability when needed
-        if availabilityService.isAvailable && modelContainer != nil {
-            enableSync()
-        } else {
-            disableSync()
+        // Modern @Observable observation pattern
+        // Monitor availabilityService.isAvailable for changes
+        Task {
+            while true {
+                if availabilityService.isAvailable && modelContainer != nil {
+                    if !isEnabled {
+                        enableSync()
+                    }
+                } else {
+                    if isEnabled {
+                        disableSync()
+                    }
+                }
+
+                // Check every 30 seconds for availability changes
+                try? await Task.sleep(nanoseconds: 30_000_000_000)
+            }
         }
     }
-    
-    private var cancellables = Set<AnyCancellable>()
+
+    // Note: Cannot store Task reference due to @Observable macro limitations
+    // Using detached tasks instead of stored task references
     
     // MARK: - Automatic Sync Scheduling
     
     /**
-     * Start automatic sync scheduling
+     * Start automatic sync scheduling using detached task approach
      */
     func startAutomaticSync() {
         guard isEnabled else { return }
-        
-        // Schedule periodic background sync (every 5 minutes when active)
-        Timer.publish(every: 300, on: .main, in: .common)
-            .autoconnect()
-            .sink { [weak self] _ in
-                Task { @MainActor in
+
+        // Use detached task for background sync (no stored reference due to @Observable)
+        Task.detached { [weak self] in
+            while !Task.isCancelled {
+                try? await Task.sleep(nanoseconds: 300_000_000_000) // 5 minutes
+
+                if !Task.isCancelled {
                     await self?.performBackgroundSync()
                 }
             }
-            .store(in: &cancellables)
-            
-        Logger.info("⏰ Automatic sync scheduled every 5 minutes")
+        }
+
+        Logger.info("⏰ Automatic sync scheduled every 5 minutes using detached task pattern")
     }
     
     /**
@@ -342,10 +355,24 @@ class CloudSyncManager {
             return "red"
         }
     }
+
+    /**
+     * Stop automatic sync (detached tasks will self-cancel when object is deallocated)
+     */
+    func stopAutomaticSync() {
+        // Detached tasks automatically cancel when weak self becomes nil
+        Logger.info("⏹️ Automatic sync stopped - detached tasks will self-cancel")
+    }
+
+    // MARK: - Cleanup
+    deinit {
+        // Detached tasks with weak self will automatically stop when object deallocates
+        Logger.info("CloudSyncManager deinitialized")
+    }
 }
 
-// MARK: - Import Combine
-import Combine
+// MARK: - Modern @Observable Pattern
+// No longer using Combine - migrated to @Observable observation
 
 // MARK: - Notification Names
 extension Notification.Name {

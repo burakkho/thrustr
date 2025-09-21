@@ -234,36 +234,3 @@ class NavyMethodCalculatorViewModel {
     }
 }
 
-// MARK: - NavyGender Enum
-
-enum NavyGender: String, CaseIterable {
-    case male = "male"
-    case female = "female"
-
-    var displayName: String {
-        switch self {
-        case .male:
-            return ProfileKeys.NavyMethodCalculator.male.localized
-        case .female:
-            return ProfileKeys.NavyMethodCalculator.female.localized
-        }
-    }
-
-    var icon: String {
-        switch self {
-        case .male:
-            return "person.fill"
-        case .female:
-            return "person.dress.fill"
-        }
-    }
-
-    var color: Color {
-        switch self {
-        case .male:
-            return .blue
-        case .female:
-            return .pink
-        }
-    }
-}

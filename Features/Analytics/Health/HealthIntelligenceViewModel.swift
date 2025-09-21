@@ -18,25 +18,46 @@ class HealthIntelligenceViewModel {
 
     // MARK: - Dependencies
 
-    private let healthAnalyticsService: HealthAnalyticsServiceProtocol
     private let healthKitService = HealthKitService.shared
 
-    // MARK: - Computed Properties
+    // MARK: - Computed Properties for Views
+
+    var recoveryInsights: [HealthInsight] {
+        guard let report = healthReport else { return [] }
+        return HealthAnalyticsService.getRecoveryInsights(from: report.insights)
+    }
+
+    var workoutInsights: [HealthInsight] {
+        guard let report = healthReport else { return [] }
+        return HealthAnalyticsService.getWorkoutInsights(from: report.insights)
+    }
+
+    var trendInsights: [HealthInsight] {
+        guard let report = healthReport else { return [] }
+        return HealthAnalyticsService.getTrendInsights(from: report.insights)
+    }
+
+    var priorityInsights: [HealthInsight] {
+        guard let report = healthReport else { return [] }
+        return HealthAnalyticsService.getPriorityInsights(from: report.insights)
+    }
+
+    // MARK: - HealthKit Data (Direct Access for UI)
 
     var vo2Max: Double? {
         healthKitService.vo2Max
     }
 
     var stepsHistory: [Double] {
-        healthKitService.stepsHistory
+        healthKitService.stepsHistory.map { $0.value }
     }
 
     var todaySteps: Int {
-        healthKitService.todaySteps
+        Int(healthKitService.todaySteps)
     }
 
     var weightHistory: [Double] {
-        healthKitService.weightHistory
+        healthKitService.weightHistory.map { $0.value }
     }
 
     var currentWeight: Double? {
@@ -44,14 +65,12 @@ class HealthIntelligenceViewModel {
     }
 
     var heartRateHistory: [Double] {
-        healthKitService.heartRateHistory
+        healthKitService.heartRateHistory.map { $0.value }
     }
 
     // MARK: - Initialization
 
-    init() {
-        self.healthAnalyticsService = HealthAnalyticsService()
-    }
+    init() {}
 
     // MARK: - Public Methods
 
@@ -114,10 +133,10 @@ enum IntelligenceTab: CaseIterable {
 
     var title: String {
         switch self {
-        case .overview: return LocalizationKeys.Health.Intelligence.tab_overview.localized
-        case .recovery: return LocalizationKeys.Health.Intelligence.tab_recovery.localized
-        case .fitness: return LocalizationKeys.Health.Intelligence.tab_fitness.localized
-        case .trends: return LocalizationKeys.Health.Intelligence.tab_trends.localized
+        case .overview: return "analytics.overview".localized
+        case .recovery: return "analytics.recovery".localized
+        case .fitness: return "analytics.fitness".localized
+        case .trends: return "analytics.trends".localized
         }
     }
 

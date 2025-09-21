@@ -1,5 +1,6 @@
 import Foundation
 import UIKit
+import SwiftData
 
 /**
  * Image management service for file system storage and optimization.
@@ -26,7 +27,10 @@ class ImageManager {
     // MARK: - Directory Paths
     
     private var documentsDirectory: URL {
-        FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+        guard let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
+            fatalError("Documents directory not available")
+        }
+        return url
     }
     
     private var imagesDirectory: URL {
@@ -204,11 +208,96 @@ class ImageManager {
     
     /**
      * Cleanup unused images (call periodically).
+     * Removes image files that are no longer referenced in SwiftData.
      */
-    func cleanupUnusedImages() {
-        // TODO: Implement cleanup logic
-        // This would require checking which image paths are still referenced in SwiftData
-        print("🧹 Image cleanup - TODO: Implement cleanup logic")
+    func cleanupUnusedImages(modelContext: ModelContext) async {
+        Logger.info("🧹 Starting image cleanup process...")
+
+        do {
+            // Get all referenced image URLs from SwiftData
+            let referencedImagePaths = try await getReferencedImagePaths(modelContext: modelContext)
+
+            // Get all image files from file system
+            let allImageFiles = getAllImageFiles()
+
+            // Find unused images
+            let unusedImages = allImageFiles.filter { filePath in
+                !referencedImagePaths.contains(filePath)
+            }
+
+            Logger.info("Found \(unusedImages.count) unused images out of \(allImageFiles.count) total images")
+
+            // Delete unused images
+            var deletedCount = 0
+            for imagePath in unusedImages {
+                if await deleteImageFile(at: imagePath) {
+                    deletedCount += 1
+                }
+            }
+
+            Logger.success("✅ Image cleanup completed: deleted \(deletedCount) unused images")
+
+        } catch {
+            Logger.error("❌ Image cleanup failed: \(error)")
+        }
+    }
+
+    // MARK: - Private Cleanup Helpers
+
+    private func getReferencedImagePaths(modelContext: ModelContext) async throws -> Set<String> {
+        var referencedPaths = Set<String>()
+
+        // Get all user profile picture URLs
+        let userDescriptor = FetchDescriptor<User>()
+        let users = try modelContext.fetch(userDescriptor)
+
+        for user in users {
+            if let profileURL = user.profilePictureURL, !profileURL.isEmpty {
+                referencedPaths.insert(profileURL)
+            }
+        }
+
+        // Get all progress photo URLs
+        let photoDescriptor = FetchDescriptor<ProgressPhoto>()
+        let progressPhotos = try modelContext.fetch(photoDescriptor)
+
+        for photo in progressPhotos {
+            if let imageURL = photo.imageURL, !imageURL.isEmpty {
+                referencedPaths.insert(imageURL)
+            }
+        }
+
+        Logger.info("Found \(referencedPaths.count) referenced image paths in database")
+        return referencedPaths
+    }
+
+    private func getAllImageFiles() -> [String] {
+        var allFiles: [String] = []
+
+        let directories = [profilePicturesDirectory, progressPhotosDirectory, thumbnailsDirectory]
+
+        for directory in directories {
+            do {
+                let files = try FileManager.default.contentsOfDirectory(at: directory, includingPropertiesForKeys: nil)
+                let imagePaths = files.map { $0.path }
+                allFiles.append(contentsOf: imagePaths)
+            } catch {
+                Logger.warning("Could not read directory \(directory.path): \(error)")
+            }
+        }
+
+        return allFiles
+    }
+
+    private func deleteImageFile(at path: String) async -> Bool {
+        do {
+            try FileManager.default.removeItem(atPath: path)
+            Logger.info("Deleted unused image: \(URL(fileURLWithPath: path).lastPathComponent)")
+            return true
+        } catch {
+            Logger.error("Failed to delete image at \(path): \(error)")
+            return false
+        }
     }
 }
 

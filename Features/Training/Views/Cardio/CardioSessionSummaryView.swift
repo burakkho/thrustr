@@ -8,51 +8,28 @@ struct CardioSessionSummaryView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(UnitSettings.self) var unitSettings
     @Environment(HealthKitService.self) var healthKitService
-    
+
     let session: CardioSession
     let user: User
     let onDismiss: (() -> Void)?
-    
-    init(session: CardioSession, user: User, onDismiss: (() -> Void)? = nil) {
-        self.session = session
-        self.user = user
-        self.onDismiss = onDismiss
-    }
-    
+
+    @State private var viewModel: CardioSessionSummaryViewModel
     @State private var feeling: SessionFeeling = .good
     @State private var notes: String = ""
     @State private var showingShareSheet = false
     @State private var mapSnapshot: UIImage?
-    @State private var mapCameraPosition = MapCameraPosition.automatic
-    
+
     // Edit modals
     @State private var showingDurationEdit = false
     @State private var showingDistanceEdit = false
     @State private var showingCaloriesEdit = false
     @State private var showingHeartRateEdit = false
-    
-    // Edit values
-    @State private var editHours: Int = 0
-    @State private var editMinutes: Int = 0
-    @State private var editSeconds: Int = 0
-    @State private var editDistance: Double = 0.0
-    @State private var editCalories: Int = 0
-    @State private var editAvgHeartRate: Int = 0
-    @State private var editMaxHeartRate: Int = 0
-    
-    // Edit tracking (only for heart rate - others are tracked in session model)
-    @State private var isHeartRateEdited = false
-    
-    private var routeCoordinates: [CLLocationCoordinate2D] {
-        guard let routeData = session.routeData,
-              let routePoints = try? JSONSerialization.jsonObject(with: routeData) as? [[String: Double]] else {
-            return []
-        }
-        
-        return routePoints.compactMap { point in
-            guard let lat = point["lat"], let lng = point["lng"] else { return nil }
-            return CLLocationCoordinate2D(latitude: lat, longitude: lng)
-        }
+
+    init(session: CardioSession, user: User, onDismiss: (() -> Void)? = nil) {
+        self.session = session
+        self.user = user
+        self.onDismiss = onDismiss
+        self._viewModel = State(initialValue: CardioSessionSummaryViewModel(unitSettings: UnitSettings.shared))
     }
     
     var body: some View {
@@ -66,7 +43,7 @@ struct CardioSessionSummaryView: View {
                     mainStatsSection
                     
                     // Route Map (if available)
-                    if !routeCoordinates.isEmpty {
+                    if !viewModel.routeCoordinates.isEmpty {
                         routeMapSection
                     }
                     
@@ -97,40 +74,55 @@ struct CardioSessionSummaryView: View {
                 }
             }
         }
+        .onAppear {
+            viewModel.loadSessionData(for: session)
+        }
         .sheet(isPresented: $showingShareSheet) {
-            if let image = createShareImage() {
-                CardioShareSheet(items: [image, createShareText()])
+            if let image = viewModel.createShareImage(for: session) {
+                CardioShareSheet(items: [image, viewModel.createShareText(for: session)])
             }
         }
         .sheet(isPresented: $showingDurationEdit) {
             DurationEditSheet(
-                hours: $editHours,
-                minutes: $editMinutes,
-                seconds: $editSeconds,
-                onSave: saveDurationEdit,
+                hours: $viewModel.editHours,
+                minutes: $viewModel.editMinutes,
+                seconds: $viewModel.editSeconds,
+                onSave: {
+                    viewModel.updateSessionDuration(session)
+                    showingDurationEdit = false
+                },
                 onCancel: { showingDurationEdit = false }
             )
         }
         .sheet(isPresented: $showingDistanceEdit) {
             DistanceEditSheet(
-                distance: $editDistance,
+                distance: $viewModel.editDistance,
                 unitSystem: unitSettings.unitSystem,
-                onSave: saveDistanceEdit,
+                onSave: {
+                    viewModel.updateSessionDistance(session)
+                    showingDistanceEdit = false
+                },
                 onCancel: { showingDistanceEdit = false }
             )
         }
         .sheet(isPresented: $showingHeartRateEdit) {
             HeartRateEditSheet(
-                avgHeartRate: $editAvgHeartRate,
-                maxHeartRate: $editMaxHeartRate,
-                onSave: saveHeartRateEdit,
+                avgHeartRate: $viewModel.editAvgHeartRate,
+                maxHeartRate: $viewModel.editMaxHeartRate,
+                onSave: {
+                    viewModel.updateSessionHeartRate(session)
+                    showingHeartRateEdit = false
+                },
                 onCancel: { showingHeartRateEdit = false }
             )
         }
         .sheet(isPresented: $showingCaloriesEdit) {
             CaloriesEditSheet(
-                calories: $editCalories,
-                onSave: saveCaloriesEdit,
+                calories: $viewModel.editCalories,
+                onSave: {
+                    viewModel.updateSessionCalories(session)
+                    showingCaloriesEdit = false
+                },
                 onCancel: { showingCaloriesEdit = false }
             )
         }
@@ -210,28 +202,22 @@ struct CardioSessionSummaryView: View {
                 Spacer()
             }
             
-            Map(position: $mapCameraPosition) {
-                MapPolyline(coordinates: routeCoordinates)
+            Map(position: $viewModel.mapCameraPosition) {
+                MapPolyline(coordinates: viewModel.routeCoordinates)
                     .stroke(.blue, lineWidth: 4)
-                
-                if let start = routeCoordinates.first {
+
+                if let start = viewModel.routeCoordinates.first {
                     Marker(CardioKeys.SessionSummary.startMarker.localized, coordinate: start)
                         .tint(.green)
                 }
-                
-                if let end = routeCoordinates.last {
+
+                if let end = viewModel.routeCoordinates.last {
                     Marker(CardioKeys.SessionSummary.finishMarker.localized, coordinate: end)
                         .tint(.red)
                 }
             }
             .frame(height: 300)
             .cornerRadius(theme.radius.m)
-            .onAppear {
-                if !routeCoordinates.isEmpty {
-                    let region = calculateRegion(for: routeCoordinates)
-                    mapCameraPosition = .region(region)
-                }
-            }
         }
         .cardStyle()
     }
@@ -281,7 +267,7 @@ struct CardioSessionSummaryView: View {
                         .fontWeight(.semibold)
                         .foregroundColor(theme.colors.textPrimary)
                     
-                    if isHeartRateEdited {
+                    if viewModel.isHeartRateEdited {
                         Text(CardioKeys.SessionSummary.edited.localized)
                             .font(.caption2)
                             .fontWeight(.bold)
@@ -442,118 +428,53 @@ struct CardioSessionSummaryView: View {
     }
     
     // MARK: - Helper Methods
-    private func calculateRegion(for coordinates: [CLLocationCoordinate2D]) -> MKCoordinateRegion {
-        guard !coordinates.isEmpty else {
-            return MKCoordinateRegion()
-        }
-        
-        let latitudes = coordinates.map { $0.latitude }
-        let longitudes = coordinates.map { $0.longitude }
-        
-        let minLat = latitudes.min() ?? 0
-        let maxLat = latitudes.max() ?? 0
-        let minLon = longitudes.min() ?? 0
-        let maxLon = longitudes.max() ?? 0
-        
-        let center = CLLocationCoordinate2D(
-            latitude: (minLat + maxLat) / 2,
-            longitude: (minLon + maxLon) / 2
-        )
-        
-        let span = MKCoordinateSpan(
-            latitudeDelta: (maxLat - minLat) * 1.3,
-            longitudeDelta: (maxLon - minLon) * 1.3
-        )
-        
-        return MKCoordinateRegion(center: center, span: span)
-    }
     
     private func saveSession() {
-        // Update session with feeling and notes
-        session.feeling = feeling.rawValue
-        session.sessionNotes = notes.isEmpty ? nil : notes
-        
-        // Mark as completed if not already (without recalculating totals)
-        if !session.isCompleted {
-            session.completedAt = Date()
-            session.isCompleted = true
-        }
-        
-        // Session is already in context, no need to insert
-        
-        // Update user stats (use final edited values)
-        user.addCardioSession(
-            duration: TimeInterval(session.totalDuration),
-            distance: session.totalDistance,
-            calories: session.totalCaloriesBurned
-        )
-        
-        do {
-            try modelContext.save()
-            
-            
-            // Log activity for dashboard
-            ActivityLoggerService.shared.logCardioCompleted(
-                activityType: session.workoutName,
-                distance: session.totalDistance,
-                duration: TimeInterval(session.totalDuration),
-                calories: Double(session.totalCaloriesBurned ?? 0),
-                user: user
+        Task {
+            await viewModel.saveSession(
+                session,
+                feeling: feeling,
+                notes: notes,
+                user: user,
+                modelContext: modelContext,
+                healthKitService: healthKitService
             )
-            
-            // Save to HealthKit
-            Task {
-                let success = await healthKitService.saveCardioWorkout(
-                    activityType: session.workoutName,
-                    duration: TimeInterval(session.totalDuration),
-                    distance: session.totalDistance > 0 ? session.totalDistance : nil,
-                    caloriesBurned: session.totalCaloriesBurned.map { Double($0) },
-                    averageHeartRate: session.averageHeartRate.map { Double($0) },
-                    maxHeartRate: session.maxHeartRate.map { Double($0) },
-                    startDate: session.startDate,
-                    endDate: session.completedAt ?? Date()
-                )
-                
-                if success {
-                    Logger.info("Cardio workout successfully synced to HealthKit")
-                }
-            }
-            
-            // Trigger achievement notification for workout completion
-            Task {
-                do {
-                    let durationMinutes = Int(TimeInterval(session.totalDuration) / 60)
-                    let calories = session.totalCaloriesBurned ?? 0
-                    
-                    // Schedule system notification
-                    try await NotificationManager.shared.scheduleAchievementNotification(
-                        title: CardioKeys.SessionSummary.achievementTitle.localized,
-                        description: String(format: CardioKeys.SessionSummary.achievementBody.localized, 
-                                          session.workoutName, durationMinutes, calories),
-                        delay: 2.0
-                    )
-                    
-                    // Show in-app notification
-                    await MainActor.run {
-                        InAppNotificationManager.shared.showAchievement(
-                            title: CardioKeys.SessionSummary.achievementTitle.localized,
-                            description: String(format: CardioKeys.SessionSummary.achievementInApp.localized,
-                                              session.workoutName, durationMinutes)
-                        )
-                    }
-                } catch {
-                    Logger.error("Failed to send achievement notification: \(error)")
-                }
-            }
-            
+
+            // Show achievement notifications
+            await showAchievementNotifications()
+
             // Dismiss with callback
             if let onDismiss = onDismiss {
                 onDismiss()
             } else {
                 dismiss()
             }
+        }
+    }
+
+    private func showAchievementNotifications() async {
+        do {
+            let durationMinutes = Int(TimeInterval(session.totalDuration) / 60)
+            let calories = session.totalCaloriesBurned ?? 0
+
+            // Schedule system notification
+            try await NotificationManager.shared.scheduleAchievementNotification(
+                title: CardioKeys.SessionSummary.achievementTitle.localized,
+                description: String(format: CardioKeys.SessionSummary.achievementBody.localized,
+                                  session.workoutName, durationMinutes, calories),
+                delay: 2.0
+            )
+
+            // Show in-app notification
+            await MainActor.run {
+                InAppNotificationManager.shared.showAchievement(
+                    title: CardioKeys.SessionSummary.achievementTitle.localized,
+                    description: String(format: CardioKeys.SessionSummary.achievementInApp.localized,
+                                      session.workoutName, durationMinutes)
+                )
+            }
         } catch {
-            Logger.error("Failed to save cardio session: \(error)")
+            Logger.error("Failed to send achievement notification: \(error)")
         }
     }
     
@@ -565,46 +486,17 @@ struct CardioSessionSummaryView: View {
         }
     }
     
-    private func createShareText() -> String {
-        var text = "\(CardioKeys.SessionSummary.shareWorkoutCompleted.localized)\n\n"
-        text += "\(CardioKeys.SessionSummary.shareDurationPrefix.localized) \(session.formattedDuration)\n"
-        text += "📍 Mesafe: \(session.formattedDistance(using: unitSettings.unitSystem))\n"
-        text += "🔥 Kalori: \(session.totalCaloriesBurned ?? 0) kcal\n"
-        
-        if let pace = session.formattedAveragePace(using: unitSettings.unitSystem) {
-            text += "⚡ Tempo: \(pace)\n"
-        }
-        
-        text += "\n#Thrustr #Fitness"
-        
-        return text
-    }
-    
-    private func createShareImage() -> UIImage? {
-        let cardSize = CGSize(width: 400, height: 500)
-        let hostingController = UIHostingController(
-            rootView: CardioShareCard(session: session)
-                .frame(width: cardSize.width, height: cardSize.height)
-                .background(Color.white)
-        )
-        hostingController.view.bounds = CGRect(origin: .zero, size: cardSize)
-        
-        let renderer = UIGraphicsImageRenderer(size: cardSize)
-        return renderer.image { _ in
-            hostingController.view.drawHierarchy(in: hostingController.view.bounds, afterScreenUpdates: true)
-        }
-    }
     
     // MARK: - Edit Methods
     private func initializeDurationEdit() {
         let totalSeconds = session.totalDuration
-        editHours = totalSeconds / 3600
-        editMinutes = (totalSeconds % 3600) / 60
-        editSeconds = totalSeconds % 60
+        viewModel.editHours = totalSeconds / 3600
+        viewModel.editMinutes = (totalSeconds % 3600) / 60
+        viewModel.editSeconds = totalSeconds % 60
     }
     
     private func saveDurationEdit() {
-        let newDuration = editHours * 3600 + editMinutes * 60 + editSeconds
+        let newDuration = viewModel.editHours * 3600 + viewModel.editMinutes * 60 + viewModel.editSeconds
         
         if newDuration != session.totalDuration {
             session.updateDurationManually(newDuration)
@@ -617,9 +509,9 @@ struct CardioSessionSummaryView: View {
         // Convert meters to user's preferred unit for editing
         switch unitSettings.unitSystem {
         case .metric:
-            editDistance = session.totalDistance / 1000.0 // Convert to km
+            viewModel.editDistance = session.totalDistance / 1000.0 // Convert to km
         case .imperial:
-            editDistance = session.totalDistance * 0.000621371 // Convert to miles
+            viewModel.editDistance = session.totalDistance * 0.000621371 // Convert to miles
         }
     }
     
@@ -628,9 +520,9 @@ struct CardioSessionSummaryView: View {
         let newDistanceMeters: Double
         switch unitSettings.unitSystem {
         case .metric:
-            newDistanceMeters = editDistance * 1000.0 // km to meters
+            newDistanceMeters = viewModel.editDistance * 1000.0 // km to meters
         case .imperial:
-            newDistanceMeters = editDistance * 1609.34 // miles to meters
+            newDistanceMeters = viewModel.editDistance * 1609.34 // miles to meters
         }
         
         if abs(newDistanceMeters - session.totalDistance) > 0.1 { // Allow for minor floating point differences
@@ -641,30 +533,30 @@ struct CardioSessionSummaryView: View {
     }
     
     private func initializeHeartRateEdit() {
-        editAvgHeartRate = session.averageHeartRate ?? 0
-        editMaxHeartRate = session.maxHeartRate ?? 0
+        viewModel.editAvgHeartRate = session.averageHeartRate ?? 0
+        viewModel.editMaxHeartRate = session.maxHeartRate ?? 0
     }
     
     private func saveHeartRateEdit() {
         let originalAvg = session.averageHeartRate ?? 0
         let originalMax = session.maxHeartRate ?? 0
         
-        if editAvgHeartRate != originalAvg || editMaxHeartRate != originalMax {
-            isHeartRateEdited = true
-            session.averageHeartRate = editAvgHeartRate > 0 ? editAvgHeartRate : nil
-            session.maxHeartRate = editMaxHeartRate > 0 ? editMaxHeartRate : nil
+        if viewModel.editAvgHeartRate != originalAvg || viewModel.editMaxHeartRate != originalMax {
+            viewModel.isHeartRateEdited = true
+            session.averageHeartRate = viewModel.editAvgHeartRate > 0 ? viewModel.editAvgHeartRate : nil
+            session.maxHeartRate = viewModel.editMaxHeartRate > 0 ? viewModel.editMaxHeartRate : nil
         }
         
         showingHeartRateEdit = false
     }
     
     private func initializeCaloriesEdit() {
-        editCalories = session.totalCaloriesBurned ?? 0
+        viewModel.editCalories = session.totalCaloriesBurned ?? 0
     }
     
     private func saveCaloriesEdit() {
-        if editCalories != (session.totalCaloriesBurned ?? 0) {
-            session.updateCaloriesManually(editCalories > 0 ? editCalories : nil)
+        if viewModel.editCalories != (session.totalCaloriesBurned ?? 0) {
+            session.updateCaloriesManually(viewModel.editCalories > 0 ? viewModel.editCalories : nil)
         }
         
         showingCaloriesEdit = false

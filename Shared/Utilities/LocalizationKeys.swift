@@ -228,6 +228,30 @@ enum LocalizationKeys {
         static let unknown = CommonKeys.HeartRate.unknown
     }
     
+    enum Health {
+        static let insights = AnalyticsKeys.Insights.insights
+        static let no_insights = AnalyticsKeys.Insights.no_insights
+        static let no_insights_message = AnalyticsKeys.Insights.no_insights_message
+        static let analyzing_health_data = "health.analyzing_health_data"
+        static let recovery_score = AnalyticsKeys.Recovery.recovery_score
+        static let sleep_quality = AnalyticsKeys.Recovery.sleep_quality
+        static let hrv = AnalyticsKeys.Recovery.hrv
+        static let vo2_max = AnalyticsKeys.Fitness.vo2_max
+        static let cardio_fitness = AnalyticsKeys.Fitness.cardio_fitness
+        static let overall_fitness = AnalyticsKeys.Fitness.overall_fitness
+        static let poor = "health.fitness.poor"
+        static let fair = "health.fitness.fair"
+        static let good = "health.fitness.good"
+        static let excellent = "health.fitness.excellent"
+        static let elite = "health.fitness.elite"
+        static let below_average = "health.fitness.below_average"
+        static let above_average = "health.fitness.above_average"
+        static let superior = "health.fitness.superior"
+        static let trend_improving = "health.trend.improving"
+        static let trend_stable = "health.trend.stable"
+        static let trend_declining = "health.trend.declining"
+    }
+
     enum Common {
         static let ok = CommonKeys.Onboarding.Common.ok
         static let cancel = CommonKeys.Onboarding.Common.cancel
@@ -243,6 +267,8 @@ enum LocalizationKeys {
         static let loading = CommonKeys.Onboarding.Common.loading
         static let search = CommonKeys.Onboarding.Common.search
         static let all = CommonKeys.Onboarding.Common.all
+        static let view_all = "common.view_all"
+        static let HealthKit = "common.healthkit"
     }
     
 }

@@ -17,7 +17,7 @@ import SwiftData
 struct AchievementService: Sendable {
 
     // MARK: - Achievement Computation
-
+    
     /**
      * Computes recent achievements based on user activity across all fitness modalities.
      *

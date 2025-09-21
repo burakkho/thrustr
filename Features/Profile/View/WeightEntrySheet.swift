@@ -60,25 +60,29 @@ struct WeightEntrySheet: View {
         Task {
             do {
                 // Convert to metric if needed
-                let weightInKg = unitSettings.unitSystem == .metric ? 
+                let weightInKg = unitSettings.unitSystem == .metric ?
                     weightValue : weightValue * 0.453592 // lb to kg
-                
+
+                // Store previous weight for activity logging
+                let previousWeight = user.currentWeight
+
                 user.currentWeight = weightInKg
                 user.calculateMetrics()
-                
+
                 try modelContext.save()
-                
+
                 // Log activity for dashboard
                 ActivityLoggerService.shared.setModelContext(modelContext)
                 ActivityLoggerService.shared.logMeasurementUpdate(
                     measurementType: "Kilo",
                     value: weightInKg,
-                    previousValue: user.currentWeight,
+                    previousValue: previousWeight,
                     unit: "kg",
                     user: user
                 )
-                
+
                 await MainActor.run {
+                    isLoading = false
                     dismiss()
                 }
             } catch {

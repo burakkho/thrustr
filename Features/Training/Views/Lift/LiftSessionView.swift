@@ -1,81 +1,189 @@
 import SwiftUI
 import SwiftData
 
-// Import our ViewModels and DTOs
-// Note: These files need to be added to Xcode project
-class LiftSessionViewModel: ObservableObject {
-    // Temporary placeholder until files are added to Xcode project
-    @Published var exercises: [ExerciseResultData] = []
-    @Published var isLoading = false
-    @Published var expandedExerciseId: UUID?
-    @Published var isEditingOrder = false
-    
-    var hasExercises: Bool { !exercises.isEmpty }
-    
-    func loadSession(_ session: LiftSession, context: ModelContext) {
-        // Placeholder implementation
-    }
-    
-    func toggleExpansion(for exerciseId: UUID) {
-        expandedExerciseId = expandedExerciseId == exerciseId ? nil : exerciseId
-    }
-    
-    func toggleEditingOrder() {
-        isEditingOrder.toggle()
-        if isEditingOrder {
-            expandedExerciseId = nil
-        }
-    }
-    
-    func addSet(to exerciseId: UUID) {
-        // Placeholder
-    }
-    
-    func completeSet(exerciseId: UUID, setIndex: Int) {
-        // Placeholder
-    }
-    
-    func moveExercises(from source: IndexSet, to destination: Int) {
-        // Placeholder
-    }
-}
-
-struct ExerciseResultData: Identifiable, Sendable {
-    let id: UUID = UUID()
-    let exerciseId: String = ""
-    let exerciseName: String = ""
-    let targetSets: Int = 0
-    let targetReps: Int = 0
-    let targetWeight: Double?
-    var sets: [SetData] = []
-    var notes: String?
-    var isPersonalRecord: Bool = false
-    var isCompleted: Bool = false
-    
-    var completedSets: Int { 0 }
-    var totalVolume: Double { 0 }
-    var maxWeight: Double? { nil }
-    var totalReps: Int { 0 }
-    var completionPercentage: Double { 0 }
-}
 
 struct SimpleExerciseCardRow: View {
     @Binding var exerciseData: ExerciseResultData
-    let isExpanded: Bool
+    let iExpanded: Bool
     let isEditMode: Bool
-    
+
     let onToggle: () -> Void
     let onAddSet: () -> Void
     let onCompleteSet: (Int) -> Void
-    
+
+    @Environment(\.theme) private var theme
+    @Environment(UnitSettings.self) private var unitSettings
+
     var body: some View {
-        VStack {
-            Text("Exercise: \(exerciseData.exerciseName)")
-            Text("Placeholder component")
+        VStack(spacing: 0) {
+            // Exercise Header - Always Visible
+            exerciseHeader
+
+            // Expanded Content - Sets Details
+            if iExpanded {
+                setsContent
+                    .transition(.opacity.combined(with: .scale(scale: 0.95, anchor: .top)))
+            }
         }
+        .background(theme.colors.cardBackground)
+        .cornerRadius(theme.radius.m)
+        .shadow(color: theme.shadows.card.opacity(0.1), radius: 2, x: 0, y: 1)
+        .animation(.easeInOut(duration: 0.3), value: iExpanded)
         .onTapGesture {
-            onToggle()
+            withAnimation(.easeInOut(duration: 0.3)) {
+                onToggle()
+            }
         }
+    }
+
+    // MARK: - Exercise Header
+    private var exerciseHeader: some View {
+        HStack(spacing: 12) {
+            // Exercise Info
+            VStack(alignment: .leading, spacing: 4) {
+                Text(exerciseData.exerciseName)
+                    .font(theme.typography.body)
+                    .fontWeight(.semibold)
+                    .foregroundColor(theme.colors.textPrimary)
+                    .lineLimit(2)
+
+                Text("\(exerciseData.completedSets)/\(exerciseData.totalSets) sets")
+                    .font(theme.typography.caption)
+                    .foregroundColor(theme.colors.textSecondary)
+            }
+
+            Spacer()
+
+            // Progress Indicator
+            VStack(alignment: .trailing, spacing: 4) {
+                if exerciseData.isCompleted {
+                    Image(systemName: "checkmark.circle.fill")
+                        .font(.title3)
+                        .foregroundColor(.green)
+                } else {
+                    let progress = exerciseData.totalSets > 0 ? Double(exerciseData.completedSets) / Double(exerciseData.totalSets) : 0
+
+                    ZStack {
+                        Circle()
+                            .stroke(theme.colors.textSecondary.opacity(0.3), lineWidth: 3)
+                            .frame(width: 24, height: 24)
+
+                        Circle()
+                            .trim(from: 0, to: progress)
+                            .stroke(theme.colors.accent, lineWidth: 3)
+                            .frame(width: 24, height: 24)
+                            .rotationEffect(.degrees(-90))
+                    }
+                }
+
+                // Expand/Collapse Indicator
+                Image(systemName: iExpanded ? "chevron.up" : "chevron.down")
+                    .font(.caption)
+                    .foregroundColor(theme.colors.textSecondary)
+                    .rotationEffect(.degrees(iExpanded ? 0 : 0))
+                    .animation(.easeInOut(duration: 0.3), value: iExpanded)
+            }
+        }
+        .padding(theme.spacing.m)
+        .background(iExpanded ? theme.colors.cardBackground : Color.clear)
+    }
+
+    // MARK: - Sets Content
+    private var setsContent: some View {
+        VStack(spacing: theme.spacing.s) {
+            // Sets List
+            ForEach(Array(exerciseData.sets.enumerated()), id: \.offset) { index, set in
+                SetRow(
+                    set: set,
+                    setNumber: index + 1,
+                    unitSettings: unitSettings,
+                    onComplete: { onCompleteSet(index) }
+                )
+            }
+
+            // Add Set Button
+            Button(action: onAddSet) {
+                HStack {
+                    Image(systemName: "plus.circle")
+                        .font(.body)
+                    Text("Add Set")
+                        .font(theme.typography.body)
+                        .fontWeight(.medium)
+                }
+                .foregroundColor(theme.colors.accent)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, theme.spacing.s)
+                .background(theme.colors.accent.opacity(0.1))
+                .cornerRadius(theme.radius.s)
+            }
+        }
+        .padding(.horizontal, theme.spacing.m)
+        .padding(.bottom, theme.spacing.m)
+    }
+}
+
+// MARK: - Set Row Component
+struct SetRow: View {
+    let set: SetData
+    let setNumber: Int
+    let unitSettings: UnitSettings
+    let onComplete: () -> Void
+
+    @Environment(\.theme) private var theme
+
+    var body: some View {
+        HStack(spacing: 12) {
+            // Set Number
+            Text("\(setNumber)")
+                .font(theme.typography.caption)
+                .fontWeight(.semibold)
+                .foregroundColor(set.isCompleted ? .green : theme.colors.textSecondary)
+                .frame(width: 20, alignment: .center)
+
+            // Weight
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Weight")
+                    .font(theme.typography.caption2)
+                    .foregroundColor(theme.colors.textSecondary)
+
+                if let weight = set.weight {
+                    Text(UnitsFormatter.formatWeight(kg: weight, system: unitSettings.unitSystem))
+                        .font(theme.typography.caption)
+                        .fontWeight(.medium)
+                        .foregroundColor(theme.colors.textPrimary)
+                } else {
+                    Text("--")
+                        .font(theme.typography.caption)
+                        .foregroundColor(theme.colors.textSecondary)
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+
+            // Reps
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Reps")
+                    .font(theme.typography.caption2)
+                    .foregroundColor(theme.colors.textSecondary)
+
+                Text("\(set.reps)")
+                    .font(theme.typography.caption)
+                    .fontWeight(.medium)
+                    .foregroundColor(theme.colors.textPrimary)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+
+            // Complete Button
+            Button(action: onComplete) {
+                Image(systemName: set.isCompleted ? "checkmark.circle.fill" : "circle")
+                    .font(.title3)
+                    .foregroundColor(set.isCompleted ? .green : theme.colors.textSecondary)
+            }
+            .buttonStyle(PlainButtonStyle())
+        }
+        .padding(.horizontal, theme.spacing.s)
+        .padding(.vertical, theme.spacing.xs)
+        .background(set.isCompleted ? Color.green.opacity(0.1) : theme.colors.backgroundSecondary)
+        .cornerRadius(theme.radius.s)
     }
 }
 
@@ -85,30 +193,20 @@ struct LiftSessionView: View {
     @Environment(\.theme) private var theme
     @Environment(\.modelContext) private var modelContext
     @Environment(UnitSettings.self) private var unitSettings
-    @Environment(HealthKitService.self) private var healthKitService
-    @Query private var users: [User]
-    
     let workout: LiftWorkout
     let programExecution: ProgramExecution?
-    @StateObject private var viewModel = LiftSessionViewModel()
-    @State private var session: LiftSession?
+    @State private var viewModel = LiftSessionViewModel()
     @State private var showingCompletion = false
     @State private var showingCancelAlert = false
     @State private var showingExerciseSelection = false
-    @State private var showingNotes = false
     @State private var sessionNotes = ""
     @State private var showingProgramCelebration = false
-    @State private var saveWorkItem: DispatchWorkItem?
-    @State private var previousSessions: [LiftSession] = []
-    
-    private var currentUser: User? {
-        users.first
-    }
+
     
     var body: some View {
         NavigationStack {
-            if let session = session {
-                mainContentView(session: session)
+            if viewModel.currentSession != nil {
+                mainContentView
             } else {
                 ProgressView("Starting workout...")
                     .onAppear {
@@ -116,10 +214,25 @@ struct LiftSessionView: View {
                     }
             }
         }
+        .onAppear {
+            setupViewModel()
+        }
+        .onChange(of: viewModel.errorMessage) { _, message in
+            if let message = message {
+                // Handle error display if needed
+                print("Error: \(message)")
+            }
+        }
+        .onChange(of: viewModel.successMessage) { _, message in
+            if let message = message {
+                // Handle success display if needed
+                print("Success: \(message)")
+            }
+        }
     }
     
     @ViewBuilder
-    private func mainContentView(session: LiftSession) -> some View {
+    private var mainContentView: some View {
         ScrollView {
             VStack(spacing: theme.spacing.l) {
                 sessionHeaderView
@@ -143,7 +256,7 @@ struct LiftSessionView: View {
                         .font(theme.typography.headline)
                         .fontWeight(.semibold)
                     
-                    if (session.exerciseResults?.count ?? 0) > 1 {
+                    if (viewModel.currentSession?.exerciseResults?.count ?? 0) > 1 {
                         Button(action: {
                             withAnimation(.spring(response: 0.3)) {
                                 viewModel.toggleEditingOrder()
@@ -162,7 +275,7 @@ struct LiftSessionView: View {
                     completeSession()
                 }
                 .fontWeight(.semibold)
-                .disabled(session.exerciseResults?.allSatisfy { $0.completedSets == 0 } ?? true)
+                .disabled(!viewModel.canCompleteSession)
             }
         }
         .alert(TrainingKeys.Alerts.cancelWorkout.localized, isPresented: $showingCancelAlert) {
@@ -174,14 +287,37 @@ struct LiftSessionView: View {
             Text(TrainingKeys.Alerts.cancelWorkoutMessage.localized)
         }
         .sheet(isPresented: $showingCompletion) {
-            if let user = currentUser {
-                LiftSessionSummaryView(
-                    session: session,
+            if viewModel.isSessionReady, let currentSession = viewModel.currentSession, let user = viewModel.currentUser {
+                Components.LiftSessionSummaryView(
+                    session: currentSession,
                     user: user,
                     onDismiss: {
                         handleWorkoutCompletion()
                     }
                 )
+            } else {
+                // Fallback view if session or user is nil
+                VStack(spacing: 16) {
+                    Image(systemName: "exclamationmark.triangle")
+                        .font(.largeTitle)
+                        .foregroundColor(.red)
+                    Text("Session Error")
+                        .font(.headline)
+                    Text("Workout session not found")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                    Button("Close") {
+                        showingCompletion = false
+                    }
+                    .buttonStyle(.borderedProminent)
+                }
+                .padding()
+            }
+        }
+        .sheet(isPresented: $showingExerciseSelection) {
+            ExerciseSelectionView { exercise in
+                addExerciseToSession(exercise)
+                showingExerciseSelection = false
             }
         }
         .sheet(isPresented: $showingProgramCelebration) {
@@ -190,20 +326,23 @@ struct LiftSessionView: View {
                 onDismiss: { showingProgramCelebration = false }
             )
         }
-        .sheet(isPresented: $showingExerciseSelection) {
-            ExerciseSelectionView { exercise in
-                addExerciseToSession(exercise)
+        .overlay(alignment: .center) {
+            if viewModel.isLoading {
+                ProgressView("Processing...")
+                    .progressViewStyle(CircularProgressViewStyle())
+                    .padding()
+                    .background(Color.black.opacity(0.8))
+                    .foregroundColor(.white)
+                    .cornerRadius(10)
             }
         }
-        .sheet(isPresented: $showingNotes) {
-            WorkoutNotesSheet(
-                notes: $sessionNotes,
-                onSave: { notes in
-                    session.notes = notes.isEmpty ? nil : notes
-                    try? modelContext.save()
-                    showingNotes = false
-                }
-            )
+        .alert("Error", isPresented: Binding<Bool>(
+            get: { viewModel.errorMessage != nil },
+            set: { if !$0 { viewModel.clearMessages() } }
+        )) {
+            Button("OK") { viewModel.clearMessages() }
+        } message: {
+            Text(viewModel.errorMessage ?? "")
         }
     }
     
@@ -221,9 +360,9 @@ struct LiftSessionView: View {
                     SimpleExerciseCardRow(
                         exerciseData: Binding(
                             get: { viewModel.exercises[index] },
-                            set: { viewModel.exercises[index] = $0 }
+                            set: { viewModel.updateExercise($0) }
                         ),
-                        isExpanded: viewModel.expandedExerciseId == exerciseData.id,
+                        iExpanded: viewModel.expandedExerciseId == exerciseData.id,
                         isEditMode: viewModel.isEditingOrder,
                         onToggle: {
                             viewModel.toggleExpansion(for: exerciseData.id)
@@ -239,7 +378,7 @@ struct LiftSessionView: View {
                     .listRowBackground(Color.clear)
                     .deleteDisabled(!viewModel.isEditingOrder)
                 }
-                .onMove(perform: viewModel.isEditingOrder ? viewModel.moveExercises : nil)
+                .onMove(perform: viewModel.isEditingOrder ? { indices, destination in viewModel.moveExercises(from: indices, to: destination) } : nil)
             }
             .listStyle(PlainListStyle())
         } else {
@@ -290,21 +429,21 @@ struct LiftSessionView: View {
             LiftStatCard(
                 icon: "scalemass.fill",
                 title: "Volume",
-                value: UnitsFormatter.formatVolume(kg: session?.totalVolume ?? 0, system: unitSettings.unitSystem),
+                value: UnitsFormatter.formatVolume(kg: viewModel.sessionTotals.volume, system: unitSettings.unitSystem),
                 color: theme.colors.accent
             )
-            
+
             LiftStatCard(
                 icon: "number",
                 title: "Sets",
-                value: "\(session?.totalSets ?? 0)",
+                value: "\(viewModel.sessionTotals.sets)",
                 color: theme.colors.success
             )
-            
+
             LiftStatCard(
                 icon: "repeat",
                 title: "Reps",
-                value: "\(session?.totalReps ?? 0)",
+                value: "\(viewModel.sessionTotals.reps)",
                 color: theme.colors.warning
             )
         }
@@ -331,8 +470,8 @@ struct LiftSessionView: View {
             
             // Notes Button
             Button(action: {
-                sessionNotes = session?.notes ?? ""
-                showingNotes = true
+                sessionNotes = viewModel.currentSession?.notes ?? ""
+                // showingNotes = true // Notes functionality can be implemented later
             }) {
                 HStack {
                     Image(systemName: "note.text")
@@ -349,308 +488,42 @@ struct LiftSessionView: View {
     }
     
     // MARK: - Helper Methods
+
+    private func setupViewModel() {
+        viewModel.configure(modelContext: modelContext)
+    }
+
     private func startSession() {
-        guard let user = currentUser else { return }
-        session = workout.startSession(for: user, programExecution: programExecution)
-        
-        // Load session data into ViewModel
-        if let session = session {
-            viewModel.loadSession(session, context: modelContext)
-            
-            // Smart auto-expand: first incomplete exercise
-            if let firstIncompleteData = viewModel.exercises.first(where: { !$0.isCompleted }) {
-                viewModel.toggleExpansion(for: firstIncompleteData.id)
-            } else if let firstExercise = viewModel.exercises.first {
-                viewModel.toggleExpansion(for: firstExercise.id)
-            }
+        Task {
+            await viewModel.startWorkoutSession(
+                workout: workout,
+                programExecution: programExecution
+            )
         }
-        
-        // Load previous sessions for comparison
-        loadPreviousSessions()
     }
     
-    
-    private func updateSessionTotals() {
-        session?.calculateTotals()
-        scheduleDebouncedSave()
-    }
-    
-    private func scheduleDebouncedSave() {
-        saveWorkItem?.cancel()
-        
-        saveWorkItem = DispatchWorkItem {
-            try? modelContext.save()
-        }
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: saveWorkItem!)
-    }
-    
-    private func handleSetCompletion(for exerciseResult: LiftExerciseResult) {
-        // Auto-expand logic now handled by ViewModel
-        // The ViewModel automatically manages expansion state
-    }
-    
-    // Exercise movement now handled by ViewModel
     
     
     private func completeSession() {
-        session?.complete()
-        try? modelContext.save()
-        
-        // Check for PRs and log activities
-        if let completedSession = session, let user = fetchCurrentUser() {
-            ActivityLoggerService.shared.setModelContext(modelContext)
-            
-            // Log workout completion
-            ActivityLoggerService.shared.logWorkoutCompleted(
-                workoutType: workout.name,
-                duration: completedSession.duration,
-                volume: completedSession.totalVolume,
-                sets: completedSession.totalSets,
-                reps: completedSession.totalReps,
-                user: user
-            )
-            
-            // Check for PRs in completed exercises
-            checkAndLogPersonalRecords(session: completedSession, user: user)
-            
-            // Save to HealthKit
-            Task {
-                let estimatedCalories = HealthCalculator.estimateStrengthTrainingCalories(
-                    duration: completedSession.duration,
-                    bodyWeight: user.currentWeight,
-                    intensity: .moderate
-                )
-                
-                let success = await healthKitService.saveLiftWorkout(
-                    duration: completedSession.duration,
-                    caloriesBurned: estimatedCalories,
-                    startDate: completedSession.startDate,
-                    endDate: completedSession.endDate ?? Date(),
-                    totalVolume: completedSession.totalVolume
-                )
-                
-                if success {
-                    Logger.info("Lift workout successfully synced to HealthKit")
-                }
-            }
-        }
-        
-        showingCompletion = true
-    }
-    
-    private func checkAndLogPersonalRecords(session: LiftSession, user: User) {
-        for exerciseResult in session.exerciseResults ?? [] {
-            guard let exercise = exerciseResult.exercise else { continue }
-            
-            // Calculate max weight for this exercise in this session
-            let maxWeightThisSession = exerciseResult.sets
-                .filter { $0.isCompleted && $0.reps > 0 }
-                .compactMap { $0.weight }
-                .max() ?? 0
-            
-            if maxWeightThisSession > 0 {
-                // Get previous best for this exercise
-                let previousBest = getPreviousBest(for: exercise, user: user)
-                
-                // Check if this is a PR (personal record)
-                if maxWeightThisSession > previousBest {
-                    ActivityLoggerService.shared.logPersonalRecord(
-                        exerciseName: exercise.exerciseName,
-                        newValue: maxWeightThisSession,
-                        previousValue: previousBest > 0 ? previousBest : nil,
-                        unit: "kg",
-                        user: user
-                    )
-                }
+        Task {
+            await viewModel.completeSession()
+
+            await MainActor.run {
+                showingCompletion = true
             }
         }
     }
-    
-    private func getPreviousBest(for exercise: LiftExercise, user: User) -> Double {
-        // Optimized query: only fetch recent sessions with limit
-        var descriptor = FetchDescriptor<LiftSession>(
-            predicate: #Predicate<LiftSession> { session in
-                session.isCompleted
-            },
-            sortBy: [SortDescriptor(\LiftSession.startDate, order: .reverse)]
-        )
-        
-        // Limit to last 20 sessions for performance
-        descriptor.fetchLimit = 20
-        
-        do {
-            let recentSessions = try modelContext.fetch(descriptor)
-            var maxWeight: Double = 0
-            
-            // Early exit optimization: stop when we find enough data
-            for session in recentSessions {
-                for result in session.exerciseResults ?? [] {
-                    if result.exercise?.exerciseName == exercise.exerciseName {
-                        let sessionMax = result.sets
-                            .filter { $0.isCompleted && $0.reps > 0 }
-                            .compactMap { $0.weight }
-                            .max() ?? 0
-                        maxWeight = max(maxWeight, sessionMax)
-                        
-                        // Performance boost: if we found good data, no need to check all sessions
-                        if maxWeight > 0 && recentSessions.count > 5 {
-                            break
-                        }
-                    }
-                }
-            }
-            
-            return maxWeight
-        } catch {
-            Logger.error("Error fetching previous sessions for PR check: \(error)")
-            return 0
-        }
-    }
-    
+
     private func cancelSession() {
-        if let session = session {
-            modelContext.delete(session)
-            try? modelContext.save()
-        }
         dismiss()
     }
-    
-    private func loadPreviousSessions() {
-        // Get previous sessions for this workout
-        previousSessions = workout.sessions?
-            .filter { $0.isCompleted }
-            .sorted { $0.startDate > $1.startDate } ?? []
-    }
-    
-    // Helper to get current user
-    private func fetchCurrentUser() -> User? {
-        let descriptor = FetchDescriptor<User>(sortBy: [SortDescriptor(\User.createdAt)])
-        do {
-            let users = try modelContext.fetch(descriptor)
-            return users.first
-        } catch {
-            return nil
-        }
-    }
-    
-    // MARK: - Program Integration
+
     private func handleWorkoutCompletion() {
-        // First, close the session view to return to dashboard
         dismiss()
-        
-        guard let execution = programExecution else {
-            Logger.info("Workout completed without program context")
-            return
-        }
-        
-        // Mark current workout as completed in program
-        execution.completeCurrentWorkout()
-        
-        do {
-            try modelContext.save()
-            Logger.success("Program advanced: Week \(execution.currentWeek), Day \(execution.currentDay)")
-            
-            // Check if program is completed
-            if execution.isCompleted {
-                Logger.success("Program completed! \(execution.program?.localizedName ?? "Unknown")")
-                showingProgramCelebration = true
-                HapticManager.shared.notification(.success)
-            }
-            
-        } catch {
-            Logger.error("Failed to advance program: \(error)")
-        }
     }
-    
-    private func getPreviousSets(for exercise: LiftExercise) -> [SetData]? {
-        // Find the most recent completed session with this exercise
-        for session in previousSessions {
-            if let result = session.exerciseResults?.first(where: { $0.exercise?.exerciseId == exercise.exerciseId }) {
-                return result.sets.filter { $0.isCompleted }
-            }
-        }
-        return nil
-    }
-    
+
     private func addExerciseToSession(_ exercise: Exercise) {
-        guard let session = session else { return }
-        
-        // Check if exercise already exists in session
-        if session.exerciseResults?.contains(where: { $0.exercise?.exerciseId == exercise.id }) == true {
-            print("⚠️ Exercise already exists in session")
-            return
-        }
-        
-        // Create a LiftExercise from the selected Exercise
-        let liftExercise = LiftExercise(
-            exerciseId: exercise.id,
-            exerciseName: exercise.nameEN,
-            orderIndex: session.exerciseResults?.count ?? 0,
-            targetSets: 3,
-            targetReps: 10
-        )
-        
-        // Add to workout if not already there
-        if !(workout.exercises?.contains(where: { $0.exerciseId == exercise.id }) == true) {
-            workout.addExercise(liftExercise)
-        }
-        
-        // Create exercise result for the session
-        let exerciseResult = LiftExerciseResult(exercise: liftExercise)
-        
-        // Add 1 initial set with smart defaults
-        let setData = SetData(
-            setNumber: 1,
-            weight: getLastUsedWeight(for: exercise),
-            reps: 10,
-            isWarmup: false,
-            isCompleted: false
-        )
-        exerciseResult.sets.append(setData)
-        
-        // Use safe add method
-        session.safeAddExerciseResult(exerciseResult)
-        
-        // Save changes first to ensure model consistency
-        do {
-            try modelContext.save()
-            
-            // Reload ViewModel with updated session data
-            viewModel.loadSession(session, context: modelContext)
-            // Auto-expand the newly added exercise
-            viewModel.toggleExpansion(for: exerciseResult.id)
-        } catch {
-            print("❌ Failed to save exercise: \(error)")
-        }
-    }
-    
-    // MARK: - Helper Methods for Exercise Setup
-    
-    private func getLastUsedWeight(for exercise: Exercise) -> Double? {
-        // In a real implementation, this would query previous lift sessions
-        // For now, return a reasonable default based on exercise type
-        guard let oneRM = getOneRMForExercise(exercise) else { return nil }
-        return oneRM * 0.7 // Start with 70% of 1RM as a reasonable working weight
-    }
-    
-    private func getOneRMForExercise(_ exercise: Exercise) -> Double? {
-        guard let user = currentUser else { return nil }
-        
-        let exerciseName = exercise.displayName.lowercased()
-        if exerciseName.contains("bench") || exerciseName.contains("press") {
-            return user.benchPressOneRM
-        } else if exerciseName.contains("squat") {
-            return user.squatOneRM
-        } else if exerciseName.contains("deadlift") {
-            return user.deadliftOneRM
-        } else if exerciseName.contains("overhead") {
-            return user.overheadPressOneRM
-        } else if exerciseName.contains("pull") {
-            return user.pullUpOneRM
-        }
-        
-        return nil
+        viewModel.addExercise(exercise)
     }
 }
 
@@ -709,425 +582,6 @@ struct WorkoutNotesSheet: View {
     }
 }
 
-// MARK: - Lift Stat Card Component
-struct LiftStatCard: View {
-    @Environment(\.theme) private var theme
-    let icon: String
-    let title: String
-    let value: String
-    let color: Color
-    
-    var body: some View {
-        VStack(spacing: theme.spacing.s) {
-            Image(systemName: icon)
-                .font(.title2)
-                .foregroundColor(color)
-            
-            Text(value)
-                .font(theme.typography.headline)
-                .fontWeight(.bold)
-                .foregroundColor(theme.colors.textPrimary)
-            
-            Text(title)
-                .font(theme.typography.caption)
-                .foregroundColor(theme.colors.textSecondary)
-        }
-        .frame(maxWidth: .infinity)
-        .padding()
-        .background(theme.colors.cardBackground)
-        .cornerRadius(theme.radius.m)
-    }
-}
-
-// MARK: - Session Completion View
-struct LiftSessionSummaryView: View {
-    @Environment(\.dismiss) private var dismiss
-    @Environment(\.theme) private var theme
-    @Environment(\.modelContext) private var modelContext
-    @Environment(UnitSettings.self) private var unitSettings
-    @Environment(HealthKitService.self) private var healthKitService
-    
-    let session: LiftSession
-    let user: User
-    let onDismiss: (() -> Void)?
-    
-    init(session: LiftSession, user: User, onDismiss: (() -> Void)? = nil) {
-        self.session = session
-        self.user = user
-        self.onDismiss = onDismiss
-    }
-    
-    @State private var feeling: SessionFeeling = .good
-    @State private var notes: String = ""
-    @State private var showingShareSheet = false
-    
-    // Edit modals
-    @State private var showingDurationEdit = false
-    @State private var showingVolumeEdit = false
-    @State private var showingSetsEdit = false
-    @State private var showingRepsEdit = false
-    
-    // Edit values
-    @State private var editHours: Int = 0
-    @State private var editMinutes: Int = 0
-    @State private var editSeconds: Int = 0
-    @State private var editVolume: Double = 0.0
-    @State private var editSets: Int = 0
-    @State private var editReps: Int = 0
-    
-    var body: some View {
-        NavigationStack {
-            ScrollView {
-                VStack(spacing: theme.spacing.l) {
-                    // Success Header
-                    successHeader
-                    
-                    // Main Stats
-                    mainStatsSection
-                    
-                    // Exercise Results Summary
-                    exerciseResultsSection
-                    
-                    // Personal Records (if any)
-                    if !session.prsHit.isEmpty {
-                        personalRecordsSection
-                    }
-                    
-                    // Feeling Selection
-                    feelingSection
-                    
-                    // Notes
-                    notesSection
-                    
-                    // Action Buttons
-                    actionButtons
-                }
-                .padding(theme.spacing.m)
-            }
-            .navigationTitle("Workout Summary")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(action: { showingShareSheet = true }) {
-                        Image(systemName: "square.and.arrow.up")
-                    }
-                }
-            }
-        }
-        .sheet(isPresented: $showingShareSheet) {
-            if let shareText = createShareText() {
-                LiftShareSheet(items: [shareText])
-            }
-        }
-        .sheet(isPresented: $showingDurationEdit) {
-            LiftDurationEditSheet(
-                hours: $editHours,
-                minutes: $editMinutes,
-                seconds: $editSeconds,
-                onSave: saveDurationEdit,
-                onCancel: { showingDurationEdit = false }
-            )
-        }
-    }
-    
-    // MARK: - Success Header
-    private var successHeader: some View {
-        VStack(spacing: theme.spacing.m) {
-            Image(systemName: "checkmark.circle.fill")
-                .font(.system(size: 60))
-                .foregroundColor(theme.colors.success)
-                .symbolRenderingMode(.hierarchical)
-            
-            Text("Tebrikler!")
-                .font(theme.typography.title2)
-                .fontWeight(.bold)
-                .foregroundColor(theme.colors.textPrimary)
-            
-            Text("Antrenmanı Tamamladın!")
-                .font(theme.typography.body)
-                .foregroundColor(theme.colors.textSecondary)
-        }
-        .padding(.vertical, theme.spacing.l)
-    }
-    
-    // MARK: - Main Stats
-    private var mainStatsSection: some View {
-        VStack(spacing: theme.spacing.m) {
-            HStack(spacing: theme.spacing.m) {
-                LiftMainStatCard(
-                    icon: "timer",
-                    value: session.formattedDuration,
-                    label: "Duration",
-                    color: theme.colors.accent,
-                    onEdit: { 
-                        initializeDurationEdit()
-                        showingDurationEdit = true 
-                    }
-                )
-                
-                LiftMainStatCard(
-                    icon: "scalemass.fill",
-                    value: UnitsFormatter.formatVolume(kg: session.totalVolume, system: unitSettings.unitSystem),
-                    label: "Volume",
-                    color: theme.colors.success,
-                    onEdit: nil // Volume hesaplanır, edit edilmez
-                )
-            }
-            
-            HStack(spacing: theme.spacing.m) {
-                LiftMainStatCard(
-                    icon: "list.number",
-                    value: "\(session.totalSets)",
-                    label: "Sets",
-                    color: theme.colors.warning,
-                    onEdit: nil // Sets hesaplanır
-                )
-                
-                LiftMainStatCard(
-                    icon: "repeat",
-                    value: "\(session.totalReps)",
-                    label: "Reps",
-                    color: theme.colors.error,
-                    onEdit: nil // Reps hesaplanır
-                )
-            }
-        }
-    }
-    
-    // MARK: - Exercise Results
-    private var exerciseResultsSection: some View {
-        VStack(alignment: .leading, spacing: theme.spacing.m) {
-            HStack {
-                Image(systemName: "list.clipboard.fill")
-                    .foregroundColor(theme.colors.accent)
-                Text("Exercise Summary")
-                    .font(theme.typography.headline)
-                    .fontWeight(.semibold)
-                    .foregroundColor(theme.colors.textPrimary)
-                Spacer()
-            }
-            
-            VStack(spacing: theme.spacing.s) {
-                ForEach(session.exerciseResults ?? []) { result in
-                    ExerciseResultRow(result: result, unitSettings: unitSettings)
-                }
-            }
-        }
-        .cardStyle()
-    }
-    
-    // MARK: - Personal Records
-    private var personalRecordsSection: some View {
-        VStack(alignment: .leading, spacing: theme.spacing.m) {
-            HStack {
-                Image(systemName: "trophy.fill")
-                    .foregroundColor(theme.colors.warning)
-                Text("Personal Records!")
-                    .font(theme.typography.headline)
-                    .fontWeight(.semibold)
-                    .foregroundColor(theme.colors.warning)
-                Spacer()
-            }
-            
-            VStack(spacing: theme.spacing.s) {
-                ForEach(session.prsHit, id: \.self) { pr in
-                    HStack {
-                        Image(systemName: "trophy.fill")
-                            .font(.caption)
-                            .foregroundColor(theme.colors.warning)
-                        Text(pr)
-                            .font(theme.typography.body)
-                            .foregroundColor(theme.colors.textPrimary)
-                        Spacer()
-                    }
-                }
-            }
-        }
-        .padding(theme.spacing.m)
-        .background(theme.colors.warning.opacity(0.1))
-        .cornerRadius(theme.radius.m)
-    }
-    
-    // MARK: - Feeling Section
-    private var feelingSection: some View {
-        VStack(alignment: .leading, spacing: theme.spacing.m) {
-            Text("How do you feel?")
-                .font(theme.typography.headline)
-                .fontWeight(.semibold)
-                .foregroundColor(theme.colors.textPrimary)
-            
-            HStack(spacing: theme.spacing.s) {
-                ForEach(SessionFeeling.allCases, id: \.self) { feelingOption in
-                    Button(action: { feeling = feelingOption }) {
-                        VStack(spacing: 4) {
-                            Text(feelingOption.emoji)
-                                .font(.title2)
-                            Text(feelingOption.displayName)
-                                .font(.caption2)
-                                .fontWeight(feeling == feelingOption ? .semibold : .regular)
-                        }
-                        .foregroundColor(feeling == feelingOption ? .white : theme.colors.textPrimary)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, theme.spacing.s)
-                        .background(
-                            RoundedRectangle(cornerRadius: theme.radius.s)
-                                .fill(feeling == feelingOption ? theme.colors.accent : theme.colors.backgroundSecondary)
-                        )
-                    }
-                    .buttonStyle(PlainButtonStyle())
-                }
-            }
-        }
-    }
-    
-    // MARK: - Notes Section
-    private var notesSection: some View {
-        VStack(alignment: .leading, spacing: theme.spacing.s) {
-            Text("Notes (Optional)")
-                .font(theme.typography.body)
-                .fontWeight(.medium)
-                .foregroundColor(theme.colors.textPrimary)
-            
-            TextField("Add notes about your workout...", text: $notes, axis: .vertical)
-                .textFieldStyle(.plain)
-                .padding(theme.spacing.m)
-                .background(theme.colors.backgroundSecondary)
-                .cornerRadius(theme.radius.m)
-                .lineLimit(3...5)
-        }
-    }
-    
-    // MARK: - Action Buttons
-    private var actionButtons: some View {
-        VStack(spacing: theme.spacing.m) {
-            Button(action: saveSession) {
-                HStack {
-                    Image(systemName: "checkmark.circle.fill")
-                        .font(.title3)
-                    Text("Save Workout")
-                        .font(theme.typography.headline)
-                        .fontWeight(.semibold)
-                }
-                .foregroundColor(.white)
-                .frame(maxWidth: .infinity)
-                .padding(theme.spacing.l)
-                .background(theme.colors.accent)
-                .cornerRadius(theme.radius.m)
-            }
-            
-            Button(action: discardSession) {
-                Text("Exit without saving")
-                    .font(theme.typography.body)
-                    .foregroundColor(theme.colors.textSecondary)
-            }
-        }
-        .padding(.vertical, theme.spacing.l)
-    }
-    
-    // MARK: - Helper Methods
-    private func saveSession() {
-        // Update session with feeling and notes - convert to Int for LiftSession
-        switch feeling {
-        case .exhausted: session.feeling = 1
-        case .tired: session.feeling = 2
-        case .okay: session.feeling = 3
-        case .good: session.feeling = 4
-        case .great: session.feeling = 5
-        }
-        session.notes = notes.isEmpty ? nil : notes
-        
-        // Mark as completed if not already
-        if !session.isCompleted {
-            session.endDate = Date()
-            session.isCompleted = true
-        }
-        
-        // Update user stats with final values
-        user.addLiftSession(
-            duration: session.duration,
-            volume: session.totalVolume,
-            sets: session.totalSets,
-            reps: session.totalReps
-        )
-        
-        do {
-            try modelContext.save()
-            
-            // Save to HealthKit
-            Task {
-                let success = await healthKitService.saveLiftWorkout(
-                    duration: session.duration,
-                    startDate: session.startDate,
-                    endDate: session.endDate ?? Date(),
-                    totalVolume: session.totalVolume
-                )
-                
-                if success {
-                    Logger.info("Lift workout successfully synced to HealthKit")
-                }
-            }
-            
-            // Dismiss with callback
-            if let onDismiss = onDismiss {
-                onDismiss()
-            } else {
-                dismiss()
-            }
-        } catch {
-            Logger.error("Failed to save lift session: \(error)")
-        }
-    }
-    
-    private func discardSession() {
-        if let onDismiss = onDismiss {
-            onDismiss()
-        } else {
-            dismiss()
-        }
-    }
-    
-    private func createShareText() -> String? {
-        var text = "💪 Workout Completed!\n\n"
-        text += "⏱️ Duration: \(session.formattedDuration)\n"
-        text += "📊 Volume: \(UnitsFormatter.formatVolume(kg: session.totalVolume, system: unitSettings.unitSystem))\n"
-        text += "🔢 Sets: \(session.totalSets)\n"
-        text += "🔄 Reps: \(session.totalReps)\n"
-        
-        if !session.prsHit.isEmpty {
-            text += "\n🏆 Personal Records:\n"
-            for pr in session.prsHit {
-                text += "• \(pr)\n"
-            }
-        }
-        
-        text += "\n#Thrustr #Lifting #Strength"
-        
-        return text
-    }
-    
-    // MARK: - Edit Methods
-    private func initializeDurationEdit() {
-        let totalSeconds = Int(session.duration)
-        editHours = totalSeconds / 3600
-        editMinutes = (totalSeconds % 3600) / 60
-        editSeconds = totalSeconds % 60
-    }
-    
-    private func saveDurationEdit() {
-        let newDuration = TimeInterval(editHours * 3600 + editMinutes * 60 + editSeconds)
-        
-        if newDuration != session.duration {
-            // Duration is computed from startDate and endDate, so we adjust endDate
-            let newEndDate = session.startDate.addingTimeInterval(newDuration)
-            session.endDate = newEndDate
-            // Note: Volume, sets, reps are calculated from exercise results
-            // Duration edit doesn't affect those
-        }
-        
-        showingDurationEdit = false
-    }
-    
-}
 
 // MARK: - Lift Main Stat Card
 struct LiftMainStatCard: View {

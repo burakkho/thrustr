@@ -7,7 +7,7 @@ struct ProfileView: View {
     @Query private var users: [User]
     @Environment(UnitSettings.self) private var unitSettings
     @Environment(CloudSyncManager.self) private var cloudSyncManager
-    @State private var errorHandler = ErrorHandlingService.shared
+    @State private var errorHandler = ErrorUIService.shared
     @State private var viewModel: ProfileViewModel?
 
     @State private var showingPersonalInfoSheet = false
@@ -84,12 +84,11 @@ struct ProfileView: View {
             // Initialize ViewModel with modern dependency injection pattern
             if viewModel == nil {
                 viewModel = ProfileViewModel()
+                viewModel?.configure(modelContext: modelContext)
             }
 
-            // Load profile data
-            if let viewModel = viewModel {
-                loadProfileData(viewModel: viewModel)
-            }
+            // Load profile data using ViewModel
+            viewModel?.loadProfileData(user: currentUser)
         }
         .sheet(isPresented: $showingPersonalInfoSheet) {
             if let user = currentUser {
@@ -119,22 +118,6 @@ struct ProfileView: View {
         }
         .toast($errorHandler.toastMessage, type: errorHandler.toastType)
     }
-
-    // MARK: - Private Methods
-
-    private func loadProfileData(viewModel: ProfileViewModel) {
-        // Load required data for ViewModel using SwiftData queries
-        let healthKitService = HealthKitService.shared
-
-        // Pass SwiftData query results to ViewModel
-        viewModel.loadProfileData(
-            user: currentUser,
-            healthKitService: healthKitService,
-            liftSessions: [],
-            nutritionEntries: [],
-            weightEntries: []
-        )
-    }
 }
 
 // MARK: - Achievement Showcase Section
@@ -162,15 +145,15 @@ struct AchievementShowcaseSection: View {
                 }
                 .padding(.horizontal, 4)
                 
-                // Achievement Display - Showcase Style with titles
-                HStack(spacing: 20) {
-                    ForEach(Array(viewModel.showcaseAchievements.enumerated()), id: \.element.id) { index, achievement in
+                // Achievement Display - Responsive Grid Layout
+                LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 16), count: 3), spacing: 16) {
+                    ForEach(Array(viewModel.showcaseAchievements.prefix(3).enumerated()), id: \.element.id) { index, achievement in
                         VStack(spacing: 8) {
                             NavigationLink(destination: AchievementsView()) {
                                 AchievementBadge(achievement: achievement, size: .showcase)
                             }
                             .buttonStyle(PlainButtonStyle())
-                            
+
                             // Achievement title below badge
                             VStack(spacing: 2) {
                                 Text(achievement.title)
@@ -178,8 +161,8 @@ struct AchievementShowcaseSection: View {
                                     .fontWeight(.medium)
                                     .foregroundColor(theme.colors.textPrimary)
                                     .lineLimit(1)
-                                    .minimumScaleFactor(0.8)
-                                
+                                    .minimumScaleFactor(0.7)
+
                                 if achievement.isCompleted {
                                     Text("profile.completed".localized)
                                         .font(.caption2)
@@ -191,26 +174,43 @@ struct AchievementShowcaseSection: View {
                                 }
                             }
                         }
-                        .frame(maxWidth: .infinity)
                     }
-                    
-                    Spacer()
-                    
-                    // Next achievement preview
-                    if viewModel.additionalAchievementsCount > 0 {
-                        VStack(spacing: 4) {
-                            Text("+\\(viewModel.additionalAchievementsCount)")
-                                .font(.caption)
-                                .fontWeight(.bold)
-                                .foregroundColor(theme.colors.accent)
 
-                            Text("profile.more_achievements".localized)
-                                .font(.caption2)
-                                .foregroundColor(theme.colors.textSecondary)
+                    // More achievements indicator
+                    if viewModel.additionalAchievementsCount > 0 {
+                        NavigationLink(destination: AchievementsView()) {
+                            VStack(spacing: 8) {
+                                Circle()
+                                    .fill(theme.colors.accent.opacity(0.2))
+                                    .frame(width: 60, height: 60)
+                                    .overlay(
+                                        VStack(spacing: 2) {
+                                            Text("+\(viewModel.additionalAchievementsCount)")
+                                                .font(.caption)
+                                                .fontWeight(.bold)
+                                                .foregroundColor(theme.colors.accent)
+
+                                            Image(systemName: "ellipsis")
+                                                .font(.caption2)
+                                                .foregroundColor(theme.colors.accent)
+                                        }
+                                    )
+
+                                VStack(spacing: 2) {
+                                    Text("profile.more_achievements".localized)
+                                        .font(.caption)
+                                        .fontWeight(.medium)
+                                        .foregroundColor(theme.colors.textPrimary)
+                                        .lineLimit(1)
+                                        .minimumScaleFactor(0.7)
+
+                                    Text("common.view_all".localized)
+                                        .font(.caption2)
+                                        .foregroundColor(theme.colors.accent)
+                                }
+                            }
                         }
-                        .onTapGesture {
-                            // Navigate to achievements view
-                        }
+                        .buttonStyle(PlainButtonStyle())
                     }
                 }
                 .padding()

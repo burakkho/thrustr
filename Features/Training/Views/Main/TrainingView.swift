@@ -6,7 +6,7 @@ struct TrainingView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(TabRouter.self) private var tabRouter
     @State private var coordinator = TrainingCoordinator()
-    @State private var errorHandler = ErrorHandlingService.shared
+    @State private var errorHandler = ErrorUIService.shared
     @Query private var programs: [LiftProgram]
     @Query private var users: [User]
     
@@ -67,7 +67,7 @@ struct TrainingView: View {
                     EmptyStateView(
                         systemImage: "chart.bar.fill",
                         title: "Personal Records",
-                        message: "Detailed PR tracking coming soon!",
+                        message: "Advanced PR tracking and analytics will be available in a future update.",
                         primaryTitle: "Back",
                         primaryAction: { coordinator.navigationPath.removeLast() }
                     )

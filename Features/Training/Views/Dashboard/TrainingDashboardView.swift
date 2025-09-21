@@ -28,50 +28,21 @@ struct TrainingDashboardView: View {
         if let cached = sessionsCache.getCachedSessions() {
             return cached
         }
-        
-        // Compute fresh sessions
-        return computeFreshSessions()
-    }
-    
-    private func computeFreshSessions() -> [any WorkoutSession] {
-        var allSessions: [any WorkoutSession] = []
-        
-        // Add lift sessions
-        allSessions.append(contentsOf: liftSessions.filter { $0.isCompleted })
-        
-        // Add cardio sessions  
-        allSessions.append(contentsOf: cardioSessions.filter { $0.isCompleted })
-        
-        // Sort by date and take recent 5
-        return allSessions
-            .sorted { session1, session2 in
-                let date1 = session1.completedAt ?? session1.startDate
-                let date2 = session2.completedAt ?? session2.startDate
-                return date1 > date2
-            }
-            .prefix(5)
-            .map { $0 }
+
+        // Use service for fresh sessions computation
+        let freshSessions = TrainingDashboardService.computeRecentSessions(
+            liftSessions: liftSessions,
+            cardioSessions: cardioSessions,
+            wodResults: wodResults
+        )
+
+        // Cache the result
+        sessionsCache.updateCache(freshSessions)
+        return freshSessions
     }
     
     private var thisWeekStats: TrainingWeeklyStats {
-        let calendar = Calendar.current
-        let startOfWeek = calendar.dateInterval(of: .weekOfYear, for: Date())?.start ?? Date()
-        
-        let thisWeekSessions = recentSessions.filter { session in
-            let sessionDate = session.completedAt ?? session.startDate
-            return sessionDate >= startOfWeek
-        }
-        
-        let totalWorkouts = thisWeekSessions.count
-        let totalTime = thisWeekSessions.reduce(0) { total, session in
-            total + session.sessionDuration
-        }
-        
-        return TrainingWeeklyStats(
-            workouts: totalWorkouts,
-            totalTime: totalTime,
-            streak: calculateStreak()
-        )
+        return TrainingDashboardService.calculateWeeklyStats(from: recentSessions)
     }
     
     var body: some View {
@@ -342,40 +313,24 @@ struct TrainingDashboardView: View {
     @MainActor
     private func updateCacheIfNeeded() {
         if !sessionsCache.isValid {
-            let freshSessions = computeFreshSessions()
+            let freshSessions = TrainingDashboardService.computeRecentSessions(
+                liftSessions: liftSessions,
+                cardioSessions: cardioSessions,
+                wodResults: wodResults
+            )
             sessionsCache.updateCache(freshSessions)
         }
     }
-    
+
     @MainActor
     private func invalidateCacheAndUpdate() {
         sessionsCache.invalidateCache()
-        let freshSessions = computeFreshSessions()
+        let freshSessions = TrainingDashboardService.computeRecentSessions(
+            liftSessions: liftSessions,
+            cardioSessions: cardioSessions,
+            wodResults: wodResults
+        )
         sessionsCache.updateCache(freshSessions)
-    }
-    
-    // MARK: - Helper Methods
-    private func calculateStreak() -> Int {
-        // Simple streak calculation - consecutive days with workouts
-        let calendar = Calendar.current
-        var streak = 0
-        var currentDate = calendar.startOfDay(for: Date())
-        
-        while streak < 30 { // Max 30 days check
-            let hasWorkout = recentSessions.contains { session in
-                let sessionDate = calendar.startOfDay(for: session.completedAt ?? session.startDate)
-                return sessionDate == currentDate
-            }
-            
-            if hasWorkout {
-                streak += 1
-                currentDate = calendar.date(byAdding: .day, value: -1, to: currentDate) ?? currentDate
-            } else {
-                break
-            }
-        }
-        
-        return streak
     }
     
     private func formatDuration(_ duration: TimeInterval) -> String {
@@ -422,139 +377,10 @@ struct TrainingDashboardView: View {
 
 // MARK: - Supporting Models & Views
 
-struct TrainingWeeklyStats {
-    let workouts: Int
-    let totalTime: TimeInterval
-    let streak: Int
-}
 
 
 
-// MARK: - Quick Action Card
-struct QuickActionCard: View {
-    @Environment(\.theme) private var theme
-    let title: String
-    let subtitle: String
-    let icon: String
-    let color: Color
-    let action: () -> Void
-    
-    var body: some View {
-        Button(action: action) {
-            VStack(alignment: .leading, spacing: theme.spacing.s) {
-                HStack {
-                    Image(systemName: icon)
-                        .font(.title2)
-                        .foregroundColor(color)
-                    Spacer()
-                }
-                
-                Text(title)
-                    .font(theme.typography.body)
-                    .fontWeight(.semibold)
-                    .foregroundColor(theme.colors.textPrimary)
-                
-                Text(subtitle)
-                    .font(theme.typography.caption)
-                    .foregroundColor(theme.colors.textSecondary)
-            }
-            .padding(theme.spacing.m)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .background(theme.colors.cardBackground)
-            .cornerRadius(theme.radius.m)
-            .shadow(color: theme.shadows.card.opacity(0.05), radius: 2)
-        }
-        .buttonStyle(PlainButtonStyle())
-    }
-}
 
-// MARK: - Stat Pill
-struct StatPill: View {
-    @Environment(\.theme) private var theme
-    let icon: String
-    let value: String
-    let label: String
-    
-    var body: some View {
-        HStack(spacing: theme.spacing.xs) {
-            Image(systemName: icon)
-                .font(.caption2)
-                .foregroundColor(.white.opacity(0.8))
-            
-            VStack(alignment: .leading, spacing: 0) {
-                Text(value)
-                    .font(.caption)
-                    .fontWeight(.semibold)
-                    .foregroundColor(.white)
-                
-                Text(label)
-                    .font(.caption2)
-                    .foregroundColor(.white.opacity(0.7))
-            }
-        }
-        .padding(.horizontal, theme.spacing.xs)
-        .padding(.vertical, theme.spacing.xxs)
-        .background(.white.opacity(0.15))
-        .cornerRadius(theme.radius.xs)
-    }
-}
-
-// MARK: - Recent Activity Row
-struct RecentActivityRow: View {
-    @Environment(\.theme) private var theme
-    let session: any WorkoutSession
-    
-    var body: some View {
-        HStack(spacing: theme.spacing.m) {
-            // Workout type icon
-            Image(systemName: workoutTypeIcon)
-                .font(.body)
-                .foregroundColor(workoutTypeColor)
-                .frame(width: 24, height: 24)
-            
-            VStack(alignment: .leading, spacing: 2) {
-                Text(session.workoutName)
-                    .font(theme.typography.body)
-                    .fontWeight(.medium)
-                    .foregroundColor(theme.colors.textPrimary)
-                
-                Text(formatRelativeDate(session.completedAt ?? session.startDate))
-                    .font(theme.typography.caption)
-                    .foregroundColor(theme.colors.textSecondary)
-            }
-            
-            Spacer()
-            
-            Text(formatDuration(session.sessionDuration))
-                .font(theme.typography.caption)
-                .foregroundColor(theme.colors.textSecondary)
-        }
-        .padding(.vertical, theme.spacing.s)
-    }
-    
-    private var workoutTypeIcon: String {
-        if session is LiftSession { return "dumbbell.fill" }
-        if session is CardioSession { return "heart.fill" }
-        return "figure.strengthtraining.traditional"
-    }
-    
-    private var workoutTypeColor: Color {
-        if session is LiftSession { return .strengthColor }
-        if session is CardioSession { return .cardioColor }
-        return .gray
-    }
-    
-    private func formatDuration(_ duration: TimeInterval) -> String {
-        let minutes = Int(duration) / 60
-        return "\(minutes)m"
-    }
-    
-    private func formatRelativeDate(_ date: Date) -> String {
-        let formatter = RelativeDateTimeFormatter()
-        formatter.unitsStyle = .abbreviated
-        return formatter.localizedString(for: date, relativeTo: Date())
-    }
-}
 
 #Preview {
     TrainingDashboardView()

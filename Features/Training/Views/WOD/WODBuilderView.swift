@@ -7,71 +7,84 @@ struct WODBuilderView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(UnitSettings.self) var unitSettings
     @Query private var exercises: [Exercise]
-    
-    @State private var wodName = ""
-    @State private var wodType: WODType = .forTime
-    @State private var repScheme = ""
-    @State private var timeCap = ""
-    @State private var movements: [WODMovementData] = []
-    @State private var showingMovementPicker = false
-    @State private var editingMovement: WODMovementData?
-    @State private var errorMessage: String?
-    @State private var successMessage: String?
-    @State private var showingCancelAlert = false
-    
-    // Temporary data structure for building
-    struct WODMovementData: Identifiable {
-        let id = UUID()
-        var name: String
-        var reps: String = ""
-        var rxWeightMale: String = ""
-        var rxWeightFemale: String = ""
-        var scaledWeightMale: String = ""
-        var scaledWeightFemale: String = ""
-        var notes: String = ""
+
+    @State private var viewModel: WODBuilderViewModel?
+
+    // Computed properties that delegate to ViewModel
+    private var wodName: String {
+        get { viewModel?.wodName ?? "" }
+        set { viewModel?.updateWODName(newValue) }
+    }
+
+    private var wodType: WODType {
+        get { viewModel?.wodType ?? .forTime }
+        set { viewModel?.updateWODType(newValue) }
+    }
+
+    private var repScheme: String {
+        get { viewModel?.repScheme ?? "" }
+        set { viewModel?.updateRepScheme(newValue) }
+    }
+
+    private var timeCap: String {
+        get { viewModel?.timeCap ?? "" }
+        set { viewModel?.updateTimeCap(newValue) }
+    }
+
+    private var movements: [WODBuilderViewModel.WODMovementData] {
+        viewModel?.movements ?? []
+    }
+
+    private var showingMovementPicker: Bool {
+        get { viewModel?.showingMovementPicker ?? false }
+        set { viewModel?.showingMovementPicker = newValue }
+    }
+
+    private var editingMovement: WODBuilderViewModel.WODMovementData? {
+        get { viewModel?.editingMovement }
+        set { viewModel?.editingMovement = newValue }
+    }
+
+    private var errorMessage: String? {
+        viewModel?.errorMessage
+    }
+
+    private var successMessage: String? {
+        viewModel?.successMessage
+    }
+
+    private var showingCancelAlert: Bool {
+        get { viewModel?.showingCancelAlert ?? false }
+        set { viewModel?.showingCancelAlert = newValue }
     }
     
+    // Computed properties that delegate to ViewModel
     private var isValid: Bool {
-        isNameValid && hasMovements && isTimeCapValid && isRepSchemeValid
+        viewModel?.isValid ?? false
     }
-    
+
     private var isNameValid: Bool {
-        !wodName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty &&
-        wodName.trimmingCharacters(in: .whitespacesAndNewlines).count >= 2
+        viewModel?.isNameValid ?? false
     }
-    
+
     private var hasMovements: Bool {
-        !movements.isEmpty
+        viewModel?.hasMovements ?? false
     }
-    
+
     private var isTimeCapValid: Bool {
-        guard (wodType == .amrap || wodType == .emom) && !timeCap.isEmpty else { return true }
-        guard let minutes = Int(timeCap), minutes > 0, minutes <= 60 else { return false }
-        return true
+        viewModel?.isTimeCapValid ?? false
     }
-    
+
     private var isRepSchemeValid: Bool {
-        guard wodType == .forTime && !repScheme.isEmpty else { return true }
-        let components = repScheme.split(separator: "-")
-        return components.allSatisfy { Int($0.trimmingCharacters(in: .whitespaces)) != nil }
+        viewModel?.isRepSchemeValid ?? false
     }
-    
+
     private var hasUnsavedChanges: Bool {
-        !wodName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ||
-        !movements.isEmpty ||
-        !repScheme.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ||
-        !timeCap.isEmpty
+        viewModel?.hasUnsavedChanges ?? false
     }
-    
+
     private var suggestedMovements: [String] {
-        // Common CrossFit movements
-        [
-            "Thrusters", "Pull-ups", "Push-ups", "Air Squats",
-            "Burpees", "Box Jumps", "Wall Balls", "Kettlebell Swings",
-            "Double-unders", "Toes-to-bar", "Clean and Jerk", "Snatches",
-            "Deadlifts", "Handstand Push-ups", "Muscle-ups", "Row",
-            "Run", "Assault Bike", "Ski Erg"
-        ]
+        viewModel?.suggestedMovements ?? []
     }
     
     var body: some View {
@@ -84,7 +97,10 @@ struct WODBuilderView: View {
                             .font(theme.typography.caption)
                             .foregroundColor(theme.colors.textSecondary)
                         
-                        TextField("wod.enter_name_placeholder".localized, text: $wodName)
+                        TextField("wod.enter_name_placeholder".localized, text: Binding(
+                            get: { wodName },
+                            set: { viewModel?.updateWODName($0) }
+                        ))
                             .textFieldStyle(.plain)
                             .font(theme.typography.body)
                             .padding()
@@ -98,8 +114,8 @@ struct WODBuilderView: View {
                             )
                             .cornerRadius(theme.radius.m)
                         
-                        if !wodName.isEmpty && !isNameValid {
-                            Text("Name must be at least 2 characters")
+                        if let errorText = viewModel?.getValidationError(for: .name) {
+                            Text(errorText)
                                 .font(theme.typography.caption2)
                                 .foregroundColor(theme.colors.error)
                         }
@@ -111,7 +127,10 @@ struct WODBuilderView: View {
                             .font(theme.typography.caption)
                             .foregroundColor(theme.colors.textSecondary)
                         
-                        Picker("wod.type_label".localized, selection: $wodType) {
+                        Picker("wod.type_label".localized, selection: Binding(
+                            get: { wodType },
+                            set: { viewModel?.updateWODType($0) }
+                        )) {
                             ForEach(WODType.allCases, id: \.self) { type in
                                 Text(type.displayName).tag(type)
                             }
@@ -126,7 +145,10 @@ struct WODBuilderView: View {
                                 .font(theme.typography.caption)
                                 .foregroundColor(theme.colors.textSecondary)
                             
-                            TextField("wod.rep_scheme_placeholder".localized, text: $repScheme)
+                            TextField("wod.rep_scheme_placeholder".localized, text: Binding(
+                                get: { repScheme },
+                                set: { viewModel?.updateRepScheme($0) }
+                            ))
                                 .textFieldStyle(.plain)
                                 .font(theme.typography.body)
                                 .padding()
@@ -140,12 +162,12 @@ struct WODBuilderView: View {
                                 )
                                 .cornerRadius(theme.radius.m)
                             
-                            if !repScheme.isEmpty && !isRepSchemeValid {
-                                Text("Rep scheme must contain valid numbers (e.g., 21-15-9)")
+                            if let errorText = viewModel?.getValidationError(for: .repScheme) {
+                                Text(errorText)
                                     .font(theme.typography.caption2)
                                     .foregroundColor(theme.colors.error)
-                            } else {
-                                Text("wod.rep_scheme_examples".localized)
+                            } else if let helperText = viewModel?.getHelperText(for: .repScheme) {
+                                Text(helperText)
                                     .font(theme.typography.caption2)
                                     .foregroundColor(theme.colors.textSecondary)
                             }
@@ -159,7 +181,10 @@ struct WODBuilderView: View {
                                 .font(theme.typography.caption)
                                 .foregroundColor(theme.colors.textSecondary)
                             
-                            TextField("wod.duration_placeholder".localized, text: $timeCap)
+                            TextField("wod.duration_placeholder".localized, text: Binding(
+                                get: { timeCap },
+                                set: { viewModel?.updateTimeCap($0) }
+                            ))
                                 .textFieldStyle(.plain)
                                 .font(theme.typography.body)
                                 .keyboardType(.numberPad)
@@ -174,8 +199,8 @@ struct WODBuilderView: View {
                                 )
                                 .cornerRadius(theme.radius.m)
                             
-                            if !timeCap.isEmpty && !isTimeCapValid {
-                                Text("Time must be between 1-60 minutes")
+                            if let errorText = viewModel?.getValidationError(for: .timeCap) {
+                                Text(errorText)
                                     .font(theme.typography.caption2)
                                     .foregroundColor(theme.colors.error)
                             }
@@ -191,7 +216,7 @@ struct WODBuilderView: View {
                             
                             Spacer()
                             
-                            Button(action: { showingMovementPicker = true }) {
+                            Button(action: { viewModel?.showMovementPicker() }) {
                                 Image(systemName: "plus.circle.fill")
                                     .foregroundColor(theme.colors.accent)
                             }
@@ -207,17 +232,19 @@ struct WODBuilderView: View {
                                     .background(theme.colors.backgroundSecondary.opacity(0.5))
                                     .cornerRadius(theme.radius.m)
                                 
-                                Text("At least one movement is required")
-                                    .font(theme.typography.caption2)
-                                    .foregroundColor(theme.colors.error)
+                                if let errorText = viewModel?.getValidationError(for: .movements) {
+                                    Text(errorText)
+                                        .font(theme.typography.caption2)
+                                        .foregroundColor(theme.colors.error)
+                                }
                             }
                         } else {
                             ForEach(Array(movements.enumerated()), id: \.element.id) { index, movement in
                                 MovementRow(
                                     movement: movement,
                                     index: index + 1,
-                                    onEdit: { editingMovement = movement },
-                                    onDelete: { movements.removeAll { $0.id == movement.id } }
+                                    onEdit: { viewModel?.editMovement(movement) },
+                                    onDelete: { viewModel?.removeMovement(withId: movement.id) }
                                 )
                             }
                         }
@@ -227,7 +254,7 @@ struct WODBuilderView: View {
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: theme.spacing.s) {
                             ForEach(suggestedMovements.prefix(5), id: \.self) { movement in
-                                Button(action: { addQuickMovement(movement) }) {
+                                Button(action: { viewModel?.addQuickMovement(movement) }) {
                                     Text(movement)
                                         .font(theme.typography.caption)
                                         .padding(.horizontal, theme.spacing.m)
@@ -248,7 +275,7 @@ struct WODBuilderView: View {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button("common.cancel".localized) {
                         if hasUnsavedChanges {
-                            showingCancelAlert = true
+                            viewModel?.showCancelAlert()
                         } else {
                             dismiss()
                         }
@@ -256,25 +283,44 @@ struct WODBuilderView: View {
                 }
                 
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("common.save".localized) { saveWOD() }
+                    Button("common.save".localized) {
+                        Task {
+                            let result = await viewModel?.saveWOD()
+                            if case .success = result {
+                                // Dismiss after short delay to show success message
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                                    dismiss()
+                                }
+                            }
+                        }
+                    }
                         .fontWeight(.semibold)
                         .disabled(!isValid)
                 }
             }
-            .sheet(isPresented: $showingMovementPicker) {
+            .sheet(isPresented: Binding(
+                get: { showingMovementPicker },
+                set: { viewModel?.showingMovementPicker = $0 }
+            )) {
                 EnhancedMovementPicker { movementData in
-                    movements.append(movementData)
+                    viewModel?.addMovement(movementData)
                 }
             }
-            .sheet(item: $editingMovement) { movement in
+            .sheet(item: Binding(
+                get: { editingMovement },
+                set: { viewModel?.editingMovement = $0 }
+            )) { movement in
                 MovementEditView(movement: movement) { updated in
-                    if let index = movements.firstIndex(where: { $0.id == movement.id }) {
-                        movements[index] = updated
-                    }
+                    viewModel?.updateMovement(updated)
                 }
             }
-            .alert("common.confirm_discard".localized, isPresented: $showingCancelAlert) {
-                Button("common.cancel".localized, role: .cancel) { }
+            .alert("common.confirm_discard".localized, isPresented: Binding(
+                get: { showingCancelAlert },
+                set: { viewModel?.showingCancelAlert = $0 }
+            )) {
+                Button("common.cancel".localized, role: .cancel) {
+                    viewModel?.hideCancelAlert()
+                }
                 Button("common.discard".localized, role: .destructive) {
                     dismiss()
                 }
@@ -290,7 +336,7 @@ struct WODBuilderView: View {
                     .transition(.move(edge: .bottom).combined(with: .opacity))
                     .onAppear {
                         DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
-                            withAnimation { self.errorMessage = nil }
+                            withAnimation { viewModel?.clearError() }
                         }
                     }
             }
@@ -302,93 +348,26 @@ struct WODBuilderView: View {
                     .transition(.move(edge: .bottom).combined(with: .opacity))
                     .onAppear {
                         DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-                            withAnimation { self.successMessage = nil }
+                            withAnimation { viewModel?.clearSuccess() }
                         }
                     }
             }
         }
         .animation(.easeInOut, value: errorMessage)
         .animation(.easeInOut, value: successMessage)
+        .onAppear {
+            if viewModel == nil {
+                viewModel = WODBuilderViewModel()
+                viewModel?.setModelContext(modelContext)
+            }
+        }
     }
     
-    private func addQuickMovement(_ name: String) {
-        let movement = WODMovementData(name: name)
-        movements.append(movement)
-    }
-    
-    private func saveWOD() {
-        // Pre-save validation
-        guard isValid else {
-            HapticManager.shared.notification(.error)
-            errorMessage = "wod.fix_validation_errors".localized
-            return
-        }
-        
-        // Parse rep scheme
-        let reps: [Int] = {
-            if wodType == .forTime {
-                let components = repScheme.split(separator: "-")
-                return components.compactMap { Int($0.trimmingCharacters(in: .whitespaces)) }
-            }
-            return []
-        }()
-        
-        // Parse time cap
-        let timeCapSeconds: Int? = {
-            if let minutes = Int(timeCap) {
-                return minutes * 60
-            }
-            return nil
-        }()
-        
-        // Create WOD
-        let wod = WOD(
-            name: wodName,
-            type: wodType,
-            repScheme: reps,
-            timeCap: timeCapSeconds,
-            isCustom: true
-        )
-        
-        // Add movements
-        for (index, movementData) in movements.enumerated() {
-            let movement = WODMovement(
-                name: movementData.name,
-                rxWeightMale: movementData.rxWeightMale.isEmpty ? nil : movementData.rxWeightMale,
-                rxWeightFemale: movementData.rxWeightFemale.isEmpty ? nil : movementData.rxWeightFemale,
-                reps: movementData.reps.isEmpty ? nil : Int(movementData.reps),
-                orderIndex: index,
-                scaledWeightMale: movementData.scaledWeightMale.isEmpty ? nil : movementData.scaledWeightMale,
-                scaledWeightFemale: movementData.scaledWeightFemale.isEmpty ? nil : movementData.scaledWeightFemale,
-                notes: movementData.notes.isEmpty ? nil : movementData.notes
-            )
-            movement.wod = wod
-            if wod.movements == nil { wod.movements = [] }
-            wod.movements!.append(movement)
-            modelContext.insert(movement)
-        }
-        
-        modelContext.insert(wod)
-        
-        do {
-            try modelContext.save()
-            HapticManager.shared.notification(.success)
-            successMessage = "wod.metcon_created_successfully".localized
-            
-            // Dismiss after short delay to show success message
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                dismiss()
-            }
-        } catch {
-            HapticManager.shared.notification(.error)
-            errorMessage = "wod.failed_to_save_metcon".localized + ": \(error.localizedDescription)"
-        }
-    }
 }
 
 // MARK: - Movement Row
 private struct MovementRow: View {
-    let movement: WODBuilderView.WODMovementData
+    let movement: WODBuilderViewModel.WODMovementData
     let index: Int
     let onEdit: () -> Void
     let onDelete: () -> Void
@@ -451,8 +430,8 @@ private struct MovementRow: View {
 private struct MovementEditView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(UnitSettings.self) var unitSettings
-    let movement: WODBuilderView.WODMovementData
-    let onSave: (WODBuilderView.WODMovementData) -> Void
+    let movement: WODBuilderViewModel.WODMovementData
+    let onSave: (WODBuilderViewModel.WODMovementData) -> Void
     
     @State private var movementName: String
     @State private var reps: String
@@ -462,7 +441,7 @@ private struct MovementEditView: View {
     @State private var scaledWeightFemale: String
     @State private var notes: String
     
-    init(movement: WODBuilderView.WODMovementData, onSave: @escaping (WODBuilderView.WODMovementData) -> Void) {
+    init(movement: WODBuilderViewModel.WODMovementData, onSave: @escaping (WODBuilderViewModel.WODMovementData) -> Void) {
         self.movement = movement
         self.onSave = onSave
         _movementName = State(initialValue: movement.name)

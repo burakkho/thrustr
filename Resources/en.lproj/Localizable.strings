@@ -216,6 +216,8 @@
 // MARK: - Profile Navy Method Calculator
 "profile.navy.title" = "Navy Method Calculator";
 "profile.navy.calculate" = "Calculate";
+"profile.navy.male" = "Male";
+"profile.navy.female" = "Female";
 
 // MARK: - Profile FFMI Calculator
 "profile.ffmi.title" = "FFMI Calculator";

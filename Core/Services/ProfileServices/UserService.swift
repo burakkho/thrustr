@@ -174,12 +174,12 @@ class UserService {
     }
     
     // MARK: - Health Metrics Calculation
-    func calculateHealthMetrics(for user: User) -> HealthMetrics {
+    func calculateHealthMetrics(for user: User) -> UserHealthMetrics {
         let bmi = user.bmi
         let bodyFatPercentage = user.calculateBodyFatPercentage()
         let ffmi = calculateFFMI(user: user, bodyFatPercentage: bodyFatPercentage)
         
-        return HealthMetrics(
+        return UserHealthMetrics(
             bmi: bmi,
             bmiCategory: user.bmiCategory,
             bmr: user.bmr,
@@ -435,7 +435,7 @@ class UserService {
 }
 
 // MARK: - Supporting Types
-struct HealthMetrics {
+struct UserHealthMetrics {
     let bmi: Double
     let bmiCategory: String
     let bmr: Double

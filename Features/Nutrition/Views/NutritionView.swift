@@ -4,7 +4,7 @@ import SwiftData
 
 struct NutritionView: View {
     @Environment(\.modelContext) private var modelContext
-    @StateObject private var viewModel = NutritionViewModel()
+    @State private var viewModel = NutritionViewModel()
     
     // PERFORMANCE: Single consolidated query for foods
     @Query(
@@ -65,10 +65,14 @@ struct NutritionView: View {
                                 message: NutritionKeys.Empty.firstMessage.localized,
                                 primaryTitle: NutritionKeys.Empty.addMeal.localized,
                                 primaryAction: {
+                                    print("🍎 Empty state - Add meal button tapped")
                                     viewModel.showFoodSelection()
                                 },
                                 secondaryTitle: NutritionKeys.Empty.addCustomFood.localized,
-                                secondaryAction: { viewModel.showCustomFoodEntry() }
+                                secondaryAction: {
+                                    print("🍎 Empty state - Add custom food button tapped")
+                                    viewModel.showCustomFoodEntry()
+                                }
                             )
                             .padding(.top, 40)
                         }
@@ -84,6 +88,7 @@ struct NutritionView: View {
                         // Favorites & Recent Foods (sadece food varsa gÃ¶ster)
                         if !foods.isEmpty {
                             FavoritesSection(foods: foods) { food in
+                                print("🍎 Favorites - Food selected: \(food.nameTR)")
                                 viewModel.showMealEntryForm(with: food)
                             }
                         }
@@ -105,6 +110,7 @@ struct NutritionView: View {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     HStack(spacing: 12) {
                         Button(action: {
+                            print("🍎 Toolbar - Barcode scanner button tapped")
                             viewModel.startWithScanner()
                         }) {
                             Image(systemName: "barcode.viewfinder")
@@ -113,6 +119,7 @@ struct NutritionView: View {
                         }
 
                         Button(action: {
+                            print("🍎 Toolbar - Add food button tapped")
                             viewModel.showFoodSelection()
                         }) {
                             Image(systemName: "plus")
@@ -125,6 +132,7 @@ struct NutritionView: View {
         }
         .sheet(isPresented: $viewModel.showingFoodSelection) {
             FoodSelectionView(foods: foods, onFoodSelected: { food in
+                print("🍎 FoodSelection - Food selected: \(food.nameTR)")
                 viewModel.showMealEntryForm(with: food)
             }, startWithScanner: viewModel.forceStartWithScanner)
             .presentationDetents([.medium, .large])
@@ -133,6 +141,7 @@ struct NutritionView: View {
         .sheet(isPresented: $viewModel.showingMealEntry) {
             if let food = viewModel.selectedFood {
                 MealEntryView(food: food) {
+                    print("🍎 MealEntry - Dismissing modal")
                     viewModel.dismissAllModals()
                 }
                 .presentationDetents([.medium, .large])
@@ -166,12 +175,16 @@ struct NutritionView: View {
         }
         .sheet(isPresented: $viewModel.showingCustomFoodEntry) {
             CustomFoodEntryView { newFood in
+                print("🍎 CustomFood - New food created: \(newFood.nameTR)")
                 viewModel.showMealEntryForm(with: newFood)
             }
             .presentationDetents([.medium, .large])
             .presentationDragIndicator(.visible)
         }
-        .toast($viewModel.errorHandler.toastMessage, type: viewModel.errorHandler.toastType)
+        .toast(Binding(
+            get: { viewModel.errorHandler.toastMessage },
+            set: { _ in }
+        ), type: viewModel.errorHandler.toastType)
         .alert(isPresented: Binding<Bool>(
             get: { viewModel.saveErrorMessage != nil },
             set: { if !$0 { viewModel.clearErrors() } }
@@ -181,6 +194,9 @@ struct NutritionView: View {
                 message: Text(viewModel.saveErrorMessage ?? ""),
                 dismissButton: .default(Text(CommonKeys.Onboarding.Common.ok.localized))
             )
+        }
+        .onAppear {
+            print("🍎 NutritionView appeared - ViewModel ready")
         }
     }
     

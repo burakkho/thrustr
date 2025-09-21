@@ -13,16 +13,6 @@ struct CardioLiveTrackingView: View {
     @State private var showingStopConfirmation = false
     @State private var showingBluetoothSheet = false
     
-    // Screen lock state
-    @State private var isScreenLocked = false
-    @State private var lockSlideOffset: CGFloat = 0
-    
-    // Volume button monitoring for unlock
-    @State private var volumeButtonMonitor: Timer?
-    @State private var lastVolumeLevel: Float = 0
-    @State private var volumeButtonPressCount = 0
-    @State private var volumeUnlockTimer: Timer?
-    
     let activityType: CardioTimerViewModel.CardioActivityType
     let isOutdoor: Bool
     let user: User
@@ -79,7 +69,7 @@ struct CardioLiveTrackingView: View {
             }
             
             // Screen Lock Overlay - Highest priority
-            if isScreenLocked {
+            if viewModel.isScreenLocked {
                 screenLockOverlay
                     .zIndex(2000) // Above everything including countdown
             }
@@ -94,7 +84,7 @@ struct CardioLiveTrackingView: View {
             }
             
             // Setup volume button monitoring for screen unlock
-            setupVolumeButtonMonitoring()
+            viewModel.setupVolumeButtonMonitoring()
         }
         .onDisappear {
             // Re-enable idle timer when leaving workout
@@ -104,7 +94,7 @@ struct CardioLiveTrackingView: View {
             }
             
             // Cleanup volume monitoring
-            cleanupVolumeButtonMonitoring()
+            viewModel.cleanupVolumeButtonMonitoring()
         }
         .onReceive(Timer.publish(every: 0.5, on: .main, in: .common).autoconnect()) { _ in
             // Force UI update on main thread
@@ -281,8 +271,8 @@ struct CardioLiveTrackingView: View {
                     Text("training.screen_lock.slide_to_unlock".localized)
                         .font(.body)
                         .fontWeight(.medium)
-                        .foregroundColor(.white.opacity(lockSlideOffset > maxOffset * 0.3 ? 0.3 : 0.8))
-                        .opacity(lockSlideOffset > maxOffset * 0.8 ? 0 : 1)
+                        .foregroundColor(.white.opacity(viewModel.lockSlideOffset > maxOffset * 0.3 ? 0.3 : 0.8))
+                        .opacity(viewModel.lockSlideOffset > maxOffset * 0.8 ? 0 : 1)
                 )
             
             // Sliding knob
@@ -301,19 +291,16 @@ struct CardioLiveTrackingView: View {
                             .font(.title3)
                             .foregroundColor(.white)
                     )
-                    .offset(x: lockSlideOffset)
+                    .offset(x: viewModel.lockSlideOffset)
                     .gesture(
                         DragGesture()
                             .onChanged { value in
-                                lockSlideOffset = max(0, min(maxOffset, value.translation.width))
+                                viewModel.lockSlideOffset = max(0, min(maxOffset, value.translation.width))
                             }
                             .onEnded { value in
-                                if lockSlideOffset >= maxOffset * 0.8 {
+                                if viewModel.lockSlideOffset >= maxOffset * 0.8 {
                                     // Unlock successful
-                                    withAnimation(.easeOut(duration: 0.3)) {
-                                        isScreenLocked = false
-                                        lockSlideOffset = 0
-                                    }
+                                    viewModel.unlockScreen()
                                     
                                     // Haptic feedback
                                     let successFeedback = UINotificationFeedbackGenerator()
@@ -321,7 +308,7 @@ struct CardioLiveTrackingView: View {
                                 } else {
                                     // Snap back
                                     withAnimation(.spring(response: 0.5, dampingFraction: 0.8)) {
-                                        lockSlideOffset = 0
+                                        viewModel.lockSlideOffset = 0
                                     }
                                     
                                     // Light haptic feedback
@@ -366,7 +353,7 @@ struct CardioLiveTrackingView: View {
             // Lock button
             Button(action: { 
                 withAnimation(.easeInOut(duration: 0.3)) {
-                    isScreenLocked = true
+                    viewModel.lockScreen()
                 }
                 // Haptic feedback
                 let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
@@ -583,13 +570,13 @@ struct CardioLiveTrackingView: View {
                             .foregroundColor(theme.colors.textPrimary)
                             .frame(width: 50, alignment: .leading)
                         
-                        Text(formatSplitTime(split.time))
+                        Text(viewModel.formatSplitTime(split.time))
                             .font(theme.typography.body)
                             .foregroundColor(theme.colors.textSecondary)
-                        
+
                         Spacer()
-                        
-                        Text("\(formatPace(split.pace)) /\(unitSettings.unitSystem == .metric ? "km" : "mi")")
+
+                        Text("\(viewModel.formatPaceForDisplay(split.pace)) /\(unitSettings.unitSystem == .metric ? "km" : "mi")")
                             .font(theme.typography.body)
                             .fontWeight(.medium)
                             .foregroundColor(theme.colors.accent)
@@ -666,15 +653,6 @@ struct CardioLiveTrackingView: View {
     }
     
     // MARK: - Helper Methods
-    private func formatSplitTime(_ time: TimeInterval) -> String {
-        let minutes = Int(time) / 60
-        let seconds = Int(time) % 60
-        return String(format: "%02d:%02d", minutes, seconds)
-    }
-    
-    private func formatPace(_ pace: Double) -> String {
-        return UnitsFormatter.formatDetailedPace(minPerKm: pace, system: unitSettings.unitSystem)
-    }
     
     private func createSession() -> CardioSession? {
         viewModel.createCardioSession()
@@ -684,66 +662,6 @@ struct CardioLiveTrackingView: View {
         viewModel.stopSession()
     }
     
-    // MARK: - Volume Button Monitoring
-    private func setupVolumeButtonMonitoring() {
-        let audioSession = AVAudioSession.sharedInstance()
-        lastVolumeLevel = audioSession.outputVolume
-        
-        volumeButtonMonitor = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { _ in
-            let currentVolume = audioSession.outputVolume
-            
-            // Detect volume button press (both up and down)
-            Task { @MainActor in
-                if abs(currentVolume - lastVolumeLevel) > 0.01 {
-                    volumeButtonPressed()
-                    lastVolumeLevel = currentVolume
-                }
-            }
-        }
-    }
-    
-    private func cleanupVolumeButtonMonitoring() {
-        volumeButtonMonitor?.invalidate()
-        volumeButtonMonitor = nil
-        volumeUnlockTimer?.invalidate()
-        volumeUnlockTimer = nil
-    }
-    
-    private func volumeButtonPressed() {
-        guard isScreenLocked else { return }
-        
-        volumeButtonPressCount += 1
-        
-        // If this is the first press, start the timer
-        if volumeButtonPressCount == 1 {
-            volumeUnlockTimer = Timer.scheduledTimer(withTimeInterval: 3.0, repeats: false) { _ in
-                Task { @MainActor in
-                    // Reset count after 3 seconds
-                    volumeButtonPressCount = 0
-                }
-            }
-        }
-        
-        // Check if we have enough presses to unlock (both volume up and down within 3 seconds)
-        if volumeButtonPressCount >= 4 { // Multiple quick presses simulate up+down combo
-            // Unlock screen with volume buttons
-            withAnimation(.easeOut(duration: 0.3)) {
-                isScreenLocked = false
-                lockSlideOffset = 0
-            }
-            
-            // Success haptic feedback
-            let successFeedback = UINotificationFeedbackGenerator()
-            successFeedback.notificationOccurred(.success)
-            
-            // Reset counter
-            volumeButtonPressCount = 0
-            volumeUnlockTimer?.invalidate()
-            volumeUnlockTimer = nil
-            
-            Logger.info("Screen unlocked via volume button combination")
-        }
-    }
 }
 
 

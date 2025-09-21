@@ -3,41 +3,16 @@ import SwiftData
 import Charts
 
 struct ProgressChartsView: View {
+    @State private var viewModel = ProgressChartsViewModel()
     @Environment(\.modelContext) private var modelContext
     @Query private var users: [User]
     @Environment(UnitSettings.self) var unitSettings
-    
-    @State private var selectedTimeRange: TimeRange = .month3
-    @State private var selectedChartType: ChartType = .weight
-    @State private var isLoading = true
-    @State private var showingChartDetail = false
-    @State private var selectedDataPoint: Date? = nil
-    
-    // PERFORMANCE: Lazy loaded queries based on selected time range
-    private var cutoffDate: Date {
-        selectedTimeRange.cutoffDate
-    }
-    
-    // PERFORMANCE: Dynamic queries with date filtering
+
+    // SwiftData queries
     @Query private var allWeightEntries: [WeightEntry]
     @Query private var allLiftSessions: [LiftSession]
+    @Query private var allCardioSessions: [CardioSession]
     @Query private var allBodyMeasurements: [BodyMeasurement]
-    
-    private var weightEntries: [WeightEntry] {
-        allWeightEntries.filter { $0.date >= cutoffDate }
-    }
-    
-    private var liftSessions: [LiftSession] {
-        allLiftSessions.filter { $0.isCompleted && $0.startDate >= cutoffDate }
-    }
-    
-    private var bodyMeasurements: [BodyMeasurement] {
-        allBodyMeasurements.filter { $0.date >= cutoffDate }
-    }
-    
-    private var currentUser: User? {
-        users.first
-    }
     
     // PERFORMANCE: Removed redundant filtering - now handled by computed properties
     
@@ -48,38 +23,38 @@ struct ProgressChartsView: View {
                 ProgressChartsHeaderSection()
                 
                 // Time Range Selector
-                TimeRangeSelector(selectedRange: $selectedTimeRange)
-                
+                TimeRangeSelector(selectedRange: $viewModel.selectedTimeRange)
+
                 // Chart Type Selector
-                ChartTypeSelector(selectedType: $selectedChartType)
-                
-                // Main Chart Section - PERFORMANCE: Use computed filtered data
-                if isLoading {
+                ChartTypeSelector(selectedType: $viewModel.selectedChartType)
+
+                // Main Chart Section
+                if viewModel.isLoading {
                     ChartSkeletonView()
                 } else {
                     MainChartSection(
-                        chartType: selectedChartType,
-                        timeRange: selectedTimeRange,
-                        weightEntries: weightEntries,
-                        liftSessions: liftSessions,
-                        bodyMeasurements: bodyMeasurements,
-                        user: currentUser
+                        chartType: viewModel.selectedChartType,
+                        timeRange: viewModel.selectedTimeRange,
+                        weightEntries: viewModel.filteredWeightEntries,
+                        liftSessions: viewModel.filteredLiftSessions,
+                        bodyMeasurements: viewModel.filteredBodyMeasurements,
+                        user: viewModel.currentUser
                     )
                 }
-                
+
                 // Summary Statistics
                 SummaryStatisticsSection(
-                    chartType: selectedChartType,
-                    weightEntries: weightEntries,
-                    liftSessions: liftSessions,
-                    timeRange: selectedTimeRange
+                    chartType: viewModel.selectedChartType,
+                    weightEntries: viewModel.filteredWeightEntries,
+                    liftSessions: viewModel.filteredLiftSessions,
+                    timeRange: viewModel.selectedTimeRange
                 )
-                
+
                 // Insights Section
                 InsightsSection(
-                    weightEntries: weightEntries,
-                    liftSessions: liftSessions,
-                    timeRange: selectedTimeRange
+                    weightEntries: viewModel.filteredWeightEntries,
+                    liftSessions: viewModel.filteredLiftSessions,
+                    timeRange: viewModel.selectedTimeRange
                 )
             }
             .padding()
@@ -88,34 +63,33 @@ struct ProgressChartsView: View {
         .navigationBarTitleDisplayMode(.inline)
         .background(Color(.systemGroupedBackground))
         .onAppear {
-            // Simulate initial loading delay
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                withAnimation(.easeInOut(duration: 0.3)) {
-                    isLoading = false
-                }
-            }
+            viewModel.loadProgressData(
+                allWeightEntries: allWeightEntries,
+                allLiftSessions: allLiftSessions,
+                allCardioSessions: allCardioSessions,
+                allBodyMeasurements: allBodyMeasurements,
+                user: users.first
+            )
         }
-        .onChange(of: selectedTimeRange) {
-            // Show loading when changing time range
-            withAnimation(.easeInOut(duration: 0.2)) {
-                isLoading = true
-            }
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                withAnimation(.easeInOut(duration: 0.3)) {
-                    isLoading = false
-                }
-            }
+        .onChange(of: viewModel.selectedTimeRange) { _, newRange in
+            viewModel.changeTimeRange(
+                to: newRange,
+                allWeightEntries: allWeightEntries,
+                allLiftSessions: allLiftSessions,
+                allCardioSessions: allCardioSessions,
+                allBodyMeasurements: allBodyMeasurements,
+                user: users.first
+            )
         }
-        .onChange(of: selectedChartType) {
-            // Show loading when changing chart type
-            withAnimation(.easeInOut(duration: 0.2)) {
-                isLoading = true
-            }
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                withAnimation(.easeInOut(duration: 0.3)) {
-                    isLoading = false
-                }
-            }
+        .onChange(of: viewModel.selectedChartType) { _, newType in
+            viewModel.changeChartType(
+                to: newType,
+                allWeightEntries: allWeightEntries,
+                allLiftSessions: allLiftSessions,
+                allCardioSessions: allCardioSessions,
+                allBodyMeasurements: allBodyMeasurements,
+                user: users.first
+            )
         }
     }
 }
@@ -871,99 +845,6 @@ struct InsightCard: View {
     }
 }
 
-// MARK: - Data Models
-struct WeightChartData: Identifiable {
-    let id = UUID()
-    let date: Date
-    let weight: Double
-}
-
-struct WeeklyVolumeData: Identifiable {
-    let id = UUID()
-    let week: Date
-    let volume: Double
-}
-
-struct FrequencyData: Identifiable {
-    let id = UUID()
-    let period: Date
-    let count: Int
-}
-
-struct MeasurementChartData: Identifiable {
-    let id = UUID()
-    let date: Date
-    let value: Double
-}
-
-// MARK: - Enums
-enum TimeRange: CaseIterable {
-    case week1, month1, month3, month6, year1
-    
-    var displayName: String {
-        switch self {
-        case .week1: return ProfileKeys.TimeRange.week1.localized
-        case .month1: return ProfileKeys.TimeRange.month1.localized
-        case .month3: return ProfileKeys.TimeRange.month3.localized
-        case .month6: return ProfileKeys.TimeRange.month6.localized
-        case .year1: return ProfileKeys.TimeRange.year1.localized
-        }
-    }
-    
-    var cutoffDate: Date {
-        let calendar = Calendar.current
-        let now = Date()
-        
-        switch self {
-        case .week1: return calendar.date(byAdding: .weekOfYear, value: -1, to: now) ?? now
-        case .month1: return calendar.date(byAdding: .month, value: -1, to: now) ?? now
-        case .month3: return calendar.date(byAdding: .month, value: -3, to: now) ?? now
-        case .month6: return calendar.date(byAdding: .month, value: -6, to: now) ?? now
-        case .year1: return calendar.date(byAdding: .year, value: -1, to: now) ?? now
-        }
-    }
-    
-    var weekCount: Int {
-        switch self {
-        case .week1: return 1
-        case .month1: return 4
-        case .month3: return 12
-        case .month6: return 24
-        case .year1: return 52
-        }
-    }
-}
-
-enum ChartType: CaseIterable {
-    case weight, workoutVolume, workoutFrequency, bodyMeasurements
-    
-    var displayName: String {
-        switch self {
-        case .weight: return ProfileKeys.ChartType.weightChange.localized
-        case .workoutVolume: return ProfileKeys.ChartType.workoutVolume.localized
-        case .workoutFrequency: return ProfileKeys.ChartType.workoutFrequency.localized
-        case .bodyMeasurements: return ProfileKeys.ChartType.bodyMeasurements.localized
-        }
-    }
-    
-    var icon: String {
-        switch self {
-        case .weight: return "scalemass.fill"
-        case .workoutVolume: return "chart.bar.fill"
-        case .workoutFrequency: return "calendar"
-        case .bodyMeasurements: return "ruler.fill"
-        }
-    }
-    
-    var color: Color {
-        switch self {
-        case .weight: return .orange
-        case .workoutVolume: return .blue
-        case .workoutFrequency: return .green
-        case .bodyMeasurements: return .purple
-        }
-    }
-}
 
 #Preview {
     NavigationStack {

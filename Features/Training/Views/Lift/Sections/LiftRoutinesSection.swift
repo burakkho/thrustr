@@ -6,7 +6,8 @@ struct LiftRoutinesSection: View {
     @Environment(\.modelContext) private var modelContext
     @Query(filter: #Predicate<LiftWorkout> { $0.isTemplate })
     private var allRoutines: [LiftWorkout]
-    
+    @Query private var users: [User]
+
     @State private var showingCreateMethodSheet = false
     @State private var showingScratchBuilder = false
     @State private var showingTemplateSelection = false
@@ -15,6 +16,10 @@ struct LiftRoutinesSection: View {
     @State private var showingDeleteAlert = false
     @State private var searchText = ""
     @State private var selectedFilter: RoutineFilter = .all
+
+    private var currentUser: User? {
+        users.first
+    }
     
     enum RoutineFilter: String, CaseIterable {
         case all = "All"
@@ -104,9 +109,7 @@ struct LiftRoutinesSection: View {
             }
         }
         .sheet(item: $selectedRoutine) { routine in
-            NavigationStack {
-                LiftSessionView(workout: routine, programExecution: nil)
-            }
+            LiftSessionView(workout: routine, programExecution: nil)
         }
         .alert("Delete Routine", isPresented: $showingDeleteAlert) {
             Button("Delete", role: .destructive) {
@@ -345,7 +348,29 @@ struct LiftRoutinesSection: View {
     // MARK: - Actions
     
     private func startRoutine(_ routine: LiftWorkout) {
-        selectedRoutine = routine
+        guard let user = currentUser else {
+            Logger.error("No user found for starting routine")
+            return
+        }
+
+        // Create a LiftSession for the routine
+        let liftSession = LiftSession(
+            workout: routine,
+            user: user,
+            programExecution: nil
+        )
+
+        do {
+            modelContext.insert(liftSession)
+            try modelContext.save()
+
+            // Start the routine session
+            selectedRoutine = routine
+
+            Logger.success("Started routine: \(routine.localizedName)")
+        } catch {
+            Logger.error("Failed to start routine: \(error)")
+        }
     }
     
     private func toggleFavorite(_ routine: LiftWorkout) {

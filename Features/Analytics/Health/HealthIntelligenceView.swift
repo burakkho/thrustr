@@ -13,7 +13,7 @@ struct HealthIntelligenceView: View {
                 ScrollView {
                     LazyVStack(spacing: 20) {
                         if viewModel.isLoading {
-                            EnhancedHealthLoadingView()
+                            AnalyticsEnhancedHealthLoadingView()
                         } else if let report = viewModel.healthReport {
                             switch viewModel.selectedTab {
                             case .overview:
@@ -40,7 +40,7 @@ struct HealthIntelligenceView: View {
                 await viewModel.loadHealthIntelligence()
             }
             .sheet(item: $viewModel.selectedInsight) { insight in
-                InsightDetailView(insight: insight)
+                HealthIntelligenceInsightDetailView(insight: insight)
             }
         }
         .onAppear {
@@ -68,8 +68,8 @@ struct HealthIntelligenceView: View {
             .animation(.easeInOut(duration: 0.4).delay(0.2), value: viewModel.animateCards)
         
         // Priority Insights
-        PriorityInsightsSection(
-            insights: Array(report.insights.prefix(3)),
+        HealthIntelligencePriorityInsightsSection(
+            insights: HealthAnalyticsService.getPriorityInsights(from: report.insights),
             onInsightTapped: { viewModel.selectInsight($0) }
         )
         .scaleEffect(viewModel.animateCards ? 1.0 : 0.95)
@@ -89,10 +89,10 @@ struct HealthIntelligenceView: View {
         EnhancedRecoveryScoreCard(recoveryScore: report.recoveryScore)
         
         // Recovery Trend Chart (if historical data available)
-        RecoveryTrendChart(recoveryScore: report.recoveryScore)
+        AnalyticsRecoveryTrendChart(recoveryScore: report.recoveryScore)
         
         // Recovery Insights filtered
-        let recoveryInsights = report.insights.filter { $0.type == .recovery || $0.type == .sleep }
+        let recoveryInsights = HealthAnalyticsService.getRecoveryInsights(from: report.insights)
         if !recoveryInsights.isEmpty {
             InsightsSectionView(
                 title: "health.intelligence.recovery_insights".localized,
@@ -113,7 +113,7 @@ struct HealthIntelligenceView: View {
         }
         
         // Workout insights
-        let workoutInsights = report.insights.filter { $0.type == .workout }
+        let workoutInsights = HealthAnalyticsService.getWorkoutInsights(from: report.insights)
         if !workoutInsights.isEmpty {
             InsightsSectionView(
                 title: "health.intelligence.training_insights".localized,
@@ -126,20 +126,20 @@ struct HealthIntelligenceView: View {
     @ViewBuilder
     private func trendsSection(report: HealthReport) -> some View {
         // Steps Trend Chart
-        StepsTrendChart(stepsHistory: viewModel.stepsHistory, todaySteps: viewModel.todaySteps)
+        AnalyticsStepsTrendChart(stepsHistory: viewModel.stepsHistory, todaySteps: viewModel.todaySteps)
 
         // Weight Trend Chart (if available)
         if !viewModel.weightHistory.isEmpty {
-            WeightTrendChart(weightHistory: viewModel.weightHistory, currentWeight: viewModel.currentWeight)
+            AnalyticsWeightTrendChart(weightHistory: viewModel.weightHistory, currentWeight: viewModel.currentWeight)
         }
 
         // Heart Rate Trend (if available)
         if !viewModel.heartRateHistory.isEmpty {
-            HeartRateTrendChart(heartRateHistory: viewModel.heartRateHistory)
+            AnalyticsHeartRateTrendChart(heartRateHistory: viewModel.heartRateHistory)
         }
         
         // Trend insights
-        let trendInsights = report.insights.filter { $0.type == .steps || $0.type == .weight || $0.type == .heartHealth }
+        let trendInsights = HealthAnalyticsService.getTrendInsights(from: report.insights)
         if !trendInsights.isEmpty {
             InsightsSectionView(
                 title: "health.intelligence.trend_analysis".localized,
@@ -372,154 +372,6 @@ struct FitnessLevelRow: View {
 }
 
 // MARK: - Empty States
-struct EmptyIntelligenceView: View {
-    @Environment(\.theme) private var theme
-    @State private var animatePulse = false
-    @State private var showingHealthKitAuth = false
-    @State private var healthKitService = HealthKitService.shared
-    
-    var body: some View {
-        VStack(spacing: 32) {
-            // 🎯 ENHANCED VISUAL - Animated brain with gradient
-            VStack(spacing: 20) {
-                ZStack {
-                    // Background gradient circle
-                    Circle()
-                        .fill(
-                            LinearGradient(
-                                colors: [theme.colors.accent.opacity(0.1), theme.colors.accent.opacity(0.03)],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            )
-                        )
-                        .frame(width: 120, height: 120)
-                        .scaleEffect(animatePulse ? 1.1 : 1.0)
-                        .animation(.easeInOut(duration: 3.0).repeatForever(autoreverses: true), value: animatePulse)
-                    
-                    // Brain icon with gradient
-                    Image(systemName: "brain.head.profile")
-                        .font(.system(size: 56, weight: .light))
-                        .foregroundStyle(
-                            LinearGradient(
-                                colors: [theme.colors.accent, theme.colors.accent.opacity(0.6)],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            )
-                        )
-                        .scaleEffect(animatePulse ? 1.05 : 0.95)
-                        .animation(.easeInOut(duration: 2.5).repeatForever(autoreverses: true), value: animatePulse)
-                }
-            }
-            
-            // 📖 STORY-DRIVEN MESSAGING
-            VStack(spacing: 16) {
-                Text("Ready to Unlock Your Health Intelligence?")
-                    .font(.title2)
-                    .fontWeight(.bold)
-                    .foregroundColor(theme.colors.textPrimary)
-                    .multilineTextAlignment(.center)
-                
-                VStack(spacing: 8) {
-                    Text("Connect your health data to get personalized insights about:")
-                        .font(.body)
-                        .foregroundColor(theme.colors.textSecondary)
-                        .multilineTextAlignment(.center)
-                    
-                    VStack(spacing: 6) {
-                        FeatureBullet(icon: "heart.fill", text: "Recovery & performance patterns", color: .red)
-                        FeatureBullet(icon: "figure.strengthtraining.traditional", text: "Fitness level assessment", color: .blue)
-                        FeatureBullet(icon: "chart.line.uptrend.xyaxis", text: "Trend analysis & predictions", color: .green)
-                        FeatureBullet(icon: "lightbulb.fill", text: "AI-powered recommendations", color: .orange)
-                    }
-                    .padding(.top, 8)
-                }
-            }
-            .padding(.horizontal, 20)
-            
-            // 🚀 ACTIONABLE CTA
-            VStack(spacing: 12) {
-                if !healthKitService.isAuthorized {
-                    // Primary CTA - HealthKit Connection
-                    Button(action: {
-                        showingHealthKitAuth = true
-                    }) {
-                        HStack(spacing: 12) {
-                            Image(systemName: "heart.fill")
-                                .font(.title3)
-                            
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text("Connect Apple Health")
-                                    .font(.headline)
-                                    .fontWeight(.semibold)
-                                
-                                Text("Enable personalized insights")
-                                    .font(.caption)
-                                    .opacity(0.9)
-                            }
-                            
-                            Spacer()
-                            
-                            Image(systemName: "arrow.right.circle.fill")
-                                .font(.title2)
-                        }
-                        .foregroundColor(.white)
-                        .padding(.horizontal, 20)
-                        .padding(.vertical, 16)
-                        .background(
-                            LinearGradient(
-                                colors: [theme.colors.accent, theme.colors.accent.opacity(0.8)],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            )
-                        )
-                        .cornerRadius(16)
-                        .shadow(color: theme.colors.accent.opacity(0.3), radius: 8, x: 0, y: 4)
-                    }
-                    .scaleEffect(animatePulse ? 1.02 : 1.0)
-                    .animation(.easeInOut(duration: 2.0).repeatForever(autoreverses: true), value: animatePulse)
-                } else {
-                    // Alternative CTA - Manual refresh
-                    Button(action: {
-                        // Trigger manual health intelligence generation
-                        Task {
-                            // This would trigger a reload of the parent view
-                        }
-                    }) {
-                        HStack(spacing: 8) {
-                            Image(systemName: "arrow.clockwise")
-                            Text("Generate Health Insights")
-                        }
-                        .font(.headline)
-                        .foregroundColor(theme.colors.accent)
-                        .padding(.horizontal, 20)
-                        .padding(.vertical, 12)
-                        .background(theme.colors.accent.opacity(0.1))
-                        .cornerRadius(12)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 12)
-                                .stroke(theme.colors.accent.opacity(0.3), lineWidth: 1)
-                        )
-                    }
-                }
-                
-                // Helper text
-                Text("No personal data leaves your device")
-                    .font(.caption2)
-                    .foregroundColor(theme.colors.textTertiary)
-                    .padding(.top, 4)
-            }
-            .padding(.horizontal, 20)
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .padding(.vertical, 60)
-        .onAppear {
-            animatePulse = true
-        }
-        .sheet(isPresented: $showingHealthKitAuth) {
-            HealthKitAuthorizationView()
-        }
-    }
-}
 
 // MARK: - Feature Bullet Point
 struct FeatureBullet: View {
@@ -544,98 +396,6 @@ struct FeatureBullet: View {
     }
 }
 
-struct EmptyInsightsView: View {
-    @Environment(\.theme) private var theme
-    @State private var animateSuccess = false
-    
-    var body: some View {
-        VStack(spacing: 20) {
-            // 🎉 ENHANCED SUCCESS STATE - Animated celebration
-            VStack(spacing: 16) {
-                ZStack {
-                    // Success gradient background
-                    Circle()
-                        .fill(
-                            LinearGradient(
-                                colors: [Color.green.opacity(0.15), Color.green.opacity(0.05)],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            )
-                        )
-                        .frame(width: 80, height: 80)
-                        .scaleEffect(animateSuccess ? 1.1 : 1.0)
-                        .animation(.easeInOut(duration: 2.5).repeatForever(autoreverses: true), value: animateSuccess)
-                    
-                    // Animated checkmark
-                    Image(systemName: "checkmark.circle.fill")
-                        .font(.system(size: 40, weight: .medium))
-                        .foregroundColor(.green)
-                        .scaleEffect(animateSuccess ? 1.05 : 0.98)
-                        .animation(.easeInOut(duration: 2.0).repeatForever(autoreverses: true), value: animateSuccess)
-                }
-                
-                // Success message
-                VStack(spacing: 8) {
-                    Text("All Clear! 🎉")
-                        .font(.title3)
-                        .fontWeight(.bold)
-                        .foregroundColor(theme.colors.textPrimary)
-                    
-                    Text("Your health metrics look great - no urgent insights to address right now.")
-                        .font(.body)
-                        .foregroundColor(theme.colors.textSecondary)
-                        .multilineTextAlignment(.center)
-                        .lineSpacing(2)
-                }
-            }
-            
-            // 📊 POSITIVE REINFORCEMENT - What this means
-            VStack(spacing: 12) {
-                VStack(spacing: 8) {
-                    HStack(spacing: 8) {
-                        Image(systemName: "info.circle.fill")
-                            .font(.caption)
-                            .foregroundColor(theme.colors.accent)
-                        
-                        Text("This means:")
-                            .font(.caption)
-                            .fontWeight(.semibold)
-                            .foregroundColor(theme.colors.textSecondary)
-                        
-                        Spacer()
-                    }
-                    
-                    VStack(spacing: 4) {
-                        PositiveIndicator(text: "Recovery levels are optimal")
-                        PositiveIndicator(text: "Fitness trends are stable")
-                        PositiveIndicator(text: "No concerning patterns detected")
-                    }
-                }
-                .padding(16)
-                .background(theme.colors.backgroundSecondary.opacity(0.5))
-                .cornerRadius(12)
-            }
-            
-            // 🚀 NEXT STEPS - Actionable guidance
-            VStack(spacing: 8) {
-                Text("Keep up the great work!")
-                    .font(.caption)
-                    .fontWeight(.medium)
-                    .foregroundColor(theme.colors.textPrimary)
-                
-                Text("We'll keep monitoring and notify you if anything needs attention.")
-                    .font(.caption2)
-                    .foregroundColor(theme.colors.textSecondary)
-                    .multilineTextAlignment(.center)
-            }
-        }
-        .padding(.horizontal, 20)
-        .padding(.vertical, 30)
-        .onAppear {
-            animateSuccess = true
-        }
-    }
-}
 
 // MARK: - Positive Indicator
 struct PositiveIndicator: View {
@@ -721,258 +481,6 @@ struct IntelligenceTabBar: View {
 }
 
 
-struct AISummaryCard: View {
-    let report: HealthReport
-    @Environment(\.theme) private var theme
-    @State private var isAnimating = false
-    
-    var body: some View {
-        VStack(spacing: 0) {
-            // 🎯 HERO HEADER - Prominent AI Intelligence Branding
-            VStack(spacing: 16) {
-                // Animated AI Brain Icon with Gradient
-                ZStack {
-                    // Background gradient circle
-                    Circle()
-                        .fill(
-                            LinearGradient(
-                                colors: [statusColor.opacity(0.2), statusColor.opacity(0.05)],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            )
-                        )
-                        .frame(width: 80, height: 80)
-                        .scaleEffect(isAnimating ? 1.1 : 0.95)
-                        .animation(.easeInOut(duration: 2.0).repeatForever(autoreverses: true), value: isAnimating)
-                    
-                    // AI Brain icon
-                    Image(systemName: "brain.head.profile.fill")
-                        .font(.system(size: 32, weight: .medium))
-                        .foregroundStyle(
-                            LinearGradient(
-                                colors: [statusColor, statusColor.opacity(0.7)],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            )
-                        )
-                        .scaleEffect(isAnimating ? 1.05 : 0.98)
-                        .animation(.easeInOut(duration: 1.5).repeatForever(autoreverses: true), value: isAnimating)
-                }
-                
-                // Title with Status Indicator
-                VStack(spacing: 8) {
-                    HStack(spacing: 8) {
-                        Text("health.intelligence.ai_summary".localized)
-                            .font(.title2)
-                            .fontWeight(.bold)
-                            .foregroundColor(theme.colors.textPrimary)
-                        
-                        // Status Badge
-                        Text(statusMessage)
-                            .font(.caption)
-                            .fontWeight(.semibold)
-                            .foregroundColor(.white)
-                            .padding(.horizontal, 8)
-                            .padding(.vertical, 4)
-                            .background(Capsule().fill(statusColor))
-                    }
-                    
-                    // Subtitle 
-                    Text("health.intelligence.ai_powered_insights".localized)
-                        .font(.caption)
-                        .foregroundColor(theme.colors.textSecondary)
-                }
-            }
-            .padding(.top, 24)
-            .padding(.horizontal, 20)
-            
-            // 📖 STORY CONTENT - Narrative-driven health summary
-            VStack(alignment: .leading, spacing: 16) {
-                // Main Story Message
-                Text(generateStoryMessage())
-                    .font(.body)
-                    .fontWeight(.medium)
-                    .foregroundColor(theme.colors.textPrimary)
-                    .lineSpacing(4)
-                    .multilineTextAlignment(.leading)
-                
-                // Key Insights Preview (if any high priority)
-                if report.insights.filter({ $0.priority == .high }).count > 0 {
-                    VStack(alignment: .leading, spacing: 8) {
-                        HStack(spacing: 6) {
-                            Image(systemName: "exclamationmark.triangle.fill")
-                                .font(.caption)
-                                .foregroundColor(.orange)
-                            
-                            Text("health.intelligence.key_focus_areas".localized)
-                                .font(.caption)
-                                .fontWeight(.semibold)
-                                .foregroundColor(theme.colors.textSecondary)
-                        }
-                        
-                        Text(generateKeyFocusMessage())
-                            .font(.caption)
-                            .foregroundColor(theme.colors.textSecondary)
-                            .padding(.leading, 16)
-                    }
-                    .padding(12)
-                    .background(theme.colors.backgroundSecondary.opacity(0.5))
-                    .cornerRadius(8)
-                }
-            }
-            .padding(.top, 20)
-            .padding(.horizontal, 20)
-            
-            // 📊 METRICS SUMMARY - Visual health overview
-            HStack(spacing: 20) {
-                // Recovery Score Visual
-                VStack(spacing: 4) {
-                    ZStack {
-                        Circle()
-                            .stroke(statusColor.opacity(0.2), lineWidth: 3)
-                            .frame(width: 40, height: 40)
-                        
-                        Circle()
-                            .trim(from: 0, to: CGFloat(report.recoveryScore.overallScore / 100))
-                            .stroke(statusColor, style: StrokeStyle(lineWidth: 3, lineCap: .round))
-                            .frame(width: 40, height: 40)
-                            .rotationEffect(.degrees(-90))
-                        
-                        Text("\(Int(report.recoveryScore.overallScore))")
-                            .font(.caption)
-                            .fontWeight(.bold)
-                            .foregroundColor(statusColor)
-                    }
-                    
-                    Text("Recovery")
-                        .font(.caption2)
-                        .foregroundColor(theme.colors.textSecondary)
-                }
-                
-                Divider()
-                    .frame(height: 30)
-                
-                // Insights Count
-                VStack(spacing: 4) {
-                    Text("\(report.insights.count)")
-                        .font(.title3)
-                        .fontWeight(.bold)
-                        .foregroundColor(theme.colors.textPrimary)
-                    
-                    Text("Insights")
-                        .font(.caption2)
-                        .foregroundColor(theme.colors.textSecondary)
-                }
-                
-                Spacer()
-                
-                // Last Update with improved styling
-                VStack(alignment: .trailing, spacing: 2) {
-                    Text("Updated")
-                        .font(.caption2)
-                        .foregroundColor(theme.colors.textSecondary)
-                    
-                    Text(report.generatedDate, style: .time)
-                        .font(.caption)
-                        .fontWeight(.medium)
-                        .foregroundColor(theme.colors.textPrimary)
-                }
-            }
-            .padding(.top, 16)
-            .padding(.horizontal, 20)
-            .padding(.bottom, 20)
-        }
-        .background(
-            RoundedRectangle(cornerRadius: 20)
-                .fill(theme.colors.cardBackground)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 20)
-                        .stroke(statusColor.opacity(0.1), lineWidth: 1)
-                )
-        )
-        .shadow(color: statusColor.opacity(0.1), radius: 12, x: 0, y: 6)
-        .shadow(color: theme.shadows.card.opacity(0.05), radius: 4, x: 0, y: 2)
-        .onAppear {
-            isAnimating = true
-        }
-    }
-    
-    // MARK: - Computed Properties
-    
-    private var statusColor: Color {
-        switch report.recoveryScore.overallScore {
-        case 80...100: return .green
-        case 60..<80: return .blue
-        case 40..<60: return .orange
-        default: return .red
-        }
-    }
-    
-    private var statusMessage: String {
-        switch report.recoveryScore.overallScore {
-        case 80...100: return "OPTIMAL"
-        case 60..<80: return "GOOD"
-        case 40..<60: return "CAUTION"
-        default: return "FOCUS"
-        }
-    }
-    
-    // MARK: - Story-Driven Messages
-    
-    private func generateStoryMessage() -> String {
-        let recoveryScore = Int(report.recoveryScore.overallScore)
-        let fitnessLevel = report.fitnessAssessment.overallLevel.localizedName
-        let priorityInsights = report.insights.filter { $0.priority == .high }.count
-        
-        // Story-driven, personalized narrative approach
-        if recoveryScore > 80 {
-            return "🎯 Your body is in excellent recovery state (\(recoveryScore)%) with \(fitnessLevel) fitness level. You're primed for peak performance and can handle intensive training sessions."
-        } else if recoveryScore > 60 {
-            return "💪 You're showing good recovery patterns (\(recoveryScore)%) at \(fitnessLevel) level. With \(priorityInsights) key areas to optimize, you're on track for consistent progress."
-        } else if recoveryScore > 40 {
-            return "⚠️ Your recovery signals suggest taking a more measured approach (\(recoveryScore)%). Focus on the \(priorityInsights) priority areas highlighted below for better balance."
-        } else {
-            return "🔄 Your body is asking for attention (\(recoveryScore)%). Let's prioritize recovery with the \(priorityInsights) critical insights to rebuild your foundation."
-        }
-    }
-    
-    private func generateKeyFocusMessage() -> String {
-        let highPriorityInsights = report.insights.filter { $0.priority == .high }
-        
-        if highPriorityInsights.isEmpty {
-            return "No critical areas requiring immediate attention."
-        }
-        
-        let topInsights = highPriorityInsights.prefix(3)
-        let categories = topInsights.map { $0.type.rawValue.capitalized }
-        
-        switch categories.count {
-        case 1:
-            return "Primary focus: \(categories[0])"
-        case 2:
-            return "Key areas: \(categories[0]) and \(categories[1])"
-        default:
-            return "Focus areas: \(categories[0]), \(categories[1]) and \(categories.count - 2) more"
-        }
-    }
-    
-    // MARK: - Legacy Methods (kept for compatibility)
-    
-    private func generateSummaryMessage() -> String {
-        let recoveryScore = Int(report.recoveryScore.overallScore)
-        let fitnessLevel = report.fitnessAssessment.overallLevel.localizedName
-        let priorityInsights = report.insights.filter { $0.priority == .high }.count
-        
-        if recoveryScore > 80 {
-            return String(format: "health.intelligence.summary.excellent".localized, recoveryScore, fitnessLevel)
-        } else if recoveryScore > 60 {
-            return String(format: "health.intelligence.summary.good".localized, recoveryScore, fitnessLevel, priorityInsights)
-        } else {
-            return String(format: "health.intelligence.summary.attention".localized, recoveryScore, priorityInsights)
-        }
-    }
-}
-
 struct KeyMetricsRow: View {
     let report: HealthReport
     @Environment(\.theme) private var theme
@@ -1029,7 +537,7 @@ struct KeyMetricsRow: View {
 }
 
 
-struct PriorityInsightsSection: View {
+struct HealthIntelligencePriorityInsightsSection: View {
     let insights: [HealthInsight]
     let onInsightTapped: (HealthInsight) -> Void
     @Environment(\.theme) private var theme
@@ -1069,7 +577,7 @@ struct PriorityInsightsSection: View {
                 GridItem(.flexible(), spacing: 12)
             ], spacing: 16) {
                 ForEach(insights.prefix(4), id: \.id) { insight in
-                    ActionableInsightCard(insight: insight) {
+                    AnalyticsActionableInsightCard(insight: insight) {
                         onInsightTapped(insight)
                     }
                 }
@@ -1078,112 +586,6 @@ struct PriorityInsightsSection: View {
     }
 }
 
-// MARK: - Actionable Insight Card (ActionableStatCard-inspired for insights)
-struct ActionableInsightCard: View {
-    let insight: HealthInsight
-    let action: () -> Void
-    @Environment(\.theme) private var theme
-    @State private var isPressed = false
-    
-    var body: some View {
-        VStack(spacing: 12) {
-            // Priority Indicator with Icon
-            HStack {
-                Image(systemName: priorityIcon)
-                    .font(.title2)
-                    .foregroundColor(priorityColor)
-                
-                Spacer()
-                
-                // Priority Badge
-                Text(priorityText)
-                    .font(.caption2)
-                    .fontWeight(.semibold)
-                    .foregroundColor(.white)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 3)
-                    .background(Capsule().fill(priorityColor))
-            }
-            
-            VStack(spacing: 6) {
-                // Insight Title
-                Text(insight.title)
-                    .font(.subheadline)
-                    .fontWeight(.semibold)
-                    .foregroundColor(theme.colors.textPrimary)
-                    .lineLimit(2)
-                    .multilineTextAlignment(.center)
-                
-                // Insight Message (truncated)
-                Text(insight.message)
-                    .font(.caption)
-                    .foregroundColor(theme.colors.textSecondary)
-                    .lineLimit(3)
-                    .multilineTextAlignment(.center)
-            }
-            
-            // Action Indicator
-            HStack(spacing: 4) {
-                Image(systemName: "arrow.up.right.circle.fill")
-                    .font(.caption)
-                Text("Tap to explore")
-                    .font(.caption2)
-            }
-            .foregroundColor(priorityColor.opacity(0.8))
-        }
-        .frame(maxWidth: .infinity, idealHeight: 140)
-        .padding(theme.spacing.m)
-        .background(
-            RoundedRectangle(cornerRadius: theme.radius.m)
-                .fill(theme.colors.cardBackground)
-                .overlay(
-                    RoundedRectangle(cornerRadius: theme.radius.m)
-                        .stroke(priorityColor.opacity(0.2), lineWidth: 1)
-                )
-                .shadow(
-                    color: isPressed ? priorityColor.opacity(0.3) : Color.black.opacity(0.1),
-                    radius: isPressed ? 6 : 2,
-                    y: isPressed ? 3 : 1
-                )
-        )
-        .scaleEffect(isPressed ? 0.95 : 1.0)
-        .animation(.spring(response: 0.3, dampingFraction: 0.6), value: isPressed)
-        .contentShape(Rectangle())
-        .onTapGesture {
-            let impactFeedback = UIImpactFeedbackGenerator(style: .light)
-            impactFeedback.impactOccurred()
-            action()
-        }
-        .onLongPressGesture(minimumDuration: 0, maximumDistance: .infinity, perform: {}, onPressingChanged: { pressing in
-            isPressed = pressing
-        })
-    }
-    
-    // MARK: - Computed Properties
-    private var priorityColor: Color {
-        switch insight.priority {
-        case .high: return .red
-        case .medium: return .orange  
-        case .low: return .blue
-        }
-    }
-    
-    private var priorityIcon: String {
-        switch insight.priority {
-        case .high: return "exclamationmark.triangle.fill"
-        case .medium: return "info.circle.fill"
-        case .low: return "lightbulb.fill"
-        }
-    }
-    
-    private var priorityText: String {
-        switch insight.priority {
-        case .high: return "URGENT"
-        case .medium: return "MEDIUM"
-        case .low: return "INFO"
-        }
-    }
-}
 
 // MARK: - Legacy Compact Card (kept for compatibility)
 struct CompactInsightCard: View {
@@ -1373,7 +775,7 @@ struct EnhancedRecoveryScoreCard: View {
     var body: some View {
         VStack(spacing: theme.spacing.l) {
             // Enhanced version of existing RecoveryScoreCard
-            RecoveryScoreCard(recoveryScore: recoveryScore)
+            AnalyticsRecoveryScoreCard(recoveryScore: recoveryScore)
             
             // Recovery factors breakdown
             VStack(alignment: .leading, spacing: theme.spacing.s) {
@@ -1900,7 +1302,7 @@ struct InsightRow: View {
     }
 }
 
-struct InsightDetailView: View {
+struct HealthIntelligenceInsightDetailView: View {
     let insight: HealthInsight
     @Environment(\.theme) private var theme
     @Environment(\.dismiss) private var dismiss

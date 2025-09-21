@@ -14,33 +14,6 @@ struct CardioProgressChart: View {
     @State private var cardioSessions: [CardioSession] = []
     @State private var isLoading = false
     
-    enum TimeRange: String, CaseIterable {
-        case oneMonth = "1M"
-        case threeMonths = "3M"
-        case sixMonths = "6M"
-        case oneYear = "1Y"
-        case allTime = "All"
-        
-        var months: Int {
-            switch self {
-            case .oneMonth: return 1
-            case .threeMonths: return 3
-            case .sixMonths: return 6
-            case .oneYear: return 12
-            case .allTime: return 24
-            }
-        }
-        
-        var displayTitle: String {
-            switch self {
-            case .oneMonth: return TrainingKeys.CardioAnalytics.oneMonth.localized
-            case .threeMonths: return TrainingKeys.CardioAnalytics.threeMonths.localized
-            case .sixMonths: return TrainingKeys.CardioAnalytics.sixMonths.localized
-            case .oneYear: return TrainingKeys.CardioAnalytics.lastYear.localized
-            case .allTime: return TrainingKeys.CardioAnalytics.allTime.localized
-            }
-        }
-    }
     
     enum CardioMetric: String, CaseIterable {
         case distance = "distance"

@@ -7,11 +7,48 @@ struct ProgramDashboardView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(TrainingCoordinator.self) private var coordinator
     @Environment(UnitSettings.self) var unitSettings
-    
+    @State private var viewModel: ProgramDashboardViewModel?
+
     let execution: ProgramExecution?
     let onStartWorkout: () -> Void
     let onPauseProgram: () -> Void
     let onViewDetails: () -> Void
+
+    // MARK: - Computed Properties for Safe ViewModel Access
+    private var totalVolume: Double {
+        guard let execution = execution, let viewModel = viewModel else { return 0.0 }
+        return viewModel.totalVolume(execution: execution)
+    }
+
+    private var prsThisWeek: Int {
+        guard let execution = execution, let viewModel = viewModel else { return 0 }
+        return viewModel.prsThisWeek(execution: execution)
+    }
+
+    private var averageSessionDuration: TimeInterval {
+        guard let execution = execution, let viewModel = viewModel else { return 0 }
+        return viewModel.averageSessionDuration(execution: execution)
+    }
+
+    private var totalSetsCompleted: Int {
+        guard let execution = execution, let viewModel = viewModel else { return 0 }
+        return viewModel.totalSetsCompleted(execution: execution)
+    }
+
+    private var totalRepsCompleted: Int {
+        guard let execution = execution, let viewModel = viewModel else { return 0 }
+        return viewModel.totalRepsCompleted(execution: execution)
+    }
+
+    private var weeklyCompletionPercentage: Double {
+        guard let execution = execution, let viewModel = viewModel else { return 0.0 }
+        return viewModel.weeklyCompletionPercentage(execution: execution)
+    }
+
+    private var programIntensityScore: Double {
+        guard let execution = execution, let viewModel = viewModel else { return 0.0 }
+        return viewModel.programIntensityScore(execution: execution)
+    }
     
     var body: some View {
         VStack(spacing: 0) {
@@ -21,8 +58,14 @@ struct ProgramDashboardView: View {
                 noProgramPrompt
             }
         }
+        .onAppear {
+            if viewModel == nil {
+                viewModel = ProgramDashboardViewModel()
+                viewModel?.setModelContext(modelContext)
+            }
+        }
     }
-    
+
     // MARK: - Active Program Dashboard
     private func activeProgramDashboard(execution: ProgramExecution) -> some View {
         VStack(spacing: theme.spacing.l) {
@@ -133,7 +176,7 @@ struct ProgramDashboardView: View {
             statItem(
                 icon: "chart.line.uptrend.xyaxis",
                 title: "Total Volume",
-                value: UnitsFormatter.formatVolume(kg: totalVolume(execution: execution), system: unitSettings.unitSystem)
+                value: UnitsFormatter.formatVolume(kg: totalVolume, system: unitSettings.unitSystem)
             )
             
             Divider()
@@ -142,7 +185,7 @@ struct ProgramDashboardView: View {
             statItem(
                 icon: "trophy.fill",
                 title: "PRs This Week",
-                value: "\(prsThisWeek(execution: execution))"
+                value: "\(prsThisWeek)"
             )
         }
         .padding(.vertical, theme.spacing.m)
@@ -392,19 +435,6 @@ struct ProgramDashboardView: View {
         .background(theme.colors.cardBackground)
         .cornerRadius(theme.radius.l)
         .padding(.horizontal)
-    }
-    
-    // MARK: - Helper Functions
-    private func totalVolume(execution: ProgramExecution) -> Double {
-        // Calculate total volume from completed workouts
-        // This would integrate with LiftSession data
-        return Double((execution.completedWorkouts?.count ?? 0) * 1500) // Placeholder
-    }
-    
-    private func prsThisWeek(execution: ProgramExecution) -> Int {
-        // Calculate PRs hit this week
-        // This would integrate with LiftSession data
-        return max(0, execution.currentWeek - 5) // Placeholder
     }
 }
 

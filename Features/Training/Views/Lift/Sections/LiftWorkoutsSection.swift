@@ -62,12 +62,10 @@ struct LiftWorkoutsSection: View {
             .padding(.vertical, theme.spacing.m)
         }
         .sheet(item: $selectedWorkout) { workout in
-            NavigationStack {
-                LiftSessionView(
-                    workout: workout,
-                    programExecution: findProgramExecutionForWorkout(workout)
-                )
-            }
+            LiftSessionView(
+                workout: workout,
+                programExecution: findProgramExecutionForWorkout(workout)
+            )
         }
         .sheet(isPresented: $showingScratchBuilder) {
             ScratchRoutineBuilderView()

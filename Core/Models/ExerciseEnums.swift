@@ -445,4 +445,15 @@ enum MealType: String, CaseIterable, Sendable {
         case .dinner: return 6
         }
     }
+
+    var healthKitValue: String {
+        switch self {
+        case .breakfast: return "Breakfast"
+        case .lunch: return "Lunch"
+        case .dinner: return "Dinner"
+        case .snack: return "Snack"
+        case .preworkout: return "Pre-Workout"
+        case .postworkout: return "Post-Workout"
+        }
+    }
 }

@@ -6,10 +6,11 @@ struct ProgramDetailView: View {
     @Environment(\.theme) private var theme
     @Environment(\.modelContext) private var modelContext
     @Query private var users: [User]
-    
+
     let program: LiftProgram
     @State private var showingOneRMSetup = false
-    
+    @State private var startingWorkout: LiftWorkout?
+
     private var currentUser: User? {
         users.first
     }
@@ -31,6 +32,9 @@ struct ProgramDetailView: View {
         }
         .sheet(isPresented: $showingOneRMSetup) {
             oneRMSetupSheet
+        }
+        .fullScreenCover(item: $startingWorkout) { workout in
+            LiftSessionView(workout: workout, programExecution: nil)
         }
     }
     
@@ -141,7 +145,7 @@ struct ProgramDetailView: View {
         modelContext.insert(execution)
         do {
             try modelContext.save()
-            
+
             // Log program start activity
             Task { @MainActor in
                 ActivityLoggerService.shared.setModelContext(modelContext)
@@ -152,9 +156,28 @@ struct ProgramDetailView: View {
                     user: user
                 )
             }
-            
+
             Logger.success("Program started successfully")
-            dismiss()
+
+            // Start the first workout immediately
+            if let firstWorkout = execution.currentWorkout {
+                // Create LiftSession for the first workout
+                let liftSession = LiftSession(
+                    workout: firstWorkout,
+                    user: user,
+                    programExecution: execution
+                )
+                modelContext.insert(liftSession)
+                try modelContext.save()
+
+                // Navigate to the workout
+                dismiss()
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    startingWorkout = firstWorkout
+                }
+            } else {
+                dismiss()
+            }
         } catch {
             Logger.error("Failed to start program: \(error)")
         }

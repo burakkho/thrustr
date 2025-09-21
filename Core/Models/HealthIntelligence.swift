@@ -2,7 +2,7 @@ import Foundation
 import SwiftUI
 
 // MARK: - Recovery Score Model
-struct RecoveryScore {
+struct RecoveryScore: Equatable, Hashable, Codable {
     let overallScore: Double // 0-100
     let hrvScore: Double
     let sleepScore: Double
@@ -75,8 +75,8 @@ enum RecoveryCategory: String, CaseIterable {
 }
 
 // MARK: - Health Insights
-struct HealthInsight: Identifiable {
-    let id = UUID()
+struct HealthInsight: Identifiable, Equatable, Hashable, Codable {
+    let id: UUID
     let type: InsightType
     let title: String
     let message: String
@@ -84,8 +84,19 @@ struct HealthInsight: Identifiable {
     let date: Date
     let actionable: Bool
     let action: String?
+
+    init(type: InsightType, title: String, message: String, priority: InsightPriority, date: Date, actionable: Bool, action: String? = nil) {
+        self.id = UUID()
+        self.type = type
+        self.title = title
+        self.message = message
+        self.priority = priority
+        self.date = date
+        self.actionable = actionable
+        self.action = action
+    }
     
-    enum InsightType: String, CaseIterable {
+    enum InsightType: String, CaseIterable, Codable {
         case workout = "workout"
         case sleep = "sleep"
         case nutrition = "nutrition"
@@ -107,7 +118,7 @@ struct HealthInsight: Identifiable {
         }
     }
     
-    enum InsightPriority: String, CaseIterable {
+    enum InsightPriority: String, CaseIterable, Codable {
         case high = "high"
         case medium = "medium"
         case low = "low"

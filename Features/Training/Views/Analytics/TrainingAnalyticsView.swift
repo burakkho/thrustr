@@ -9,16 +9,11 @@ struct TrainingAnalyticsView: View {
     @Environment(UnitSettings.self) private var unitSettings
     @Query private var users: [User]
     
-    @State private var analyticsService: AnalyticsService
+    @State private var analyticsService: AnalyticsService?
     @State private var showingGoalSettings = false
-    
-    // Initialize AnalyticsService with default empty service, will be updated in onAppear
-    init() {
-        // Temporary initialization - will be updated when view appears
-        let config = ModelConfiguration(isStoredInMemoryOnly: true)
-        let tempContainer = try! ModelContainer(for: User.self, configurations: config)
-        self._analyticsService = StateObject(wrappedValue: AnalyticsService(modelContext: tempContainer.mainContext))
-    }
+    @State private var exerciseProgressions: [(name: String, currentMax: Double, trend: TrendDirection, improvement: Double)] = []
+    @State private var workoutFrequency: (thisWeek: Int, lastWeek: Int, trend: TrendDirection) = (0, 0, .stable)
+    @State private var progressInsights: [String] = []
     
     private var currentUser: User? {
         users.first
@@ -42,13 +37,22 @@ struct TrainingAnalyticsView: View {
                         .frame(maxHeight: 150) // Limit chart height
                 }
                 
-                // Additional Analytics - Collapsed by default
+                // Additional Analytics - Enhanced with TrainingAnalyticsService
                 VStack(spacing: theme.spacing.m) {
+                    // Exercise Progressions from TrainingAnalyticsService
+                    exerciseProgressionsSection
+
+                    // Workout Frequency Analysis
+                    workoutFrequencySection
+
+                    // Progress Insights
+                    progressInsightsSection
+
                     // PR Timeline Card - Compact
                     PRTimelineCard(user: user)
                         .padding(.horizontal)
                         .frame(maxHeight: 120) // Compact PR display
-                    
+
                     // Monthly Goals Section
                     monthlyGoalsSection(for: user)
                 }
@@ -76,8 +80,12 @@ struct TrainingAnalyticsView: View {
             }
         }
         .onAppear {
-            if let user = currentUser {
-                analyticsService.updateUserAnalytics(for: user)
+            if analyticsService == nil {
+                analyticsService = AnalyticsService(modelContext: modelContext)
+            }
+            if let user = currentUser, let service = analyticsService {
+                service.updateUserAnalytics(for: user)
+                loadTrainingAnalytics(for: user)
             }
         }
     }
@@ -85,7 +93,8 @@ struct TrainingAnalyticsView: View {
     // MARK: - Summary Cards Section
     private func summaryCardsSection(for user: User) -> some View {
         VStack(alignment: .leading, spacing: theme.spacing.m) {
-            let weeklySummary = analyticsService.getWeeklySummary(for: user)
+            if let service = analyticsService {
+                let weeklySummary = service.getWeeklySummary(for: user)
             
             LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: theme.spacing.m) {
                 QuickStatCard(
@@ -120,6 +129,10 @@ struct TrainingAnalyticsView: View {
                     color: theme.colors.error
                 )
             }
+            } else {
+                ProgressView()
+                    .frame(height: 200)
+            }
         }
         .padding(.horizontal)
     }
@@ -127,12 +140,17 @@ struct TrainingAnalyticsView: View {
     // MARK: - Weekly Chart Section  
     private var weeklyChartSection: some View {
         VStack {
-            let activityData = analyticsService.getDailyActivityData()
+            if let service = analyticsService {
+                let activityData = service.getDailyActivityData()
             
-            if activityData.allSatisfy({ $0.totalSessions == 0 }) {
-                EmptyActivityChart()
+                if activityData.allSatisfy({ $0.totalSessions == 0 }) {
+                    EmptyActivityChart()
+                } else {
+                    WeeklyActivityChart(activityData: activityData)
+                }
             } else {
-                WeeklyActivityChart(activityData: activityData)
+                ProgressView()
+                    .frame(height: 150)
             }
         }
         .padding(.horizontal)
@@ -146,9 +164,9 @@ struct TrainingAnalyticsView: View {
                     .font(theme.typography.headline)
                     .fontWeight(.semibold)
                     .foregroundColor(theme.colors.textPrimary)
-                
+
                 Spacer()
-                
+
                 Button(TrainingKeys.Analytics.editGoals.localized) {
                     showingGoalSettings = true
                 }
@@ -156,8 +174,9 @@ struct TrainingAnalyticsView: View {
                 .foregroundColor(theme.colors.accent)
             }
             .padding(.horizontal)
-            
-            let goalProgress = analyticsService.getMonthlyGoalProgress(for: user)
+
+            if let service = analyticsService {
+                let goalProgress = service.getMonthlyGoalProgress(for: user)
             
             HStack(spacing: theme.spacing.m) {
                 GoalProgressCard(
@@ -177,13 +196,206 @@ struct TrainingAnalyticsView: View {
                     color: Color.cardioColor,
                     onTap: { showingGoalSettings = true }
                 )
+                }
+                .padding(.horizontal)
+            } else {
+                ProgressView()
+                    .frame(height: 100)
+                    .padding(.horizontal)
             }
+        }
+    }
+
+    // MARK: - TrainingAnalyticsService Sections
+
+    private var exerciseProgressionsSection: some View {
+        VStack(alignment: .leading, spacing: theme.spacing.m) {
+            HStack {
+                Text("Exercise Progressions")
+                    .font(theme.typography.headline)
+                    .fontWeight(.semibold)
+                    .foregroundColor(theme.colors.textPrimary)
+
+                Spacer()
+
+                Text("Top 3")
+                    .font(theme.typography.caption)
+                    .foregroundColor(theme.colors.textSecondary)
+            }
+            .padding(.horizontal)
+
+            if exerciseProgressions.isEmpty {
+                Text("Start logging workouts to see progressions")
+                    .font(theme.typography.body)
+                    .foregroundColor(theme.colors.textSecondary)
+                    .padding(.horizontal)
+            } else {
+                VStack(spacing: theme.spacing.s) {
+                    ForEach(exerciseProgressions, id: \.name) { progression in
+                        HStack {
+                            VStack(alignment: .leading) {
+                                Text(progression.name)
+                                    .font(theme.typography.subheadline)
+                                    .fontWeight(.medium)
+
+                                Text(TrainingAnalyticsService.formatWeight(progression.currentMax, unitSystem: unitSettings.unitSystem))
+                                    .font(theme.typography.caption)
+                                    .foregroundColor(theme.colors.textSecondary)
+                            }
+
+                            Spacer()
+
+                            HStack(spacing: 4) {
+                                Image(systemName: progression.trend.icon)
+                                    .foregroundColor(progression.trend.color)
+
+                                Text(TrainingAnalyticsService.formatWeightDifference(progression.improvement, trend: progression.trend, unitSystem: unitSettings.unitSystem))
+                                    .font(theme.typography.caption)
+                                    .foregroundColor(progression.trend.color)
+                            }
+                        }
+                        .padding(.horizontal)
+                        .padding(.vertical, theme.spacing.xs)
+                        .background(theme.colors.surfaceSecondary)
+                        .cornerRadius(8)
+                    }
+                }
+                .padding(.horizontal)
+            }
+        }
+    }
+
+    private var workoutFrequencySection: some View {
+        VStack(alignment: .leading, spacing: theme.spacing.m) {
+            HStack {
+                Text("Workout Frequency")
+                    .font(theme.typography.headline)
+                    .fontWeight(.semibold)
+                    .foregroundColor(theme.colors.textPrimary)
+
+                Spacer()
+
+                HStack(spacing: 4) {
+                    Image(systemName: workoutFrequency.trend.icon)
+                        .foregroundColor(workoutFrequency.trend.color)
+
+                    Text(workoutFrequency.trend.displayName)
+                        .font(theme.typography.caption)
+                        .foregroundColor(workoutFrequency.trend.color)
+                }
+            }
+            .padding(.horizontal)
+
+            HStack {
+                VStack {
+                    Text("\(workoutFrequency.thisWeek)")
+                        .font(theme.typography.title)
+                        .fontWeight(.bold)
+                        .foregroundColor(theme.colors.textPrimary)
+
+                    Text("This Week")
+                        .font(theme.typography.caption)
+                        .foregroundColor(theme.colors.textSecondary)
+                }
+                .frame(maxWidth: .infinity)
+
+                VStack {
+                    Text("\(workoutFrequency.lastWeek)")
+                        .font(theme.typography.title)
+                        .fontWeight(.bold)
+                        .foregroundColor(theme.colors.textSecondary)
+
+                    Text("Last Week")
+                        .font(theme.typography.caption)
+                        .foregroundColor(theme.colors.textSecondary)
+                }
+                .frame(maxWidth: .infinity)
+            }
+            .padding()
+            .background(theme.colors.surfaceSecondary)
+            .cornerRadius(12)
             .padding(.horizontal)
         }
     }
-    
-    
-    
+
+    private var progressInsightsSection: some View {
+        VStack(alignment: .leading, spacing: theme.spacing.m) {
+            HStack {
+                Text("Progress Insights")
+                    .font(theme.typography.headline)
+                    .fontWeight(.semibold)
+                    .foregroundColor(theme.colors.textPrimary)
+
+                Spacer()
+
+                Image(systemName: "lightbulb.fill")
+                    .foregroundColor(theme.colors.warning)
+            }
+            .padding(.horizontal)
+
+            if progressInsights.isEmpty {
+                Text("Complete more workouts to generate insights")
+                    .font(theme.typography.body)
+                    .foregroundColor(theme.colors.textSecondary)
+                    .padding(.horizontal)
+            } else {
+                VStack(alignment: .leading, spacing: theme.spacing.s) {
+                    ForEach(progressInsights, id: \.self) { insight in
+                        HStack(alignment: .top, spacing: theme.spacing.s) {
+                            Image(systemName: "star.fill")
+                                .foregroundColor(theme.colors.accent)
+                                .font(.caption)
+                                .padding(.top, 2)
+
+                            Text(insight)
+                                .font(theme.typography.body)
+                                .foregroundColor(theme.colors.textPrimary)
+
+                            Spacer()
+                        }
+                        .padding()
+                        .background(theme.colors.surfaceSecondary)
+                        .cornerRadius(8)
+                    }
+                }
+                .padding(.horizontal)
+            }
+        }
+    }
+
+    // MARK: - TrainingAnalyticsService Integration
+
+    private func loadTrainingAnalytics(for user: User) {
+        Task {
+            // Get lift results for TrainingAnalyticsService
+            let liftResults = user.completedLiftSessions?.flatMap { session in
+                session.exerciseResults?.compactMap { exerciseResult in
+                    // Convert to the format expected by TrainingAnalyticsService
+                    LiftExerciseResult.fromModel(exerciseResult)
+                } ?? []
+            } ?? []
+
+            // Get cardio results
+            let cardioResults = user.completedCardioSessions?.compactMap { session in
+                CardioResult.fromModel(session)
+            } ?? []
+
+            await MainActor.run {
+                // Calculate exercise progressions using TrainingAnalyticsService
+                exerciseProgressions = TrainingAnalyticsService.calculateExerciseMaxes(from: liftResults)
+
+                // Calculate workout frequency
+                workoutFrequency = TrainingAnalyticsService.calculateWorkoutFrequency(
+                    liftResults: liftResults,
+                    cardioResults: cardioResults
+                )
+
+                // Generate progress insights
+                progressInsights = TrainingAnalyticsService.generateProgressInsights(liftResults: liftResults)
+            }
+        }
+    }
+
     // MARK: - Helper Methods
     private func formatDuration(_ duration: TimeInterval) -> String {
         let hours = Int(duration) / 3600

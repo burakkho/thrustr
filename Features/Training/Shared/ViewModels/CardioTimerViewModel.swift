@@ -26,6 +26,16 @@ class CardioTimerViewModel {
     
     // MARK: - Unit Settings
     private var unitSettings: UnitSettings { UnitSettings.shared }
+
+    // MARK: - Screen Lock Management
+    var isScreenLocked = false
+    var lockSlideOffset: CGFloat = 0
+
+    // MARK: - Volume Button Monitoring
+    private var volumeButtonMonitor: Timer?
+    private var lastVolumeLevel: Float = 0
+    private var volumeButtonPressCount = 0
+    private var volumeUnlockTimer: Timer?
     
     // MARK: - Cardio Properties
     let activityType: CardioActivityType
@@ -429,6 +439,18 @@ class CardioTimerViewModel {
     private func formatPace(_ pace: Double) -> String {
         return UnitsFormatter.formatDetailedPace(minPerKm: pace, system: unitSettings.unitSystem)
     }
+
+    /// Format split time in MM:SS format
+    func formatSplitTime(_ time: TimeInterval) -> String {
+        let minutes = Int(time) / 60
+        let seconds = Int(time) % 60
+        return String(format: "%02d:%02d", minutes, seconds)
+    }
+
+    /// Format pace for display with proper unit system
+    func formatPaceForDisplay(_ pace: Double) -> String {
+        return UnitsFormatter.formatDetailedPace(minPerKm: pace, system: unitSettings.unitSystem)
+    }
     
     // MARK: - Session Completion
     func createCardioSession() -> CardioSession {
@@ -664,5 +686,92 @@ class CardioTimerViewModel {
             }
         }
     }
-    
+
+    // MARK: - Volume Button Monitoring & Screen Lock
+
+    /**
+     * Sets up volume button monitoring for screen unlock functionality
+     */
+    func setupVolumeButtonMonitoring() {
+        let audioSession = AVAudioSession.sharedInstance()
+        lastVolumeLevel = audioSession.outputVolume
+
+        volumeButtonMonitor = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { _ in
+            let currentVolume = audioSession.outputVolume
+
+            // Detect volume button press (both up and down)
+            Task { @MainActor in
+                if abs(currentVolume - self.lastVolumeLevel) > 0.01 {
+                    self.volumeButtonPressed()
+                    self.lastVolumeLevel = currentVolume
+                }
+            }
+        }
+    }
+
+    /**
+     * Cleans up volume button monitoring timers
+     */
+    func cleanupVolumeButtonMonitoring() {
+        volumeButtonMonitor?.invalidate()
+        volumeButtonMonitor = nil
+        volumeUnlockTimer?.invalidate()
+        volumeUnlockTimer = nil
+    }
+
+    /**
+     * Handles volume button press for screen unlock
+     */
+    private func volumeButtonPressed() {
+        guard isScreenLocked else { return }
+
+        volumeButtonPressCount += 1
+
+        // If this is the first press, start the timer
+        if volumeButtonPressCount == 1 {
+            volumeUnlockTimer = Timer.scheduledTimer(withTimeInterval: 3.0, repeats: false) { _ in
+                Task { @MainActor in
+                    // Reset count after 3 seconds
+                    self.volumeButtonPressCount = 0
+                }
+            }
+        }
+
+        // Check if we have enough presses to unlock (both volume up and down within 3 seconds)
+        if volumeButtonPressCount >= 4 { // Multiple quick presses simulate up+down combo
+            unlockScreen()
+        }
+    }
+
+    /**
+     * Unlocks the screen with animation and haptic feedback
+     */
+    func unlockScreen() {
+        withAnimation(.easeOut(duration: 0.3)) {
+            isScreenLocked = false
+            lockSlideOffset = 0
+        }
+
+        // Success haptic feedback
+        let successFeedback = UINotificationFeedbackGenerator()
+        successFeedback.notificationOccurred(.success)
+
+        // Reset counter
+        volumeButtonPressCount = 0
+        volumeUnlockTimer?.invalidate()
+        volumeUnlockTimer = nil
+
+        Logger.info("Screen unlocked via volume button combination")
+    }
+
+    /**
+     * Locks the screen programmatically
+     */
+    func lockScreen() {
+        withAnimation(.easeOut(duration: 0.3)) {
+            isScreenLocked = true
+            lockSlideOffset = 0
+        }
+    }
+
 }

@@ -3149,6 +3149,8 @@
 // MARK: - Profile Navy Method Calculator
 "profile.navy.title" = "Donanma Yöntemi Hesaplayıcı";
 "profile.navy.calculate" = "Hesapla";
+"profile.navy.male" = "Erkek";
+"profile.navy.female" = "Kadın";
 
 // MARK: - Profile One Rep Max Calculator
 "profile.oneRM.title" = "1RM Hesaplayıcı";

@@ -32,8 +32,64 @@ class ProfileViewModel {
 
     private let achievementService = AchievementService.self
     private let profileAnalyticsService = ProfileAnalyticsService.self
+    private var modelContext: ModelContext?
+
+    // MARK: - Configuration
+
+    /**
+     * Configures the ViewModel with required dependencies.
+     *
+     * - Parameter modelContext: SwiftData model context for database queries
+     */
+    func configure(modelContext: ModelContext) {
+        self.modelContext = modelContext
+    }
 
     // MARK: - Data Loading
+
+    /**
+     * Loads all profile data from SwiftData and services.
+     *
+     * Fetches data from SwiftData database, coordinates with HealthKit service,
+     * and updates all UI state. Handles loading states and error conditions.
+     *
+     * - Parameter user: Current user profile
+     */
+    func loadProfileData(user: User?) {
+        guard let user = user, let modelContext = modelContext else {
+            clearData()
+            return
+        }
+
+        isLoading = true
+        errorMessage = nil
+
+        do {
+            // Fetch SwiftData entities for achievements calculation
+            let liftSessions = try fetchRecentLiftSessions(modelContext: modelContext)
+            let nutritionEntries = try fetchRecentNutritionEntries(modelContext: modelContext)
+            let weightEntries = try fetchRecentWeightEntries(modelContext: modelContext)
+
+            // Get HealthKit service instance
+            let healthKitService = HealthKitService.shared
+
+            // Load achievements using fetched data
+            loadAchievements(
+                user: user,
+                healthKitService: healthKitService,
+                liftSessions: liftSessions,
+                nutritionEntries: nutritionEntries,
+                weightEntries: weightEntries
+            )
+
+            // Load strength level analysis
+            loadStrengthLevel(user: user)
+
+            isLoading = false
+        } catch {
+            showError("Failed to load profile data: \(error.localizedDescription)")
+        }
+    }
 
     /**
      * Loads all profile data including achievements and strength analysis.
@@ -48,21 +104,13 @@ class ProfileViewModel {
      *   - nutritionEntries: Recent nutrition tracking entries
      *   - weightEntries: Recent weight tracking entries
      */
-    func loadProfileData(
-        user: User?,
+    private func loadAchievements(
+        user: User,
         healthKitService: HealthKitService,
         liftSessions: [LiftSession],
         nutritionEntries: [NutritionEntry],
         weightEntries: [WeightEntry]
     ) {
-        guard let user = user else {
-            clearData()
-            return
-        }
-
-        isLoading = true
-        errorMessage = nil
-
         // Load achievements using service
         achievements = achievementService.computeRecentAchievements(
             user: user,
@@ -72,11 +120,6 @@ class ProfileViewModel {
             nutritionEntries: nutritionEntries,
             weightEntries: weightEntries
         )
-
-        // Load strength level analysis
-        loadStrengthLevel(user: user)
-
-        isLoading = false
     }
 
     /**
@@ -220,5 +263,70 @@ class ProfileViewModel {
     func canShowAnalytics(user: User?) -> Bool {
         guard let user = user else { return false }
         return profileAnalyticsService.canCalculateStrengthLevel(user: user)
+    }
+
+    // MARK: - SwiftData Queries
+
+    /**
+     * Fetches recent lift sessions for achievements calculation.
+     *
+     * - Parameter modelContext: SwiftData model context
+     * - Returns: Array of recent lift sessions
+     * - Throws: SwiftData query errors
+     */
+    private func fetchRecentLiftSessions(modelContext: ModelContext) throws -> [LiftSession] {
+        let calendar = Calendar.current
+        let thirtyDaysAgo = calendar.date(byAdding: .day, value: -30, to: Date()) ?? Date()
+
+        let descriptor = FetchDescriptor<LiftSession>(
+            predicate: #Predicate { session in
+                session.startDate >= thirtyDaysAgo
+            },
+            sortBy: [SortDescriptor(\.startDate, order: .reverse)]
+        )
+
+        return try modelContext.fetch(descriptor)
+    }
+
+    /**
+     * Fetches recent nutrition entries for achievements calculation.
+     *
+     * - Parameter modelContext: SwiftData model context
+     * - Returns: Array of recent nutrition entries
+     * - Throws: SwiftData query errors
+     */
+    private func fetchRecentNutritionEntries(modelContext: ModelContext) throws -> [NutritionEntry] {
+        let calendar = Calendar.current
+        let thirtyDaysAgo = calendar.date(byAdding: .day, value: -30, to: Date()) ?? Date()
+
+        let descriptor = FetchDescriptor<NutritionEntry>(
+            predicate: #Predicate { entry in
+                entry.date >= thirtyDaysAgo
+            },
+            sortBy: [SortDescriptor(\.date, order: .reverse)]
+        )
+
+        return try modelContext.fetch(descriptor)
+    }
+
+    /**
+     * Fetches recent weight entries for achievements calculation.
+     *
+     * - Parameter modelContext: SwiftData model context
+     * - Returns: Array of recent weight entries
+     * - Throws: SwiftData query errors
+     */
+    private func fetchRecentWeightEntries(modelContext: ModelContext) throws -> [WeightEntry] {
+        let calendar = Calendar.current
+        let thirtyDaysAgo = calendar.date(byAdding: .day, value: -30, to: Date()) ?? Date()
+
+        let descriptor = FetchDescriptor<WeightEntry>(
+            predicate: #Predicate { entry in
+                entry.date >= thirtyDaysAgo
+            },
+            sortBy: [SortDescriptor(\.date, order: .reverse)]
+        )
+
+        return try modelContext.fetch(descriptor)
     }
 }

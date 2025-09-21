@@ -33,7 +33,11 @@ struct ExerciseResultData: Identifiable, Sendable {
     var totalReps: Int {
         sets.filter { $0.isCompleted }.reduce(0) { $0 + $1.reps }
     }
-    
+
+    var totalSets: Int {
+        sets.count
+    }
+
     var completionPercentage: Double {
         guard targetSets > 0 else { return 0 }
         return Double(completedSets) / Double(targetSets)
@@ -42,7 +46,7 @@ struct ExerciseResultData: Identifiable, Sendable {
     // MARK: - Initialization
     init(from exerciseResult: LiftExerciseResult) {
         self.id = exerciseResult.id
-        self.exerciseId = exerciseResult.exercise?.exerciseId ?? ""
+        self.exerciseId = exerciseResult.exercise?.exerciseId.uuidString ?? ""
         self.exerciseName = exerciseResult.exercise?.exerciseName ?? "Unknown Exercise"
         self.targetSets = exerciseResult.exercise?.targetSets ?? 0
         self.targetReps = exerciseResult.exercise?.targetReps ?? 0

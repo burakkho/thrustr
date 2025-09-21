@@ -9,33 +9,6 @@ struct StrengthProgressOverview: View {
     @State private var selectedTimeRange: TimeRange = .sixMonths
     @State private var selectedExercise: String? = nil
     
-    enum TimeRange: String, CaseIterable {
-        case oneMonth = "1M"
-        case threeMonths = "3M"  
-        case sixMonths = "6M"
-        case oneYear = "1Y"
-        case allTime = "All"
-        
-        var months: Int {
-            switch self {
-            case .oneMonth: return 1
-            case .threeMonths: return 3
-            case .sixMonths: return 6
-            case .oneYear: return 12
-            case .allTime: return 24
-            }
-        }
-        
-        var displayTitle: String {
-            switch self {
-            case .oneMonth: return TrainingKeys.StrengthAnalytics.oneMonth.localized
-            case .threeMonths: return TrainingKeys.StrengthAnalytics.threeMonths.localized
-            case .sixMonths: return TrainingKeys.StrengthAnalytics.sixMonths.localized
-            case .oneYear: return TrainingKeys.StrengthAnalytics.oneYear.localized
-            case .allTime: return TrainingKeys.StrengthAnalytics.allTime.localized
-            }
-        }
-    }
     
     struct StrengthDataPoint: Identifiable {
         let id = UUID()

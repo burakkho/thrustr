@@ -168,7 +168,7 @@ extension TrendDirection {
 }
 
 // MARK: - Codable Support
-extension TrendDirection: Codable, CaseIterable {
+extension TrendDirection: Codable, CaseIterable, Equatable, Hashable {
     // Automatic Codable synthesis
 }
 

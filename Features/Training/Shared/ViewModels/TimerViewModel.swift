@@ -1,6 +1,7 @@
 import SwiftUI
 import Foundation
 
+@MainActor
 @Observable
 class TimerViewModel {
     // MARK: - Published Properties

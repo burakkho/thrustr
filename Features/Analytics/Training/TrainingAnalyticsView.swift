@@ -2,43 +2,44 @@ import SwiftUI
 import SwiftData
 
 struct TrainingAnalyticsView: View {
+    @State private var viewModel = TrainingAnalyticsViewModel()
     @Environment(\.theme) private var theme
     @Environment(UnitSettings.self) var unitSettings
-    
-    // Real SwiftData queries for lift exercise results
+
+    // SwiftData query for lift exercise results
     @Query(
         sort: \LiftExerciseResult.performedAt,
         order: .reverse
     ) private var allLiftExerciseResults: [LiftExerciseResult]
-    
-    // Calculate 30 days ago for trend analysis
-    private var thirtyDaysAgo: Date {
-        Calendar.current.date(byAdding: .day, value: -30, to: Date()) ?? Date()
-    }
-    
-    // Filter recent lift exercise results
-    private var recentLiftResults: [LiftExerciseResult] {
-        allLiftExerciseResults.filter { result in
-            result.performedAt >= thirtyDaysAgo
-        }
-    }
+
+    // SwiftData query for cardio results
+    @Query(
+        sort: \CardioResult.completedAt,
+        order: .reverse
+    ) private var allCardioResults: [CardioResult]
     
     var body: some View {
         LazyVStack(spacing: 32) {
             // 🎯 HERO TRAINING STORY - Your strength journey overview
-            TrainingStoryHeroCard(liftResults: recentLiftResults)
-            
+            AnalyticsTrainingStoryHeroCard(liftResults: viewModel.recentLiftResults)
+
             // 💪 STRENGTH PROGRESSION SHOWCASE - ActionableStatCard grid
-            EnhancedStrengthProgressionSection(liftResults: recentLiftResults)
-            
-            // 🏆 PR CELEBRATION TIMELINE - Achievement showcase  
+            StrengthProgressionSection(viewModel: viewModel)
+
+            // 🏆 PR CELEBRATION TIMELINE - Achievement showcase
             EnhancedPRTimelineSection()
-            
+
             // 📊 TRAINING INSIGHTS GRID - Frequency + patterns combined
-            TrainingInsightsGridSection()
-            
+            TrainingInsightsGridSection(viewModel: viewModel, cardioResults: allCardioResults)
+
             // 🎯 GOALS & MOTIVATION - Next milestones
-            TrainingGoalsMotivationSection(liftResults: recentLiftResults)
+            TrainingGoalsMotivationSection(liftResults: viewModel.recentLiftResults)
+        }
+        .onAppear {
+            viewModel.updateData(allLiftExerciseResults)
+        }
+        .onChange(of: allLiftExerciseResults) { _, newResults in
+            viewModel.updateData(newResults)
         }
     }
 }
@@ -47,41 +48,8 @@ struct TrainingAnalyticsView: View {
 struct StrengthProgressionSection: View {
     @Environment(\.theme) private var theme
     @Environment(UnitSettings.self) var unitSettings
-    let liftResults: [LiftExerciseResult]
-    
-    // Calculate real exercise maxes from lift results
-    private var exerciseMaxes: [(name: String, currentMax: Double, trend: TrendDirection, improvement: Double)] {
-        let exerciseGroups = Dictionary(grouping: liftResults) { result in
-            result.exercise?.exerciseName ?? "Unknown"
-        }
-        
-        return exerciseGroups.compactMap { (exerciseName, results) in
-            guard !results.isEmpty else { return nil }
-            
-            // Find current max (best set from all results)
-            let currentMax = results.compactMap { $0.maxWeight }.max() ?? 0.0
-            
-            // Calculate trend (compare last 2 weeks vs previous 2 weeks)
-            let twoWeeksAgo = Calendar.current.date(byAdding: .day, value: -14, to: Date()) ?? Date()
-            let fourWeeksAgo = Calendar.current.date(byAdding: .day, value: -28, to: Date()) ?? Date()
-            
-            let recentResults = results.filter { $0.performedAt >= twoWeeksAgo }
-            let previousResults = results.filter { $0.performedAt >= fourWeeksAgo && $0.performedAt < twoWeeksAgo }
-            
-            let recentMax = recentResults.compactMap { $0.maxWeight }.max() ?? 0.0
-            let previousMax = previousResults.compactMap { $0.maxWeight }.max() ?? 0.0
-            
-            let improvement = recentMax - previousMax
-            let trend: TrendDirection = {
-                if improvement > 2.5 { return .increasing }
-                if improvement < -2.5 { return .decreasing }
-                return .stable
-            }()
-            
-            return (exerciseName, currentMax, trend, abs(improvement))
-        }.prefix(3).map { $0 } // Show top 3 exercises
-    }
-    
+    let viewModel: TrainingAnalyticsViewModel
+
     var body: some View {
         VStack(spacing: theme.spacing.m) {
             HStack {
@@ -95,21 +63,21 @@ struct StrengthProgressionSection: View {
                         .foregroundColor(theme.colors.accent)
                 }
             }
-            
-            // Real 1RM Progression from SwiftData
+
+            // Real 1RM Progression from ViewModel
             VStack(spacing: theme.spacing.s) {
-                if exerciseMaxes.isEmpty {
+                if viewModel.exerciseMaxes.isEmpty {
                     // Empty state when no lift data available
                     VStack(spacing: theme.spacing.m) {
                         Image(systemName: "chart.bar.fill")
                             .font(.title)
                             .foregroundColor(theme.colors.textSecondary)
-                        
+
                         Text(TrainingKeys.Analytics.noStrengthDataTitle.localized)
                             .font(theme.typography.subheadline)
                             .fontWeight(.medium)
                             .foregroundColor(theme.colors.textPrimary)
-                        
+
                         Text(TrainingKeys.Analytics.noStrengthDataDesc.localized)
                             .font(theme.typography.caption)
                             .foregroundColor(theme.colors.textSecondary)
@@ -117,12 +85,12 @@ struct StrengthProgressionSection: View {
                     }
                     .padding(.vertical, theme.spacing.l)
                 } else {
-                    ForEach(exerciseMaxes, id: \.name) { exerciseData in
+                    ForEach(viewModel.exerciseMaxes, id: \.name) { exerciseData in
                         StrengthMetricRow(
                             exercise: exerciseData.name,
-                            currentMax: formatWeight(exerciseData.currentMax),
+                            currentMax: viewModel.formatWeight(exerciseData.currentMax, unitSystem: unitSettings.unitSystem),
                             trend: exerciseData.trend,
-                            trendValue: formatWeightDifference(exerciseData.improvement, trend: exerciseData.trend),
+                            trendValue: viewModel.formatWeightDifference(exerciseData.improvement, trend: exerciseData.trend, unitSystem: unitSettings.unitSystem),
                             unitSettings: unitSettings
                         )
                     }
@@ -134,146 +102,9 @@ struct StrengthProgressionSection: View {
         .cornerRadius(theme.radius.l)
         .cardStyle()
     }
-    
-    // MARK: - Weight Formatting Functions
-    
-    private func formatWeight(_ weightInKg: Double) -> String {
-        if unitSettings.unitSystem == .metric {
-            return String(format: "%.1f kg", weightInKg)
-        } else {
-            let weightInLbs = weightInKg * 2.20462
-            return String(format: "%.1f lb", weightInLbs)
-        }
-    }
-    
-    private func formatWeightDifference(_ diffInKg: Double, trend: TrendDirection) -> String {
-        if diffInKg == 0 {
-            return unitSettings.unitSystem == .metric ? "0kg" : "0lb"
-        }
-        
-        let prefix = trend == .increasing ? "+" : (trend == .decreasing ? "-" : "")
-        let absValue = abs(diffInKg)
-        
-        if unitSettings.unitSystem == .metric {
-            return "\(prefix)\(String(format: "%.1f", absValue))kg"
-        } else {
-            let diffInLbs = absValue * 2.20462
-            return "\(prefix)\(String(format: "%.1f", diffInLbs))lb"
-        }
-    }
+
 }
 
-// MARK: - Workout Frequency Section
-struct WorkoutFrequencySection: View {
-    @Environment(\.theme) private var theme
-    
-    // Real SwiftData queries for workout frequency
-    @Query(
-        sort: \LiftExerciseResult.performedAt,
-        order: .reverse
-    ) private var allLiftExerciseResults: [LiftExerciseResult]
-    
-    @Query(
-        sort: \CardioResult.completedAt,
-        order: .reverse
-    ) private var allCardioResults: [CardioResult]
-    
-    @Query(
-        sort: \LiftSession.startDate,
-        order: .reverse
-    ) private var allLiftSessions: [LiftSession]
-    
-    // Calculate date ranges
-    private var oneWeekAgo: Date {
-        Calendar.current.date(byAdding: .day, value: -7, to: Date()) ?? Date()
-    }
-    
-    private var oneMonthAgo: Date {
-        Calendar.current.date(byAdding: .day, value: -30, to: Date()) ?? Date()
-    }
-    
-    // Calculate real metrics
-    private var thisWeekWorkouts: Int {
-        let liftWorkouts = allLiftExerciseResults.filter { $0.performedAt >= oneWeekAgo }.count
-        let cardioWorkouts = allCardioResults.filter { $0.completedAt >= oneWeekAgo }.count
-        return liftWorkouts + cardioWorkouts
-    }
-    
-    private var thisMonthWorkouts: Int {
-        let liftWorkouts = allLiftExerciseResults.filter { $0.performedAt >= oneMonthAgo }.count
-        let cardioWorkouts = allCardioResults.filter { $0.completedAt >= oneMonthAgo }.count
-        return liftWorkouts + cardioWorkouts
-    }
-    
-    private var averageDuration: String {
-        let recentSessions = allLiftSessions.filter { session in
-            session.endDate != nil && session.startDate >= oneMonthAgo
-        }
-        guard !recentSessions.isEmpty else { return "0" }
-        
-        // Calculate average duration from actual session data
-        let totalDuration = recentSessions.reduce(0.0) { total, session in
-            total + session.duration
-        }
-        let avgSeconds = totalDuration / Double(recentSessions.count)
-        let avgMinutes = Int(avgSeconds / 60)
-        return "\(avgMinutes)"
-    }
-    
-    var body: some View {
-        VStack(spacing: theme.spacing.m) {
-            HStack {
-                Text("analytics.workout_frequency".localized)
-                    .font(theme.typography.headline)
-                    .fontWeight(.semibold)
-                Spacer()
-            }
-            
-            if thisWeekWorkouts == 0 && thisMonthWorkouts == 0 {
-                // Empty state
-                VStack(spacing: theme.spacing.s) {
-                    Image(systemName: "calendar.badge.exclamationmark")
-                        .font(.title2)
-                        .foregroundColor(theme.colors.textSecondary)
-                    
-                    Text(TrainingKeys.Analytics.noWorkoutsTitle.localized)
-                        .font(theme.typography.bodySmall)
-                        .foregroundColor(theme.colors.textSecondary)
-                    
-                    Text("Start training to see your workout frequency")
-                        .font(theme.typography.caption)
-                        .foregroundColor(theme.colors.textTertiary)
-                        .multilineTextAlignment(.center)
-                }
-                .padding(.vertical, theme.spacing.m)
-            } else {
-                HStack(spacing: theme.spacing.l) {
-                    FrequencyMetric(
-                        title: "analytics.this_week".localized,
-                        value: "\(thisWeekWorkouts)",
-                        subtitle: "workouts".localized
-                    )
-                    
-                    FrequencyMetric(
-                        title: "analytics.this_month".localized,
-                        value: "\(thisMonthWorkouts)",
-                        subtitle: "workouts".localized
-                    )
-                    
-                    FrequencyMetric(
-                        title: "analytics.avg_duration".localized,
-                        value: averageDuration,
-                        subtitle: "minutes".localized
-                    )
-                }
-            }
-        }
-        .padding(theme.spacing.l)
-        .background(theme.colors.cardBackground)
-        .cornerRadius(theme.radius.l)
-        .cardStyle()
-    }
-}
 
 // MARK: - PR Timeline Section
 struct PRTimelineSection: View {
@@ -286,40 +117,9 @@ struct PRTimelineSection: View {
         order: .reverse
     ) private var allLiftExerciseResults: [LiftExerciseResult]
     
-    // Calculate real PRs from recent results
+    // Use ViewModel's recentPRs calculation
     private var recentPRs: [(exercise: String, weight: Double, date: Date, isNew: Bool)] {
-        let thirtyDaysAgo = Calendar.current.date(byAdding: .day, value: -30, to: Date()) ?? Date()
-        let recentResults = allLiftExerciseResults.filter { $0.performedAt >= thirtyDaysAgo }
-        
-        // Group by exercise and find best weights
-        let exerciseGroups = Dictionary(grouping: recentResults) { result in
-            result.exercise?.exerciseName ?? "Unknown"
-        }
-        
-        var prs: [(exercise: String, weight: Double, date: Date, isNew: Bool)] = []
-        
-        for (exerciseName, results) in exerciseGroups {
-            // Filter results with valid maxWeight values
-            let validResults: [(result: LiftExerciseResult, weight: Double)] = results.compactMap { result in
-                guard let maxWeight = result.maxWeight, maxWeight > 0 else { return nil }
-                return (result: result, weight: maxWeight)
-            }
-            
-            guard let bestResult = validResults.max(by: { $0.weight < $1.weight }) else { continue }
-            
-            // Check if this is a new PR (within last 7 days)
-            let oneWeekAgo = Calendar.current.date(byAdding: .day, value: -7, to: Date()) ?? Date()
-            let isNew = bestResult.result.performedAt >= oneWeekAgo
-            
-            prs.append((
-                exercise: exerciseName,
-                weight: bestResult.weight,
-                date: bestResult.result.performedAt,
-                isNew: isNew
-            ))
-        }
-        
-        return Array(prs.prefix(3)) // Show top 3 recent PRs
+        return viewModel.recentPRs
     }
     
     var body: some View {
@@ -358,7 +158,7 @@ struct PRTimelineSection: View {
                     ForEach(recentPRs, id: \.exercise) { pr in
                         PRTimelineRow(
                             exercise: pr.exercise,
-                            weight: formatWeight(pr.weight),
+                            weight: TrainingAnalyticsService.formatWeight(pr.weight, unitSystem: unitSettings.unitSystem),
                             date: formatDate(pr.date),
                             isNew: pr.isNew
                         )
@@ -374,14 +174,6 @@ struct PRTimelineSection: View {
     
     // MARK: - Helper Functions
     
-    private func formatWeight(_ weightInKg: Double) -> String {
-        if unitSettings.unitSystem == .metric {
-            return String(format: "%.1f kg", weightInKg)
-        } else {
-            let weightInLbs = weightInKg * 2.20462
-            return String(format: "%.1f lb", weightInLbs)
-        }
-    }
     
     private func formatDate(_ date: Date) -> String {
         let now = Date()
@@ -426,56 +218,9 @@ struct TrainingPatternsSection: View {
         order: .reverse
     ) private var allCardioResults: [CardioResult]
     
-    // Calculate real training patterns
-    private var mostActiveTimeRange: String {
-        // Combine both lift and cardio results by converting to common date type
-        let liftDates = allLiftExerciseResults.map { $0.performedAt }
-        let cardioDates = allCardioResults.map { $0.completedAt }
-        let allDates = liftDates + cardioDates
-        
-        guard !allDates.isEmpty else { return "No data" }
-        
-        let hourCounts = Dictionary(grouping: allDates) { date in
-            Calendar.current.component(.hour, from: date)
-        }.mapValues { $0.count }
-        
-        guard let mostActiveHour = hourCounts.max(by: { $0.value < $1.value })?.key else {
-            return "No data"
-        }
-        
-        let endHour = (mostActiveHour + 2) % 24
-        return String(format: "%02d:00-%02d:00", mostActiveHour, endHour)
-    }
-    
-    private var favoriteWorkoutDay: String {
-        // Combine both lift and cardio results by converting to common date type
-        let liftDates = allLiftExerciseResults.map { $0.performedAt }
-        let cardioDates = allCardioResults.map { $0.completedAt }
-        let allDates = liftDates + cardioDates
-        
-        guard !allDates.isEmpty else { return "No data" }
-        
-        let dayCounts = Dictionary(grouping: allDates) { date in
-            Calendar.current.component(.weekday, from: date)
-        }.mapValues { $0.count }
-        
-        guard let mostActiveDay = dayCounts.max(by: { $0.value < $1.value })?.key else {
-            return "No data"
-        }
-        
-        let formatter = DateFormatter()
-        formatter.locale = Locale.current
-        let dayName = formatter.weekdaySymbols[mostActiveDay - 1]
-        return dayName
-    }
-    
-    private var weeklyVolume: Double {
-        let oneWeekAgo = Calendar.current.date(byAdding: .day, value: -7, to: Date()) ?? Date()
-        let recentResults = allLiftExerciseResults.filter { $0.performedAt >= oneWeekAgo }
-        
-        return recentResults.reduce(0.0) { total, result in
-            total + result.totalVolume
-        }
+    // Use ViewModel's training patterns calculation
+    private var trainingPatterns: (mostActiveTime: String, favoriteDay: String, weeklyVolume: Double) {
+        return viewModel.trainingPatterns
     }
     
     var body: some View {
@@ -490,17 +235,17 @@ struct TrainingPatternsSection: View {
             VStack(alignment: .leading, spacing: theme.spacing.s) {
                 PatternInsight(
                     icon: "clock",
-                    insight: "analytics.most_active_time".localized + ": " + mostActiveTimeRange
+                    insight: "analytics.most_active_time".localized + ": " + trainingPatterns.mostActiveTime
                 )
-                
+
                 PatternInsight(
                     icon: "calendar",
-                    insight: "analytics.favorite_workout_day".localized + ": " + favoriteWorkoutDay
+                    insight: "analytics.favorite_workout_day".localized + ": " + trainingPatterns.favoriteDay
                 )
-                
+
                 PatternInsight(
                     icon: "chart.bar.fill",
-                    insight: "analytics.avg_weekly_volume".localized + ": " + formatVolume(weeklyVolume)
+                    insight: "analytics.avg_weekly_volume".localized + ": " + formatVolume(trainingPatterns.weeklyVolume)
                 )
             }
         }
@@ -1037,7 +782,7 @@ struct EnhancedPRTimelineSection: View {
                             Spacer()
                             
                             VStack(alignment: .trailing, spacing: 2) {
-                                Text(formatWeight(pr.weight))
+                                Text(TrainingAnalyticsService.formatWeight(pr.weight, unitSystem: unitSettings.unitSystem))
                                     .font(.headline)
                                     .fontWeight(.bold)
                                     .foregroundColor(theme.colors.textPrimary)
@@ -1066,14 +811,6 @@ struct EnhancedPRTimelineSection: View {
         }
     }
     
-    private func formatWeight(_ weight: Double) -> String {
-        if unitSettings.unitSystem == .metric {
-            return String(format: "%.0f kg", weight)
-        } else {
-            let pounds = weight * 2.20462
-            return String(format: "%.0f lb", pounds)
-        }
-    }
     
     private func formatRelativeDate(_ date: Date) -> String {
         let now = Date()
@@ -1099,18 +836,12 @@ struct EnhancedPRTimelineSection: View {
 struct TrainingInsightsGridSection: View {
     @Environment(\.theme) private var theme
     @Environment(UnitSettings.self) var unitSettings
-    
-    @Query(
-        sort: \LiftExerciseResult.performedAt,
-        order: .reverse
-    ) private var allLiftExerciseResults: [LiftExerciseResult]
-    
-    @Query(
-        sort: \CardioResult.completedAt,
-        order: .reverse
-    ) private var allCardioResults: [CardioResult]
-    
+    let viewModel: TrainingAnalyticsViewModel
+    let cardioResults: [CardioResult]
+
     var body: some View {
+        let insights = viewModel.calculateTrainingInsights(cardioResults: cardioResults)
+
         VStack(spacing: 20) {
             // Section Header
             HStack {
@@ -1118,11 +849,11 @@ struct TrainingInsightsGridSection: View {
                     .font(.headline)
                     .fontWeight(.semibold)
                     .foregroundColor(theme.colors.textPrimary)
-                
+
                 Spacer()
             }
             .padding(.horizontal, 4)
-            
+
             // Insights Grid
             LazyVGrid(columns: [
                 GridItem(.flexible(), spacing: 16),
@@ -1131,129 +862,34 @@ struct TrainingInsightsGridSection: View {
                 TrainingInsightCard(
                     icon: "calendar.badge.clock",
                     title: "Workout Frequency",
-                    value: "\(calculateWeeklyFrequency())/week",
-                    trend: calculateFrequencyTrend(),
+                    value: "\(insights.weeklyFrequency)/week",
+                    trend: insights.frequencyTrend,
                     color: .blue
                 )
-                
+
                 TrainingInsightCard(
                     icon: "clock.fill",
                     title: "Avg Duration",
-                    value: "\(calculateAverageDuration())min",
+                    value: "\(insights.avgDuration)min",
                     trend: .stable,
                     color: .indigo
                 )
-                
+
                 TrainingInsightCard(
                     icon: "flame.fill",
                     title: "Weekly Volume",
-                    value: formatVolume(calculateWeeklyVolume()),
-                    trend: calculateVolumeTrend(),
+                    value: viewModel.formatVolume(insights.weeklyVolume, unitSystem: unitSettings.unitSystem),
+                    trend: insights.volumeTrend,
                     color: .orange
                 )
-                
+
                 TrainingInsightCard(
                     icon: "star.fill",
                     title: "Best Day",
-                    value: calculateBestWorkoutDay(),
+                    value: insights.bestDay,
                     trend: .stable,
                     color: .yellow
                 )
-            }
-        }
-    }
-    
-    // MARK: - Calculation Methods
-    
-    private func calculateWeeklyFrequency() -> Int {
-        let oneWeekAgo = Calendar.current.date(byAdding: .day, value: -7, to: Date()) ?? Date()
-        let liftWorkouts = allLiftExerciseResults.filter { $0.performedAt >= oneWeekAgo }.count
-        let cardioWorkouts = allCardioResults.filter { $0.completedAt >= oneWeekAgo }.count
-        return liftWorkouts + cardioWorkouts
-    }
-    
-    private func calculateFrequencyTrend() -> TrendDirection {
-        let thisWeek = calculateWeeklyFrequency()
-        let twoWeeksAgo = Calendar.current.date(byAdding: .day, value: -14, to: Date()) ?? Date()
-        let oneWeekAgo = Calendar.current.date(byAdding: .day, value: -7, to: Date()) ?? Date()
-        
-        let lastWeekLift = allLiftExerciseResults.filter { $0.performedAt >= twoWeeksAgo && $0.performedAt < oneWeekAgo }.count
-        let lastWeekCardio = allCardioResults.filter { $0.completedAt >= twoWeeksAgo && $0.completedAt < oneWeekAgo }.count
-        let lastWeek = lastWeekLift + lastWeekCardio
-        
-        if thisWeek > lastWeek { return .increasing }
-        if thisWeek < lastWeek { return .decreasing }
-        return .stable
-    }
-    
-    private func calculateAverageDuration() -> Int {
-        // Simplified calculation - would need LiftSession data for actual duration
-        return 45 // Default average workout duration
-    }
-    
-    private func calculateWeeklyVolume() -> Double {
-        let oneWeekAgo = Calendar.current.date(byAdding: .day, value: -7, to: Date()) ?? Date()
-        let recentResults = allLiftExerciseResults.filter { $0.performedAt >= oneWeekAgo }
-        
-        return recentResults.reduce(0.0) { total, result in
-            total + result.totalVolume
-        }
-    }
-    
-    private func calculateVolumeTrend() -> TrendDirection {
-        let thisWeekVolume = calculateWeeklyVolume()
-        let twoWeeksAgo = Calendar.current.date(byAdding: .day, value: -14, to: Date()) ?? Date()
-        let oneWeekAgo = Calendar.current.date(byAdding: .day, value: -7, to: Date()) ?? Date()
-        
-        let lastWeekResults = allLiftExerciseResults.filter { $0.performedAt >= twoWeeksAgo && $0.performedAt < oneWeekAgo }
-        let lastWeekVolume = lastWeekResults.reduce(0.0) { total, result in
-            total + result.totalVolume
-        }
-        
-        if thisWeekVolume > lastWeekVolume * 1.1 { return .increasing }
-        if thisWeekVolume < lastWeekVolume * 0.9 { return .decreasing }
-        return .stable
-    }
-    
-    private func calculateBestWorkoutDay() -> String {
-        let liftDates = allLiftExerciseResults.map { $0.performedAt }
-        let cardioDates = allCardioResults.map { $0.completedAt }
-        let allDates = liftDates + cardioDates
-        
-        guard !allDates.isEmpty else { return "None" }
-        
-        let dayCounts = Dictionary(grouping: allDates) { date in
-            Calendar.current.component(.weekday, from: date)
-        }.mapValues { $0.count }
-        
-        guard let mostActiveDay = dayCounts.max(by: { $0.value < $1.value })?.key else {
-            return "None"
-        }
-        
-        let formatter = DateFormatter()
-        let dayName = formatter.shortWeekdaySymbols[mostActiveDay - 1]
-        return dayName
-    }
-    
-    private func formatVolume(_ weightInKg: Double) -> String {
-        if weightInKg == 0 {
-            return "0"
-        }
-        
-        if unitSettings.unitSystem == .metric {
-            if weightInKg >= 1000 {
-                let tons = weightInKg / 1000.0
-                return String(format: "%.1ft", tons)
-            } else {
-                return String(format: "%.0fkg", weightInKg)
-            }
-        } else {
-            let weightInLbs = weightInKg * 2.20462
-            if weightInLbs >= 2000 {
-                let shortTons = weightInLbs / 2000.0
-                return String(format: "%.1ft", shortTons)
-            } else {
-                return String(format: "%.0flb", weightInLbs)
             }
         }
     }
@@ -1445,69 +1081,6 @@ struct MotivationCard: View {
 
 // MARK: - Supporting Components
 
-enum CelebrationType {
-    case none, celebration, progress, fire
-}
-
-struct TrainingStoryMetric: View {
-    let icon: String
-    let title: String
-    let value: String
-    let color: Color
-    let celebrationType: CelebrationType
-    @Environment(\.theme) private var theme
-    
-    var body: some View {
-        VStack(spacing: 8) {
-            HStack {
-                Image(systemName: icon)
-                    .font(.title3)
-                    .foregroundColor(color)
-                
-                if celebrationType != .none {
-                    Image(systemName: celebrationIcon)
-                        .font(.caption)
-                        .foregroundColor(celebrationColor)
-                }
-                
-                Spacer()
-            }
-            
-            VStack(alignment: .leading, spacing: 2) {
-                Text(value)
-                    .font(.title2)
-                    .fontWeight(.bold)
-                    .foregroundColor(theme.colors.textPrimary)
-                
-                Text(title)
-                    .font(.caption)
-                    .foregroundColor(theme.colors.textSecondary)
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-        }
-        .padding(12)
-        .background(theme.colors.backgroundSecondary.opacity(0.5))
-        .cornerRadius(12)
-    }
-    
-    private var celebrationIcon: String {
-        switch celebrationType {
-        case .celebration: return "party.popper.fill"
-        case .progress: return "arrow.up.circle.fill"
-        case .fire: return "flame.fill"
-        case .none: return ""
-        }
-    }
-    
-    private var celebrationColor: Color {
-        switch celebrationType {
-        case .celebration: return .yellow
-        case .progress: return .green
-        case .fire: return .red
-        case .none: return .clear
-        }
-    }
-}
 
 struct ActionableStrengthCard: View {
     let exerciseName: String
@@ -1534,7 +1107,7 @@ struct ActionableStrengthCard: View {
             }
             
             VStack(alignment: .leading, spacing: 4) {
-                Text(formatWeight(currentMax))
+                Text(TrainingAnalyticsService.formatWeight(currentMax, unitSystem: unitSettings.unitSystem))
                     .font(.title3)
                     .fontWeight(.bold)
                     .foregroundColor(theme.colors.textPrimary)
@@ -1545,7 +1118,7 @@ struct ActionableStrengthCard: View {
                     .lineLimit(1)
                 
                 if improvement > 0 {
-                    Text("+\(formatWeight(improvement))")
+                    Text("+\(TrainingAnalyticsService.formatWeight(improvement, unitSystem: unitSettings.unitSystem))")
                         .font(.caption2)
                         .fontWeight(.medium)
                         .foregroundColor(trendColor)
@@ -1586,14 +1159,6 @@ struct ActionableStrengthCard: View {
         }
     }
     
-    private func formatWeight(_ weight: Double) -> String {
-        if unitSettings.unitSystem == .metric {
-            return String(format: "%.0f kg", weight)
-        } else {
-            let pounds = weight * 2.20462
-            return String(format: "%.0f lb", pounds)
-        }
-    }
 }
 
 // MARK: - TrendDirection Support (uses HealthTrends.TrendDirection)

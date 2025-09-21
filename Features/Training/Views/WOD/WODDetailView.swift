@@ -6,22 +6,15 @@ struct WODDetailView: View {
     @Environment(\.theme) private var theme
     @Environment(\.modelContext) private var modelContext
     @Environment(UnitSettings.self) var unitSettings
-    @Query private var user: [User]
-    
     let wod: WOD
-    @State private var selectedWeights: [UUID: Double] = [:]
-    @State private var isRX = true
+    @State private var viewModel = WODDetailViewModel()
     @State private var showingTimer = false
     @State private var showingHistory = false
     @State private var showingEdit = false
     @State private var showingShare = false
-    
-    private var currentUser: User? {
-        user.first
-    }
-    
+
     private var wodResults: [WODResult] {
-        (wod.results ?? []).sorted { $0.completedAt > $1.completedAt }
+        viewModel.getSortedResults(for: wod)
     }
     
     var body: some View {
@@ -43,13 +36,8 @@ struct WODDetailView: View {
             .fullScreenCover(isPresented: $showingTimer) {
                 EnhancedWODTimerView(
                     wod: wod,
-                    movements: (wod.movements ?? []).map { movement in
-                        let updatedMovement = movement
-                        updatedMovement.userWeight = selectedWeights[movement.id]
-                        updatedMovement.isRX = isRX
-                        return updatedMovement
-                    },
-                    isRX: isRX
+                    movements: viewModel.prepareMovementsForTimer(from: wod),
+                    isRX: viewModel.isRX
                 )
             }
             .sheet(isPresented: $showingHistory) {
@@ -70,8 +58,27 @@ struct WODDetailView: View {
                 WODShareView(wod: wod, result: nil)
             }
             .sheet(isPresented: $showingEdit) {
-                // WOD edit view would go here
-                Text("Edit WOD - Coming Soon")
+                // WOD edit functionality
+                VStack(spacing: 16) {
+                    Image(systemName: "pencil.circle")
+                        .font(.system(size: 40))
+                        .foregroundColor(.blue)
+
+                    Text("WOD Editor")
+                        .font(.headline)
+
+                    Text("WOD editing will be available in a future update.")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                        .multilineTextAlignment(.center)
+
+                    Button("Close") {
+                        showingEdit = false
+                    }
+                    .buttonStyle(.borderedProminent)
+                }
+                .padding()
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
         }
     }
@@ -174,11 +181,12 @@ struct WODDetailView: View {
                 MovementCard(
                     movement: movement,
                     index: index + 1,
-                    userGender: currentUser?.gender,
-                    isRX: $isRX,
+                    userGender: viewModel.currentUser?.gender,
+                    viewModel: viewModel,
+                    isRX: $viewModel.isRX,
                     selectedWeight: Binding(
-                        get: { selectedWeights[movement.id] },
-                        set: { selectedWeights[movement.id] = $0 }
+                        get: { viewModel.selectedWeights[movement.id] },
+                        set: { viewModel.selectedWeights[movement.id] = $0 }
                     )
                 )
             }
@@ -191,7 +199,7 @@ struct WODDetailView: View {
                 .font(theme.typography.body)
                 .foregroundColor(theme.colors.textSecondary)
             
-            Picker("Mode", selection: $isRX) {
+            Picker("Mode", selection: $viewModel.isRX) {
                 Text("RX").tag(true)
                 Text("Scaled").tag(false)
             }
@@ -274,8 +282,11 @@ struct WODDetailView: View {
                 }
             }
         }
+        .onAppear {
+            viewModel.configure(modelContext: modelContext)
+        }
     }
-    
+
     @ToolbarContentBuilder
     private var toolbarContent: some ToolbarContent {
         ToolbarItem(placement: .navigationBarLeading) {
@@ -286,9 +297,7 @@ struct WODDetailView: View {
     }
     
     private func toggleFavorite() {
-        wod.isFavorite.toggle()
-        try? modelContext.save()
-        HapticManager.shared.impact(.light)
+        viewModel.toggleFavorite(for: wod)
     }
 }
 
@@ -297,38 +306,18 @@ private struct MovementCard: View {
     let movement: WODMovement
     let index: Int
     let userGender: String?
+    let viewModel: WODDetailViewModel
     @Binding var isRX: Bool
     @Binding var selectedWeight: Double?
     @Environment(\.theme) private var theme
-    @Environment(UnitSettings.self) var unitSettings
     @State private var weightText = ""
-    
-    private var rxWeight: String? {
-        movement.rxWeight(for: userGender)
-    }
-    
-    private var scaledWeight: String? {
-        movement.scaledWeight(for: userGender)
-    }
-    
+
     private var displayRxWeight: String? {
-        guard let rx = rxWeight else { return nil }
-        // Parse weight value and convert to user's preferred units
-        let numbers = rx.filter { "0123456789.".contains($0) }
-        if let weight = Double(numbers) {
-            return UnitsFormatter.formatWeight(kg: weight, system: unitSettings.unitSystem)
-        }
-        return rx // Fallback to original string
+        viewModel.displayRxWeight(for: movement, userGender: userGender)
     }
     
     private var displayScaledWeight: String? {
-        guard let scaled = scaledWeight else { return nil }
-        // Parse weight value and convert to user's preferred units
-        let numbers = scaled.filter { "0123456789.".contains($0) }
-        if let weight = Double(numbers) {
-            return UnitsFormatter.formatWeight(kg: weight, system: unitSettings.unitSystem)
-        }
-        return scaled // Fallback to original string
+        viewModel.displayScaledWeight(for: movement, userGender: userGender)
     }
     
     var body: some View {
@@ -375,9 +364,7 @@ private struct MovementCard: View {
                             .background(theme.colors.backgroundSecondary)
                             .cornerRadius(theme.radius.s)
                             .onChange(of: weightText) { oldValue, newValue in
-                                guard let inputWeight = Double(newValue) else { return }
-                                // Always store in kg internally
-                                selectedWeight = unitSettings.unitSystem == .metric ? inputWeight : UnitsConverter.lbsToKg(inputWeight)
+                                selectedWeight = viewModel.handleWeightInput(newValue)
                             }
                         
                         Text(unitSettings.unitSystem == .metric ? "kg" : "lb")
@@ -398,12 +385,10 @@ private struct MovementCard: View {
         .background(theme.colors.backgroundSecondary)
         .cornerRadius(theme.radius.m)
         .onAppear {
-            if let weight = selectedWeight {
-                // Display in user's preferred units
-                let displayWeight = unitSettings.unitSystem == .metric ? weight : UnitsConverter.kgToLbs(weight)
-                weightText = String(format: "%.0f", displayWeight)
-            } else if let rx = rxWeight {
-                // Parse weight from RX string (e.g., "43kg" -> 43)
+            weightText = viewModel.getWeightInputText(for: selectedWeight)
+
+            // If no weight selected, try to parse from RX weight
+            if selectedWeight == nil, let rx = movement.rxWeight(for: userGender) {
                 let numbers = rx.filter { "0123456789.".contains($0) }
                 if let parsed = Double(numbers) {
                     selectedWeight = parsed // Always store in kg

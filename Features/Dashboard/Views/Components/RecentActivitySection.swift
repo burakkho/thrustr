@@ -520,7 +520,7 @@ extension Notification.Name {
     let config = ModelConfiguration(isStoredInMemoryOnly: true)
     let container = try! ModelContainer(for: ActivityEntry.self, configurations: config)
     let context = container.mainContext
-    
+
     // Create sample activities
     let sampleUser = User()
     let activities = [
@@ -528,12 +528,13 @@ extension Notification.Name {
         sampleNutritionActivity(user: sampleUser),
         sampleMeasurementActivity(user: sampleUser)
     ]
-    
-    activities.forEach { context.insert($0) }
-    
+
+    // Insert activities and setup viewModel
+    _ = activities.map { context.insert($0) }
+
     let viewModel = DashboardViewModel(healthKitService: HealthKitService())
-    viewModel.currentUser = sampleUser
-    
+    _ = { viewModel.currentUser = sampleUser }()
+
     return RecentActivitySection(viewModel: viewModel)
         .modelContainer(container)
         .environment(TabRouter())
