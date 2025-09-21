@@ -1,50 +1,21 @@
 import SwiftUI
 
 struct HealthIntelligenceView: View {
-    @State private var healthKitService = HealthKitService.shared
+    @State private var viewModel = HealthIntelligenceViewModel()
     @Environment(\.theme) private var theme
-    @State private var unitSettings = UnitSettings.shared
-    @State private var isLoading = true
-    @State private var healthReport: HealthReport?
-    @State private var selectedTab: IntelligenceTab = .overview
-    @State private var showingDetailedInsights = false
-    @State private var selectedInsight: HealthInsight?
-    @State private var animateCards = false
-    
-    enum IntelligenceTab: CaseIterable {
-        case overview, recovery, fitness, trends
-        
-        var title: String {
-            switch self {
-            case .overview: return "health.intelligence.tab.overview".localized
-            case .recovery: return "health.intelligence.tab.recovery".localized
-            case .fitness: return "health.intelligence.tab.fitness".localized
-            case .trends: return "health.intelligence.tab.trends".localized
-            }
-        }
-        
-        var icon: String {
-            switch self {
-            case .overview: return "brain.head.profile"
-            case .recovery: return "heart.fill"
-            case .fitness: return "figure.strengthtraining.traditional"
-            case .trends: return "chart.line.uptrend.xyaxis"
-            }
-        }
-    }
     
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
                 // Custom Tab Bar
-                IntelligenceTabBar(selectedTab: $selectedTab)
-                
+                IntelligenceTabBar(selectedTab: $viewModel.selectedTab)
+
                 ScrollView {
                     LazyVStack(spacing: 20) {
-                        if isLoading {
+                        if viewModel.isLoading {
                             EnhancedHealthLoadingView()
-                        } else if let report = healthReport {
-                            switch selectedTab {
+                        } else if let report = viewModel.healthReport {
+                            switch viewModel.selectedTab {
                             case .overview:
                                 overviewSection(report: report)
                             case .recovery:
@@ -60,24 +31,22 @@ struct HealthIntelligenceView: View {
                     }
                     .padding(.horizontal, 20)
                     .padding(.top, 10)
-                    .animation(.easeInOut(duration: 0.3), value: selectedTab)
+                    .animation(.easeInOut(duration: 0.3), value: viewModel.selectedTab)
                 }
             }
             .navigationTitle("health.intelligence.title".localized)
             .navigationBarTitleDisplayMode(.large)
             .refreshable {
-                await loadHealthIntelligence()
+                await viewModel.loadHealthIntelligence()
             }
-            .sheet(item: $selectedInsight) { insight in
+            .sheet(item: $viewModel.selectedInsight) { insight in
                 InsightDetailView(insight: insight)
             }
         }
         .onAppear {
             Task {
-                await loadHealthIntelligence()
-                withAnimation(.easeInOut(duration: 0.6)) {
-                    animateCards = true
-                }
+                await viewModel.loadHealthIntelligence()
+                viewModel.startCardAnimations()
             }
         }
     }
@@ -88,30 +57,30 @@ struct HealthIntelligenceView: View {
     private func overviewSection(report: HealthReport) -> some View {
         // AI Summary Card
         AISummaryCard(report: report)
-            .scaleEffect(animateCards ? 1.0 : 0.95)
-            .opacity(animateCards ? 1.0 : 0.6)
-            .animation(.easeInOut(duration: 0.4).delay(0.1), value: animateCards)
-        
+            .scaleEffect(viewModel.animateCards ? 1.0 : 0.95)
+            .opacity(viewModel.animateCards ? 1.0 : 0.6)
+            .animation(.easeInOut(duration: 0.4).delay(0.1), value: viewModel.animateCards)
+
         // Key Metrics Row
         KeyMetricsRow(report: report)
-            .scaleEffect(animateCards ? 1.0 : 0.95)
-            .opacity(animateCards ? 1.0 : 0.6)
-            .animation(.easeInOut(duration: 0.4).delay(0.2), value: animateCards)
+            .scaleEffect(viewModel.animateCards ? 1.0 : 0.95)
+            .opacity(viewModel.animateCards ? 1.0 : 0.6)
+            .animation(.easeInOut(duration: 0.4).delay(0.2), value: viewModel.animateCards)
         
         // Priority Insights
         PriorityInsightsSection(
-            insights: Array(report.insights.prefix(3)), 
-            onInsightTapped: { selectedInsight = $0 }
+            insights: Array(report.insights.prefix(3)),
+            onInsightTapped: { viewModel.selectInsight($0) }
         )
-        .scaleEffect(animateCards ? 1.0 : 0.95)
-        .opacity(animateCards ? 1.0 : 0.6)
-        .animation(.easeInOut(duration: 0.4).delay(0.3), value: animateCards)
-        
+        .scaleEffect(viewModel.animateCards ? 1.0 : 0.95)
+        .opacity(viewModel.animateCards ? 1.0 : 0.6)
+        .animation(.easeInOut(duration: 0.4).delay(0.3), value: viewModel.animateCards)
+
         // Quick Actions
         QuickActionsRow(report: report)
-            .scaleEffect(animateCards ? 1.0 : 0.95)
-            .opacity(animateCards ? 1.0 : 0.6)
-            .animation(.easeInOut(duration: 0.4).delay(0.4), value: animateCards)
+            .scaleEffect(viewModel.animateCards ? 1.0 : 0.95)
+            .opacity(viewModel.animateCards ? 1.0 : 0.6)
+            .animation(.easeInOut(duration: 0.4).delay(0.4), value: viewModel.animateCards)
     }
     
     @ViewBuilder
@@ -128,7 +97,7 @@ struct HealthIntelligenceView: View {
             InsightsSectionView(
                 title: "health.intelligence.recovery_insights".localized,
                 insights: recoveryInsights,
-                onInsightTapped: { selectedInsight = $0 }
+                onInsightTapped: { viewModel.selectInsight($0) }
             )
         }
     }
@@ -139,8 +108,8 @@ struct HealthIntelligenceView: View {
         EnhancedFitnessAssessmentCard(assessment: report.fitnessAssessment)
         
         // VO2 Max Visualization (if available)
-        if healthKitService.vo2Max != nil {
-            VO2MaxVisualizationCard(vo2Max: healthKitService.vo2Max!)
+        if let vo2Max = viewModel.vo2Max {
+            VO2MaxVisualizationCard(vo2Max: vo2Max)
         }
         
         // Workout insights
@@ -149,7 +118,7 @@ struct HealthIntelligenceView: View {
             InsightsSectionView(
                 title: "health.intelligence.training_insights".localized,
                 insights: workoutInsights,
-                onInsightTapped: { selectedInsight = $0 }
+                onInsightTapped: { viewModel.selectInsight($0) }
             )
         }
     }
@@ -157,16 +126,16 @@ struct HealthIntelligenceView: View {
     @ViewBuilder
     private func trendsSection(report: HealthReport) -> some View {
         // Steps Trend Chart
-        StepsTrendChart(stepsHistory: healthKitService.stepsHistory, todaySteps: healthKitService.todaySteps)
-        
+        StepsTrendChart(stepsHistory: viewModel.stepsHistory, todaySteps: viewModel.todaySteps)
+
         // Weight Trend Chart (if available)
-        if !healthKitService.weightHistory.isEmpty {
-            WeightTrendChart(weightHistory: healthKitService.weightHistory, currentWeight: healthKitService.currentWeight)
+        if !viewModel.weightHistory.isEmpty {
+            WeightTrendChart(weightHistory: viewModel.weightHistory, currentWeight: viewModel.currentWeight)
         }
-        
+
         // Heart Rate Trend (if available)
-        if !healthKitService.heartRateHistory.isEmpty {
-            HeartRateTrendChart(heartRateHistory: healthKitService.heartRateHistory)
+        if !viewModel.heartRateHistory.isEmpty {
+            HeartRateTrendChart(heartRateHistory: viewModel.heartRateHistory)
         }
         
         // Trend insights
@@ -175,18 +144,8 @@ struct HealthIntelligenceView: View {
             InsightsSectionView(
                 title: "health.intelligence.trend_analysis".localized,
                 insights: trendInsights,
-                onInsightTapped: { selectedInsight = $0 }
+                onInsightTapped: { viewModel.selectInsight($0) }
             )
-        }
-    }
-    
-    private func loadHealthIntelligence() async {
-        isLoading = true
-        defer { isLoading = false }
-        
-        let report = await healthKitService.generateComprehensiveHealthReport()
-        await MainActor.run {
-            healthReport = report
         }
     }
 }

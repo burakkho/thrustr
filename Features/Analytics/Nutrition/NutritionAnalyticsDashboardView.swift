@@ -2,111 +2,42 @@ import SwiftUI
 import SwiftData
 
 struct NutritionAnalyticsDashboardView: View {
+    @State private var viewModel = NutritionAnalyticsViewModel()
     @Environment(\.theme) private var theme
     @Environment(UnitSettings.self) var unitSettings
-    
-    // Calculate 30 days ago date for filter
-    private var thirtyDaysAgo: Date {
-        Calendar.current.date(byAdding: .day, value: -30, to: Date()) ?? Date()
-    }
-    
-    // SwiftData query for last 30 days of nutrition entries
+
+    // SwiftData query for nutrition entries
     @Query(
         sort: \NutritionEntry.date,
         order: .reverse
     ) private var allNutritionEntries: [NutritionEntry]
     
-    // Filter entries within the last 30 days
-    private var nutritionEntries: [NutritionEntry] {
-        allNutritionEntries.filter { entry in
-            entry.date >= thirtyDaysAgo
-        }
-    }
-    
-    private var weeklyData: [DayData] {
-        let calendar = Calendar.current
-        let today = Date()
-        let weekAgo = calendar.date(byAdding: .day, value: -6, to: today) ?? today
-        
-        var dailyTotals: [Date: (calories: Double, protein: Double, carbs: Double, fat: Double)] = [:]
-        
-        // Process last 7 days
-        for entry in nutritionEntries {
-            let dayStart = calendar.startOfDay(for: entry.date)
-            
-            if dayStart >= calendar.startOfDay(for: weekAgo) && dayStart <= calendar.startOfDay(for: today) {
-                if let existing = dailyTotals[dayStart] {
-                    dailyTotals[dayStart] = (
-                        calories: existing.calories + entry.calories,
-                        protein: existing.protein + entry.protein,
-                        carbs: existing.carbs + entry.carbs,
-                        fat: existing.fat + entry.fat
-                    )
-                } else {
-                    dailyTotals[dayStart] = (
-                        calories: entry.calories,
-                        protein: entry.protein,
-                        carbs: entry.carbs,
-                        fat: entry.fat
-                    )
-                }
-            }
-        }
-        
-        // Create 7-day data array
-        var weekData: [DayData] = []
-        for i in 0..<7 {
-            let date = calendar.date(byAdding: .day, value: -6 + i, to: today) ?? today
-            let dayStart = calendar.startOfDay(for: date)
-            let dayName = calendar.component(.weekday, from: date)
-            
-            let dayNames = ["",
-                            NutritionKeys.Days.sunday.localized,
-                            NutritionKeys.Days.monday.localized,
-                            NutritionKeys.Days.tuesday.localized,
-                            NutritionKeys.Days.wednesday.localized,
-                            NutritionKeys.Days.thursday.localized,
-                            NutritionKeys.Days.friday.localized,
-                            NutritionKeys.Days.saturday.localized]
-            
-            if let data = dailyTotals[dayStart] {
-                weekData.append(DayData(
-                    date: date,
-                    dayName: dayNames[dayName],
-                    calories: data.calories,
-                    protein: data.protein,
-                    carbs: data.carbs,
-                    fat: data.fat
-                ))
-            } else {
-                weekData.append(DayData(
-                    date: date,
-                    dayName: dayNames[dayName],
-                    calories: 0,
-                    protein: 0,
-                    carbs: 0,
-                    fat: 0
-                ))
-            }
-        }
-        
-        return weekData
-    }
-    
     var body: some View {
         LazyVStack(spacing: 32) {
             // 🍎 NUTRITION STORY HERO - Your dietary journey overview
-            NutritionStoryHeroCard(nutritionEntries: nutritionEntries)
-            
+            NutritionStoryHeroCard(nutritionEntries: filteredNutritionEntries)
+
             // 🔥 VISUAL MACRO TIMELINE - Interactive daily breakdown
-            EnhancedMacroTimelineSection(weeklyData: weeklyData)
-            
+            EnhancedMacroTimelineSection(weeklyData: viewModel.weeklyData)
+
             // 🎯 NUTRITION GOALS TRACKING - Progress towards targets
-            EnhancedNutritionGoalsSection(nutritionEntries: nutritionEntries)
-            
+            EnhancedNutritionGoalsSection(nutritionEntries: filteredNutritionEntries)
+
             // 📈 NUTRITION INSIGHTS GRID - Smart dietary analysis
-            EnhancedNutritionInsightsSection(weeklyData: weeklyData, nutritionEntries: nutritionEntries)
+            EnhancedNutritionInsightsSection(weeklyData: viewModel.weeklyData, nutritionEntries: filteredNutritionEntries)
         }
+        .onAppear {
+            viewModel.updateData(allNutritionEntries)
+        }
+        .onChange(of: allNutritionEntries) { _, newEntries in
+            viewModel.updateData(newEntries)
+        }
+    }
+
+    // MARK: - Helper Properties
+
+    private var filteredNutritionEntries: [NutritionEntry] {
+        viewModel.filteredEntries
     }
     
 // 🍎 NUTRITION STORY HERO CARD
