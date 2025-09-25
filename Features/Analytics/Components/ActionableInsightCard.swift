@@ -65,7 +65,7 @@ struct AnalyticsActionableInsightCard: View {
         HStack(spacing: 4) {
             Image(systemName: "arrow.up.right.circle.fill")
                 .font(.caption)
-            Text("Tap to explore")
+            Text(CommonKeys.Analytics.tapToExplore.localized)
                 .font(.caption2)
         }
         .foregroundColor(priorityColor.opacity(0.8))

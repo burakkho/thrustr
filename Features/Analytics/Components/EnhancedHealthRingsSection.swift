@@ -13,7 +13,7 @@ struct AnalyticsEnhancedHealthRingsSection: View {
         VStack(spacing: 20) {
             // Section Header
             HStack {
-                Text("Health Activity Rings")
+                Text(CommonKeys.Analytics.healthActivityRings.localized)
                     .font(.headline)
                     .fontWeight(.semibold)
                     .foregroundColor(theme.colors.textPrimary)
@@ -21,7 +21,7 @@ struct AnalyticsEnhancedHealthRingsSection: View {
                 Spacer()
 
                 NavigationLink(destination: Text("Health Detail")) {
-                    Text("View Details")
+                    Text(CommonKeys.Analytics.viewDetails.localized)
                         .font(.caption)
                         .foregroundColor(theme.colors.accent)
                 }

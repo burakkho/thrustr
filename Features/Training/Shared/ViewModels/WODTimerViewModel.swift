@@ -134,10 +134,9 @@ class WODTimerViewModel {
                 ActivityLoggerService.shared.logWODCompleted(
                     wodName: wod.name,
                     wodType: wod.wodType.rawValue,
-                    totalTime: result.totalTime,
-                    rounds: result.rounds,
-                    extraReps: result.extraReps,
-                    isRX: result.isRX,
+                    totalTime: TimeInterval(result.totalTime ?? 0),
+                    rounds: result.rounds ?? 0,
+                    extraReps: result.extraReps ?? 0,
                     isPR: isPR,
                     user: currentUser
                 )

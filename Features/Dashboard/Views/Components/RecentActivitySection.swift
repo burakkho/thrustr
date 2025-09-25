@@ -380,7 +380,7 @@ private struct AllActivitiesView: View {
         
         Task { @MainActor in
             // Fetch more activities for the full view
-            activities = activityLogger.fetchRecentActivities(limit: 100, for: user)
+            activities = await activityLogger.fetchRecentActivities(limit: 100, for: user)
             filterActivities()
             isLoading = false
         }

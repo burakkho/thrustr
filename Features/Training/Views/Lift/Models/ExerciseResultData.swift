@@ -42,6 +42,10 @@ struct ExerciseResultData: Identifiable, Sendable {
         guard targetSets > 0 else { return 0 }
         return Double(completedSets) / Double(targetSets)
     }
+
+    var progressPercentage: Double {
+        return completionPercentage
+    }
     
     // MARK: - Initialization
     init(from exerciseResult: LiftExerciseResult) {
@@ -55,6 +59,20 @@ struct ExerciseResultData: Identifiable, Sendable {
         self.notes = exerciseResult.notes
         self.isPersonalRecord = exerciseResult.isPersonalRecord
         self.isCompleted = exerciseResult.completedSets >= (exerciseResult.exercise?.targetSets ?? 0)
+    }
+
+    // Manual init for testing/preview purposes
+    init(id: UUID, exerciseId: String, exerciseName: String, targetSets: Int, targetReps: Int, targetWeight: Double?, sets: [SetData], notes: String?, isPersonalRecord: Bool, isCompleted: Bool) {
+        self.id = id
+        self.exerciseId = exerciseId
+        self.exerciseName = exerciseName
+        self.targetSets = targetSets
+        self.targetReps = targetReps
+        self.targetWeight = targetWeight
+        self.sets = sets
+        self.notes = notes
+        self.isPersonalRecord = isPersonalRecord
+        self.isCompleted = isCompleted
     }
 }
 

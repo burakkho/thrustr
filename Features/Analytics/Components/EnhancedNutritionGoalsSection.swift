@@ -10,15 +10,15 @@ struct EnhancedNutritionGoalsSection: View {
         VStack(spacing: 20) {
             // Section Header
             HStack {
-                Text("Nutrition Goals")
+                Text(CommonKeys.Analytics.nutritionGoals.localized)
                     .font(.headline)
                     .fontWeight(.semibold)
                     .foregroundColor(theme.colors.textPrimary)
 
                 Spacer()
 
-                NavigationLink(destination: Text("Goal Settings")) {
-                    Text("Edit Goals")
+                NavigationLink(destination: Text(CommonKeys.Analytics.goalSettings.localized)) {
+                    Text(CommonKeys.Analytics.editGoals.localized)
                         .font(.caption)
                         .foregroundColor(theme.colors.accent)
                 }

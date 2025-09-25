@@ -141,6 +141,9 @@ final class ActivityMetadata {
     var reps: Int?
     var distance: Double?
     var calories: Double?
+    var rounds: Int?
+    var extraReps: Int?
+    var isPersonalRecord: Bool?
     
     // Nutrition metadata
     var protein: Double?

@@ -127,13 +127,20 @@ struct CardioSessionSummaryService: Sendable {
             try modelContext.save()
 
             // Log activity for dashboard
-            ActivityLoggerService.shared.logCardioCompleted(
-                activityType: session.workoutName,
-                distance: session.totalDistance,
-                duration: TimeInterval(session.totalDuration),
-                calories: Double(session.totalCaloriesBurned ?? 0),
-                user: user
-            )
+            let workoutName = session.workoutName
+            let totalDistance = session.totalDistance
+            let totalDuration = TimeInterval(session.totalDuration)
+            let totalCalories = Double(session.totalCaloriesBurned ?? 0)
+
+            await MainActor.run { [user] in
+                ActivityLoggerService.shared.logCardioCompleted(
+                    activityType: workoutName,
+                    distance: totalDistance,
+                    duration: totalDuration,
+                    calories: totalCalories,
+                    user: user
+                )
+            }
 
             // Save to HealthKit
             let success = await healthKitService.saveCardioWorkout(

@@ -12,7 +12,7 @@ struct AnalyticsStrengthProgressionSection: View {
         VStack(spacing: theme.spacing.m) {
             // Section header
             HStack {
-                Text("Strength Progression")
+                Text(CommonKeys.Analytics.strengthProgression.localized)
                     .font(theme.typography.headline)
                     .fontWeight(.semibold)
                 Spacer()
@@ -26,9 +26,9 @@ struct AnalyticsStrengthProgressionSection: View {
             if viewModel?.exerciseMaxes.isEmpty ?? true {
                 EmptyStateView(
                     systemImage: "dumbbell.fill",
-                    title: "No Strength Data",
-                    message: "Start tracking your strength workouts to see progress",
-                    primaryTitle: "Start Training",
+                    title: CommonKeys.Analytics.noStrengthData.localized,
+                    message: CommonKeys.Analytics.noStrengthMessage.localized,
+                    primaryTitle: CommonKeys.Analytics.startTraining.localized,
                     primaryAction: {
                         // Navigate to training section
                         print("Navigate to strength training")
@@ -50,7 +50,7 @@ struct AnalyticsStrengthProgressionSection: View {
                             monthlyValue: viewModel?.calculateMonthlyProgress(for: exerciseData.name, liftResults: liftResults, unitSettings: unitSettings) ?? "--",
                             dailySubtitle: "Current Max",
                             weeklySubtitle: "Recent Change",
-                            monthlySubtitle: "Monthly Progress",
+                            monthlySubtitle: CommonKeys.Analytics.thisMonth.localized,
                             progress: viewModel?.calculateProgressPercentage(exerciseData.improvement),
                             color: viewModel?.getTrendColor(exerciseData.trend) ?? .blue,
                             onNavigate: {
@@ -91,7 +91,7 @@ struct AnalyticsEnhancedStrengthProgressionSection: View {
 
             // Additional insights using existing AnalyticsStatItem components
             VStack(alignment: .leading, spacing: theme.spacing.m) {
-                Text("Strength Insights")
+                Text(CommonKeys.Analytics.strengthInsights.localized)
                     .font(theme.typography.subheadline)
                     .fontWeight(.medium)
 
@@ -100,16 +100,16 @@ struct AnalyticsEnhancedStrengthProgressionSection: View {
                     GridItem(.flexible(), spacing: 12)
                 ], spacing: 12) {
                     AnalyticsStatItem(
-                        title: "Strongest Lift",
+                        title: CommonKeys.Analytics.strongestLift.localized,
                         value: viewModel?.strongestLiftValue ?? "--",
                         subtitle: viewModel?.strongestLiftName ?? "--",
                         color: .purple
                     )
 
                     AnalyticsStatItem(
-                        title: "Total Volume",
+                        title: CommonKeys.Analytics.totalVolume.localized,
                         value: viewModel?.totalVolumeValue ?? "--",
-                        subtitle: "This Month",
+                        subtitle: CommonKeys.Analytics.thisMonth.localized,
                         color: .orange
                     )
                 }

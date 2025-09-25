@@ -41,7 +41,7 @@ struct AnalyticsFitnessAssessmentCard: View {
 
             HStack(spacing: 16) {
                 VStack(alignment: .leading, spacing: 8) {
-                    Text(LocalizationKeys.Common.HealthKit.overallLevelTitle.localized)
+                    Text(LocalizationKeys.Health.fitness_level.localized)
                         .font(theme.typography.subheadline)
                         .fontWeight(.medium)
                         .foregroundColor(theme.colors.textPrimary)
@@ -70,7 +70,7 @@ struct AnalyticsFitnessAssessmentCard: View {
                             .foregroundColor(assessment.progressTrend.swiftUIColor)
                     }
 
-                    Text("\(LocalizationKeys.Common.HealthKit.consistencyTitle.localized): \(Int(assessment.consistencyScore))%")
+                    Text("\(LocalizationKeys.Training.Analytics.progress.localized): \(Int(assessment.consistencyScore))%")
                         .font(theme.typography.caption)
                         .foregroundColor(theme.colors.textSecondary)
                 }
@@ -79,13 +79,13 @@ struct AnalyticsFitnessAssessmentCard: View {
             // Detailed breakdown
             VStack(spacing: 12) {
                 AnalyticsFitnessLevelRow(
-                    title: LocalizationKeys.Common.HealthKit.cardioTitle.localized,
+                    title: CommonKeys.HealthKit.cardioTitle.localized,
                     level: assessment.cardioLevel,
                     icon: "heart.fill"
                 )
 
                 AnalyticsFitnessLevelRow(
-                    title: LocalizationKeys.Common.HealthKit.strengthTitle.localized,
+                    title: "Strength",
                     level: assessment.strengthLevel,
                     icon: "dumbbell.fill"
                 )

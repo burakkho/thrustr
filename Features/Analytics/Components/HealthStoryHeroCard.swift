@@ -13,7 +13,7 @@ struct AnalyticsHealthStoryHeroCard: View {
             // Hero Header
             HStack {
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("Your Health Journey")
+                    Text(CommonKeys.Analytics.healthJourney.localized)
                         .font(.title2)
                         .fontWeight(.bold)
                         .foregroundColor(theme.colors.textPrimary)

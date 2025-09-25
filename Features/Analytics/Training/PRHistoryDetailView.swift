@@ -42,34 +42,41 @@ struct PRHistoryDetailView: View {
     @Environment(\.theme) private var theme
     @Environment(\.modelContext) private var modelContext
     @Environment(UnitSettings.self) var unitSettings
-    @Query private var users: [User]
-    
     @State private var selectedCategory: AnalyticsService.PRCategory = .strength
-    @State private var selectedTimeRange: TimeFilter = .all
+    @State private var selectedTimeRange = TimeFilter.all
     @State private var searchText = ""
     @State private var analyticsService: AnalyticsService?
-    
+
     private var currentUser: User? {
-        users.first
+        do {
+            let userDescriptor = FetchDescriptor<User>()
+            let users = try modelContext.fetch(userDescriptor)
+            return users.first
+        } catch {
+            return nil
+        }
     }
-    
+
     enum TimeFilter: String, CaseIterable {
-        case thisWeek = "this_week"
-        case thisMonth = "this_month"
-        case last3Months = "last_3_months"
-        case thisYear = "this_year"
-        case all = "all_time"
-        
+        case week = "week"
+        case month = "month"
+        case threeMonths = "threeMonths"
+        case sixMonths = "sixMonths"
+        case year = "year"
+        case all = "all"
+
         var displayName: String {
             switch self {
-            case .thisWeek: return "analytics.this_week".localized
-            case .thisMonth: return "analytics.this_month".localized
-            case .last3Months: return "analytics.last_3_months".localized
-            case .thisYear: return "analytics.this_year".localized
-            case .all: return "analytics.all_time".localized
+            case .week: return CommonKeys.Analytics.week.localized
+            case .month: return CommonKeys.Analytics.month.localized
+            case .threeMonths: return CommonKeys.Analytics.threeMonths.localized
+            case .sixMonths: return CommonKeys.Analytics.sixMonths.localized
+            case .year: return CommonKeys.Analytics.year.localized
+            case .all: return CommonKeys.Analytics.allTime.localized
             }
         }
     }
+    
     
     private func setupAnalyticsService() {
         if analyticsService == nil {
@@ -223,16 +230,19 @@ struct PRHistoryDetailView: View {
         let now = Date()
         
         switch selectedTimeRange {
-        case .thisWeek:
+        case .week:
             let startOfWeek = calendar.dateInterval(of: .weekOfYear, for: now)?.start ?? now
             filtered = filtered.filter { $0.date >= startOfWeek }
-        case .thisMonth:
+        case .month:
             let startOfMonth = calendar.dateInterval(of: .month, for: now)?.start ?? now
             filtered = filtered.filter { $0.date >= startOfMonth }
-        case .last3Months:
+        case .threeMonths:
             let threeMonthsAgo = calendar.date(byAdding: .month, value: -3, to: now) ?? now
             filtered = filtered.filter { $0.date >= threeMonthsAgo }
-        case .thisYear:
+        case .sixMonths:
+            let sixMonthsAgo = calendar.date(byAdding: .month, value: -6, to: now) ?? now
+            filtered = filtered.filter { $0.date >= sixMonthsAgo }
+        case .year:
             let startOfYear = calendar.dateInterval(of: .year, for: now)?.start ?? now
             filtered = filtered.filter { $0.date >= startOfYear }
         case .all:

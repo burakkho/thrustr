@@ -5,12 +5,7 @@ struct NutritionAnalyticsDashboardView: View {
     @State private var viewModel = NutritionAnalyticsViewModel()
     @Environment(\.theme) private var theme
     @Environment(UnitSettings.self) var unitSettings
-
-    // SwiftData query for nutrition entries
-    @Query(
-        sort: \NutritionEntry.date,
-        order: .reverse
-    ) private var allNutritionEntries: [NutritionEntry]
+    @Environment(\.modelContext) private var modelContext
     
     var body: some View {
         LazyVStack(spacing: 32) {
@@ -27,10 +22,8 @@ struct NutritionAnalyticsDashboardView: View {
             EnhancedNutritionInsightsSection(weeklyData: viewModel.weeklyData, nutritionEntries: filteredNutritionEntries)
         }
         .onAppear {
-            viewModel.updateData(allNutritionEntries)
-        }
-        .onChange(of: allNutritionEntries) { _, newEntries in
-            viewModel.updateData(newEntries)
+            // Set ModelContext and load data when view appears
+            viewModel.setModelContext(modelContext)
         }
     }
 
@@ -52,7 +45,7 @@ struct NutritionStoryHeroCard: View {
             // Hero Header
             HStack {
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("Your Nutrition Journey")
+                    Text(CommonKeys.Analytics.nutritionJourney.localized)
                         .font(.title2)
                         .fontWeight(.bold)
                         .foregroundColor(theme.colors.textPrimary)
@@ -95,7 +88,7 @@ struct NutritionStoryHeroCard: View {
             ], spacing: 16) {
                 NutritionStoryMetric(
                     icon: "flame.fill",
-                    title: "Avg Calories",
+                    title: CommonKeys.Analytics.avgCalories.localized,
                     value: "\(calculateAvgCalories())kcal",
                     color: .orange,
                     celebrationType: calculateCaloriesCelebration()
@@ -103,7 +96,7 @@ struct NutritionStoryHeroCard: View {
                 
                 NutritionStoryMetric(
                     icon: "chart.bar.fill",
-                    title: "Logged Days",
+                    title: CommonKeys.Analytics.loggedDays.localized,
                     value: "\(calculateLoggedDays())/7",
                     color: .blue,
                     celebrationType: calculateLoggedDays() >= 6 ? .celebration : .none
@@ -111,7 +104,7 @@ struct NutritionStoryHeroCard: View {
                 
                 NutritionStoryMetric(
                     icon: "target",
-                    title: "Consistency",
+                    title: CommonKeys.Analytics.consistency.localized,
                     value: "\(calculateConsistency())%",
                     color: .green,
                     celebrationType: calculateConsistency() >= 80 ? .fire : .none
@@ -195,15 +188,15 @@ struct EnhancedMacroTimelineSection: View {
         VStack(spacing: 20) {
             // Section Header
             HStack {
-                Text("Macro Timeline")
+                Text(CommonKeys.Analytics.macroTimeline.localized)
                     .font(.headline)
                     .fontWeight(.semibold)
                     .foregroundColor(theme.colors.textPrimary)
                 
                 Spacer()
                 
-                NavigationLink(destination: Text("Detailed Charts")) {
-                    Text("View Details")
+                NavigationLink(destination: Text(CommonKeys.Analytics.detailedCharts.localized)) {
+                    Text(CommonKeys.Analytics.viewDetails.localized)
                         .font(.caption)
                         .foregroundColor(theme.colors.accent)
                 }
@@ -267,15 +260,15 @@ struct EnhancedNutritionGoalsSection: View {
         VStack(spacing: 20) {
             // Section Header
             HStack {
-                Text("Nutrition Goals")
+                Text(CommonKeys.Analytics.nutritionGoals.localized)
                     .font(.headline)
                     .fontWeight(.semibold)
                     .foregroundColor(theme.colors.textPrimary)
                 
                 Spacer()
                 
-                NavigationLink(destination: Text("Goal Settings")) {
-                    Text("Edit Goals")
+                NavigationLink(destination: Text(CommonKeys.Analytics.goalSettings.localized)) {
+                    Text(CommonKeys.Analytics.editGoals.localized)
                         .font(.caption)
                         .foregroundColor(theme.colors.accent)
                 }
@@ -286,7 +279,7 @@ struct EnhancedNutritionGoalsSection: View {
             VStack(spacing: 12) {
                 NutritionGoalCard(
                     icon: "flame.fill",
-                    title: "Daily Calories",
+                    title: CommonKeys.Analytics.dailyCalories.localized,
                     current: calculateAvgCalories(),
                     target: 2000,
                     unit: "kcal",
@@ -295,7 +288,7 @@ struct EnhancedNutritionGoalsSection: View {
                 
                 NutritionGoalCard(
                     icon: "figure.strengthtraining.traditional",
-                    title: "Protein Intake",
+                    title: CommonKeys.Analytics.proteinIntake.localized,
                     current: Int(calculateAvgProtein()),
                     target: 150,
                     unit: "g",
@@ -304,7 +297,7 @@ struct EnhancedNutritionGoalsSection: View {
                 
                 NutritionGoalCard(
                     icon: "chart.bar.fill",
-                    title: "Logging Streak",
+                    title: CommonKeys.Analytics.loggingStreak.localized,
                     current: calculateCurrentStreak(),
                     target: 7,
                     unit: "days",
@@ -389,7 +382,7 @@ struct EnhancedNutritionInsightsSection: View {
         VStack(spacing: 20) {
             // Section Header
             HStack {
-                Text("Nutrition Intelligence")
+                Text(CommonKeys.Analytics.nutritionIntelligence.localized)
                     .font(.headline)
                     .fontWeight(.semibold)
                     .foregroundColor(theme.colors.textPrimary)
@@ -405,33 +398,33 @@ struct EnhancedNutritionInsightsSection: View {
             ], spacing: 16) {
                 NutritionInsightCard(
                     icon: "chart.line.uptrend.xyaxis",
-                    title: "Eating Pattern",
+                    title: CommonKeys.Analytics.eatingPattern.localized,
                     insight: generateEatingPatternInsight(),
-                    confidence: "High",
+                    confidence: CommonKeys.Analytics.highConfidence.localized,
                     color: .blue
                 )
                 
                 NutritionInsightCard(
                     icon: "leaf.fill",
-                    title: "Macro Balance",
+                    title: CommonKeys.Analytics.macroBalance.localized,
                     insight: generateMacroBalanceInsight(),
-                    confidence: "Medium",
+                    confidence: CommonKeys.Analytics.mediumConfidence.localized,
                     color: .green
                 )
                 
                 NutritionInsightCard(
                     icon: "target",
-                    title: "Goal Progress",
+                    title: CommonKeys.Analytics.goalProgress.localized,
                     insight: generateGoalProgressInsight(),
-                    confidence: "High",
+                    confidence: CommonKeys.Analytics.highConfidence.localized,
                     color: .purple
                 )
                 
                 NutritionInsightCard(
                     icon: "lightbulb.fill",
-                    title: "Recommendation",
+                    title: CommonKeys.Analytics.recommendation.localized,
                     insight: generateRecommendation(),
-                    confidence: "Medium",
+                    confidence: CommonKeys.Analytics.mediumConfidence.localized,
                     color: .orange
                 )
             }
@@ -632,10 +625,10 @@ struct MacroDetailCard: View {
                 .foregroundColor(theme.colors.textPrimary)
             
             HStack(spacing: 16) {
-                MacroDetail(label: "Calories", value: "\(Int(day.calories))", color: .orange)
-                MacroDetail(label: "Protein", value: "\(Int(day.protein))g", color: .red)
-                MacroDetail(label: "Carbs", value: "\(Int(day.carbs))g", color: .blue)
-                MacroDetail(label: "Fat", value: "\(Int(day.fat))g", color: .purple)
+                MacroDetail(label: CommonKeys.Analytics.calories.localized, value: "\(Int(day.calories))", color: .orange)
+                MacroDetail(label: CommonKeys.Analytics.protein.localized, value: "\(Int(day.protein))g", color: .red)
+                MacroDetail(label: CommonKeys.Analytics.carbs.localized, value: "\(Int(day.carbs))g", color: .blue)
+                MacroDetail(label: CommonKeys.Analytics.fat.localized, value: "\(Int(day.fat))g", color: .purple)
             }
         }
         .padding(16)

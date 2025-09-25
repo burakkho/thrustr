@@ -12,7 +12,7 @@ struct AnalyticsStepsTrendChart: View {
                     .font(theme.typography.headline)
                     .fontWeight(.semibold)
                 Spacer()
-                Text(LocalizationKeys.Analytics.this_week.localized)
+                Text(LocalizationKeys.analytics.Time.this_week.localized)
                     .font(theme.typography.caption)
                     .foregroundColor(theme.colors.textSecondary)
             }
@@ -44,6 +44,6 @@ struct AnalyticsStepsTrendChart: View {
         HealthDataPoint(date: Date(), value: 6500)
     ]
 
-    StepsTrendChart(stepsHistory: mockDataPoints, todaySteps: 9500)
+    AnalyticsStepsTrendChart(stepsHistory: mockDataPoints, todaySteps: 9500)
         .environment(\.theme, DefaultLightTheme())
 }

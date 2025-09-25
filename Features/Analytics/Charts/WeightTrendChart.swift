@@ -12,7 +12,7 @@ struct AnalyticsWeightTrendChart: View {
                     .font(theme.typography.headline)
                     .fontWeight(.semibold)
                 Spacer()
-                Text(LocalizationKeys.Analytics.this_month.localized)
+                Text(LocalizationKeys.analytics.Time.this_month.localized)
                     .font(theme.typography.caption)
                     .foregroundColor(theme.colors.textSecondary)
             }

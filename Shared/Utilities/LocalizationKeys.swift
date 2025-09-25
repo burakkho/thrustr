@@ -43,6 +43,29 @@ enum LocalizationKeys {
         static let active = TrainingKeys.active
         static let templates = TrainingKeys.templates
 
+        enum Analytics {
+            static let title = "training.analytics.title"
+            static let progress = "training.analytics.progress"
+            static let recent_prs = "training.analytics.recent_prs"
+            static let view_all_prs = "training.analytics.view_all_prs"
+            static let no_recent_prs = "training.analytics.no_recent_prs"
+            static let start_lifting = "training.analytics.start_lifting"
+            static let goals_motivation = "training.analytics.goals_motivation"
+            static let your_potential = "training.analytics.your_potential"
+            static let strength_goals = "training.analytics.strength_goals"
+            static let achievement_unlock = "training.analytics.achievement_unlock"
+            static let progress_tracking = "training.analytics.progress_tracking"
+            static let personal_records = "training.analytics.personal_records"
+            static let total_prs = "training.analytics.total_prs"
+            static let all_time = "training.analytics.all_time"
+            static let great_job = "training.analytics.great_job"
+            static let keep_going = "training.analytics.keep_going"
+            static let on_fire = "training.analytics.on_fire"
+            static let days_estimate = "training.analytics.days_estimate"
+            static let weeks_estimate = "training.analytics.weeks_estimate"
+            static let months_estimate = "training.analytics.months_estimate"
+        }
+
         enum Cardio {
             static let title = TrainingKeys.Cardio.title
             static let running = TrainingKeys.Cardio.running
@@ -61,6 +84,12 @@ enum LocalizationKeys {
             static let programs = TrainingKeys.Lift.programs
             static let routines = TrainingKeys.Lift.routines
             static let history = TrainingKeys.Lift.history
+        }
+
+        enum StrengthTraining {
+            static let title = "training.strength.title"
+            static let session_complete = "training.strength.session_complete"
+            static let workout_summary = "training.strength.workout_summary"
         }
     }
     
@@ -250,6 +279,96 @@ enum LocalizationKeys {
         static let trend_improving = "health.trend.improving"
         static let trend_stable = "health.trend.stable"
         static let trend_declining = "health.trend.declining"
+        static let steps = "health.steps"
+        static let heart_rate = "health.heart_rate"
+        static let weight = "health.weight"
+        static let fitness_level = "health.fitness_level"
+
+        enum Intelligence {
+            static let ai_summary = "health.intelligence.ai_summary"
+            static let ai_powered_insights = "health.intelligence.ai_powered_insights"
+            static let key_focus_areas = "health.intelligence.key_focus_areas"
+            static let insights_title = "health.intelligence.insights_title"
+            static let status_optimal = "health.intelligence.status_optimal"
+            static let status_good = "health.intelligence.status_good"
+            static let status_caution = "health.intelligence.status_caution"
+            static let status_focus = "health.intelligence.status_focus"
+            static let summary_excellent = "health.intelligence.summary_excellent"
+            static let summary_good = "health.intelligence.summary_good"
+            static let summary_caution = "health.intelligence.summary_caution"
+            static let summary_focus = "health.intelligence.summary_focus"
+            static let no_critical_areas = "health.intelligence.no_critical_areas"
+            static let primary_focus = "health.intelligence.primary_focus"
+            static let key_areas_two = "health.intelligence.key_areas_two"
+            static let focus_areas_multiple = "health.intelligence.focus_areas_multiple"
+            static let priority_insights = "health.intelligence.priority_insights"
+            static let metrics_recovery = "health.intelligence.metrics_recovery"
+            static let metrics_fitness = "health.intelligence.metrics_fitness"
+            static let metrics_insights = "health.intelligence.metrics_insights"
+            static let metrics_insights_unit = "health.intelligence.metrics_insights_unit"
+            static let quick_actions = "health.intelligence.quick_actions"
+            static let suggest_workout = "health.intelligence.suggest_workout"
+            static let nutrition_advice = "health.intelligence.nutrition_advice"
+            static let rest_recommendation = "health.intelligence.rest_recommendation"
+            static let loading_title = "health.intelligence.loading_title"
+            static let loading_subtitle = "health.intelligence.loading_subtitle"
+            static let loading_reading_data = "health.intelligence.loading_reading_data"
+            static let loading_recovery_analysis = "health.intelligence.loading_recovery_analysis"
+            static let loading_fitness_assessment = "health.intelligence.loading_fitness_assessment"
+            static let loading_generating_insights = "health.intelligence.loading_generating_insights"
+            static let all_clear_title = "health.intelligence.all_clear_title"
+            static let all_clear_message = "health.intelligence.all_clear_message"
+            static let this_means = "health.intelligence.this_means"
+            static let recovery_optimal = "health.intelligence.recovery_optimal"
+            static let fitness_stable = "health.intelligence.fitness_stable"
+            static let no_concerns = "health.intelligence.no_concerns"
+            static let keep_great_work = "health.intelligence.keep_great_work"
+            static let monitoring_message = "health.intelligence.monitoring_message"
+            static let ready_unlock_title = "health.intelligence.ready_unlock_title"
+            static let connect_data_message = "health.intelligence.connect_data_message"
+            static let feature_recovery = "health.intelligence.feature_recovery"
+            static let feature_fitness = "health.intelligence.feature_fitness"
+            static let feature_trends = "health.intelligence.feature_trends"
+            static let feature_ai_recommendations = "health.intelligence.feature_ai_recommendations"
+            static let connect_apple_health = "health.intelligence.connect_apple_health"
+            static let enable_insights = "health.intelligence.enable_insights"
+            static let generate_insights = "health.intelligence.generate_insights"
+            static let privacy_message = "health.intelligence.privacy_message"
+            static let recommended_action = "health.intelligence.recommended_action"
+            static let insight_details = "health.intelligence.insight_details"
+            static let recovery_trend = "health.intelligence.recovery_trend"
+        }
+
+        enum Fitness {
+            static let vo2_max_title = "health.fitness.vo2_max_title"
+            static let vo2_max_unit = "health.fitness.vo2_max_unit"
+            static let vo2_excellent = "health.fitness.vo2_excellent"
+            static let vo2_good = "health.fitness.vo2_good"
+            static let vo2_fair = "health.fitness.vo2_fair"
+            static let vo2_poor = "health.fitness.vo2_poor"
+            static let vo2_athlete_level = "health.fitness.vo2_athlete_level"
+            static let vo2_above_average = "health.fitness.vo2_above_average"
+            static let vo2_average = "health.fitness.vo2_average"
+            static let vo2_below_average = "health.fitness.vo2_below_average"
+            static let improvement_areas = "health.fitness.improvement_areas"
+            static let cardio_training = "health.fitness.cardio_training"
+            static let cardio_suggestion = "health.fitness.cardio_suggestion"
+            static let strength_training = "health.fitness.strength_training"
+            static let strength_suggestion = "health.fitness.strength_suggestion"
+        }
+
+        enum Recovery {
+            static let title = "health.recovery.title"
+            static let factors_title = "health.recovery.factors_title"
+            static let sleep_quality = "health.recovery.sleep_quality"
+            static let hrv = "health.recovery.hrv"
+            static let workout_load = "health.recovery.workout_load"
+        }
+
+        enum Heart {
+            static let resting_bpm = "health.heart.resting_bpm"
+            static let active_bpm = "health.heart.active_bpm"
+        }
     }
 
     enum Common {
@@ -268,9 +387,40 @@ enum LocalizationKeys {
         static let search = CommonKeys.Onboarding.Common.search
         static let all = CommonKeys.Onboarding.Common.all
         static let view_all = "common.view_all"
-        static let HealthKit = "common.healthkit"
+        static let updated = "common.updated"
+
+        enum HealthKit {
+            static let recoveryScoreTitle = CommonKeys.HealthKit.recoveryScoreTitle
+            static let fitnessLevelTitle = CommonKeys.HealthKit.fitnessLevelTitle
+            static let loadingMessage = CommonKeys.HealthKit.loadingMessage
+        }
+
+        enum Days {
+            static let monday_short = "common.days.monday_short"
+            static let tuesday_short = "common.days.tuesday_short"
+            static let wednesday_short = "common.days.wednesday_short"
+            static let thursday_short = "common.days.thursday_short"
+            static let friday_short = "common.days.friday_short"
+            static let saturday_short = "common.days.saturday_short"
+            static let sunday_short = "common.days.sunday_short"
+        }
+
+        enum Time {
+            static let hours = "common.time.hours"
+            static let minutes = "common.time.minutes"
+            static let seconds = "common.time.seconds"
+            static let hour = "common.time.hour"
+            static let minute = "common.time.minute"
+            static let second = "common.time.second"
+            static let days = "common.time.days"
+            static let weeks = "common.time.weeks"
+            static let months = "common.time.months"
+        }
     }
-    
+
+    // MARK: - Analytics
+    static let analytics = AnalyticsKeys.self
+
 }
 
 // MARK: - Convenience Extensions

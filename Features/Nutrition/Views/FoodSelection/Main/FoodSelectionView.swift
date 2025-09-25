@@ -12,96 +12,211 @@ struct FoodSelectionView: View {
 
     // All state management delegated to ViewModel - no computed properties needed
     
-    var body: some View {
-        VStack(spacing: 0) {
-            // Native iOS Sheet Header
-            HStack {
-                Button(NutritionKeys.FoodSelection.cancel.localized) {
-                    dismiss()
+    // Computed properties to avoid complex expressions
+    private var hasLocalResults: Bool {
+        !(viewModel?.filteredFoods.isEmpty ?? true)
+    }
+
+    private var hasAliasResults: Bool {
+        !(viewModel?.aliasMatches.isEmpty ?? true)
+    }
+
+    private var hasOffResults: Bool {
+        !(viewModel?.offResults.isEmpty ?? true)
+    }
+
+    private var isSearching: Bool {
+        !(viewModel?.debouncedSearchText.isEmpty ?? true)
+    }
+
+    private var hasAnyResults: Bool {
+        viewModel?.hasAnyResults ?? false
+    }
+
+    private var shouldShowLoading: Bool {
+        viewModel?.shouldShowLoading ?? false
+    }
+
+    private var headerView: some View {
+        HStack {
+            Button(NutritionKeys.FoodSelection.cancel.localized) {
+                dismiss()
+            }
+            .font(.body)
+            .foregroundColor(.blue)
+
+            Spacer()
+
+            Text(NutritionKeys.FoodSelection.title.localized)
+                .font(.headline)
+                .fontWeight(.semibold)
+                .foregroundColor(.primary)
+
+            Spacer()
+
+            HStack(spacing: 16) {
+                Button {
+                    viewModel?.startScanning()
+                } label: {
+                    Image(systemName: "barcode.viewfinder")
+                        .font(.title3)
+                        .foregroundColor(.blue)
+                }
+
+                Button(NutritionKeys.FoodSelection.addNew.localized) {
+                    viewModel?.showCustomFoodEntry()
                 }
                 .font(.body)
                 .foregroundColor(.blue)
-                
-                Spacer()
-                
-                Text(NutritionKeys.FoodSelection.title.localized)
-                    .font(.headline)
-                    .fontWeight(.semibold)
-                    .foregroundColor(.primary)
-                
-                Spacer()
-                
-                HStack(spacing: 16) {
-                    Button {
-                        viewModel?.startScanning()
-                    } label: {
-                        Image(systemName: "barcode.viewfinder")
-                            .font(.title3)
-                            .foregroundColor(.blue)
-                    }
+            }
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 12)
+        .background(
+            Color(.systemBackground)
+                .shadow(color: Color.black.opacity(0.1), radius: 1, x: 0, y: 1)
+        )
+    }
 
-                    Button(NutritionKeys.FoodSelection.addNew.localized) {
-                        viewModel?.showCustomFoodEntry()
-                    }
-                    .font(.body)
-                    .foregroundColor(.blue)
+    var body: some View {
+        mainView
+            .overlay(alignment: .center) {
+                if (viewModel?.isLoadingOFF ?? false) {
+                    LoadingOverlay()
                 }
             }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 12)
-            .background(
-                Color(.systemBackground)
-                    .shadow(color: Color.black.opacity(0.1), radius: 1, x: 0, y: 1)
+            .alert(CommonKeys.Onboarding.Common.error.localized, isPresented: .constant((viewModel?.offErrorMessage) != nil)) {
+                Button(CommonKeys.Onboarding.Common.ok.localized) { viewModel?.offErrorMessage = nil }
+            } message: {
+                Text(viewModel?.offErrorMessage ?? "")
+            }
+            .onChange(of: viewModel?.debouncedSearchText ?? "") { _, newValue in
+                viewModel?.handleDebouncedSearchChange(newValue)
+            }
+            .sheet(isPresented: customFoodEntryBinding) {
+                customFoodEntrySheet
+            }
+            .sheet(isPresented: scannerBinding) {
+                scannerSheet
+            }
+            .background(toastBackground)
+            .onAppear { handleOnAppear() }
+            .onDisappear { handleOnDisappear() }
+            .animation(.easeInOut(duration: 0.3), value: viewModel?.isLoadingOFF ?? false)
+            .animation(.easeInOut(duration: 0.3), value: viewModel?.offResults.count ?? 0)
+    }
+
+    private var mainView: some View {
+        VStack(spacing: 0) {
+            headerView
+            contentView
+        }
+    }
+
+    private var customFoodEntryBinding: Binding<Bool> {
+        Binding(
+            get: { viewModel?.showingCustomFoodEntry ?? false },
+            set: { viewModel?.showingCustomFoodEntry = $0 }
+        )
+    }
+
+    private var scannerBinding: Binding<Bool> {
+        Binding(
+            get: { viewModel?.showingScanner ?? false },
+            set: { viewModel?.showingScanner = $0 }
+        )
+    }
+
+    private var customFoodEntrySheet: some View {
+        CustomFoodEntryView(onFoodCreated: { newFood in
+            viewModel?.showingCustomFoodEntry = false
+            onFoodSelected(newFood)
+        }, prefillBarcode: (viewModel?.debouncedSearchText.isEmpty ?? true) ? nil : viewModel?.debouncedSearchText)
+    }
+
+    private var scannerSheet: some View {
+        BarcodeScanView { code in
+            Task {
+                await viewModel?.handleScannedBarcode(code)
+                // Handle food selection if needed through callback
+            }
+        }
+        .ignoresSafeArea()
+    }
+
+    private var toastBackground: some View {
+        ToastPresenter(message: Binding(
+            get: { viewModel?.toastMessage },
+            set: { viewModel?.toastMessage = $0 }
+        ), icon: "checkmark.circle.fill", type: .success) { EmptyView() }
+    }
+
+    private func handleOnAppear() {
+        if viewModel == nil {
+            viewModel = FoodSelectionViewModel()
+            viewModel?.setModelContext(modelContext)
+        }
+
+        if startWithScanner && !(viewModel?.showingScanner ?? false) {
+            viewModel?.startScanning()
+        }
+    }
+
+    private func handleOnDisappear() {
+        // Performance optimization - cancel ongoing tasks to prevent memory leaks
+        viewModel?.clearSearchState()
+    }
+
+    private var searchSection: some View {
+        FoodSearchBar(
+            searchText: Binding(
+                get: { viewModel?.searchText ?? "" },
+                set: { viewModel?.updateSearchText($0, foods: foods) }
+            ),
+            recentSearches: Binding(
+                get: { viewModel?.recentSearches ?? [] },
+                set: { viewModel?.recentSearches = $0 }
             )
-            
-            // Content
-            VStack(spacing: 0) {
-                // Arama çubuğu
-                FoodSearchBar(
-                    searchText: Binding(
-                        get: { viewModel?.searchText ?? "" },
-                        set: { viewModel?.updateSearchText($0, foods: foods) }
-                    ),
-                    recentSearches: Binding(
-                        get: { viewModel?.recentSearches ?? [] },
-                        set: { viewModel?.recentSearches = $0 }
-                    )
+        )
+        .padding(.horizontal)
+        .padding(.top, 8)
+        .onChange(of: viewModel?.searchText ?? "") { _, newValue in
+            viewModel?.updateSearchText(newValue, foods: foods)
+        }
+    }
+
+    private var categoryFilterSection: some View {
+        FoodCategoryFilter(selectedCategory: Binding(
+            get: { viewModel?.selectedCategory },
+            set: { viewModel?.updateSelectedCategory($0, foods: foods) }
+        ))
+    }
+
+    private var contentView: some View {
+        VStack(spacing: 0) {
+            searchSection
+            categoryFilterSection
+            foodListSection
+        }
+    }
+
+    private var foodListSection: some View {
+        Group {
+            if !hasAnyResults && !isSearching {
+                // Empty state when not searching
+                FoodSelectionEmptyStateView(
+                    searchText: viewModel?.searchText ?? "",
+                    onAddNew: { viewModel?.showCustomFoodEntry() }
                 )
-                .padding(.horizontal)
-                .padding(.top, 8)
-                .onChange(of: viewModel?.searchText ?? "") { _, newValue in
-                    viewModel?.updateSearchText(newValue, foods: foods)
-                }
-
-                // Kategori filtreleri
-                FoodCategoryFilter(selectedCategory: Binding(
-                    get: { viewModel?.selectedCategory },
-                    set: { viewModel?.updateSelectedCategory($0, foods: foods) }
-                ))
-                
-                // Progressive food list - enhanced with alias support
-                let hasLocalResults = !(viewModel?.filteredFoods.isEmpty ?? true)
-                let hasAliasResults = !(viewModel?.aliasMatches.isEmpty ?? true)
-                let hasOffResults = !(viewModel?.offResults.isEmpty ?? true)
-                let isSearching = !(viewModel?.debouncedSearchText.isEmpty ?? true)
-                let hasAnyResults = viewModel?.hasAnyResults ?? false
-                let shouldShowLoading = viewModel?.shouldShowLoading ?? false
-
-                if !hasAnyResults && !isSearching {
-                    // Empty state when not searching
-                    FoodSelectionEmptyStateView(
-                        searchText: viewModel?.searchText ?? "",
-                        onAddNew: { viewModel?.showCustomFoodEntry() }
-                    )
-                } else if !hasAnyResults && isSearching && !shouldShowLoading {
-                    // No results for search
-                    FoodSelectionEmptyStateView(
-                        searchText: viewModel?.searchText ?? "",
-                        onAddNew: { viewModel?.showCustomFoodEntry() }
-                    )
-                } else {
-                    // Progressive results - show what we have
-                    List {
+            } else if !hasAnyResults && isSearching && !shouldShowLoading {
+                // No results for search
+                FoodSelectionEmptyStateView(
+                    searchText: viewModel?.searchText ?? "",
+                    onAddNew: { viewModel?.showCustomFoodEntry() }
+                )
+            } else {
+                // Progressive results - show what we have
+                List {
                         // Enhanced local results (immediate)
                         if hasLocalResults {
                             Section(header: Text(NutritionKeys.Search.localResults.localized)) {
@@ -154,62 +269,8 @@ struct FoodSelectionView: View {
                 }
             }
         }
-        .overlay(alignment: .center) {
-            if (viewModel?.isLoadingOFF ?? false) {
-                LoadingOverlay()
-            }
-        }
-        .alert(CommonKeys.Onboarding.Common.error.localized, isPresented: .constant((viewModel?.offErrorMessage) != nil)) {
-            Button(CommonKeys.Onboarding.Common.ok.localized) { viewModel?.offErrorMessage = nil }
-        } message: {
-            Text(viewModel?.offErrorMessage ?? "")
-        }
-        .onChange(of: viewModel?.debouncedSearchText ?? "") { _, newValue in
-            viewModel?.handleDebouncedSearchChange(newValue)
-        }
-        .sheet(isPresented: Binding(
-            get: { viewModel?.showingCustomFoodEntry ?? false },
-            set: { viewModel?.showingCustomFoodEntry = $0 }
-        )) {
-            CustomFoodEntryView(onFoodCreated: { newFood in
-                viewModel?.showingCustomFoodEntry = false
-                onFoodSelected(newFood)
-            }, prefillBarcode: (viewModel?.debouncedSearchText.isEmpty ?? true) ? nil : viewModel?.debouncedSearchText)
-        }
-        .sheet(isPresented: Binding(
-            get: { viewModel?.showingScanner ?? false },
-            set: { viewModel?.showingScanner = $0 }
-        )) {
-            BarcodeScanView { code in
-                Task {
-                    await viewModel?.handleScannedBarcode(code)
-                    // Handle food selection if needed through callback
-                }
-            }
-            .ignoresSafeArea()
-        }
-        .background(ToastPresenter(message: Binding(
-            get: { viewModel?.toastMessage },
-            set: { viewModel?.toastMessage = $0 }
-        ), icon: "checkmark.circle.fill", type: .success) { EmptyView() })
-        .onAppear {
-            if viewModel == nil {
-                viewModel = FoodSelectionViewModel()
-                viewModel?.setModelContext(modelContext)
-            }
-
-            if startWithScanner && !showingScanner {
-                viewModel?.startScanning()
-            }
-        }
-        .onDisappear {
-            // Performance optimization - cancel ongoing tasks to prevent memory leaks
-            viewModel?.clearSearchState()
-        }
-        .animation(.easeInOut(duration: 0.3), value: isLoadingOFF)
-        .animation(.easeInOut(duration: 0.3), value: offResults.count)
     }
-}
+
 
 // MARK: - Supporting Views
 private struct FoodSelectionEmptyStateView: View {

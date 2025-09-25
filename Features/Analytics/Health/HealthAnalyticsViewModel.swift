@@ -19,7 +19,7 @@ class HealthAnalyticsViewModel {
     var healthDataLoaded = false
 
     // MARK: - Dependencies
-    private let healthKitService = HealthKitService.shared
+    private let healthKitService: HealthKitService
 
     // MARK: - Computed Properties
 
@@ -74,8 +74,8 @@ class HealthAnalyticsViewModel {
 
     // MARK: - Initialization
 
-    init() {
-        // No additional initialization needed
+    init(healthKitService: HealthKitService? = nil) {
+        self.healthKitService = healthKitService ?? HealthKitService.shared
     }
 
     // MARK: - Public Methods

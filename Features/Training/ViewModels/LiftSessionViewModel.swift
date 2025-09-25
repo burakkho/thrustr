@@ -92,14 +92,12 @@ final class LiftSessionViewModel {
         isLoading = true
         defer { isLoading = false }
 
-        let result = await Task {
-            return await liftSessionService.createSession(
-                workout: workout,
-                user: user,
-                programExecution: programExecution,
-                modelContext: modelContext
-            )
-        }.value
+        let result = await liftSessionService.createSession(
+            workout: workout,
+            user: user,
+            programExecution: programExecution,
+            modelContext: modelContext
+        )
 
         switch result {
         case .success(let session):
@@ -315,10 +313,11 @@ final class LiftSessionViewModel {
             let exerciseData = ExerciseResultData(from: exerciseResult)
             exercises.append(exerciseData)
             updateSessionProgress()
-            successMessage = "Exercise added successfully"
+            successMessage = "✅ \(exercise.nameEN) added to workout!"
 
         case .failure(let error):
-            errorMessage = error.localizedDescription
+            errorMessage = "❌ Failed to add exercise: \(error.localizedDescription)"
+            Logger.error("Exercise addition failed: \(error)")
         }
     }
 

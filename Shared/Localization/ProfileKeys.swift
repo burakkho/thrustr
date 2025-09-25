@@ -226,6 +226,19 @@ enum ProfileKeys {
         static let calculating = "analytics.calculating"
         static let change = "analytics.change"
         static let average = "analytics.average"
+
+        // Additional Analytics Keys
+        static let totalSessions = "analytics.total_sessions"
+        static let averageOneRM = "analytics.average_one_rm"
+        static let topExercise = "analytics.top_exercise"
+        static let personalRecords = "analytics.personal_records"
+        static let noStrengthData = "analytics.no_strength_data"
+        static let noCardioData = "analytics.no_cardio_data"
+        static let totalDistance = "analytics.total_distance"
+        static let totalDuration = "analytics.total_duration"
+        static let totalCalories = "analytics.total_calories"
+        static let averageHeartRate = "analytics.average_heart_rate"
+        static let averageDistance = "analytics.average_distance"
     }
     
     // MARK: - Time Ranges

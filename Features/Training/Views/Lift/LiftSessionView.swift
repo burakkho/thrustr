@@ -193,6 +193,7 @@ struct LiftSessionView: View {
     @Environment(\.theme) private var theme
     @Environment(\.modelContext) private var modelContext
     @Environment(UnitSettings.self) private var unitSettings
+    @Environment(ErrorUIService.self) private var errorUI
     let workout: LiftWorkout
     let programExecution: ProgramExecution?
     @State private var viewModel = LiftSessionViewModel()
@@ -205,13 +206,27 @@ struct LiftSessionView: View {
     
     var body: some View {
         NavigationStack {
-            if viewModel.currentSession != nil {
+            if viewModel.isSessionReady && viewModel.currentSession != nil {
                 mainContentView
             } else {
-                ProgressView("Starting workout...")
-                    .onAppear {
+                VStack(spacing: theme.spacing.m) {
+                    ProgressView()
+                        .scaleEffect(1.2)
+                    Text("Starting workout...")
+                        .font(theme.typography.headline)
+                        .foregroundColor(theme.colors.textSecondary)
+
+                    if viewModel.isLoading {
+                        Text("Please wait while we prepare your session")
+                            .font(theme.typography.caption)
+                            .foregroundColor(theme.colors.textSecondary)
+                    }
+                }
+                .onAppear {
+                    if !viewModel.isLoading && viewModel.currentSession == nil {
                         startSession()
                     }
+                }
             }
         }
         .onAppear {
@@ -219,14 +234,25 @@ struct LiftSessionView: View {
         }
         .onChange(of: viewModel.errorMessage) { _, message in
             if let message = message {
-                // Handle error display if needed
-                print("Error: \(message)")
+                errorUI.showErrorToast(message)
+                viewModel.clearMessages()
             }
         }
         .onChange(of: viewModel.successMessage) { _, message in
             if let message = message {
-                // Handle success display if needed
-                print("Success: \(message)")
+                errorUI.showSuccessToast(message)
+                viewModel.clearMessages()
+            }
+        }
+        .overlay(alignment: .top) {
+            if let toastMessage = errorUI.toastMessage {
+                ToastView(
+                    text: toastMessage,
+                    type: errorUI.toastType
+                )
+                .padding(.top, 60)
+                .transition(.move(edge: .top).combined(with: .opacity))
+                .zIndex(999)
             }
         }
     }
@@ -288,7 +314,7 @@ struct LiftSessionView: View {
         }
         .sheet(isPresented: $showingCompletion) {
             if viewModel.isSessionReady, let currentSession = viewModel.currentSession, let user = viewModel.currentUser {
-                Components.LiftSessionSummaryView(
+                LiftSessionSummaryView(
                     session: currentSession,
                     user: user,
                     onDismiss: {
@@ -455,16 +481,26 @@ struct LiftSessionView: View {
         VStack(spacing: theme.spacing.m) {
             // Add Exercise Button
             Button(action: {
-                showingExerciseSelection = true
+                if viewModel.isSessionReady {
+                    showingExerciseSelection = true
+                } else {
+                    errorUI.showErrorToast("Session is still loading. Please wait...")
+                }
             }) {
                 HStack {
-                    Image(systemName: "plus.circle")
+                    if viewModel.isLoading {
+                        ProgressView()
+                            .scaleEffect(0.8)
+                    } else {
+                        Image(systemName: "plus.circle")
+                    }
                     Text("Add Exercise")
+                        .opacity(viewModel.isSessionReady ? 1.0 : 0.6)
                 }
                 .frame(maxWidth: .infinity)
                 .padding()
-                .background(theme.colors.backgroundSecondary)
-                .foregroundColor(theme.colors.textPrimary)
+                .background(viewModel.isSessionReady ? theme.colors.backgroundSecondary : theme.colors.backgroundSecondary.opacity(0.5))
+                .foregroundColor(viewModel.isSessionReady ? theme.colors.textPrimary : theme.colors.textSecondary)
                 .cornerRadius(theme.radius.m)
             }
             
@@ -528,7 +564,7 @@ struct LiftSessionView: View {
 }
 
 // MARK: - Workout Notes Sheet
-struct WorkoutNotesSheet: View {
+struct LiftWorkoutNotesSheet: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.theme) private var theme
     @Binding var notes: String
@@ -636,7 +672,7 @@ struct LiftMainStatCard: View {
 }
 
 // MARK: - Exercise Result Row
-struct ExerciseResultRow: View {
+struct LiftExerciseResultRow: View {
     @Environment(\.theme) private var theme
     let result: LiftExerciseResult
     let unitSettings: UnitSettings

@@ -26,6 +26,7 @@ class NutritionAnalyticsViewModel {
     var filteredEntries: [NutritionEntry] = []
     
     // MARK: - Dependencies
+    private var modelContext: ModelContext?
     // NutritionAnalyticsService is static, no instance needed
     
     // MARK: - Computed Properties
@@ -56,9 +57,46 @@ class NutritionAnalyticsViewModel {
     }
     
     // MARK: - Initialization
-    
-    init() {
-        // No dependencies needed since service is static
+
+    init(modelContext: ModelContext? = nil) {
+        self.modelContext = modelContext
+    }
+
+    // MARK: - Data Loading Methods
+
+    /**
+     * Loads all nutrition data from SwiftData context.
+     */
+    func loadNutritionData() {
+        guard let context = modelContext else { return }
+
+        isLoading = true
+        errorMessage = nil
+
+        do {
+            // Load nutrition entries (last 3 months for better analytics)
+            let threeMonthsAgo = Calendar.current.date(byAdding: .month, value: -3, to: Date()) ?? Date()
+            let nutritionDescriptor = FetchDescriptor<NutritionEntry>(
+                predicate: #Predicate { $0.date >= threeMonthsAgo },
+                sortBy: [SortDescriptor(\.date, order: .reverse)]
+            )
+            let allNutritionEntries = try context.fetch(nutritionDescriptor)
+
+            updateData(allNutritionEntries)
+
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+
+        isLoading = false
+    }
+
+    /**
+     * Sets the ModelContext for SwiftData queries.
+     */
+    func setModelContext(_ context: ModelContext) {
+        modelContext = context
+        loadNutritionData()
     }
     
     // MARK: - Public Methods

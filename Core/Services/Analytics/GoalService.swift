@@ -52,7 +52,7 @@ struct GoalService: GoalServiceProtocol, @unchecked Sendable {
 
     func updateGoal(_ goal: Goal) async throws -> Goal {
         // Update progress if needed
-        goal.currentValue = calculateCurrentValue(for: goal)
+        goal.currentValue = await calculateCurrentValue(for: goal)
 
         // Check if goal is completed
         if goal.currentValue >= goal.targetValue && !goal.isCompleted {
@@ -76,14 +76,14 @@ struct GoalService: GoalServiceProtocol, @unchecked Sendable {
     }
 
     // MARK: - Private Helpers
-    private func calculateCurrentValue(for goal: Goal) -> Double {
+    private func calculateCurrentValue(for goal: Goal) async -> Double {
         switch goal.typeEnum {
         case .weight:
-            return calculateWeightProgress(for: goal)
+            return await calculateWeightProgress(for: goal)
         case .bodyFat:
-            return calculateBodyFatProgress(for: goal)
+            return await calculateBodyFatProgress(for: goal)
         case .muscle:
-            return calculateMuscleProgress(for: goal)
+            return await calculateMuscleProgress(for: goal)
         case .strength:
             return calculateStrengthProgress(for: goal)
         case .endurance:
@@ -93,12 +93,14 @@ struct GoalService: GoalServiceProtocol, @unchecked Sendable {
         }
     }
 
-    private func calculateWeightProgress(for goal: Goal) -> Double {
+    private func calculateWeightProgress(for goal: Goal) async -> Double {
         // Try to get current weight from HealthKit first
-        if let healthKitService = healthKitService,
-           let healthKitWeight = healthKitService.currentWeight, healthKitWeight > 0 {
-            Logger.info("Using HealthKit weight data for goal progress: \(healthKitWeight) kg")
-            return healthKitWeight
+        if let healthKitService = healthKitService {
+            let healthKitWeight = await healthKitService.currentWeight
+            if let healthKitWeight = healthKitWeight, healthKitWeight > 0 {
+                Logger.info("Using HealthKit weight data for goal progress: \(healthKitWeight) kg")
+                return healthKitWeight
+            }
         }
 
         // Fallback: Try to get latest manual weight entry from database
@@ -121,12 +123,14 @@ struct GoalService: GoalServiceProtocol, @unchecked Sendable {
         return goal.currentValue
     }
 
-    private func calculateBodyFatProgress(for goal: Goal) -> Double {
+    private func calculateBodyFatProgress(for goal: Goal) async -> Double {
         // Try to get body fat percentage from HealthKit first
-        if let healthKitService = healthKitService,
-           let healthKitBodyFat = healthKitService.bodyFatPercentage, healthKitBodyFat > 0 {
-            Logger.info("Using HealthKit body fat data for goal progress: \(healthKitBodyFat)%")
-            return healthKitBodyFat
+        if let healthKitService = healthKitService {
+            let healthKitBodyFat = await healthKitService.bodyFatPercentage
+            if let healthKitBodyFat = healthKitBodyFat, healthKitBodyFat > 0 {
+                Logger.info("Using HealthKit body fat data for goal progress: \(healthKitBodyFat)%")
+                return healthKitBodyFat
+            }
         }
 
         // Fallback: Try to get latest body fat from weight entries
@@ -165,12 +169,14 @@ struct GoalService: GoalServiceProtocol, @unchecked Sendable {
         return goal.currentValue
     }
 
-    private func calculateMuscleProgress(for goal: Goal) -> Double {
+    private func calculateMuscleProgress(for goal: Goal) async -> Double {
         // Try to get lean body mass from HealthKit first
-        if let healthKitService = healthKitService,
-           let healthKitLeanMass = healthKitService.leanBodyMass, healthKitLeanMass > 0 {
-            Logger.info("Using HealthKit lean body mass for goal progress: \(healthKitLeanMass) kg")
-            return healthKitLeanMass
+        if let healthKitService = healthKitService {
+            let healthKitLeanMass = await healthKitService.leanBodyMass
+            if let healthKitLeanMass = healthKitLeanMass, healthKitLeanMass > 0 {
+                Logger.info("Using HealthKit lean body mass for goal progress: \(healthKitLeanMass) kg")
+                return healthKitLeanMass
+            }
         }
 
         // Fallback: Try to get muscle mass from weight entries

@@ -113,6 +113,6 @@ struct AnalyticsRecoveryTrendChart: View {
         date: Date()
     )
 
-    RecoveryTrendChart(recoveryScore: mockRecoveryScore)
+    AnalyticsRecoveryTrendChart(recoveryScore: mockRecoveryScore)
         .environment(\.theme, DefaultLightTheme())
 }

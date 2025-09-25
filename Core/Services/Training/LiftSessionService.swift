@@ -1,5 +1,5 @@
 import Foundation
-import SwiftData
+@preconcurrency import SwiftData
 
 /**
  * Business logic service for LiftSession management.
@@ -20,8 +20,6 @@ struct LiftSessionService: Sendable {
 
     // MARK: - Dependencies
     private static let healthCalculator = HealthCalculator.self
-    private static let activityLogger = ActivityLoggerService.shared
-    private static let healthKitService = HealthKitService.shared
     private static let dashboardService = TrainingDashboardService.self
 
     // MARK: - Session Management
@@ -100,7 +98,7 @@ struct LiftSessionService: Sendable {
             }
 
             // Calculate session metrics
-            let metrics = calculateSessionMetrics(session)
+            _ = calculateSessionMetrics(session)
 
             // Mark session as completed
             session.complete()
@@ -109,7 +107,7 @@ struct LiftSessionService: Sendable {
             try modelContext.save()
 
             // Check for Personal Records
-            let personalRecords = await checkPersonalRecords(session: session, user: user, modelContext: modelContext)
+            _ = await checkPersonalRecords(session: session, user: user, modelContext: modelContext)
             // Note: prsHit is a computed property, PRs are tracked via isPersonalRecord in exercise results
 
             // Log activity with proper context
@@ -281,9 +279,10 @@ struct LiftSessionService: Sendable {
     ) -> [SetData]? {
 
         // Query for previous completed sessions with this exercise
+        let userId = user.id
         let descriptor = FetchDescriptor<LiftSession>(
             predicate: #Predicate<LiftSession> { session in
-                session.isCompleted == true && session.user?.id == user.id
+                session.isCompleted == true && session.user?.id == userId
             },
             sortBy: [SortDescriptor(\.startDate, order: .reverse)]
         )
@@ -370,13 +369,16 @@ struct LiftSessionService: Sendable {
                     personalRecords.append(exercise.exerciseName)
 
                     // Log the PR
-                    await MainActor.run {
+                    let exerciseName = exercise.exerciseName
+                    let previousRecord = previousBest > 0 ? previousBest : nil
+
+                    Task { @MainActor in
+                        let activityLogger = ActivityLoggerService.shared
                         activityLogger.setModelContext(modelContext)
                         activityLogger.logPersonalRecord(
-                            exerciseName: exercise.exerciseName,
-                            newValue: maxWeightThisSession,
-                            previousValue: previousBest > 0 ? previousBest : nil,
-                            unit: "kg",
+                            exerciseName: exerciseName,
+                            newRecord: maxWeightThisSession,
+                            previousRecord: previousRecord,
                             user: user
                         )
                     }
@@ -395,9 +397,10 @@ struct LiftSessionService: Sendable {
         user: User,
         modelContext: ModelContext
     ) -> Double {
+        let userId = user.id
         var descriptor = FetchDescriptor<LiftSession>(
             predicate: #Predicate<LiftSession> { session in
-                session.isCompleted && session.user?.id == user.id
+                session.isCompleted && session.user?.id == userId
             },
             sortBy: [SortDescriptor(\LiftSession.startDate, order: .reverse)]
         )
@@ -435,14 +438,17 @@ struct LiftSessionService: Sendable {
         user: User,
         modelContext: ModelContext
     ) async {
-        await MainActor.run {
+        let workoutType = session.workout?.localizedName ?? "Lift Workout"
+        let duration = session.duration
+        let volume = session.totalVolume
+
+        Task { @MainActor in
+            let activityLogger = ActivityLoggerService.shared
             activityLogger.setModelContext(modelContext)
             activityLogger.logWorkoutCompleted(
-                workoutType: session.workout?.localizedName ?? "Lift Workout",
-                duration: session.duration,
-                volume: session.totalVolume,
-                sets: session.totalSets,
-                reps: session.totalReps,
+                workoutType: workoutType,
+                duration: duration,
+                volume: volume,
                 user: user
             )
         }
@@ -463,19 +469,30 @@ struct LiftSessionService: Sendable {
         )
 
         // Sync to HealthKit
-        let success = await healthKitService.saveLiftWorkout(
-            duration: session.duration,
-            caloriesBurned: estimatedCalories,
-            startDate: session.startDate,
-            endDate: session.endDate ?? Date(),
-            totalVolume: session.totalVolume
-        )
+        let duration = session.duration
+        let startDate = session.startDate
+        let endDate = session.endDate ?? Date()
+        let totalVolume = session.totalVolume
 
-        if success {
-            Logger.info("✅ Lift workout successfully synced to HealthKit")
-        } else {
-            Logger.warning("⚠️ Failed to sync lift workout to HealthKit")
+        _ = await MainActor.run {
+            Task {
+                let healthKitService = HealthKitService.shared
+                let success = await healthKitService.saveLiftWorkout(
+                    duration: duration,
+                    caloriesBurned: estimatedCalories,
+                    startDate: startDate,
+                    endDate: endDate,
+                    totalVolume: totalVolume
+                )
+
+                if success {
+                    Logger.info("✅ Lift workout successfully synced to HealthKit")
+                } else {
+                    Logger.warning("⚠️ Failed to sync lift workout to HealthKit")
+                }
+            }
         }
+
     }
 }
 

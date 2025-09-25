@@ -428,6 +428,19 @@
 		41BFC71D2E81FBC900C05EB9 /* CaloriesValidator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41BFC71C2E81FBC900C05EB9 /* CaloriesValidator.swift */; };
 		41BFC71F2E81FF3200C05EB9 /* CardioAnalyticsCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41BFC71E2E81FF3200C05EB9 /* CardioAnalyticsCard.swift */; };
 		41BFC7212E8299E000C05EB9 /* NutritionAnalyticsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41BFC7202E8299E000C05EB9 /* NutritionAnalyticsService.swift */; };
+		41BFC9122E82AA5400C05EB9 /* DashboardMetricsFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41BFC9102E82AA5400C05EB9 /* DashboardMetricsFormatter.swift */; };
+		41BFC9212E82AA9C00C05EB9 /* WorkoutNotesSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41BFC91D2E82AA9C00C05EB9 /* WorkoutNotesSheet.swift */; };
+		41BFC9222E82AA9C00C05EB9 /* LiftExerciseCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41BFC9132E82AA9C00C05EB9 /* LiftExerciseCard.swift */; };
+		41BFC9232E82AA9C00C05EB9 /* LiftSessionProgressOverview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41BFC9162E82AA9C00C05EB9 /* LiftSessionProgressOverview.swift */; };
+		41BFC9242E82AA9C00C05EB9 /* LiftSessionActionButtons.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41BFC9142E82AA9C00C05EB9 /* LiftSessionActionButtons.swift */; };
+		41BFC9272E82AA9C00C05EB9 /* LiftSessionHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41BFC9152E82AA9C00C05EB9 /* LiftSessionHeaderView.swift */; };
+		41BFC9282E82AA9C00C05EB9 /* LiftSessionSummaryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41BFC9172E82AA9C00C05EB9 /* LiftSessionSummaryView.swift */; };
+		41F3A8352E83FDEA0018FCB9 /* RecoveryCalculationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41F3A8342E83FDEA0018FCB9 /* RecoveryCalculationService.swift */; };
+		41F3A8382E83FE310018FCB9 /* DateFormatterService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41F3A8362E83FE310018FCB9 /* DateFormatterService.swift */; };
+		41F3A83E2E8495440018FCB9 /* StrengthChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41F3A83B2E8495440018FCB9 /* StrengthChartView.swift */; };
+		41F3A83F2E8495440018FCB9 /* CardioStatisticsCards.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41F3A83A2E8495440018FCB9 /* CardioStatisticsCards.swift */; };
+		41F3A8402E8495440018FCB9 /* CardioChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41F3A8392E8495440018FCB9 /* CardioChartView.swift */; };
+		41F3A8412E8495440018FCB9 /* StrengthStatisticsCards.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41F3A83C2E8495440018FCB9 /* StrengthStatisticsCards.swift */; };
 		4ECC1006497A48EB89FCE36E /* CardioKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AA4A34FFB504ABB847436D2 /* CardioKeys.swift */; };
 /* End PBXBuildFile section */
 
@@ -881,6 +894,19 @@
 		41BFC71C2E81FBC900C05EB9 /* CaloriesValidator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaloriesValidator.swift; sourceTree = "<group>"; };
 		41BFC71E2E81FF3200C05EB9 /* CardioAnalyticsCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardioAnalyticsCard.swift; sourceTree = "<group>"; };
 		41BFC7202E8299E000C05EB9 /* NutritionAnalyticsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NutritionAnalyticsService.swift; sourceTree = "<group>"; };
+		41BFC9102E82AA5400C05EB9 /* DashboardMetricsFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardMetricsFormatter.swift; sourceTree = "<group>"; };
+		41BFC9132E82AA9C00C05EB9 /* LiftExerciseCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiftExerciseCard.swift; sourceTree = "<group>"; };
+		41BFC9142E82AA9C00C05EB9 /* LiftSessionActionButtons.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiftSessionActionButtons.swift; sourceTree = "<group>"; };
+		41BFC9152E82AA9C00C05EB9 /* LiftSessionHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiftSessionHeaderView.swift; sourceTree = "<group>"; };
+		41BFC9162E82AA9C00C05EB9 /* LiftSessionProgressOverview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiftSessionProgressOverview.swift; sourceTree = "<group>"; };
+		41BFC9172E82AA9C00C05EB9 /* LiftSessionSummaryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiftSessionSummaryView.swift; sourceTree = "<group>"; };
+		41BFC91D2E82AA9C00C05EB9 /* WorkoutNotesSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutNotesSheet.swift; sourceTree = "<group>"; };
+		41F3A8342E83FDEA0018FCB9 /* RecoveryCalculationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecoveryCalculationService.swift; sourceTree = "<group>"; };
+		41F3A8362E83FE310018FCB9 /* DateFormatterService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateFormatterService.swift; sourceTree = "<group>"; };
+		41F3A8392E8495440018FCB9 /* CardioChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardioChartView.swift; sourceTree = "<group>"; };
+		41F3A83A2E8495440018FCB9 /* CardioStatisticsCards.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardioStatisticsCards.swift; sourceTree = "<group>"; };
+		41F3A83B2E8495440018FCB9 /* StrengthChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StrengthChartView.swift; sourceTree = "<group>"; };
+		41F3A83C2E8495440018FCB9 /* StrengthStatisticsCards.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StrengthStatisticsCards.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1290,6 +1316,7 @@
 		41268C9F2E6F9CFB00D5302C /* Analytics */ = {
 			isa = PBXGroup;
 			children = (
+				41F3A83D2E8495440018FCB9 /* Components */,
 				41268C9C2E6F9CFB00D5302C /* AchievementsView.swift */,
 				41268C9D2E6F9CFB00D5302C /* GoalTrackingView.swift */,
 				41268C9E2E6F9CFB00D5302C /* ProgressChartsView.swift */,
@@ -1342,6 +1369,7 @@
 		4137E2652E80261200E9355E /* Analytics */ = {
 			isa = PBXGroup;
 			children = (
+				41F3A8342E83FDEA0018FCB9 /* RecoveryCalculationService.swift */,
 				41BFC7202E8299E000C05EB9 /* NutritionAnalyticsService.swift */,
 				4137E33B2E81D2CF00E9355E /* AnalyticsProcessor.swift */,
 				4137E33C2E81D2CF00E9355E /* AnalyticsService.swift */,
@@ -1758,6 +1786,7 @@
 		4151B7272E5A59C100A4E11E /* Shared */ = {
 			isa = PBXGroup;
 			children = (
+				41F3A8372E83FE310018FCB9 /* Services */,
 				4137E31B2E80273200E9355E /* Models */,
 				4100B4602E78991200B6A4C3 /* Navigation */,
 				41268C722E6EFF8000D5302C /* Enums */,
@@ -1813,6 +1842,7 @@
 		4151B7A42E5A609C00A4E11E /* Dashboard */ = {
 			isa = PBXGroup;
 			children = (
+				41BFC9112E82AA5400C05EB9 /* Services */,
 				4151B7992E5A609C00A4E11E /* ViewModels */,
 				4151B7A32E5A609C00A4E11E /* Views */,
 			);
@@ -2129,6 +2159,7 @@
 		4151B8342E5A609C00A4E11E /* Training */ = {
 			isa = PBXGroup;
 			children = (
+				41BFC91E2E82AA9C00C05EB9 /* Components */,
 				4137E23B2E7F114500E9355E /* ViewModels */,
 				4151B8F22E5B868200A4E11E /* Tests */,
 				4151B7EE2E5A609C00A4E11E /* Shared */,
@@ -2254,6 +2285,27 @@
 			path = ViewModels;
 			sourceTree = "<group>";
 		};
+		41BFC9112E82AA5400C05EB9 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				41BFC9102E82AA5400C05EB9 /* DashboardMetricsFormatter.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		41BFC91E2E82AA9C00C05EB9 /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				41BFC9132E82AA9C00C05EB9 /* LiftExerciseCard.swift */,
+				41BFC9142E82AA9C00C05EB9 /* LiftSessionActionButtons.swift */,
+				41BFC9152E82AA9C00C05EB9 /* LiftSessionHeaderView.swift */,
+				41BFC9162E82AA9C00C05EB9 /* LiftSessionProgressOverview.swift */,
+				41BFC9172E82AA9C00C05EB9 /* LiftSessionSummaryView.swift */,
+				41BFC91D2E82AA9C00C05EB9 /* WorkoutNotesSheet.swift */,
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
 		41E316242E46320900A27990 = {
 			isa = PBXGroup;
 			children = (
@@ -2272,6 +2324,25 @@
 				41268CB92E70ABFB00D5302C /* README.md */,
 				41268CBA2E70ABFB00D5302C /* TANITIM.md */,
 			);
+			sourceTree = "<group>";
+		};
+		41F3A8372E83FE310018FCB9 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				41F3A8362E83FE310018FCB9 /* DateFormatterService.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		41F3A83D2E8495440018FCB9 /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				41F3A8392E8495440018FCB9 /* CardioChartView.swift */,
+				41F3A83A2E8495440018FCB9 /* CardioStatisticsCards.swift */,
+				41F3A83B2E8495440018FCB9 /* StrengthChartView.swift */,
+				41F3A83C2E8495440018FCB9 /* StrengthStatisticsCards.swift */,
+			);
+			path = Components;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -2526,6 +2597,7 @@
 				4151B8DD2E5B863200A4E11E /* StrengthTestResult.swift in Sources */,
 				4100B4362E78044300B6A4C3 /* NavyMethodCalculatorViewModel.swift in Sources */,
 				4100B4372E78044300B6A4C3 /* OneRMCalculatorViewModel.swift in Sources */,
+				41F3A8382E83FE310018FCB9 /* DateFormatterService.swift in Sources */,
 				4151B7562E5A59C100A4E11E /* Double+Extensions.swift in Sources */,
 				4151B7572E5A59C100A4E11E /* LiftExercise.swift in Sources */,
 				4137E3262E80309600E9355E /* AnalyticsKeys.swift in Sources */,
@@ -2571,6 +2643,7 @@
 				4151B8562E5A609C00A4E11E /* TemplateGuideCard.swift in Sources */,
 				4137E27F2E80263D00E9355E /* ErrorService.swift in Sources */,
 				4151B8572E5A609C00A4E11E /* LiftAccordionCard.swift in Sources */,
+				41F3A8352E83FDEA0018FCB9 /* RecoveryCalculationService.swift in Sources */,
 				4137E3222E802EAC00E9355E /* TrainingAnalyticsViewModel.swift in Sources */,
 				412659E82E605B1A00FAB9E8 /* NotificationSettingsSection.swift in Sources */,
 				4151B91B2E5DCB5800A4E11E /* ComponentTokens.swift in Sources */,
@@ -2760,6 +2833,7 @@
 				41268CAA2E70591200D5302C /* NutritionInsightView.swift in Sources */,
 				41268CAB2E70591200D5302C /* DayData.swift in Sources */,
 				41268CAC2E70591200D5302C /* CalorieBarChart.swift in Sources */,
+				41BFC9122E82AA5400C05EB9 /* DashboardMetricsFormatter.swift in Sources */,
 				41268CAD2E70591200D5302C /* MacroSummaryView.swift in Sources */,
 				4151B8A82E5A609C00A4E11E /* ExerciseSelectionView.swift in Sources */,
 				4151B8A92E5A609C00A4E11E /* WorkoutPreviewView.swift in Sources */,
@@ -2772,6 +2846,10 @@
 				4137E2342E7F112200E9355E /* MealEntryViewModel.swift in Sources */,
 				4151B8BD2E5B112500A4E11E /* StepCounterManager.swift in Sources */,
 				4151B9142E5CF5C400A4E11E /* RecentActivitySection.swift in Sources */,
+				41F3A83E2E8495440018FCB9 /* StrengthChartView.swift in Sources */,
+				41F3A83F2E8495440018FCB9 /* CardioStatisticsCards.swift in Sources */,
+				41F3A8402E8495440018FCB9 /* CardioChartView.swift in Sources */,
+				41F3A8412E8495440018FCB9 /* StrengthStatisticsCards.swift in Sources */,
 				4151B9152E5CF5C400A4E11E /* EmptyActivityView.swift in Sources */,
 				4151B75E2E5A59C100A4E11E /* ProgramExecution.swift in Sources */,
 				412659DE2E604CD700FAB9E8 /* LifetimeAchievementsSection.swift in Sources */,
@@ -2818,6 +2896,12 @@
 				412659E22E605AE000FAB9E8 /* NotificationSettings.swift in Sources */,
 				4151B7642E5A59C100A4E11E /* DatabaseError.swift in Sources */,
 				4151B7652E5A59C100A4E11E /* BodyTrackingModels.swift in Sources */,
+				41BFC9212E82AA9C00C05EB9 /* WorkoutNotesSheet.swift in Sources */,
+				41BFC9222E82AA9C00C05EB9 /* LiftExerciseCard.swift in Sources */,
+				41BFC9232E82AA9C00C05EB9 /* LiftSessionProgressOverview.swift in Sources */,
+				41BFC9242E82AA9C00C05EB9 /* LiftSessionActionButtons.swift in Sources */,
+				41BFC9272E82AA9C00C05EB9 /* LiftSessionHeaderView.swift in Sources */,
+				41BFC9282E82AA9C00C05EB9 /* LiftSessionSummaryView.swift in Sources */,
 				4151B7662E5A59C100A4E11E /* CardioExercise.swift in Sources */,
 				4151B7672E5A59C100A4E11E /* NutritionEnums.swift in Sources */,
 				4151B7682E5A59C100A4E11E /* LocationManager.swift in Sources */,

@@ -10,15 +10,15 @@ struct EnhancedMacroTimelineSection: View {
         VStack(spacing: 20) {
             // Section Header
             HStack {
-                Text("Macro Timeline")
+                Text(CommonKeys.Analytics.macroTimeline.localized)
                     .font(.headline)
                     .fontWeight(.semibold)
                     .foregroundColor(theme.colors.textPrimary)
 
                 Spacer()
 
-                NavigationLink(destination: Text("Detailed Charts")) {
-                    Text("View Details")
+                NavigationLink(destination: Text(CommonKeys.Analytics.detailedCharts.localized)) {
+                    Text(CommonKeys.Analytics.viewDetails.localized)
                         .font(.caption)
                         .foregroundColor(theme.colors.accent)
                 }

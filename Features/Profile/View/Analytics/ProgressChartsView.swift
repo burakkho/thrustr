@@ -37,6 +37,7 @@ struct ProgressChartsView: View {
                         timeRange: viewModel.selectedTimeRange,
                         weightEntries: viewModel.filteredWeightEntries,
                         liftSessions: viewModel.filteredLiftSessions,
+                        cardioSessions: allCardioSessions,
                         bodyMeasurements: viewModel.filteredBodyMeasurements,
                         user: viewModel.currentUser
                     )
@@ -47,6 +48,7 @@ struct ProgressChartsView: View {
                     chartType: viewModel.selectedChartType,
                     weightEntries: viewModel.filteredWeightEntries,
                     liftSessions: viewModel.filteredLiftSessions,
+                    cardioSessions: allCardioSessions,
                     timeRange: viewModel.selectedTimeRange
                 )
 
@@ -168,19 +170,24 @@ struct ChartTypeSelector: View {
                     Button {
                         selectedType = type
                     } label: {
+                        let isSelected = selectedType == type
+                        let iconColor: Color = isSelected ? .white : type.color
+                        let textColor: Color = isSelected ? .white : .primary
+                        let bgColor: Color = isSelected ? type.color : Color(.secondarySystemBackground)
+
                         VStack(spacing: 8) {
                             Image(systemName: type.icon)
                                 .font(.title2)
-                                .foregroundColor(selectedType == type ? .white : type.color)
-                            
+                                .foregroundColor(iconColor)
+
                             Text(type.displayName)
                                 .font(.caption)
                                 .fontWeight(.medium)
-                                .foregroundColor(selectedType == type ? .white : .primary)
+                                .foregroundColor(textColor)
                         }
                         .frame(maxWidth: .infinity)
                         .padding()
-                        .background(selectedType == type ? type.color : Color(.secondarySystemBackground))
+                        .background(bgColor)
                         .clipShape(RoundedRectangle(cornerRadius: 12))
                     }
                 }
@@ -199,6 +206,7 @@ struct MainChartSection: View {
     let timeRange: TimeRange
     let weightEntries: [WeightEntry]
     let liftSessions: [LiftSession]
+    let cardioSessions: [CardioSession]
     let bodyMeasurements: [BodyMeasurement]
     let user: User?
     
@@ -207,23 +215,30 @@ struct MainChartSection: View {
             Text(chartType.displayName)
                 .font(.headline)
                 .fontWeight(.semibold)
-            
-            Group {
-                switch chartType {
-                case .weight:
-                    WeightChartView(entries: weightEntries)
-                case .workoutVolume:
-                    WorkoutVolumeChartView(liftSessions: liftSessions)
-                case .workoutFrequency:
-                    WorkoutFrequencyChartView(liftSessions: liftSessions, timeRange: timeRange)
-                case .bodyMeasurements:
-                    BodyMeasurementsChartView(measurements: bodyMeasurements)
-                }
-            }
+
+            chartContentView
             .padding()
             .background(Color(.systemBackground))
             .clipShape(RoundedRectangle(cornerRadius: 12))
             .shadow(color: .black.opacity(0.05), radius: 5, x: 0, y: 2)
+        }
+    }
+
+    @ViewBuilder
+    private var chartContentView: some View {
+        switch chartType {
+        case .weight:
+            WeightChartView(entries: weightEntries)
+        case .workoutVolume:
+            WorkoutVolumeChartView(liftSessions: liftSessions)
+        case .workoutFrequency:
+            WorkoutFrequencyChartView(liftSessions: liftSessions, timeRange: timeRange)
+        case .bodyMeasurements:
+            BodyMeasurementsChartView(measurements: bodyMeasurements)
+        case .strength:
+            StrengthChartView(liftSessions: liftSessions)
+        case .cardio:
+            CardioChartView(cardioSessions: cardioSessions.filter { $0.isCompleted && $0.startDate >= timeRange.cutoffDate })
         }
     }
 }
@@ -320,7 +335,9 @@ struct WorkoutVolumeChartView: View {
             let totalVolume = sessions.reduce(0.0) { total, session in
                 total + session.totalVolume
             }
-            return WeeklyVolumeData(week: week, volume: totalVolume)
+            let workoutCount = sessions.count
+            let averageVolume = workoutCount > 0 ? totalVolume / Double(workoutCount) : 0.0
+            return WeeklyVolumeData(week: week, volume: totalVolume, workoutCount: workoutCount, averageVolume: averageVolume)
         }.sorted { $0.week < $1.week }
     }
     
@@ -358,7 +375,10 @@ struct WorkoutFrequencyChartView: View {
         }
         
         return grouped.map { (week, sessions) in
-            FrequencyData(period: week, count: sessions.count)
+            let frequency = sessions.count
+            let target = 3 // Default weekly workout target
+            let completionRate = Double(frequency) / Double(target)
+            return FrequencyData(period: week, frequency: frequency, target: target, completionRate: completionRate)
         }.sorted { $0.period < $1.period }
     }
     
@@ -371,7 +391,7 @@ struct WorkoutFrequencyChartView: View {
                     Chart(frequencyData) { data in
                         BarMark(
                             x: .value("Week", data.period),
-                            y: .value("Frequency", data.count)
+                            y: .value("Frequency", data.frequency)
                         )
                         .foregroundStyle(.green)
                     }
@@ -397,11 +417,14 @@ struct BodyMeasurementsChartView: View {
     }
     
     private var chartData: [MeasurementChartData] {
-        filteredMeasurements.map { 
-            MeasurementChartData(
-                date: $0.date, 
-                value: unitSettings.unitSystem == .metric ? $0.value : $0.value * 0.393701
-            ) 
+        filteredMeasurements.map { measurement in
+            let convertedValue = unitSettings.unitSystem == .metric ? measurement.value : measurement.value * 0.393701
+            return MeasurementChartData(
+                date: measurement.date,
+                measurement: convertedValue,
+                measurementType: selectedMeasurementType.rawValue,
+                change: 0.0
+            )
         }
     }
     
@@ -439,14 +462,14 @@ struct BodyMeasurementsChartView: View {
                         Chart(chartData) { data in
                             LineMark(
                                 x: .value("Date", data.date),
-                                y: .value("Measurement", data.value)
+                                y: .value("Measurement", data.measurement)
                             )
                             .foregroundStyle(selectedMeasurementType.color)
                             .lineStyle(StrokeStyle(lineWidth: 3))
                             
                             PointMark(
                                 x: .value("Date", data.date),
-                                y: .value("Measurement", data.value)
+                                y: .value("Measurement", data.measurement)
                             )
                             .foregroundStyle(selectedMeasurementType.color)
                             .symbolSize(50)
@@ -564,6 +587,7 @@ struct SummaryStatisticsSection: View {
     let chartType: ChartType
     let weightEntries: [WeightEntry]
     let liftSessions: [LiftSession]
+    let cardioSessions: [CardioSession]
     let timeRange: TimeRange
     
     var body: some View {
@@ -580,6 +604,10 @@ struct SummaryStatisticsSection: View {
                     WorkoutStatisticsCards(liftSessions: liftSessions, timeRange: timeRange)
                 case .bodyMeasurements:
                     BodyMeasurementStatisticsCards()
+                case .strength:
+                    StrengthStatisticsCards(liftSessions: liftSessions, timeRange: timeRange)
+                case .cardio:
+                    CardioStatisticsCards(cardioSessions: cardioSessions.filter { $0.isCompleted && $0.startDate >= timeRange.cutoffDate }, timeRange: timeRange)
                 }
             }
             .padding()

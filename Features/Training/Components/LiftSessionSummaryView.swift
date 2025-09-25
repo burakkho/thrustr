@@ -149,7 +149,7 @@ struct LiftSessionSummaryView: View {
             HStack {
                 Image(systemName: "list.clipboard.fill")
                     .foregroundColor(theme.colors.accent)
-                Text(LocalizationKeys.training.StrengthTraining.exercise_summary.localized)
+                Text("training.strength.exercise_summary".localized)
                     .font(theme.typography.headline)
                     .fontWeight(.semibold)
                     .foregroundColor(theme.colors.textPrimary)
@@ -253,7 +253,7 @@ struct LiftSessionSummaryView: View {
                 HStack {
                     Image(systemName: "checkmark.circle.fill")
                         .font(.title3)
-                    Text(LocalizationKeys.training.StrengthTraining.save_workout.localized)
+                    Text("training.strength.save_workout".localized)
                         .font(theme.typography.headline)
                         .fontWeight(.semibold)
                 }
@@ -376,194 +376,7 @@ struct LiftSessionSummaryView: View {
 }
 
 // MARK: - Supporting Components
-
-struct LiftMainStatCard: View {
-    @Environment(\.theme) private var theme
-    let icon: String
-    let value: String
-    let label: String
-    let color: Color
-    let onEdit: (() -> Void)?
-
-    var body: some View {
-        VStack(spacing: theme.spacing.s) {
-            HStack {
-                Image(systemName: icon)
-                    .font(.title3)
-                    .foregroundColor(color)
-
-                if let onEdit = onEdit {
-                    Spacer()
-                    Button(action: onEdit) {
-                        Image(systemName: "pencil.circle.fill")
-                            .font(.title3)
-                            .foregroundColor(theme.colors.accent)
-                    }
-                }
-            }
-
-            Text(value)
-                .font(.system(size: 20, weight: .bold, design: .rounded))
-                .foregroundColor(theme.colors.textPrimary)
-                .multilineTextAlignment(.center)
-                .lineLimit(1)
-                .minimumScaleFactor(0.8)
-
-            Text(label)
-                .font(theme.typography.caption)
-                .foregroundColor(theme.colors.textSecondary)
-        }
-        .frame(maxWidth: .infinity)
-        .padding(theme.spacing.m)
-        .background(theme.colors.backgroundSecondary)
-        .cornerRadius(theme.radius.m)
-    }
-}
-
-struct LiftDurationEditSheet: View {
-    @Environment(\.theme) private var theme
-    @Binding var hours: Int
-    @Binding var minutes: Int
-    @Binding var seconds: Int
-    let onSave: () -> Void
-    let onCancel: () -> Void
-
-    var body: some View {
-        NavigationStack {
-            VStack(spacing: theme.spacing.l) {
-                // Header
-                VStack(spacing: theme.spacing.s) {
-                    Image(systemName: "timer")
-                        .font(.system(size: 40))
-                        .foregroundColor(theme.colors.accent)
-
-                    Text(LocalizationKeys.training.StrengthTraining.edit_duration.localized)
-                        .font(theme.typography.title2)
-                        .fontWeight(.bold)
-                        .foregroundColor(theme.colors.textPrimary)
-
-                    Text("Adjust your workout duration")
-                        .font(theme.typography.body)
-                        .foregroundColor(theme.colors.textSecondary)
-                }
-                .padding(.top, theme.spacing.l)
-
-                // Time Picker
-                VStack(spacing: theme.spacing.m) {
-                    Text(LocalizationKeys.training.TimeInput.duration.localized)
-                        .font(theme.typography.headline)
-                        .fontWeight(.semibold)
-                        .foregroundColor(theme.colors.textPrimary)
-
-                    HStack(spacing: theme.spacing.m) {
-                        // Hours
-                        VStack(spacing: theme.spacing.xs) {
-                            Text(LocalizationKeys.training.TimeInput.hour.localized)
-                                .font(theme.typography.caption)
-                                .foregroundColor(theme.colors.textSecondary)
-
-                            Picker("Hours", selection: $hours) {
-                                ForEach(0..<24, id: \.self) { hour in
-                                    Text("\(hour)")
-                                        .tag(hour)
-                                }
-                            }
-                            .pickerStyle(.wheel)
-                            .frame(width: 60, height: 120)
-                        }
-
-                        Text(":")
-                            .font(.title)
-                            .fontWeight(.bold)
-                            .foregroundColor(theme.colors.textPrimary)
-
-                        // Minutes
-                        VStack(spacing: theme.spacing.xs) {
-                            Text(LocalizationKeys.training.TimeInput.min.localized)
-                                .font(theme.typography.caption)
-                                .foregroundColor(theme.colors.textSecondary)
-
-                            Picker("Minutes", selection: $minutes) {
-                                ForEach(0..<60, id: \.self) { minute in
-                                    Text(String(format: "%02d", minute))
-                                        .tag(minute)
-                                }
-                            }
-                            .pickerStyle(.wheel)
-                            .frame(width: 60, height: 120)
-                        }
-
-                        Text(":")
-                            .font(.title)
-                            .fontWeight(.bold)
-                            .foregroundColor(theme.colors.textPrimary)
-
-                        // Seconds
-                        VStack(spacing: theme.spacing.xs) {
-                            Text(LocalizationKeys.training.TimeInput.sec.localized)
-                                .font(theme.typography.caption)
-                                .foregroundColor(theme.colors.textSecondary)
-
-                            Picker("Seconds", selection: $seconds) {
-                                ForEach(0..<60, id: \.self) { second in
-                                    Text(String(format: "%02d", second))
-                                        .tag(second)
-                                }
-                            }
-                            .pickerStyle(.wheel)
-                            .frame(width: 60, height: 120)
-                        }
-                    }
-                }
-                .cardStyle()
-
-                Spacer()
-
-                // Action Buttons
-                VStack(spacing: theme.spacing.m) {
-                    Button(action: onSave) {
-                        HStack {
-                            Image(systemName: "checkmark.circle.fill")
-                                .font(.title3)
-                            Text(LocalizationKeys.training.TimeInput.save.localized)
-                                .font(theme.typography.headline)
-                                .fontWeight(.semibold)
-                        }
-                        .foregroundColor(.white)
-                        .frame(maxWidth: .infinity)
-                        .padding(theme.spacing.l)
-                        .background(theme.colors.accent)
-                        .cornerRadius(theme.radius.m)
-                    }
-
-                    Button(action: onCancel) {
-                        Text(LocalizationKeys.training.TimeInput.cancel.localized)
-                            .font(theme.typography.body)
-                            .foregroundColor(theme.colors.textSecondary)
-                    }
-                }
-            }
-            .padding(theme.spacing.m)
-            .navigationTitle("Edit Duration")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Cancel", action: onCancel)
-                }
-            }
-        }
-    }
-}
-
-struct LiftShareSheet: UIViewControllerRepresentable {
-    let items: [Any]
-
-    func makeUIViewController(context: Context) -> UIActivityViewController {
-        UIActivityViewController(activityItems: items, applicationActivities: nil)
-    }
-
-    func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}
-}
+// Note: Components are defined in LiftSessionView.swift to avoid duplication
 
 #Preview {
     // This would need mock data for preview

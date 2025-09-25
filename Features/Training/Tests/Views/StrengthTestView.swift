@@ -410,10 +410,10 @@ struct StrengthTestView: View {
             let averageStrengthLevel = currentTest.averageStrengthLevel
             let levelName = averageStrengthLevel.name
             
-            ActivityLoggerService.shared.logStrengthTestCompleted(
-                exerciseCount: currentTest.results?.count ?? 0,
-                averageStrengthLevel: levelName,
-                totalScore: currentTest.overallScore,
+            ActivityLoggerService.shared.logWorkoutCompleted(
+                workoutType: "Strength Test - \(levelName)",
+                duration: 0,
+                volume: Double(currentTest.overallScore),
                 user: user
             )
         }

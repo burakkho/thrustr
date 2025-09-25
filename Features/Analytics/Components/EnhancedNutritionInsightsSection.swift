@@ -10,7 +10,7 @@ struct EnhancedNutritionInsightsSection: View {
         VStack(spacing: 20) {
             // Section Header
             HStack {
-                Text("Nutrition Intelligence")
+                Text(CommonKeys.Analytics.nutritionIntelligence.localized)
                     .font(.headline)
                     .fontWeight(.semibold)
                     .foregroundColor(theme.colors.textPrimary)

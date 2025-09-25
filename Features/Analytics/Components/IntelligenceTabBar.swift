@@ -1,5 +1,27 @@
 import SwiftUI
 
+enum IntelligenceTab: CaseIterable {
+    case overview, recovery, fitness, trends
+
+    var title: String {
+        switch self {
+        case .overview: return "analytics.overview".localized
+        case .recovery: return "analytics.recovery".localized
+        case .fitness: return "analytics.fitness".localized
+        case .trends: return "analytics.trends".localized
+        }
+    }
+
+    var icon: String {
+        switch self {
+        case .overview: return "brain.head.profile"
+        case .recovery: return "heart.fill"
+        case .fitness: return "figure.strengthtraining.traditional"
+        case .trends: return "chart.line.uptrend.xyaxis"
+        }
+    }
+}
+
 struct IntelligenceTabBar: View {
     @Binding var selectedTab: IntelligenceTab
     @Environment(\.theme) private var theme

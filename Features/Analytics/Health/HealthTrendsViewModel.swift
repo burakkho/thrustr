@@ -6,16 +6,19 @@ import SwiftUI
 class HealthTrendsViewModel {
 
     // MARK: - Published State
-
     var isLoading = false
     var selectedMetric: HealthMetric = .steps
     var hasError = false
     var errorMessage = ""
 
-    // MARK: - Initialization
+    // MARK: - Dependencies
+    private let healthKitService: HealthKitService
+    private let _unitSettings: UnitSettings
 
-    init() {
-        // No dependencies needed - using static service calls
+    // MARK: - Initialization
+    init(healthKitService: HealthKitService? = nil, unitSettings: UnitSettings? = nil) {
+        self.healthKitService = healthKitService ?? HealthKitService.shared
+        self._unitSettings = unitSettings ?? UnitSettings.shared
     }
 
     // MARK: - Public Methods
@@ -29,19 +32,17 @@ class HealthTrendsViewModel {
             isLoading = false
         }
 
-        await HealthAnalyticsService.refreshHealthData()
+        await healthKitService.loadAllHistoricalData()
     }
 
     func getDataPointsForMetric(_ metric: HealthMetric) -> [HealthDataPoint] {
-        let healthKitAnalytics = HealthKitAnalyticsService.shared
-
         switch metric {
         case .steps:
-            return healthKitAnalytics.stepsHistory
+            return healthKitService.stepsHistory
         case .weight:
-            return healthKitAnalytics.weightHistory
+            return healthKitService.weightHistory
         case .heartRate:
-            return healthKitAnalytics.heartRateHistory
+            return healthKitService.heartRateHistory
         }
     }
 
@@ -51,20 +52,40 @@ class HealthTrendsViewModel {
 
     // MARK: - Helper Methods
 
-    func getWorkoutTrends() -> WorkoutTrends? {
-        let healthKitService = HealthKitService.shared
+    func getWorkoutTrends() -> WorkoutTrends {
         return healthKitService.workoutTrends
     }
 
     func getHealthStats() -> HealthStats {
-        let healthKitService = HealthKitService.shared
-
         return HealthStats(
             todaySteps: healthKitService.todaySteps,
-            todayCalories: healthKitService.todayCalories,
+            todayActiveCalories: healthKitService.todayActiveCalories,
             currentWeight: healthKitService.currentWeight ?? 0.0,
             restingHeartRate: healthKitService.restingHeartRate ?? 0.0
         )
+    }
+
+    // MARK: - Formatting Methods
+
+    func formatWeight(_ kg: Double) -> String {
+        switch _unitSettings.unitSystem {
+        case .metric:
+            return String(format: "%.1f", kg)
+        case .imperial:
+            let lbs = UnitsConverter.kgToLbs(kg)
+            return String(format: "%.1f", lbs)
+        }
+    }
+
+    var weightUnit: String {
+        switch _unitSettings.unitSystem {
+        case .metric: return "kg"
+        case .imperial: return "lb"
+        }
+    }
+
+    var unitSettings: UnitSettings {
+        return _unitSettings
     }
 
     // MARK: - Private Methods
@@ -79,7 +100,7 @@ class HealthTrendsViewModel {
 
 struct HealthStats {
     let todaySteps: Double
-    let todayCalories: Double
+    let todayActiveCalories: Double
     let currentWeight: Double
     let restingHeartRate: Double
 }

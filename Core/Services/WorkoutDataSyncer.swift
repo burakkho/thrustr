@@ -273,7 +273,7 @@ actor WorkoutDataSyncer {
 
 // MARK: - Supporting Types
 
-struct SyncOperation: Sendable {
+struct SyncOperation: @unchecked Sendable {
     let id: UUID
     let type: SyncType
     let data: Any

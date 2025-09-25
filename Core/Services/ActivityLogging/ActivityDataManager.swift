@@ -82,16 +82,18 @@ class ActivityDataManager {
         guard let modelContext = _modelContext else { return [] }
 
         do {
-            let descriptor = FetchDescriptor<ActivityEntry>(
-                predicate: #Predicate { activity in
-                    activity.user?.id == user.id
-                },
-                sortBy: [SortDescriptor(\.activityDate, order: .reverse)]
+            // Fetch all activities and filter manually due to SwiftData Predicate limitations
+            var descriptor = FetchDescriptor<ActivityEntry>(
+                sortBy: [SortDescriptor(\.timestamp, order: .reverse)]
             )
-            descriptor.fetchLimit = limit
+            descriptor.fetchLimit = limit * 2 // Fetch more to account for filtering
 
-            let activities = try modelContext.fetch(descriptor)
-            return activities
+            let allActivities = try modelContext.fetch(descriptor)
+            let userActivities = allActivities.filter { activity in
+                activity.user?.id == user.id
+            }
+
+            return Array(userActivities.prefix(limit))
         } catch {
             Logger.error("Failed to fetch user activities: \(error)")
             return []
@@ -105,11 +107,13 @@ class ActivityDataManager {
         guard let modelContext = _modelContext else { return [] }
 
         do {
-            let descriptor = FetchDescriptor<ActivityEntry>(
-                predicate: #Predicate { activity in
-                    activity.activityType == type
+            // Use direct string comparison to avoid enum rawValue issues
+            let typeString = type.rawValue
+            var descriptor = FetchDescriptor<ActivityEntry>(
+                predicate: #Predicate<ActivityEntry> { activity in
+                    activity.type == typeString
                 },
-                sortBy: [SortDescriptor(\.activityDate, order: .reverse)]
+                sortBy: [SortDescriptor(\.timestamp, order: .reverse)]
             )
             descriptor.fetchLimit = limit
 
@@ -133,7 +137,7 @@ class ActivityDataManager {
         do {
             let descriptor = FetchDescriptor<ActivityEntry>(
                 predicate: #Predicate { activity in
-                    activity.activityDate < cutoffDate
+                    activity.timestamp < cutoffDate
                 }
             )
 
@@ -160,18 +164,18 @@ class ActivityDataManager {
 
         do {
             let descriptor = FetchDescriptor<ActivityEntry>(
-                sortBy: [SortDescriptor(\.activityDate, order: .reverse)]
+                sortBy: [SortDescriptor(\.timestamp, order: .reverse)]
             )
 
             let allActivities = try modelContext.fetch(descriptor)
-            var seenActivityIds = Set<String>()
+            var seenActivityIds = Set<PersistentIdentifier>()
             var duplicatesToDelete: [ActivityEntry] = []
 
             for activity in allActivities {
-                if seenActivityIds.contains(activity.activityId) {
+                if seenActivityIds.contains(activity.persistentModelID) {
                     duplicatesToDelete.append(activity)
                 } else {
-                    seenActivityIds.insert(activity.activityId)
+                    seenActivityIds.insert(activity.persistentModelID)
                 }
             }
 
@@ -222,8 +226,8 @@ class ActivityDataManager {
         guard let modelContext = _modelContext else { return [] }
 
         do {
-            let descriptor = FetchDescriptor<ActivityEntry>(
-                sortBy: [SortDescriptor(\.activityDate, order: .reverse)]
+            var descriptor = FetchDescriptor<ActivityEntry>(
+                sortBy: [SortDescriptor(\.timestamp, order: .reverse)]
             )
             descriptor.fetchLimit = limit
 
@@ -253,13 +257,13 @@ class ActivityDataManager {
         do {
             let descriptor = FetchDescriptor<ActivityEntry>(
                 predicate: #Predicate { activity in
-                    activity.activityDate >= startDate && activity.activityDate <= endDate
+                    activity.timestamp >= startDate && activity.timestamp <= endDate
                 }
             )
 
             let activities = try modelContext.fetch(descriptor)
-            let workoutCount = activities.filter { $0.activityType == .workoutCompleted || $0.activityType == .cardioCompleted }.count
-            let nutritionCount = activities.filter { $0.activityType == .nutritionLogged }.count
+            let workoutCount = activities.filter { $0.typeEnum == .workoutCompleted || $0.typeEnum == .cardioCompleted }.count
+            let nutritionCount = activities.filter { $0.typeEnum == .nutritionLogged }.count
 
             let daysDifference = Calendar.current.dateComponents([.day], from: startDate, to: endDate).day ?? 1
             let averagePerDay = Double(activities.count) / Double(max(daysDifference, 1))

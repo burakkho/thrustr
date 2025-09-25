@@ -8,27 +8,27 @@ class CaloriesValidator: ValidationRule {
     func validate(_ input: String) -> ValidationResult {
         // Check if input is empty
         guard !input.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
-            return .invalid(message: LocalizationKeys.Validation.caloriesRequired.localized)
+            return .invalid(message: CommonKeys.Validation.caloriesRequired.localized)
         }
 
         // Try to parse as Integer
         guard let calories = Int(input) else {
-            return .invalid(message: LocalizationKeys.Validation.caloriesInvalidFormat.localized)
+            return .invalid(message: CommonKeys.Validation.caloriesInvalidFormat.localized)
         }
 
         // Check if calories is positive
         guard calories > 0 else {
-            return .invalid(message: LocalizationKeys.Validation.caloriesMustBePositive.localized)
+            return .invalid(message: CommonKeys.Validation.caloriesMustBePositive.localized)
         }
 
         // Check minimum calories
         guard calories >= minCalories else {
-            return .invalid(message: LocalizationKeys.Validation.caloriesMinimum.localized)
+            return .invalid(message: CommonKeys.Validation.caloriesMinimum.localized)
         }
 
         // Check maximum calories
         guard calories <= maxCalories else {
-            return .invalid(message: LocalizationKeys.Validation.caloriesMaximum.localized)
+            return .invalid(message: CommonKeys.Validation.caloriesMaximum.localized)
         }
 
         return .valid
@@ -55,7 +55,7 @@ class WorkoutCaloriesValidator: ValidationRule {
         }
 
         guard let calories = Int(input) else {
-            return .invalid(message: LocalizationKeys.Validation.caloriesInvalidFormat.localized)
+            return .invalid(message: CommonKeys.Validation.caloriesInvalidFormat.localized)
         }
 
         // Calculate realistic calorie range based on workout duration
@@ -70,7 +70,7 @@ class WorkoutCaloriesValidator: ValidationRule {
         }
 
         if calories > upperBound {
-            return .invalid(message: LocalizationKeys.Validation.caloriesUnrealistic.localized)
+            return .invalid(message: CommonKeys.Validation.caloriesUnrealistic.localized)
         }
 
         return .valid

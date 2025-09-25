@@ -321,8 +321,8 @@ struct HealthQuickStatsGrid: View {
                 if let weight = healthKitService.currentWeight {
                     HealthStatCard(
                         title: CommonKeys.HealthKit.currentWeightTitle.localized,
-                        value: formatWeight(weight),
-                        unit: weightUnit,
+                        value: UnitsFormatter.formatWeight(kg: weight, system: unitSettings.unitSystem),
+                        unit: unitSettings.unitSystem == .metric ? "kg" : "lb",
                         icon: "scalemass.fill",
                         color: .green
                     )
@@ -343,23 +343,6 @@ struct HealthQuickStatsGrid: View {
         .background(theme.colors.cardBackground)
         .cornerRadius(12)
         .shadow(color: theme.shadows.card.opacity(0.05), radius: 2)
-    }
-    
-    private func formatWeight(_ kg: Double) -> String {
-        switch unitSettings.unitSystem {
-        case .metric:
-            return String(format: "%.1f", kg)
-        case .imperial:
-            let lbs = UnitsConverter.kgToLbs(kg)
-            return String(format: "%.1f", lbs)
-        }
-    }
-    
-    private var weightUnit: String {
-        switch unitSettings.unitSystem {
-        case .metric: return "kg"
-        case .imperial: return "lb"
-        }
     }
 }
 

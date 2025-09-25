@@ -310,6 +310,7 @@ private struct MovementCard: View {
     @Binding var isRX: Bool
     @Binding var selectedWeight: Double?
     @Environment(\.theme) private var theme
+    @Environment(UnitSettings.self) private var unitSettings
     @State private var weightText = ""
 
     private var displayRxWeight: String? {
@@ -318,6 +319,10 @@ private struct MovementCard: View {
     
     private var displayScaledWeight: String? {
         viewModel.displayScaledWeight(for: movement, userGender: userGender)
+    }
+
+    private var rxWeight: String? {
+        movement.rxWeight(for: userGender)
     }
     
     var body: some View {

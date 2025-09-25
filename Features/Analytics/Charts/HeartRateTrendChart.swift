@@ -11,7 +11,7 @@ struct AnalyticsHeartRateTrendChart: View {
                     .font(theme.typography.headline)
                     .fontWeight(.semibold)
                 Spacer()
-                Text(LocalizationKeys.Analytics.this_week.localized)
+                Text(LocalizationKeys.analytics.Time.this_week.localized)
                     .font(theme.typography.caption)
                     .foregroundColor(theme.colors.textSecondary)
             }

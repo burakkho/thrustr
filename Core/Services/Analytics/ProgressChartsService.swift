@@ -129,17 +129,21 @@ struct ProgressChartsService: Sendable {
     static func prepareStrengthChartData(from sessions: [LiftSession]) -> [StrengthProgressData] {
         return sessions.compactMap { session in
             // Get the strongest exercise result from the session
-            guard let strongestResult = session.exercises.flatMap({ $0.results }).max(by: { $0.estimatedOneRM < $1.estimatedOneRM }) else {
+            guard let results = session.exerciseResults,
+                  let strongestResult = results.max(by: { $0.estimatedOneRM < $1.estimatedOneRM }) else {
                 return nil
             }
+
+            let bestSet = strongestResult.sets.filter { $0.isCompleted && $0.weight != nil }
+                .max { ($0.weight ?? 0) < ($1.weight ?? 0) }
 
             return StrengthProgressData(
                 date: session.startDate,
                 exercise: strongestResult.exercise?.exerciseName ?? "Unknown",
-                weight: strongestResult.weight,
-                reps: strongestResult.reps,
+                weight: bestSet?.weight ?? 0,
+                reps: bestSet?.reps ?? 0,
                 oneRM: strongestResult.estimatedOneRM,
-                isPersonalRecord: false
+                isPersonalRecord: strongestResult.isPersonalRecord
             )
         }.sorted { $0.date < $1.date }
     }
@@ -232,16 +236,16 @@ struct ProgressChartsService: Sendable {
         timeRange: TimeRange
     ) -> StrengthStatistics {
         let totalWorkouts = sessions.count
-        let allResults = sessions.flatMap { $0.exercises.flatMap { $0.results } }
+        let allResults = sessions.compactMap { $0.exerciseResults }.flatMap { $0 }
 
         let totalVolume = allResults.reduce(0.0) { total, result in
-            total + (result.weight * Double(result.reps))
+            total + result.totalVolume
         }
 
         let averageOneRM = allResults.isEmpty ? 0.0 :
             allResults.map { $0.estimatedOneRM }.reduce(0, +) / Double(allResults.count)
 
-        let topExercise = Dictionary(grouping: allResults) { $0.exercise?.exerciseName ?? "Unknown" }
+        let topExercise = Dictionary(grouping: allResults, by: { $0.exercise?.exerciseName ?? "Unknown" })
             .max { $0.value.count < $1.value.count }?.key ?? "No exercises"
 
         return StrengthStatistics(

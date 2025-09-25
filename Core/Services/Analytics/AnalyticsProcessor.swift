@@ -234,7 +234,7 @@ actor AnalyticsProcessor {
 
 // MARK: - Supporting Types
 
-struct AnalyticsEvent: Sendable {
+struct AnalyticsEvent: @unchecked Sendable {
     let id: UUID
     let type: EventType
     let timestamp: Date

@@ -72,6 +72,41 @@ public enum TimeRange: String, CaseIterable, Sendable {
             return 730
         }
     }
+
+    public var cutoffDate: Date {
+        let calendar = Calendar.current
+        switch self {
+        case .week1:
+            return calendar.date(byAdding: .day, value: -7, to: Date()) ?? Date()
+        case .month1:
+            return calendar.date(byAdding: .month, value: -1, to: Date()) ?? Date()
+        case .month3:
+            return calendar.date(byAdding: .month, value: -3, to: Date()) ?? Date()
+        case .month6:
+            return calendar.date(byAdding: .month, value: -6, to: Date()) ?? Date()
+        case .year1:
+            return calendar.date(byAdding: .year, value: -1, to: Date()) ?? Date()
+        case .allTime:
+            return calendar.date(byAdding: .year, value: -10, to: Date()) ?? Date()
+        }
+    }
+
+    public var weekCount: Int {
+        switch self {
+        case .week1:
+            return 1
+        case .month1:
+            return 4
+        case .month3:
+            return 12
+        case .month6:
+            return 24
+        case .year1:
+            return 52
+        case .allTime:
+            return 104
+        }
+    }
 }
 
 // MARK: - Chart Type Definitions
@@ -118,6 +153,27 @@ public enum ChartType: String, CaseIterable, Sendable {
             return "dumbbell"
         case .cardio:
             return "heart"
+        }
+    }
+
+    public var icon: String {
+        return systemImage
+    }
+
+    public var color: Color {
+        switch self {
+        case .weight:
+            return .blue
+        case .workoutVolume:
+            return .purple
+        case .workoutFrequency:
+            return .orange
+        case .bodyMeasurements:
+            return .green
+        case .strength:
+            return .red
+        case .cardio:
+            return .pink
         }
     }
 }

@@ -65,18 +65,42 @@ struct ActivityFormatter {
         calories: Double? = nil
     ) -> String {
         var components: [String] = []
-        
+
         // Add distance
         components.append(formatDistance(distance))
-        
-        // Add duration  
+
+        // Add duration
         components.append(formatDuration(duration))
-        
+
         // Add calories if available
         if let calories = calories {
             components.append("\(Int(calories)) cal")
         }
-        
+
+        return components.joined(separator: " | ")
+    }
+
+    static func wodSubtitle(
+        wodType: String,
+        totalTime: TimeInterval,
+        rounds: Int,
+        extraReps: Int
+    ) -> String {
+        var components: [String] = []
+
+        // Add WOD type
+        components.append(wodType)
+
+        // Add rounds and extra reps info
+        if extraReps > 0 {
+            components.append("\(rounds) rounds + \(extraReps) reps")
+        } else {
+            components.append("\(rounds) rounds")
+        }
+
+        // Add total time
+        components.append(formatDuration(totalTime))
+
         return components.joined(separator: " | ")
     }
     

@@ -64,7 +64,7 @@ struct WeightEntrySheet: View {
                     weightValue : weightValue * 0.453592 // lb to kg
 
                 // Store previous weight for activity logging
-                let previousWeight = user.currentWeight
+                let _ = user.currentWeight
 
                 user.currentWeight = weightInKg
                 user.calculateMetrics()
@@ -73,11 +73,8 @@ struct WeightEntrySheet: View {
 
                 // Log activity for dashboard
                 ActivityLoggerService.shared.setModelContext(modelContext)
-                ActivityLoggerService.shared.logMeasurementUpdate(
-                    measurementType: "Kilo",
-                    value: weightInKg,
-                    previousValue: previousWeight,
-                    unit: "kg",
+                ActivityLoggerService.shared.logWeightEntry(
+                    weight: weightInKg,
                     user: user
                 )
 

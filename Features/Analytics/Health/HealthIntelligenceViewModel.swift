@@ -48,24 +48,80 @@ class HealthIntelligenceViewModel {
         healthKitService.vo2Max
     }
 
-    var stepsHistory: [Double] {
-        healthKitService.stepsHistory.map { $0.value }
+    var stepsHistory: [HealthDataPoint] {
+        healthKitService.stepsHistory
     }
 
-    var todaySteps: Int {
-        Int(healthKitService.todaySteps)
+    var todaySteps: Double {
+        healthKitService.todaySteps
     }
 
-    var weightHistory: [Double] {
-        healthKitService.weightHistory.map { $0.value }
+    var weightHistory: [HealthDataPoint] {
+        healthKitService.weightHistory
     }
 
     var currentWeight: Double? {
         healthKitService.currentWeight
     }
 
-    var heartRateHistory: [Double] {
-        healthKitService.heartRateHistory.map { $0.value }
+    var heartRateHistory: [HealthDataPoint] {
+        healthKitService.heartRateHistory
+    }
+
+    // MARK: - VO2 Max Display Properties
+
+    var vo2MaxColor: String {
+        guard let vo2Max = vo2Max else { return "gray" }
+        return RecoveryCalculationService.getVO2MaxColor(for: vo2Max)
+    }
+
+    var vo2MaxCategory: String {
+        guard let vo2Max = vo2Max else { return "Unknown" }
+        return RecoveryCalculationService.getVO2MaxCategory(for: vo2Max)
+    }
+
+    var vo2MaxDescription: String {
+        guard let vo2Max = vo2Max else { return "No data available" }
+        return RecoveryCalculationService.getVO2MaxDescription(for: vo2Max)
+    }
+
+    // MARK: - Recovery Trend Properties
+
+    func recoveryScoreForDay(daysBack: Int) async -> Double {
+        guard let report = healthReport else { return 50.0 }
+        return await RecoveryCalculationService.calculateRecoveryForDay(
+            daysBack: daysBack,
+            baseRecoveryScore: report.recoveryScore,
+            healthKitService: healthKitService
+        )
+    }
+
+    func recoveryTrendData() async -> [(day: String, score: Double)] {
+        let dayNames = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+        var results: [(day: String, score: Double)] = []
+
+        for index in 0..<7 {
+            let dayScore = await recoveryScoreForDay(daysBack: 6 - index)
+            results.append((day: dayNames[index], score: dayScore))
+        }
+
+        return results
+    }
+
+    // MARK: - Date Formatting Properties
+
+    func formatRelativeDate(_ date: Date) -> String {
+        return DateFormatterService.formatRelativeDate(date)
+    }
+
+    func formatPRTimelineDate(_ date: Date) -> String {
+        return DateFormatterService.formatPRTimelineDate(date)
+    }
+
+    // MARK: - Score Color Helpers
+
+    func getScoreColor(for score: Double) -> String {
+        return RecoveryCalculationService.getScoreColor(for: score)
     }
 
     // MARK: - Initialization
@@ -126,29 +182,6 @@ class HealthIntelligenceViewModel {
     }
 }
 
-// MARK: - Intelligence Tab Definition
-
-enum IntelligenceTab: CaseIterable {
-    case overview, recovery, fitness, trends
-
-    var title: String {
-        switch self {
-        case .overview: return "analytics.overview".localized
-        case .recovery: return "analytics.recovery".localized
-        case .fitness: return "analytics.fitness".localized
-        case .trends: return "analytics.trends".localized
-        }
-    }
-
-    var icon: String {
-        switch self {
-        case .overview: return "brain.head.profile"
-        case .recovery: return "heart.fill"
-        case .fitness: return "figure.strengthtraining.traditional"
-        case .trends: return "chart.line.uptrend.xyaxis"
-        }
-    }
-}
 
 // MARK: - Service Protocol for Dependency Injection
 

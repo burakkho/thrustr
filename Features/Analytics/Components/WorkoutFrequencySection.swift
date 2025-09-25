@@ -12,7 +12,7 @@ struct WorkoutFrequencySection: View {
 
         VStack(spacing: theme.spacing.m) {
             HStack {
-                Text("analytics.workout_frequency".localized)
+                Text(CommonKeys.Analytics.workoutFrequency.localized)
                     .font(theme.typography.headline)
                     .fontWeight(.semibold)
                 Spacer()
@@ -25,11 +25,11 @@ struct WorkoutFrequencySection: View {
                         .font(.title2)
                         .foregroundColor(theme.colors.textSecondary)
 
-                    Text("No workouts this week")
+                    Text(CommonKeys.Analytics.noWorkoutsThisWeek.localized)
                         .font(theme.typography.bodySmall)
                         .foregroundColor(theme.colors.textSecondary)
 
-                    Text("Start training to see your workout frequency")
+                    Text(CommonKeys.Analytics.startTrainingMessage.localized)
                         .font(theme.typography.caption)
                         .foregroundColor(theme.colors.textTertiary)
                         .multilineTextAlignment(.center)

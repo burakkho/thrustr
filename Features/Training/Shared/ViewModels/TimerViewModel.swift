@@ -40,7 +40,9 @@ class TimerViewModel {
         countdownStartTime = Date()
         
         timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
-            self?.updateCountdown()
+            Task { @MainActor in
+                self?.updateCountdown()
+            }
         }
     }
     
@@ -55,9 +57,11 @@ class TimerViewModel {
         isRunning = true
         isPaused = false
         startTime = Date()
-        
+
         timer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { [weak self] _ in
-            self?.updateMainTimer()
+            Task { @MainActor in
+                self?.updateMainTimer()
+            }
         }
     }
     
@@ -81,9 +85,11 @@ class TimerViewModel {
         startTime = Date().addingTimeInterval(-pausedTime)
         timerState = .running
         isPaused = false
-        
+
         timer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { [weak self] _ in
-            self?.updateMainTimer()
+            Task { @MainActor in
+                self?.updateMainTimer()
+            }
         }
     }
     
@@ -136,9 +142,11 @@ class TimerViewModel {
             isRunning = true
             
             startTime = Date()
-            
+
             timer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { [weak self] _ in
-                self?.updateMainTimer()
+                Task { @MainActor in
+                    self?.updateMainTimer()
+                }
             }
         }
     }
@@ -159,6 +167,6 @@ class TimerViewModel {
     // MARK: - Cleanup
     
     deinit {
-        timer?.invalidate()
+        // Timer cleanup handled by explicit stopTimer() calls
     }
 }

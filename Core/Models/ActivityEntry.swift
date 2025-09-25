@@ -297,6 +297,41 @@ extension ActivityEntry {
     }
     
     /**
+     * Creates a WOD completed activity
+     */
+    static func wodCompleted(
+        wodName: String,
+        wodType: String,
+        totalTime: TimeInterval,
+        rounds: Int,
+        extraReps: Int,
+        isPR: Bool,
+        user: User?
+    ) -> ActivityEntry {
+        let metadata = ActivityMetadata()
+        metadata.duration = totalTime
+        metadata.rounds = rounds
+        metadata.extraReps = extraReps
+        metadata.isPersonalRecord = isPR
+
+        let subtitle = ActivityFormatter.wodSubtitle(
+            wodType: wodType,
+            totalTime: totalTime,
+            rounds: rounds,
+            extraReps: extraReps
+        )
+
+        return ActivityEntry(
+            type: ActivityType.wodCompleted,
+            title: "\(wodName) \(CommonKeys.Activity.completed.localized)",
+            subtitle: subtitle,
+            icon: "timer",
+            metadata: metadata,
+            user: user
+        )
+    }
+
+    /**
      * Creates a cardio completed activity
      */
     static func cardioCompleted(

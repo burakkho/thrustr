@@ -36,6 +36,33 @@ struct ActivityLoggerCore {
     }
 
     /**
+     * Logs a WOD completion activity.
+     */
+    static func logWODCompleted(
+        wodName: String,
+        wodType: String,
+        totalTime: TimeInterval,
+        rounds: Int,
+        extraReps: Int,
+        isPR: Bool,
+        user: User,
+        modelContext: ModelContext
+    ) {
+        let activity = ActivityEntry.wodCompleted(
+            wodName: wodName,
+            wodType: wodType,
+            totalTime: totalTime,
+            rounds: rounds,
+            extraReps: extraReps,
+            isPR: isPR,
+            user: user
+        )
+
+        saveActivity(activity, modelContext: modelContext)
+        Logger.info("✅ Logged WOD completion: \(wodName)")
+    }
+
+    /**
      * Logs a cardio session completion.
      */
     static func logCardioCompleted(
@@ -121,6 +148,27 @@ struct ActivityLoggerCore {
 
         saveActivity(activity, modelContext: modelContext)
         Logger.info("⚖️ Logged weight entry: \(weight) kg")
+    }
+
+    /**
+     * Logs program start activity.
+     */
+    static func logProgramStarted(
+        programName: String,
+        weeks: Int,
+        daysPerWeek: Int,
+        user: User,
+        modelContext: ModelContext
+    ) {
+        let duration = "\(weeks) hafta, \(daysPerWeek) gün/hafta"
+        let activity = ActivityEntry.programStarted(
+            programName: programName,
+            duration: duration,
+            user: user
+        )
+
+        saveActivity(activity, modelContext: modelContext)
+        Logger.info("🚀 Logged program start: \(programName)")
     }
 
     // MARK: - Helper Methods

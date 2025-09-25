@@ -9,7 +9,7 @@ struct AnalyticsEnhancedHealthIntelligenceSection: View {
         VStack(spacing: 20) {
             // Section Header
             HStack {
-                Text("AI Health Intelligence")
+                Text(CommonKeys.Analytics.aiHealthIntelligence.localized)
                     .font(.headline)
                     .fontWeight(.semibold)
                     .foregroundColor(theme.colors.textPrimary)
@@ -17,7 +17,7 @@ struct AnalyticsEnhancedHealthIntelligenceSection: View {
                 Spacer()
 
                 NavigationLink(destination: HealthIntelligenceView()) {
-                    Text("Full Report")
+                    Text(CommonKeys.Analytics.fullReport.localized)
                         .font(.caption)
                         .foregroundColor(theme.colors.accent)
                 }

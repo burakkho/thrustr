@@ -232,6 +232,14 @@ enum CommonKeys {
         static let bicepName = "body.part.bicep"
         static let thighName = "body.part.thigh"
         static let measurementsName = "body.part.measurements"
+
+        // Calories validation
+        static let caloriesRequired = "validation.calories.required"
+        static let caloriesInvalidFormat = "validation.calories.invalidFormat"
+        static let caloriesMustBePositive = "validation.calories.mustBePositive"
+        static let caloriesMinimum = "validation.calories.minimum"
+        static let caloriesMaximum = "validation.calories.maximum"
+        static let caloriesUnrealistic = "validation.calories.unrealistic"
     }
     
     // MARK: - Heart Rate Zones
@@ -731,6 +739,7 @@ enum CommonKeys {
     // MARK: - Units
     enum Units {
         static let kcal = "units.kcal"
+        static let calories = "units.calories"
         static let meters = "units.meters"
         static let foods = "units.foods"
         static let kilometers = "units.kilometers"
@@ -767,5 +776,134 @@ enum CommonKeys {
         static let portuguese = "language.names.portuguese"
         static let indonesian = "language.names.indonesian"
         static let polish = "language.names.polish"
+    }
+
+    // MARK: - Analytics
+    enum Analytics {
+        // Common Analytics
+        static let title = "analytics.title"
+        static let viewAll = "analytics.view_all"
+        static let viewDetails = "analytics.view_details"
+        static let noData = "analytics.no_data"
+        static let insufficientData = "analytics.insufficient_data"
+        static let loading = "analytics.loading"
+
+        // Journey Titles
+        static let strengthJourney = "analytics.strength_journey"
+        static let healthJourney = "analytics.health_journey"
+        static let nutritionJourney = "analytics.nutrition_journey"
+
+        // Training Analytics
+        static let strengthProgression = "analytics.strength_progression"
+        static let personalRecords = "analytics.personal_records"
+        static let trainingPatterns = "analytics.training_patterns"
+        static let workoutFrequency = "analytics.workout_frequency"
+        static let strengthInsights = "analytics.strength_insights"
+        static let strongestLift = "analytics.strongest_lift"
+        static let totalVolume = "analytics.total_volume"
+        static let thisMonth = "analytics.this_month"
+        static let startTraining = "analytics.start_training"
+        static let setGoals = "analytics.set_goals"
+        static let prsThisMonth = "analytics.prs_this_month"
+        static let totalProgress = "analytics.total_progress"
+        static let streak = "analytics.streak"
+
+        // Health Analytics
+        static let healthIntelligence = "analytics.health_intelligence"
+        static let aiHealthIntelligence = "analytics.ai_health_intelligence"
+        static let fullReport = "analytics.full_report"
+        static let healthActivityRings = "analytics.health_activity_rings"
+        static let healthTrends = "analytics.health_trends"
+        static let viewCharts = "analytics.view_charts"
+        static let recoveryFactors = "analytics.recovery_factors"
+        static let recommendedAction = "analytics.recommended_action"
+
+        // Nutrition Analytics
+        static let nutritionIntelligence = "analytics.nutrition_intelligence"
+        static let macroTimeline = "analytics.macro_timeline"
+        static let nutritionGoals = "analytics.nutrition_goals"
+        static let editGoals = "analytics.edit_goals"
+        static let avgCalories = "analytics.avg_calories"
+        static let loggedDays = "analytics.logged_days"
+        static let consistency = "analytics.consistency"
+        static let dailyCalories = "analytics.daily_calories"
+        static let proteinIntake = "analytics.protein_intake"
+        static let loggingStreak = "analytics.logging_streak"
+        static let eatingPattern = "analytics.eating_pattern"
+        static let macroBalance = "analytics.macro_balance"
+        static let goalProgress = "analytics.goal_progress"
+        static let recommendation = "analytics.recommendation"
+
+        // Time Periods
+        static let week = "analytics.period.week"
+        static let month = "analytics.period.month"
+        static let threeMonths = "analytics.period.three_months"
+        static let sixMonths = "analytics.period.six_months"
+        static let year = "analytics.period.year"
+        static let allTime = "analytics.period.all_time"
+
+        // Time Period Labels
+        static let lastWeek = "analytics.period.last_week"
+        static let lastMonth = "analytics.period.last_month"
+        static let lastThreeMonths = "analytics.period.last_three_months"
+        static let lastSixMonths = "analytics.period.last_six_months"
+        static let lastYear = "analytics.period.last_year"
+
+        // PR Types
+        static let strengthPRs = "analytics.pr_types.strength"
+        static let endurancePRs = "analytics.pr_types.endurance"
+        static let volumePRs = "analytics.pr_types.volume"
+
+        // Empty States
+        static let noStrengthData = "analytics.empty.no_strength_data"
+        static let noStrengthMessage = "analytics.empty.no_strength_message"
+        static let completeFirstWorkout = "analytics.empty.complete_first_workout"
+        static let noWorkoutsThisWeek = "analytics.empty.no_workouts_this_week"
+        static let startTrainingMessage = "analytics.empty.start_training_message"
+        static let setPRMessage = "analytics.empty.set_pr_message"
+
+        // Units
+        static let kcal = "analytics.units.kcal"
+        static let days = "analytics.units.days"
+        static let grams = "analytics.units.grams"
+        static let calories = "analytics.units.calories"
+        static let protein = "analytics.units.protein"
+        static let carbs = "analytics.units.carbs"
+        static let fat = "analytics.units.fat"
+
+        // Confidence Levels
+        static let highConfidence = "analytics.confidence.high"
+        static let mediumConfidence = "analytics.confidence.medium"
+        static let lowConfidence = "analytics.confidence.low"
+
+        // Interactive Elements
+        static let tapToExplore = "analytics.tap_to_explore"
+        static let detailedCharts = "analytics.detailed_charts"
+        static let goalSettings = "analytics.goal_settings"
+
+        // Error Messages
+        static let noAnalyticsData = "analytics.error.no_data_available"
+        static let invalidDateRange = "analytics.error.invalid_date_range"
+        static let calculationFailed = "analytics.error.calculation_failed"
+        static let unknownExercise = "analytics.error.unknown_exercise"
+        static let noDataPeriod = "analytics.error.no_data_period"
+
+        // Status Messages
+        static let calculating = "analytics.status.calculating"
+        static let processing = "analytics.status.processing"
+        static let complete = "analytics.status.complete"
+
+        // Milestone Messages
+        static let nextMilestone = "analytics.milestone.next"
+        static let reachWeight = "analytics.milestone.reach_weight"
+        static let breakBarrier = "analytics.milestone.break_barrier"
+        static let firstWorkout = "analytics.milestone.first_workout"
+
+        // Exercise Names (fallbacks)
+        static let benchPress = "analytics.exercise.bench_press"
+        static let squat = "analytics.exercise.squat"
+        static let deadlift = "analytics.exercise.deadlift"
+        static let overheadPress = "analytics.exercise.overhead_press"
+        static let pullUp = "analytics.exercise.pull_up"
     }
 }

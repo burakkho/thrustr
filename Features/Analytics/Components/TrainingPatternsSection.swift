@@ -266,10 +266,12 @@ struct TrainingInsightsGridSection: View {
     }
 }
 
-#Preview {
-    VStack(spacing: 20) {
-        TrainingPatternsSection(liftResults: [], cardioResults: [], liftSessions: [])
-        TrainingInsightsGridSection(liftResults: [], cardioResults: [], liftSessions: [])
+struct TrainingPatternsSection_Previews: PreviewProvider {
+    static var previews: some View {
+        VStack(spacing: 20) {
+            TrainingPatternsSection(liftResults: [], cardioResults: [], liftSessions: [])
+            TrainingInsightsGridSection(liftResults: [], cardioResults: [], liftSessions: [])
+        }
+        .environment(\.theme, DefaultLightTheme())
     }
-    .environment(\.theme, DefaultLightTheme())
 }

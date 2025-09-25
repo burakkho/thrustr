@@ -14,7 +14,7 @@ struct AnalyticsRecoveryScoreCard: View {
                         .fontWeight(.semibold)
                         .foregroundColor(theme.colors.textPrimary)
 
-                    Text(LocalizationKeys.Common.HealthKit.recoveryScoreSubtitle.localized)
+                    Text(LocalizationKeys.Common.HealthKit.loadingMessage.localized)
                         .font(theme.typography.caption)
                         .foregroundColor(theme.colors.textSecondary)
                 }
@@ -69,10 +69,10 @@ struct AnalyticsRecoveryScoreCard: View {
 
             // Detailed Scores
             VStack(spacing: 8) {
-                ScoreDetailRow(title: LocalizationKeys.Common.HealthKit.sleepScore.localized, score: recoveryScore.sleepScore)
-                ScoreDetailRow(title: LocalizationKeys.Common.HealthKit.hrvScore.localized, score: recoveryScore.hrvScore)
-                ScoreDetailRow(title: LocalizationKeys.Common.HealthKit.workloadScore.localized, score: recoveryScore.workoutLoadScore)
-                ScoreDetailRow(title: LocalizationKeys.Common.HealthKit.restingHRScore.localized, score: recoveryScore.restingHeartRateScore)
+                AnalyticsScoreDetailRow(title: LocalizationKeys.Health.sleep_quality.localized, score: recoveryScore.sleepScore)
+                AnalyticsScoreDetailRow(title: LocalizationKeys.Health.hrv.localized, score: recoveryScore.hrvScore)
+                AnalyticsScoreDetailRow(title: LocalizationKeys.Health.Recovery.workout_load.localized, score: recoveryScore.workoutLoadScore)
+                AnalyticsScoreDetailRow(title: LocalizationKeys.Health.heart_rate.localized, score: recoveryScore.restingHeartRateScore)
             }
             .padding(.top, 8)
         }
@@ -125,7 +125,7 @@ struct AnalyticsEnhancedRecoveryScoreCard: View {
     var body: some View {
         VStack(spacing: theme.spacing.l) {
             // Enhanced version of existing RecoveryScoreCard
-            RecoveryScoreCard(recoveryScore: recoveryScore)
+            AnalyticsRecoveryScoreCard(recoveryScore: recoveryScore)
 
             // Recovery factors breakdown
             VStack(alignment: .leading, spacing: theme.spacing.s) {

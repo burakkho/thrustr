@@ -161,15 +161,13 @@ extension ProgramExecution {
         isCompleted = true
         
         // Log program completion activity
-        let weekCount = currentWeek - 1
-        let totalCompletedWorkouts = (completedWorkouts ?? []).filter { !$0.isSkipped }.count
+        let _ = (completedWorkouts ?? []).filter { !$0.isSkipped }.count
         let programName = program?.localizedName ?? "Unknown Program"
-        
+
         // Log directly in same SwiftData context - no async boundary
-        ActivityLoggerService.shared.logProgramCompleted(
-            programName: programName,
-            totalWorkouts: totalCompletedWorkouts,
-            weekCount: weekCount,
+        ActivityLoggerService.shared.logWorkoutCompleted(
+            workoutType: programName,
+            duration: 0, // Program completion
             user: user
         )
     }

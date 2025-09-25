@@ -86,7 +86,7 @@ struct HealthIntelligenceView: View {
     @ViewBuilder
     private func recoverySection(report: HealthReport) -> some View {
         // Enhanced Recovery Score Card with breakdown
-        EnhancedRecoveryScoreCard(recoveryScore: report.recoveryScore)
+        AnalyticsEnhancedRecoveryScoreCard(recoveryScore: report.recoveryScore)
         
         // Recovery Trend Chart (if historical data available)
         AnalyticsRecoveryTrendChart(recoveryScore: report.recoveryScore)
@@ -105,11 +105,11 @@ struct HealthIntelligenceView: View {
     @ViewBuilder
     private func fitnessSection(report: HealthReport) -> some View {
         // Enhanced Fitness Assessment
-        EnhancedFitnessAssessmentCard(assessment: report.fitnessAssessment)
+        FitnessAssessmentCard(assessment: report.fitnessAssessment)
         
         // VO2 Max Visualization (if available)
         if let vo2Max = viewModel.vo2Max {
-            VO2MaxVisualizationCard(vo2Max: vo2Max)
+            VO2MaxVisualizationCard(vo2Max: vo2Max, viewModel: viewModel)
         }
         
         // Workout insights
@@ -151,126 +151,9 @@ struct HealthIntelligenceView: View {
 }
 
 // MARK: - Recovery Score Card
-struct RecoveryScoreCard: View {
-    let recoveryScore: RecoveryScore
-    @Environment(\.theme) private var theme
-    
-    var body: some View {
-        VStack(spacing: 16) {
-            // Header
-            HStack {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(CommonKeys.HealthKit.recoveryScoreTitle.localized)
-                        .font(theme.typography.headline)
-                        .fontWeight(.semibold)
-                        .foregroundColor(theme.colors.textPrimary)
-                    
-                    Text(CommonKeys.HealthKit.recoveryScoreSubtitle.localized)
-                        .font(theme.typography.caption)
-                        .foregroundColor(theme.colors.textSecondary)
-                }
-                
-                Spacer()
-                
-                VStack(alignment: .trailing, spacing: 4) {
-                    Text("\(Int(recoveryScore.overallScore))")
-                        .font(theme.typography.display1)
-                        .fontWeight(.bold)
-                        .foregroundColor(Color(recoveryScore.category.color))
-                    
-                    Text("/100")
-                        .font(theme.typography.caption)
-                        .foregroundColor(theme.colors.textSecondary)
-                }
-            }
-            
-            // Progress Ring
-            ZStack {
-                Circle()
-                    .stroke(Color.gray.opacity(0.2), lineWidth: 8)
-                    .frame(width: 120, height: 120)
-                
-                Circle()
-                    .trim(from: 0, to: recoveryScore.overallScore / 100)
-                    .stroke(
-                        Color(recoveryScore.category.color),
-                        style: StrokeStyle(lineWidth: 8, lineCap: .round)
-                    )
-                    .frame(width: 120, height: 120)
-                    .rotationEffect(.degrees(-90))
-                
-                VStack(spacing: 4) {
-                    Image(systemName: recoveryScore.category.icon)
-                        .font(.title2)
-                        .foregroundColor(Color(recoveryScore.category.color))
-                    
-                    Text(recoveryScore.category.rawValue)
-                        .font(theme.typography.caption)
-                        .fontWeight(.medium)
-                        .foregroundColor(theme.colors.textPrimary)
-                }
-            }
-            
-            // Recommendation
-            Text(recoveryScore.recommendation)
-                .font(theme.typography.body)
-                .foregroundColor(theme.colors.textPrimary)
-                .multilineTextAlignment(.center)
-                .padding(.horizontal)
-            
-            // Detailed Scores
-            VStack(spacing: 8) {
-                ScoreDetailRow(title: CommonKeys.HealthKit.sleepScore.localized, score: recoveryScore.sleepScore)
-                ScoreDetailRow(title: CommonKeys.HealthKit.hrvScore.localized, score: recoveryScore.hrvScore)
-                ScoreDetailRow(title: CommonKeys.HealthKit.workloadScore.localized, score: recoveryScore.workoutLoadScore)
-                ScoreDetailRow(title: CommonKeys.HealthKit.restingHRScore.localized, score: recoveryScore.restingHeartRateScore)
-            }
-            .padding(.top, 8)
-        }
-        .padding(20)
-        .background(theme.colors.cardBackground)
-        .cornerRadius(12)
-        .shadow(color: theme.shadows.card.opacity(0.05), radius: 2)
-    }
-}
+// MARK: - Duplicate RecoveryScoreCard removed - use AnalyticsRecoveryScoreCard instead
 
-struct ScoreDetailRow: View {
-    let title: String
-    let score: Double
-    @Environment(\.theme) private var theme
-    
-    var body: some View {
-        HStack {
-            Text(title)
-                .font(theme.typography.body)
-                .foregroundColor(theme.colors.textPrimary)
-            
-            Spacer()
-            
-            HStack(spacing: 8) {
-                ProgressView(value: score, total: 100)
-                    .progressViewStyle(LinearProgressViewStyle(tint: getScoreColor(score)))
-                    .frame(width: 60)
-                
-                Text("\(Int(score))")
-                    .font(theme.typography.caption)
-                    .fontWeight(.medium)
-                    .foregroundColor(theme.colors.textPrimary)
-                    .frame(width: 30)
-            }
-        }
-    }
-    
-    private func getScoreColor(_ score: Double) -> Color {
-        switch score {
-        case 80...100: return .green
-        case 60..<80: return .blue
-        case 40..<60: return .yellow
-        case 20..<40: return .orange
-        default: return .red
-        }
-    }
-}
+// MARK: - ScoreDetailRow removed - use service methods for color logic
 
 // MARK: - Fitness Assessment Card
 struct FitnessAssessmentCard: View {
@@ -435,50 +318,6 @@ struct HealthLoadingView: View {
 
 // MARK: - Enhanced UI Components
 
-struct IntelligenceTabBar: View {
-    @Binding var selectedTab: HealthIntelligenceView.IntelligenceTab
-    @Environment(\.theme) private var theme
-    
-    var body: some View {
-        // Modern iOS 17 style segmented control
-        VStack(spacing: 0) {
-            HStack(spacing: 0) {
-                ForEach(HealthIntelligenceView.IntelligenceTab.allCases, id: \.self) { tab in
-                    Button(action: {
-                        withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
-                            selectedTab = tab
-                        }
-                    }) {
-                        VStack(spacing: 6) {
-                            Image(systemName: tab.icon)
-                                .font(.system(size: 16, weight: selectedTab == tab ? .semibold : .medium))
-                            
-                            Text(tab.title)
-                                .font(.caption)
-                                .fontWeight(selectedTab == tab ? .semibold : .medium)
-                        }
-                        .foregroundColor(selectedTab == tab ? .white : theme.colors.textSecondary)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 12)
-                        .background(
-                            RoundedRectangle(cornerRadius: 10)
-                                .fill(selectedTab == tab ? theme.colors.accent : Color.clear)
-                        )
-                    }
-                    .buttonStyle(PlainButtonStyle())
-                }
-            }
-            .padding(4)
-            .background(
-                RoundedRectangle(cornerRadius: 14)
-                    .fill(theme.colors.backgroundSecondary)
-                    .shadow(color: theme.shadows.card.opacity(0.1), radius: 2, x: 0, y: 1)
-            )
-            .padding(.horizontal, 20)
-            .padding(.vertical, 16)
-        }
-    }
-}
 
 
 struct KeyMetricsRow: View {
@@ -779,7 +618,7 @@ struct EnhancedRecoveryScoreCard: View {
             
             // Recovery factors breakdown
             VStack(alignment: .leading, spacing: theme.spacing.s) {
-                Text("Recovery Factors")
+                Text(CommonKeys.Analytics.recoveryFactors.localized)
                     .font(theme.typography.subheadline)
                     .fontWeight(.medium)
                 
@@ -831,176 +670,14 @@ struct RecoveryFactorRow: View {
     }
 }
 
-struct RecoveryTrendChart: View {
-    let recoveryScore: RecoveryScore
-    @Environment(\.theme) private var theme
-    @State private var healthKitService = HealthKitService.shared
-    
-    var body: some View {
-        VStack(alignment: .leading, spacing: theme.spacing.m) {
-            Text("Recovery Trend")
-                .font(theme.typography.headline)
-                .fontWeight(.semibold)
-            
-            // Real 7-day recovery trend from historical data
-            HStack(alignment: .bottom, spacing: 8) {
-                ForEach(0..<7, id: \.self) { day in
-                    let dayScore = calculateRealRecoveryForDay(daysBack: 6 - day)
-                    let normalizedScore = max(0, min(100, dayScore))
-                    let height = (normalizedScore / 100) * 60
-                    
-                    VStack {
-                        Rectangle()
-                            .fill(getRecoveryColor(normalizedScore))
-                            .frame(width: 30, height: height)
-                            .cornerRadius(4)
-                        
-                        Text(getDayName(for: day))
-                            .font(theme.typography.caption)
-                            .foregroundColor(theme.colors.textSecondary)
-                    }
-                }
-            }
-            .frame(height: 100)
-        }
-        .padding(theme.spacing.l)
-        .background(theme.colors.cardBackground)
-        .cornerRadius(theme.radius.l)
-        .cardStyle()
-    }
-    
-    private func getRecoveryColor(_ score: Double) -> Color {
-        switch score {
-        case 80...100: return .green
-        case 60..<80: return .blue
-        case 40..<60: return .orange
-        default: return .red
-        }
-    }
-    
-    private func getDayName(for index: Int) -> String {
-        let days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
-        return days[index]
-    }
-    
-    private func calculateRealRecoveryForDay(daysBack: Int) -> Double {
-        let targetDate = Calendar.current.date(byAdding: .day, value: -daysBack, to: Date()) ?? Date()
-        
-        // Calculate recovery based on real factors for that day
-        var dayRecoveryScore = recoveryScore.overallScore
-        
-        // Adjust based on sleep data if available
-        if healthKitService.lastNightSleep > 0 {
-            // Adjust score based on sleep quality (7-9 hours optimal)
-            let sleepAdjustment = calculateSleepScoreAdjustment(sleepHours: healthKitService.lastNightSleep)
-            dayRecoveryScore = (dayRecoveryScore * 0.7) + (sleepAdjustment * 0.3)
-        }
-        
-        // Adjust based on workout load for that day (if we have workout history)
-        let workoutAdjustment = calculateWorkoutLoadAdjustment(for: targetDate)
-        dayRecoveryScore = (dayRecoveryScore * 0.8) + (workoutAdjustment * 0.2)
-        
-        return max(20, min(100, dayRecoveryScore)) // Keep within reasonable bounds
-    }
-    
-    private func calculateSleepScoreAdjustment(sleepHours: Double) -> Double {
-        switch sleepHours {
-        case 7...9: return 85.0 // Optimal sleep
-        case 6..<7, 9..<10: return 75.0 // Good sleep
-        case 5..<6, 10..<11: return 60.0 // Adequate sleep
-        default: return 40.0 // Poor sleep
-        }
-    }
-    
-    private func calculateWorkoutLoadAdjustment(for date: Date) -> Double {
-        // If high intensity workout on this day, recovery might be lower next day
-        let calendar = Calendar.current
-        let dayStart = calendar.startOfDay(for: date)
-        let _ = calendar.date(byAdding: .day, value: 1, to: dayStart) ?? dayStart
-        
-        // Check if there was intense workout on this day
-        // This is a simplified version - could be enhanced with actual workout intensity data
-        let hasIntenseWorkout = calendar.component(.weekday, from: date) != 1 && calendar.component(.weekday, from: date) != 7 // Weekdays more likely to have workouts
-        
-        return hasIntenseWorkout ? 70.0 : 80.0
-    }
-    
-    // MARK: - Chart Data Helper Methods
-    
-}
+// MARK: - Removed duplicate RecoveryTrendChart - using AnalyticsRecoveryTrendChart instead
 
-struct EnhancedFitnessAssessmentCard: View {
-    let assessment: FitnessLevelAssessment
-    @Environment(\.theme) private var theme
-    
-    var body: some View {
-        VStack(spacing: theme.spacing.l) {
-            // Enhanced version of existing FitnessAssessmentCard
-            FitnessAssessmentCard(assessment: assessment)
-            
-            // Fitness improvement suggestions
-            VStack(alignment: .leading, spacing: theme.spacing.s) {
-                Text("Improvement Areas")
-                    .font(theme.typography.subheadline)
-                    .fontWeight(.medium)
-                
-                if assessment.cardioLevel.rawValue != "excellent" {
-                    SuggestionRow(
-                        icon: "heart.fill",
-                        title: "Cardio Training",
-                        suggestion: "Add 20min cardio sessions",
-                        color: .red
-                    )
-                }
-                
-                if assessment.strengthLevel.rawValue != "excellent" {
-                    SuggestionRow(
-                        icon: "dumbbell.fill",
-                        title: "Strength Training",
-                        suggestion: "Focus on compound movements",
-                        color: .blue
-                    )
-                }
-            }
-        }
-        .padding(theme.spacing.l)
-        .background(theme.colors.cardBackground)
-        .cornerRadius(theme.radius.l)
-        .cardStyle()
-    }
-}
-
-struct SuggestionRow: View {
-    let icon: String
-    let title: String
-    let suggestion: String
-    let color: Color
-    @Environment(\.theme) private var theme
-    
-    var body: some View {
-        HStack {
-            Image(systemName: icon)
-                .foregroundColor(color)
-                .frame(width: 20)
-            
-            VStack(alignment: .leading, spacing: 2) {
-                Text(title)
-                    .font(theme.typography.caption)
-                    .fontWeight(.medium)
-                    .foregroundColor(theme.colors.textPrimary)
-                
-                Text(suggestion)
-                    .font(theme.typography.caption)
-                    .foregroundColor(theme.colors.textSecondary)
-            }
-            
-            Spacer()
-        }
-    }
-}
+// MARK: - Removed duplicate EnhancedFitnessAssessmentCard and SuggestionRow
+// Use existing FitnessAssessmentCard from Analytics components
 
 struct VO2MaxVisualizationCard: View {
     let vo2Max: Double
+    let viewModel: HealthIntelligenceViewModel
     @Environment(\.theme) private var theme
     
     var body: some View {
@@ -1014,7 +691,7 @@ struct VO2MaxVisualizationCard: View {
                     Text("\(Int(vo2Max))")
                         .font(theme.typography.display1)
                         .fontWeight(.bold)
-                        .foregroundColor(getVO2MaxColor())
+                        .foregroundColor(Color(viewModel.vo2MaxColor))
                     
                     Text("ml/kg/min")
                         .font(theme.typography.caption)
@@ -1024,12 +701,12 @@ struct VO2MaxVisualizationCard: View {
                 Spacer()
                 
                 VStack(alignment: .trailing, spacing: theme.spacing.xs) {
-                    Text(getVO2MaxCategory())
+                    Text(viewModel.vo2MaxCategory)
                         .font(theme.typography.subheadline)
                         .fontWeight(.medium)
-                        .foregroundColor(getVO2MaxColor())
+                        .foregroundColor(Color(viewModel.vo2MaxColor))
                     
-                    Text(getVO2MaxDescription())
+                    Text(viewModel.vo2MaxDescription)
                         .font(theme.typography.caption)
                         .foregroundColor(theme.colors.textSecondary)
                         .multilineTextAlignment(.trailing)
@@ -1051,41 +728,9 @@ struct VO2MaxVisualizationCard: View {
         .cornerRadius(theme.radius.l)
         .cardStyle()
     }
-    
-    private func getVO2MaxColor() -> Color {
-        switch vo2Max {
-        case 50...: return .green
-        case 40..<50: return .blue
-        case 30..<40: return .orange
-        default: return .red
-        }
-    }
-    
-    private func getVO2MaxCategory() -> String {
-        switch vo2Max {
-        case 50...: return "Excellent"
-        case 40..<50: return "Good"
-        case 30..<40: return "Fair"
-        default: return "Poor"
-        }
-    }
-    
-    private func getVO2MaxDescription() -> String {
-        switch vo2Max {
-        case 50...: return "Top athlete level"
-        case 40..<50: return "Above average fitness"
-        case 30..<40: return "Average fitness"
-        default: return "Below average"
-        }
-    }
-    
+
     private func isCurrentRange(_ range: VO2MaxRange) -> Bool {
-        switch range {
-        case .poor: return vo2Max < 30
-        case .fair: return vo2Max >= 30 && vo2Max < 40
-        case .good: return vo2Max >= 40 && vo2Max < 50
-        case .excellent: return vo2Max >= 50
-        }
+        return RecoveryCalculationService.isVO2MaxInRange(vo2Max, range: range)
     }
 }
 
@@ -1102,42 +747,7 @@ enum VO2MaxRange: CaseIterable {
     }
 }
 
-struct StepsTrendChart: View {
-    let stepsHistory: [HealthDataPoint]
-    let todaySteps: Double
-    @Environment(\.theme) private var theme
-    
-    var body: some View {
-        VStack(alignment: .leading, spacing: theme.spacing.m) {
-            HStack {
-                Text("health.steps".localized)
-                    .font(theme.typography.headline)
-                    .fontWeight(.semibold)
-                Spacer()
-                Text("analytics.this_week".localized)
-                    .font(theme.typography.caption)
-                    .foregroundColor(theme.colors.textSecondary)
-            }
-            
-            // Real activity bar chart
-            HStack(alignment: .bottom, spacing: 4) {
-                ForEach(0..<7, id: \.self) { index in
-                    let daySteps = todaySteps
-                    let height = CGFloat(max(20, min(80, (daySteps / 15000) * 80)))
-                    Rectangle()
-                        .fill(Color.blue.opacity(0.7))
-                        .frame(width: 30, height: height)
-                        .cornerRadius(4)
-                }
-            }
-            .frame(height: 100)
-        }
-        .padding(theme.spacing.l)
-        .background(theme.colors.cardBackground)
-        .cornerRadius(theme.radius.l)
-        .cardStyle()
-    }
-}
+// MARK: - Legacy Components (kept for now - will be replaced by Analytics components)
 
 struct WeightTrendChart: View {
     let weightHistory: [HealthDataPoint]
@@ -1341,7 +951,7 @@ struct HealthIntelligenceInsightDetailView: View {
                     // Action recommendations
                     if let recommendedAction = insight.action, !recommendedAction.isEmpty {
                         VStack(alignment: .leading, spacing: theme.spacing.m) {
-                            Text("Recommended Action")
+                            Text(CommonKeys.Analytics.recommendedAction.localized)
                                 .font(theme.typography.headline)
                                 .fontWeight(.semibold)
                                 .foregroundColor(theme.colors.textPrimary)

@@ -11,7 +11,7 @@ struct AnalyticsEnhancedHealthTrendsSection: View {
         VStack(spacing: 20) {
             // Section Header
             HStack {
-                Text("Health Trends")
+                Text(CommonKeys.Analytics.healthTrends.localized)
                     .font(.headline)
                     .fontWeight(.semibold)
                     .foregroundColor(theme.colors.textPrimary)
@@ -19,7 +19,7 @@ struct AnalyticsEnhancedHealthTrendsSection: View {
                 Spacer()
 
                 NavigationLink(destination: HealthTrendsView()) {
-                    Text("View Charts")
+                    Text(CommonKeys.Analytics.viewCharts.localized)
                         .font(.caption)
                         .foregroundColor(theme.colors.accent)
                 }

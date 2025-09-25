@@ -3,7 +3,7 @@ import SwiftData
 
 // MARK: - Lift Session Model
 @Model
-final class LiftSession {
+final class LiftSession: @unchecked Sendable {
     var id: UUID = UUID()
     var startDate: Date = Date()
     var endDate: Date?
@@ -299,6 +299,18 @@ extension LiftExerciseResult {
     
     var totalReps: Int {
         return sets.filter { $0.isCompleted }.reduce(0) { $0 + $1.reps }
+    }
+
+    var estimatedOneRM: Double {
+        let completedSets = sets.filter { $0.isCompleted && $0.weight != nil }
+        guard let bestSet = completedSets.max(by: {
+            ($0.weight ?? 0) * (1 + Double($0.reps) / 30) < ($1.weight ?? 0) * (1 + Double($1.reps) / 30)
+        }) else { return 0 }
+
+        guard let weight = bestSet.weight, bestSet.reps > 0 else { return 0 }
+
+        // Use Epley formula: 1RM = weight * (1 + reps/30)
+        return weight * (1 + Double(bestSet.reps) / 30.0)
     }
 }
 

@@ -63,6 +63,35 @@ class ActivityLoggerService {
     }
 
     /**
+     * Logs a WOD completion - delegates to ActivityLoggerCore
+     */
+    func logWODCompleted(
+        wodName: String,
+        wodType: String,
+        totalTime: TimeInterval,
+        rounds: Int,
+        extraReps: Int,
+        isPR: Bool,
+        user: User? = nil
+    ) {
+        guard let modelContext = dataManager.modelContext else {
+            Logger.error("Model context not set")
+            return
+        }
+
+        ActivityLoggerCore.logWODCompleted(
+            wodName: wodName,
+            wodType: wodType,
+            totalTime: totalTime,
+            rounds: rounds,
+            extraReps: extraReps,
+            isPR: isPR,
+            user: user ?? getCurrentUser(),
+            modelContext: modelContext
+        )
+    }
+
+    /**
      * Logs a cardio session completion - delegates to ActivityLoggerCore
      */
     func logCardioCompleted(
@@ -147,6 +176,29 @@ class ActivityLoggerService {
 
         ActivityLoggerCore.logWeightEntry(
             weight: weight,
+            user: user ?? getCurrentUser(),
+            modelContext: modelContext
+        )
+    }
+
+    /**
+     * Logs program start activity - delegates to ActivityLoggerCore
+     */
+    func logProgramStarted(
+        programName: String,
+        weeks: Int,
+        daysPerWeek: Int,
+        user: User? = nil
+    ) {
+        guard let modelContext = dataManager.modelContext else {
+            Logger.error("Model context not set")
+            return
+        }
+
+        ActivityLoggerCore.logProgramStarted(
+            programName: programName,
+            weeks: weeks,
+            daysPerWeek: daysPerWeek,
             user: user ?? getCurrentUser(),
             modelContext: modelContext
         )

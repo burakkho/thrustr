@@ -50,8 +50,9 @@ struct LiftExerciseCard: View {
                     // Sets list
                     ForEach(Array(exerciseData.sets.enumerated()), id: \.offset) { index, setData in
                         SetRow(
-                            setData: setData,
+                            set: setData,
                             setNumber: index + 1,
+                            unitSettings: UnitSettings.shared,
                             onComplete: { onCompleteSet(index) }
                         )
                     }
@@ -98,62 +99,6 @@ struct LiftExerciseCard: View {
     }
 }
 
-// MARK: - Set Row Component
-struct SetRow: View {
-    @Environment(\.theme) private var theme
-    let setData: SetData
-    let setNumber: Int
-    let onComplete: () -> Void
-
-    var body: some View {
-        HStack(spacing: theme.spacing.m) {
-            // Set number
-            Text("\(setNumber)")
-                .font(theme.typography.caption)
-                .fontWeight(.medium)
-                .foregroundColor(theme.colors.textSecondary)
-                .frame(width: 20)
-
-            // Weight
-            VStack(spacing: 2) {
-                Text("Weight")
-                    .font(.caption2)
-                    .foregroundColor(theme.colors.textSecondary)
-                Text(setData.weight != nil ? "\(setData.weight!, specifier: "%.1f") kg" : "-")
-                    .font(theme.typography.caption)
-                    .fontWeight(.medium)
-                    .foregroundColor(setData.isCompleted ? theme.colors.success : theme.colors.textPrimary)
-            }
-            .frame(minWidth: 60)
-
-            // Reps
-            VStack(spacing: 2) {
-                Text("Reps")
-                    .font(.caption2)
-                    .foregroundColor(theme.colors.textSecondary)
-                Text("\(setData.reps)")
-                    .font(theme.typography.caption)
-                    .fontWeight(.medium)
-                    .foregroundColor(setData.isCompleted ? theme.colors.success : theme.colors.textPrimary)
-            }
-            .frame(minWidth: 40)
-
-            Spacer()
-
-            // Complete button
-            Button(action: onComplete) {
-                Image(systemName: setData.isCompleted ? "checkmark.circle.fill" : "circle")
-                    .font(.title2)
-                    .foregroundColor(setData.isCompleted ? theme.colors.success : theme.colors.textSecondary)
-            }
-            .buttonStyle(PlainButtonStyle())
-        }
-        .padding(.vertical, theme.spacing.xs)
-        .padding(.horizontal, theme.spacing.s)
-        .background(setData.isCompleted ? theme.colors.success.opacity(0.1) : Color.clear)
-        .cornerRadius(theme.radius.s)
-    }
-}
 
 #Preview {
     // Create simple mock data for preview
@@ -173,7 +118,7 @@ struct SetRow: View {
         isCompleted: false
     )
 
-    return LiftExerciseCard(
+    LiftExerciseCard(
         exerciseData: $mockData,
         isExpanded: true,
         isEditMode: false,
